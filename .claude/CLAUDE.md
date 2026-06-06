@@ -1,0 +1,116 @@
+# fubaritico-ds — Claude Code Instructions
+
+## Project
+
+Project to generate multi UI framework base on a stencilJS architecture. The project will be a tool to produce design system packages targeted for native web components, React, Angular and Vue. The component will visible in their respective storybook application.
+
+- `apps/storybook-web-component` - [TODO] Explain and describe this package
+- `apps/storybook-react` - [TODO] Explain and describe this package
+- `apps/storybook-angular` - [TODO] Explain and describe this package
+- `apps/storybook-vuejs` - [TODO] Explain and describe this package
+- `packages/reference` - Package used a s a reference for creating component in stencil
+- `packages/shared` - [TODO] Explain and describe this package
+- `packages/stencil` - Contains `README.md` and `PLANS.md` to create and structure the monorepo project
+- `packages/tokens` - [TODO] Explain and describe this package
+
+[TODO] Add packages once created, to be updated.
+
+## Your role
+
+Help the developer — don't agree blindly. Challenge when warranted. Never work from assumptions: verify every hypothesis against the code, bring in the missing code references, and when that's not enough, verify online and cite your sources to debate solutions.
+
+## Source code reference
+
+Source code for dependencies is available in `opensrc/` for deeper understanding of implementation details.
+
+See `opensrc/sources.json` for the list of available packages and their versions.
+
+Use this source code when you need to understand how a package works internally, not just its types/interface.
+
+### Fetching Additional Source Code
+
+To fetch source code for a package or repository you need to understand, run:
+
+```bash
+npx opensrc@0.6 <package>           # npm package (e.g., npx opensrc zod)
+npx opensrc@0.6 pypi:<package>      # Python package (e.g., npx opensrc pypi:requests)
+npx opensrc@0.6 crates:<package>    # Rust crate (e.g., npx opensrc crates:serde)
+npx opensrc@0.6 <owner>/<repo>      # GitHub repo (e.g., npx opensrc vercel/ai)
+# COMMAND UPDATE: the 0.6 version is working as expected, it brings back repos in a local opensrc dir and updates/creates AGENTS.md
+npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui/tamagui.git 
+# above commande fetches the repo if not present see online doc at: https://opensrc.sh/  
+
+```
+
+## Critical Workflow Rules
+
+- **Be concise** — no recap, no enumerations, no unsolicited explanations. Act, then report briefly if needed.
+- **Discuss approach FIRST** — never code without confirming approach
+- **Review → Test → Commit** per change — no accumulation
+- **Always run** — `pnpm type-check && pnpm lint && pnpm test` from root — MUST run after every code change, never skip
+- **Risky actions** (git push, reset --hard, rm -rf) require explicit permission EVERY TIME
+- **Never hallucinate** — if uncertain, read code first
+- **Always use context7** for any question about an API, library, or package
+- **Secrets** — live in `.env*` files — never in rules, memory, or code
+- **Never `console.log`** — use `console.warn` / `console.error`
+- **Never explicit `any`** — strict TypeScript
+- **Always run** `pnpm type-check && pnpm lint && pnpm test` then `/review` after every set of modifications
+- **Always ask** user to run pnpm dev, pnpm prod:server and pnpm storybook after having modified a component
+- **Always create a Storybook story** after every component (`/story`)
+- **Model**: Haiku for questions/research, Sonnet for code/commits — suggest Haiku when appropriate
+- **For React**: instead of using `React.` for react types, import the type from react
+- **Shared responsibility** — you and the user share ownership of code quality. Care about every line; review your own output before presenting it.
+- **Research FIRST** — when something fails or behaves unexpectedly, search the web (GitHub issues, changelogs, docs) BEFORE modifying code. Most bugs are version incompatibilities or misconfigurations, not your code alone.
+- **If it works elsewhere, it works here** — never conclude "it can't work" or write workaround mocks. Find the root cause in your setup (resolution paths, singletons, config) and fix it.
+- **Never fallback values** — never serve hardcoded/stale data as silent degradation. If a runtime dependency (TMDB API, config) fails, surface the error; don't mask it.
+- **Never `--no-verify`** on commit without the developer's explicit agreement
+- **JSDoc everywhere (strict)** — every exported interface property, every function (`@param` + `@returns`), every hook, every type with properties, every constant. Exempt: generated `packages/http-client` + test files.
+- **Apply React skills** — apply `composition-patterns`, `react-best-practices`, and `react-view-transitions` when writing or reviewing component code
+
+## Code Conventions
+
+### React
+
+- Functional components: `export function Name ({ ... }: NameProps)  { ... }`
+- Import order: external → @fubaritico-ds/\* → relative → `import type` (newlines between groups)
+- `clsx` for conditional classes
+
+### Web components
+
+To be updated.
+
+### VueJS
+
+To be updated.
+
+### Angular
+
+To be updated.
+
+## Session State (updated by `/end-session`)
+
+### Completed
+
+Read @completed.md
+
+### Next
+
+You'll write here next session topics and tasks.
+
+### Known Issues
+
+Read @known-issues.md
+
+## Reference Files (load on demand — NOT auto-loaded)
+
+| File                           | When to load                            |
+| ------------------------------ | --------------------------------------- |
+| `architecture.md`              | Stack, scripts, CSS, Module Federation  |
+| `decision-tree.md`             | Skill triggers — check before coding    |
+| `patterns-ui.md`               | UI component, design system story       |
+| `testing-on-iphone-locally.md` | Mobile testing on iPhone via LAN        |
+| `tests.md`                     | Writing tests — 5-level policy          |
+| `troubleshooting.md`           | Debug, architectural decisions          |
+
+**Before coding**: ask which reference files are needed — do NOT start coding without the relevant files loaded.
+

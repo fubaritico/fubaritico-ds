@@ -1,0 +1,35 @@
+{
+  "name": "@fubaritico-ds/tokens",
+  "version": "0.0.4",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/ts/tokens.d.ts",
+        "default": "./dist/js/tokens.js"
+      }
+    },
+    "./css": "./dist/css/variables.css",
+    "./tailwind": "./dist/tailwind/theme.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "pnpm clean && style-dictionary build --config sd.config.js",
+    "local-release:patch": "pnpm build && ./publish-local.sh patch",
+    "local-release:minor": "pnpm build && ./publish-local.sh minor",
+    "local-release:major": "pnpm build && ./publish-local.sh major",
+    "release:patch": "pnpm build && ./publish.sh patch",
+    "release:minor": "pnpm build && ./publish.sh minor",
+    "release:major": "pnpm build && ./publish.sh major"
+  },
+  "devDependencies": {
+    "conventional-changelog": "catalog:",
+    "style-dictionary": "^4.3.0"
+  }
+}

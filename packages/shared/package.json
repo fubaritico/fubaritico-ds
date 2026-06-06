@@ -1,0 +1,92 @@
+{
+  "name": "@fubaritico-ds/shared",
+  "version": "0.2.0",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./vite": {
+      "types": "./dist/vite/index.d.ts",
+      "import": "./dist/vite/index.js"
+    },
+    "./mocks": {
+      "types": "./dist/mocks/index.d.ts",
+      "import": "./dist/mocks/index.js"
+    },
+    "./test-utils": {
+      "types": "./dist/test-utils/index.d.ts",
+      "import": "./dist/test-utils/index.js"
+    },
+    "./theme.css": "./dist/theme.css",
+    "./theme-no-fonts.css": "./dist/theme-no-fonts.css",
+    "./fonts.css": "./dist/fonts.css",
+    "./src/tailwind/theme.css": "./src/tailwind/theme.css",
+    "./src/tailwind/theme-no-fonts.css": "./src/tailwind/theme-no-fonts.css",
+    "./src/fonts/fonts.css": "./src/fonts/fonts.css",
+    "./assets": {
+      "types": "./dist/assets/index.d.ts",
+      "import": "./dist/assets/index.js"
+    }
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist",
+    "src/tailwind",
+    "src/fonts"
+  ],
+  "scripts": {
+    "svg": "node ./script/export-svgs.js",
+    "build:css": "postcss src/fonts/fonts.css -o dist/fonts.css && postcss src/tailwind/theme.css -o dist/theme.css && postcss src/tailwind/theme-no-fonts.css -o dist/theme-no-fonts.css && node script/copy-fonts.js",
+    "build": "pnpm svg && tsc && mkdir -p dist/assets && mv dist/.temp-svg/* dist/assets/ 2>/dev/null && rm -rf dist/.temp-svg src/.temp-svg || true && pnpm build:css",
+    "dev": "tsc --watch",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix",
+    "local-release:patch": "pnpm build && ./publish-local.sh patch",
+    "local-release:minor": "pnpm build && ./publish-local.sh minor",
+    "local-release:major": "pnpm build && ./publish-local.sh major",
+    "release:patch": "pnpm build && ./publish.sh patch",
+    "release:minor": "pnpm build && ./publish.sh minor",
+    "release:major": "pnpm build && ./publish.sh major"
+  },
+  "dependencies": {
+    "@fubaritico-ds/tokens": "workspace:*",
+    "msw": "catalog:",
+    "svg-to-jsx": "^1.0.4",
+    "svgr": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "catalog:",
+    "@testing-library/react": "catalog:",
+    "clsx": "catalog:",
+    "tailwind-merge": "^3.5.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-router-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@fontsource/inter": "catalog:",
+    "@fontsource/roboto": "catalog:",
+    "@fontsource/roboto-condensed": "catalog:",
+    "@tanstack/react-query": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "conventional-changelog": "catalog:",
+    "postcss": "catalog:",
+    "postcss-cli": "^11.0.1",
+    "postcss-import": "^16.1.0",
+    "glob": "13.0.6",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}

@@ -1,0 +1,23 @@
+/**
+ * Shared Tailwind CSS theme configuration
+ * Generated from @fubaritico-ds/tokens via Style Dictionary
+ * These tokens will be used by host and remotes
+ *
+ * All tokens are defined in packages/tokens and compiled to this @theme format.
+ * Short aliases (--color-background, --color-primary, etc.) are included.
+ */
+
+/* Fonts must be imported before tokens */
+@import '../fonts/fonts.css';
+
+@import '@fubaritico-ds/tokens/tailwind';
+
+/* Custom utilities */
+@layer utilities {
+  .text-shadow-strong {
+    text-shadow: 0 0 10px rgb(0 0 0 / 0.75);
+  }
+  .text-shadow-medium {
+    text-shadow: 0 0 5px rgb(0 0 0 / 0.5);
+  }
+}

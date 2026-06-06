@@ -1,0 +1,61 @@
+@import "tailwindcss" prefix(ui);
+@import "@fubaritico-ds/shared/src/tailwind/theme-no-fonts.css";
+
+@source "./**/*.{ts,tsx}";
+
+@layer base {
+  /* Disable preflight - host app handles reset */
+
+  /* ============================================================================
+     Custom Animations
+     ============================================================================
+
+     @keyframes must be inside a @layer to be processed by Tailwind CSS v4.
+     ========================================================================== */
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+}
+
+@theme {
+  --animate-slide-up: slide-up 0.3s ease-out;
+}
+
+@layer components {
+  /* ============================================================================
+     Custom CSS Classes
+     ============================================================================
+
+     Classes that cannot be expressed with Tailwind utilities alone.
+     These are typically used for:
+     - Complex pseudo-element styling (::before, ::after)
+     - Advanced animations with multiple properties
+     - Browser-specific workarounds
+
+     Keep this section minimal - prefer Tailwind utilities when possible.
+     ========================================================================== */
+
+  .ui-skeleton-shimmer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, var(--ui-color-white-80), transparent);
+    animation: shimmer 2s infinite;
+  }
+}

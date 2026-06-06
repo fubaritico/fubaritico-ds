@@ -1,0 +1,19 @@
+/**
+ * Shared Tailwind CSS theme configuration WITHOUT fonts
+ * Used by remotes in their remote.css (Module Federation context)
+ * The host already loads fonts, so remotes don't need to duplicate them
+ *
+ * For standalone mode, remotes use theme.css (with fonts) in index.css
+ */
+
+@import '@fubaritico-ds/tokens/tailwind';
+
+/* Custom utilities */
+@layer utilities {
+  .text-shadow-strong {
+    text-shadow: 0 0 10px rgb(0 0 0 / 0.75);
+  }
+  .text-shadow-medium {
+    text-shadow: 0 0 5px rgb(0 0 0 / 0.5);
+  }
+}

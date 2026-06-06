@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "idea": {
+      "url": "http://127.0.0.1:64342/stream",
+      "type": "http"
+    },
+    "basic-memory": {
+      "command": "uvx",
+      "args": ["basic-memory", "mcp"]
+    }
+  }
+}

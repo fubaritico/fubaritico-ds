@@ -1,0 +1,5 @@
+export { default as Tabs } from './Tabs'
+export type { TabsProps, TabsVariant } from './Tabs'
+export type { TabsListProps } from './TabsList'
+export type { TabsTriggerProps } from './TabsTrigger'
+export type { TabsPanelProps } from './TabsPanel'

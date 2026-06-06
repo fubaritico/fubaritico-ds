@@ -1,0 +1,35 @@
+{
+  "color": {
+    "primitive": {
+      "$description": "Raw color palette - not for direct use in components",
+      "neutral": {
+        "0": { "$value": "#ffffff", "$type": "color" },
+        "50": { "$value": "#fafafa", "$type": "color" },
+        "100": { "$value": "#f5f5f5", "$type": "color" },
+        "200": { "$value": "#e5e5e5", "$type": "color" },
+        "300": { "$value": "#d4d4d4", "$type": "color" },
+        "400": { "$value": "#a3a3a3", "$type": "color" },
+        "500": { "$value": "#6b6b6b", "$type": "color" },
+        "600": { "$value": "#525252", "$type": "color" },
+        "700": { "$value": "#404040", "$type": "color" },
+        "800": { "$value": "#262626", "$type": "color" },
+        "900": { "$value": "#171717", "$type": "color" },
+        "950": { "$value": "#0a0a0a", "$type": "color" }
+      },
+      "amber": {
+        "400": { "$value": "#fbbf24", "$type": "color" },
+        "500": { "$value": "#f59e0b", "$type": "color" },
+        "600": { "$value": "#d97706", "$type": "color" },
+        "700": { "$value": "#b45309", "$type": "color" }
+      },
+      "red": {
+        "500": { "$value": "#ef4444", "$type": "color" },
+        "600": { "$value": "#dc2626", "$type": "color" }
+      },
+      "green": {
+        "500": { "$value": "#22c55e", "$type": "color" },
+        "600": { "$value": "#16a34a", "$type": "color" }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Spinner > renders with custom className 1`] = `
+<div>
+  <div
+    aria-label="Loading"
+    class="ui:size-12 ui:rounded-full ui:border-4 ui:border-white/20 ui:border-t-white ui:animate-spin ui:custom-class"
+    role="status"
+  />
+</div>
+`;
+
+exports[`Spinner > renders with default props 1`] = `
+<div>
+  <div
+    aria-label="Loading"
+    class="ui:size-12 ui:rounded-full ui:border-4 ui:border-white/20 ui:border-t-white ui:animate-spin"
+    role="status"
+  />
+</div>
+`;

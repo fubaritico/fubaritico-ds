@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
+.idea/*
+
+# Where secrets are stored
+.env
+.env.bck
+/.env
+.env.local
+/.env.local
+.env.local.bak
+.env.production
+/.env.production
+
+# test reports
+test-output.json
+
+# Vitest coverage
+coverage
+
+# Files and sources
+files
+
+# E2E
+packages/e2e/src/traces/
+packages/e2e/src/reports/report.html
+packages/e2e/src/reports/report.json
+
+# Claude
+/.agent-workspace
+/.claude/settings.local.json
+
+# NPM
+.npmrc
+.nvmrc
+
+# opensrc - source code for packages
+opensrc/

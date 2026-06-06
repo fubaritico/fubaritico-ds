@@ -1,0 +1,24 @@
+<svg viewBox="0 0 32 32" height="32" width="32" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Clip path for square (overflow hidden) -->
+    <clipPath id="squareClip">
+      <rect x="2" y="2" width="28" height="28"/>
+    </clipPath>
+    <!-- Linear gradient from darker orange to lighter orange (bottom-left to top-right) -->
+    <linearGradient id="orangeGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#b45309;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Square background with gradient (no rounded corners) -->
+  <rect x="2" y="2" width="28" height="28" fill="url(#orangeGradient)"/>
+
+  <!-- White T shape (centered, scaled 1.7x, rotated -15deg, clipped) -->
+  <g clip-path="url(#squareClip)">
+    <g transform="translate(16, 18) rotate(-15) scale(1.7) translate(-22, -19)">
+      <!-- Merged T shape as single path (no rounded corners) -->
+      <path d="M 14 12 L 30 12 L 31 12 L 31 16 L 30 17 L 25 17 L 25 30 L 25 31 L 21 31 L 21 30 L 21 17 L 14 17 L 13 16 L 13 13 L 14 12 Z" fill="white"/>
+    </g>
+  </g>
+</svg>

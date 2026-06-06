@@ -1,0 +1,14 @@
+{
+  "radius": {
+    "$description": "Border radius scale",
+    "none": { "$value": "0", "$type": "dimension" },
+    "sm": { "$value": "0.25rem", "$type": "dimension" },
+    "default": { "$value": "0.5rem", "$type": "dimension" },
+    "md": { "$value": "0.5rem", "$type": "dimension" },
+    "lg": { "$value": "0.75rem", "$type": "dimension" },
+    "xl": { "$value": "1rem", "$type": "dimension" },
+    "2xl": { "$value": "1.5rem", "$type": "dimension" },
+    "3xl": { "$value": "2rem", "$type": "dimension" },
+    "full": { "$value": "9999px", "$type": "dimension" }
+  }
+}

@@ -1,0 +1,24 @@
+/**
+ * Font imports from fontsource
+ * Roboto: UI general (100-700)
+ * Roboto Condensed: Media titles (700)
+ * Inter: Body text (400, 500, 600, 700)
+ */
+
+/* Roboto - UI font */
+@import '@fontsource/roboto/latin-100.css';
+@import '@fontsource/roboto/latin-200.css';
+@import '@fontsource/roboto/latin-300.css';
+@import '@fontsource/roboto/latin-400.css';
+@import '@fontsource/roboto/latin-500.css';
+@import '@fontsource/roboto/latin-700.css';
+
+/* Roboto Condensed - Display font for movie titles */
+@import '@fontsource/roboto-condensed/latin-400.css';
+@import '@fontsource/roboto-condensed/latin-700.css';
+
+/* Inter - Body text */
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-500.css';
+@import '@fontsource/inter/latin-600.css';
+@import '@fontsource/inter/latin-700.css';

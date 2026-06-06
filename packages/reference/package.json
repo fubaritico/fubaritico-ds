@@ -1,0 +1,100 @@
+{
+  "name": "@fubaritico-ds/reference",
+  "version": "1.0.0",
+  "description": "Design system components for reference",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./react-router": {
+      "import": {
+        "types": "./dist/react-router/index.d.ts",
+        "default": "./dist/react-router/index.js"
+      }
+    },
+    "./next": {
+      "import": {
+        "types": "./dist/next/index.d.ts",
+        "default": "./dist/next/index.js"
+      }
+    },
+    "./*": {
+      "import": {
+        "types": "./dist/*/index.d.ts",
+        "default": "./dist/*/index.js"
+      }
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify",
+    "build:js": "tsup && tsc -p tsconfig.build.json",
+    "build": "pnpm build:js && pnpm build:css",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "local-release:patch": "./publish-local.sh patch",
+    "local-release:minor": "./publish-local.sh minor",
+    "local-release:major": "./publish-local.sh major",
+    "release:patch": "./publish.sh patch",
+    "release:minor": "./publish.sh minor",
+    "release:major": "./publish.sh major"
+  },
+  "peerDependencies": {
+    "next": ">=14",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-router-dom": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "react-router-dom": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "autoprefixer": "catalog:",
+    "conventional-changelog": "catalog:",
+    "jsdom": "catalog:",
+    "next": "^16.2.0",
+    "postcss": "catalog:",
+    "react-router-dom": "catalog:",
+    "tailwindcss": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@fubaritico-ds/shared": "workspace:*",
+    "clsx": "catalog:"
+  }
+}

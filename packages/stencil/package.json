@@ -1,0 +1,30 @@
+{
+  "name": "@fubaritico-ds/stencil",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Stencil Web Components sandbox — BEM-styled, overridable design system base. Generates React + Angular wrappers.",
+  "type": "module",
+  "files": [
+    "dist",
+    "loader"
+  ],
+  "scripts": {
+    "build": "stencil build",
+    "dev": "stencil build --dev --watch --serve",
+    "test": "stencil test --spec",
+    "test:watch": "stencil test --spec --watchAll",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@stencil/core": "^4.43.5"
+  },
+  "devDependencies": {
+    "@stencil/angular-output-target": "^1.3.1",
+    "@stencil/react-output-target": "^1.5.3",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@fubaritico-ds/tokens": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  }
+}
