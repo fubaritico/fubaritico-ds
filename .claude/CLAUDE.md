@@ -95,7 +95,21 @@ Read @completed.md
 
 ### Next
 
-You'll write here next session topics and tasks.
+Primary working branch is **`main`** (master is secondary). Memory holds the durable context
+(`project-goal-stencil-discovery`, `monorepo-orchestration`, `reference-projects`, `tmdb-legacy-cleanup-backlog`).
+
+1. **Create a git remote** (later) with `gh` and push `main`. No remote exists yet.
+2. **Build the CI** modeled on the two reference projects (paths in memory `reference-projects`):
+   `react-and-react-native-financial-app` and `vite-mf-monorepo`. Pipeline: Lerna+Nx
+   (lint/type-check/test/build) + pa11y (needs a Storybook running) + **Sonar** (user will register the
+   project on SonarCloud; `sonar` skill key = `fubaritico-ds`).
+3. **Finish the Stencil setup** — PLAN step 5: create `packages/stencil/src/global/ui-stencil.css`
+   and get `stencil build` green; then wire stencil into root `build` if needed.
+4. **Port reference → Stencil Web Components**: `ui-badge` → `ui-button` → `ui-rating`. Compare the
+   generated `dist/{react,angular}` wrappers to the hand-written React. Goal = understand Stencil, its
+   limitations, and the WC model (bottom-up / no Context). See `packages/stencil/README.md`.
+
+Decisions locked: keep **Lerna + Nx** (no Turbo). `packages/reference` is the port source.
 
 ### Known Issues
 
