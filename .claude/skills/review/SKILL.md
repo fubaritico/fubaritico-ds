@@ -38,7 +38,7 @@ Read all files in scope. For each file, determine which reference guides apply:
 - `.native.tsx` → platform-safety.md, accessibility.md
 - `.web.tsx` → platform-safety.md, security.md, accessibility.md
 - `*.variants.ts` → platform-safety.md (forbidden classes)
-- `packages/ui/src/components/**` → architecture.md, quality.md
+- `packages/reference/src/components/**` → architecture.md, quality.md
 - `packages/tokens/**` → architecture.md
 - `apps/api/src/routes/**` → security.md (SEC-013..016), architecture.md (ARCH-013..016), quality.md (QUAL-020..22)
 - `apps/api/src/schemas/**` → architecture.md (ARCH-014), quality.md (QUAL-023)

@@ -154,7 +154,7 @@ export const config: Config = {
       customElementsExportBehavior: 'auto-define-custom-elements',
     },
 
-    // 3) wrapper React généré → dist/react/ (à comparer à packages/ui)
+    // 3) wrapper React généré → dist/react/ (à comparer à packages/reference)
     reactOutputTarget({ outDir: './dist/react/' }),
 
     // 4) wrapper Angular généré (standalone, s'appuie sur dist-custom-elements)

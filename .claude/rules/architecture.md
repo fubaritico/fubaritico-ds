@@ -104,7 +104,7 @@ packages/
 - Tailwind v4, CSS-first (no tailwind.config.js)
 - Shared theme: `packages/shared/src/tailwind/theme.css` (OKLCH tokens)
 - `theme-no-fonts.css`: for remotes (no @font-face, avoids broken font paths)
-- packages/ui: `ui:` prefix — `ui:flex ui:items-center`
+- packages/reference: `ui:` prefix — `ui:flex ui:items-center`
 - packages/layouts: `layout:` prefix
 - apps/home: `hm:` prefix
 - apps/media: `mda:` prefix

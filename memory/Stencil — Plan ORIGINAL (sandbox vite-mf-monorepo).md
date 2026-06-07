@@ -24,7 +24,7 @@ Web Components, produit :
 2. un **wrapper React** généré (`dist/react/`),
 3. un **wrapper Angular** généré (`dist/angular/`),
 
-en **portant des composants** déjà présents dans `packages/ui` pour comparer le code généré au code React/Tailwind écrit à la main.
+en **portant des composants** déjà présents dans `packages/reference` pour comparer le code généré au code React/Tailwind écrit à la main.
 
 **Composants portés (plan initial, du plus simple au plus riche) :** `ui-badge` → `ui-button` → `ui-rating`.
 
@@ -41,7 +41,7 @@ en **portant des composants** déjà présents dans `packages/ui` pour comparer 
   `rm -rf packages/stencil`.
 - **Isolation totale du toolchain racine** : tsconfig propre (`jsx: "react"` + `jsxFactory: "h"`, n'étend
   PAS le tsconfig racine), ESLint local / ignore racine, **hors** du `pnpm dev` parallèle.
-- **Tags préfixés `ui-`** pour refléter le DS `packages/ui`.
+- **Tags préfixés `ui-`** pour refléter le DS `packages/reference`.
 - **Runner de test** : `stencil test --spec` (Jest intégré, `*.spec.tsx`) — entorse assumée au plan
   initial (`@stencil/vitest`), justifiée (zéro dép. en plus, zéro collision avec le `vitest run` racine
   ciblant `*.test.tsx`). Migration vers `@stencil/vitest` triviale plus tard.
@@ -63,7 +63,7 @@ en **portant des composants** déjà présents dans `packages/ui` pour comparer 
 | 3 | `stencil.config.ts` (5 output targets : dist+loader, dist-custom-elements auto-define, reactOutputTarget, angularOutputTarget standalone, docs-readme) | ✅ Fait |
 | 4 | **Isolation toolchain + `exports`** : eslint local OU ignores racine ; compléter `exports` (`.`, `./dist/*`, `./components/*`, `./loader`) ; vérifier hors `pnpm dev` parallèle | ⬜ À faire |
 | 5 | **Style global** : créer `src/global/ui-stencil.css` (import tokens, variables d'accent, reset) → `stencil build` doit passer au vert | ⬜ À faire |
-| 6 | Port `ui-badge` (atome, CSS simple) : `.tsx` + `.css` BEM + `.spec.tsx` (5 niveaux) → lire `dist/react` & `dist/angular` + readme généré → comparer au `packages/ui/Badge` | ⬜ À faire |
+| 6 | Port `ui-badge` (atome, CSS simple) : `.tsx` + `.css` BEM + `.spec.tsx` (5 niveaux) → lire `dist/react` & `dist/angular` + readme généré → comparer au `packages/reference/Badge` | ⬜ À faire |
 | 7 | Port `ui-button` (union discriminée + event) : mapper prop polymorphe `as` + event camelCase `e.detail` → rebuild → comparer | ⬜ À faire |
 | 8 | Port `ui-rating` (état/interactivité) : sonder `@State`/`@Method` async/slots → rebuild → comparer | ⬜ À faire |
 | 9 | Synthèse de découverte : fidélité props, events `e.detail`, perte Tailwind / stratégie BEM+CSS vars, qualité types générés (React & Angular) ; décider si on promeut `dist/react`/`dist/angular` en vrais packages | ⬜ À faire |

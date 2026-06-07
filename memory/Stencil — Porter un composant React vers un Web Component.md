@@ -12,12 +12,12 @@ tags:
 
 # Stencil — Porter un composant React vers un Web Component
 
-> Guide pour convertir des composants React (ex `packages/ui` : React 19 + Tailwind préfixe `ui:`) en
+> Guide pour convertir des composants React (ex `packages/reference` : React 19 + Tailwind préfixe `ui:`) en
 > WC Stencil, puis régénérer un wrapper React pour comparer à l'original.
 
 ## Mapping des patterns
 
-| React (`packages/ui`)                     | Stencil                                                    |
+| React (`packages/reference`)                     | Stencil                                                    |
 | ----------------------------------------- | --------------------------------------------------------- |
 | `const C: FC<CProps> = ({ ... }) => {}`   | `@Component({ tag: 'c-el' }) export class C {}`            |
 | props via params destructurés             | `@Prop() name: type` (une par prop publique)              |
@@ -92,7 +92,7 @@ export class UiButton {
 
 ## Le problème Tailwind (critique)
 
-`packages/ui` style avec des utilitaires Tailwind (`ui:`) **sur la feuille de la page**. Avec
+`packages/reference` style avec des utilitaires Tailwind (`ui:`) **sur la feuille de la page**. Avec
 `shadow: true`, ces utilitaires de page **n'atteignent pas l'intérieur du shadow root**. Options :
 
 1. **Écrire du CSS plain** dans le `.css` du composant (le plus idiomatique pour un DS en WC).
@@ -104,7 +104,7 @@ Pour découverte/comparaison, **option 1 (CSS plain)** garde l'expérience propr
 
 ## Quoi comparer après `npm run build`
 
-Ouvrir le wrapper React généré (`outDir`) à côté du `packages/ui/src/<C>/<C>.tsx` écrit à la main :
+Ouvrir le wrapper React généré (`outDir`) à côté du `packages/reference/src/<C>/<C>.tsx` écrit à la main :
 - **Surface de props** — l'union discriminée survit-elle, ou s'aplatit-elle en props lâches ?
 - **Events** — `onUiClick` + `e.detail` vs le callback `onClick` React.
 - **Types** — qualité des `.d.ts` générés vs les types `ComponentProps` à la main.

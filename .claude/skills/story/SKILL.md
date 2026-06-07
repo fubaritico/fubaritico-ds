@@ -18,7 +18,7 @@ Reference: @.claude/rules/component-patterns.md
 
 ---
 
-## Design System component (packages/ui or packages/layouts)
+## Design System component (packages/reference or packages/layouts)
 
 ```typescript jsx
 import { ComponentName } from '@fubaritico-ds/ui'

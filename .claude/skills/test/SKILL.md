@@ -22,7 +22,7 @@ Stack: **Vitest 3 + React Testing Library 16 + MSW**.
 ## Steps
 
 1. **Read the source** — read all files of the unit (component, hook, section) to understand props, branches, callbacks, async behavior
-2. **Determine the layer** — UI component (packages/ui, packages/layouts), app section (apps/\*), hook, or utility
+2. **Determine the layer** — UI component (packages/reference, packages/layouts), app section (apps/\*), hook, or utility
 3. **Write the test file** following the 5-level structure below
 4. **Run tests** — `pnpm test` (or `pnpm --filter <pkg> test`) to verify all pass
 
@@ -62,7 +62,7 @@ describe('ComponentName', () => {
 
 ## Layer-Specific Guidance
 
-### UI Components (`packages/ui`, `packages/layouts`)
+### UI Components (`packages/reference`, `packages/layouts`)
 
 - Render with `renderWithReactQuery` (or plain `render` for pure presentational atoms)
 - Check: renders, each variant/size, disabled/loading states, accessibility roles/labels

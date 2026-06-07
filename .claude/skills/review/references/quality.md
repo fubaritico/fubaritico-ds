@@ -212,8 +212,8 @@
 - **Rationale**: Examples appear in Swagger UI, making the API self-documenting
 
 ### QUAL-024: Feature component with prop-forwarded fixed labels
-- **Files**: All `*.tsx` in `apps/` and `packages/` (except `packages/ui/` design system atoms/molecules/organisms)
+- **Files**: All `*.tsx` in `apps/` and `packages/` (except `packages/reference/` design system atoms/molecules/organisms)
 - **Check**: Feature components or page-level components that always render the same labels (e.g. `nameLabel={t('transactions.form.nameLabel')}`) should call `useTranslation()` internally instead of receiving those labels as props from every consumer
-- **Exception**: `packages/ui/` components (design system atoms/molecules/organisms) remain i18n-agnostic — they always receive labels as props
+- **Exception**: `packages/reference/` components (design system atoms/molecules/organisms) remain i18n-agnostic — they always receive labels as props
 - **Exception**: Labels that legitimately vary between usages remain props
 - **Rationale**: Passing a wall of `fooLabel={t('...')}` props duplicates the same `t()` calls in web + mobile consumers. If the label never changes, it belongs inside the component.

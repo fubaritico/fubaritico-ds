@@ -437,7 +437,7 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 * Remove explicit return types from
 usePopularMovies/usePopularTV
 
-- Create CarouselLoading component (packages/ui) with props:
+- Create CarouselLoading component (packages/reference) with props:
   count, cardWidth, cardHeight, showTitle, showSubtitle
 - Fix TMDBError typing: remove explicit return types from hooks,
   add type assertion in components

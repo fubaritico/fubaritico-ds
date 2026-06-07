@@ -132,7 +132,7 @@ wait-on http://localhost:3000 http://localhost:3001 http://localhost:3002 http:/
 'ui:h-8 ui:px-3 ui:text-base ui:sm:text-sm': inputSize === 'sm',
 ```
 **Rule**: Any input that may appear on mobile must have `font-size >= 16px` below the `sm` breakpoint.
-**Applied to**: `packages/ui/src/Input/Input.tsx` — `inputSize="sm"` variant.
+**Applied to**: `packages/reference/src/Input/Input.tsx` — `inputSize="sm"` variant.
 
 ### iOS Safari blocks cross-origin dynamic `import()` on LAN
 **Problem**: Module Federation `import()` of `remoteEntry.js` from a different port (e.g. `192.168.1.212:3000` → `192.168.1.212:3001`) fails on iOS Safari with "Could not connect to the server" / "Importing a module script failed", even though the file is accessible via direct navigation and `fetch()`.

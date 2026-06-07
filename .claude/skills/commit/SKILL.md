@@ -15,7 +15,7 @@ Prepare and propose a conventional commit for the current changes.
 1. Run `git status` to see changed files
 2. Run `git diff --staged` and `git diff` to analyze all changes
 3. Identify the scope based on changed files:
-   - `packages/ui` → scope `ui`
+   - `packages/reference` → scope `ui`
    - `packages/layouts` → scope `layouts`
    - `packages/shared` → scope `shared`
    - `apps/media` → scope `media`

@@ -18,7 +18,7 @@ tags:
 
 ## Objectif du transfert
 
-Sur le nouveau repo, on **reporte** `packages/tokens` (design tokens) et `packages/ui` (design system
+Sur le nouveau repo, on **reporte** `packages/tokens` (design tokens) et `packages/reference` (design system
 React, **référence**), puis on monte `packages/stencil` qui **reproduit** les composants `ui` en Web
 Components et **génère** des wrappers React + Angular depuis une seule source. Détail :
 [[Stencil — Plan NOUVEAU (projet Stencil autonome)]].
@@ -48,7 +48,7 @@ Components et **génère** des wrappers React + Angular depuis une seule source.
 - **`@Method()` public DOIT être `async`**. **Events en camelCase** (gouverne `onXxx` React / `@Output` Angular). Payload dans **`e.detail`**.
 - **Props objet/array** : settables seulement via propriété JS, pas attribut HTML.
 - **Shadow DOM** : styles n'entrent/sortent pas → theming via **CSS variables** + **`::part()`**. Tailwind de page ne pénètre pas.
-- **tsconfig Stencil** : `jsx: "react"` + `jsxFactory: "h"` + `experimentalDecorators` — **incompatible** avec `jsx: "react-jsx"` de React → **isoler** quand on cohabite avec `packages/ui`.
+- **tsconfig Stencil** : `jsx: "react"` + `jsxFactory: "h"` + `experimentalDecorators` — **incompatible** avec `jsx: "react-jsx"` de React → **isoler** quand on cohabite avec `packages/reference`.
 - **Piège `TS18003`** : `include: ["src"]` sans `src/` → casse l'ESLint typé → bloque les commits. Créer `src/` tôt.
 - **Décorateurs = liste fermée de 11**, retirés au build. Extension réelle = `config.plugins` (Rollup) + **custom output target** (react/angular en sont).
 - **Context en WC = bottom-up** : l'enfant émet `context-request` (`bubbles`+`composed`), l'ancêtre répond.

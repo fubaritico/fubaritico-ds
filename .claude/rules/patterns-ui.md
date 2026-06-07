@@ -1,4 +1,4 @@
-# UI Component Patterns — packages/ui & packages/layouts
+# UI Component Patterns — packages/reference
 
 ## Component Template
 
@@ -14,13 +14,13 @@ export interface ComponentNameProps extends ComponentProps<'div'> {
   variant?: 'primary' | 'secondary'
 }
 
-const ComponentName: FC<ComponentNameProps> = ({
+export function ComponentName ({
   className,
   propName,
   size = 'md',
   variant = 'primary',
   ...rest
-}) => {
+}: ComponentNameProps) {
   return (
     <div
       className={clsx('ui:...', className)}
@@ -43,13 +43,13 @@ export type ComponentNameProps = ComponentAsVariantA | ComponentAsVariantB
 
 // ComponentName.tsx
 import type { ComponentNameProps } from './ComponentName.types'
-const ComponentName: FC<ComponentNameProps> = (props) => { ... }
+export function ComponentName ({props}: ComponentNameProps) { ... }
 ```
 
 ## File Structure
 
 ```
-packages/ui/src/ComponentName/
+packages/reference/src/ComponentName/
 ├── ComponentName.tsx       # FC<ComponentNameProps> implementation
 ├── ComponentName.types.ts  # Only if props are complex (discriminated unions)
 ├── ComponentName.test.tsx  # Unit tests
@@ -91,23 +91,13 @@ export interface MenuItemProps extends Omit<ComponentProps<typeof ListboxItem>, 
 **Why**: `ComponentProps` includes `ref` (React 19), `key`, and all HTML attributes in one type.
 It also works uniformly for intrinsic elements (`'div'`, `'input'`) and custom components (`typeof Input`).
 
-## CSS Prefix per Package/App
-| Location | Prefix |
-|---|---|
-| packages/ui | `ui:` |
-| packages/layouts | `layout:` |
-| apps/media | `mda:` |
-| apps/home | `hm:` |
-| apps/photos | `ph:` |
-| new app | define new prefix, never reuse existing |
-
 ## Import Order (ESLint enforced)
 ```typescript
 // 1. External
 import clsx from 'clsx'
 
 // 2. Internal packages
-import { Section } from '@fubaritico-ds/layouts'
+import { Section } from '@fubaritico-ds/shared'
 
 // 3. Relative
 import type { ComponentNameProps } from './ComponentName.types'
@@ -124,7 +114,7 @@ export type ComponentAsLink   = BaseProps & LinkProps & { as: 'link' }
 export type ComponentProps = ComponentAsButton | ComponentAsLink
 
 // ComponentName.tsx
-const Component: FC<ComponentProps> = (props) => {
+export function ComponentName ({props}: ComponentNameProps) {
   if (props.as === 'link') {
     const { as: _, variant: _v, size: _s, className: _c, children: _ch, ...linkProps } = props
     return <Link className={classes} {...linkProps}>{content}</Link>
@@ -141,10 +131,10 @@ Note: ESLint `ignoreRestSiblings` is enabled — `{ as: _, ...rest }` pattern is
 ```typescript
 const ComponentContext = createContext<ComponentContextValue | null>(null)
 
-export const Component: FC<ComponentProps> & {
+export function ComponentName ({ children, ...props }: ComponentNameProps& {
   Item: typeof ComponentItem
   Navigation: typeof ComponentNavigation
-} = ({ children, ...props }) => {
+}) {
   const [state, setState] = useState(...)
   return (
     <ComponentContext.Provider value={{ state, setState }}>

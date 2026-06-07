@@ -79,7 +79,7 @@ Boundary conditions and unusual but possible scenarios.
 
 ## Test Scope by Layer
 
-### UI Components (`packages/ui`, `packages/layouts`)
+### UI Components (`packages/reference`, `packages/layouts`)
 
 - Renders without crash (L1)
 - Each variant/size renders correctly (L2)

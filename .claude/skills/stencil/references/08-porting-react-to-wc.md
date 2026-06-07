@@ -1,11 +1,11 @@
 # 08 — Porting a React Component to a Stencil Web Component
 
-Guide for converting components from `packages/ui` (React 19 + Tailwind `ui:` prefix) into Stencil
+Guide for converting components from `packages/reference` (React 19 + Tailwind `ui:` prefix) into Stencil
 Web Components, then regenerating a React wrapper to compare against the original.
 
 ## Pattern mapping
 
-| React (`packages/ui`)                     | Stencil                                                    |
+| React (`packages/reference`)                     | Stencil                                                    |
 | ----------------------------------------- | ---------------------------------------------------------- |
 | `const C: FC<CProps> = ({ ... }) => {}`   | `@Component({ tag: 'c-el' }) export class C {}`            |
 | props via destructured params             | `@Prop() name: type` (one per public prop)                 |
@@ -102,7 +102,7 @@ export class UiButton {
 
 ## The Tailwind problem (critical for this repo)
 
-`packages/ui` styles with Tailwind utilities (`ui:` prefix) **on the page's stylesheet**. With
+`packages/reference` styles with Tailwind utilities (`ui:` prefix) **on the page's stylesheet**. With
 `shadow: true`, those page utilities **do not reach inside the shadow root**. Options:
 
 1. **Author plain CSS** in the component's `.css` (most idiomatic for a WC design system).
@@ -117,7 +117,7 @@ of leaving Tailwind behind.
 
 ## What to compare after `npm run build`
 
-Open the generated React wrapper (`outDir`) next to the hand-written `packages/ui/src/<C>/<C>.tsx`:
+Open the generated React wrapper (`outDir`) next to the hand-written `packages/reference/src/<C>/<C>.tsx`:
 
 - **Prop surface** — does the discriminated union survive, or flatten to loose props?
 - **Events** — `onUiClick` + `e.detail` vs the React `onClick` callback.

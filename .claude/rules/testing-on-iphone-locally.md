@@ -143,7 +143,7 @@ import('/_remote/home/remoteEntry.js')
 iOS Safari auto-zooms when focusing an `<input>` with `font-size < 16px`. The fix is to use 16px on mobile:
 
 ```typescript
-// packages/ui/src/Input/Input.tsx
+// packages/reference/src/Input/Input.tsx
 'ui:h-8 ui:px-3 ui:text-base ui:sm:text-sm': inputSize === 'sm',
 //                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //                 16px on mobile (no zoom), 14px on desktop (sm: breakpoint)

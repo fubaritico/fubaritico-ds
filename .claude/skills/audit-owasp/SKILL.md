@@ -41,7 +41,7 @@ Scan the full codebase. Include:
 - `apps/web/src/**/*.{ts,tsx}` (web app, loaders, components)
 - `apps/mobile-expo/src/**/*.{ts,tsx}` (mobile app, screens, navigation)
 - `packages/shared/src/**/*.{ts,tsx}` (auth, hooks, utils)
-- `packages/ui/src/**/*.{ts,tsx}` (UI components — XSS vectors)
+- `packages/reference/src/**/*.{ts,tsx}` (UI components — XSS vectors)
 - Config files: `*.config.*`, `app.json`, `package.json`, `.env.example`
 
 Exclude: `node_modules/`, `build/`, `dist/`, `*.test.*`, `*.stories.*`, lock files, `*.d.ts`
@@ -53,7 +53,7 @@ Read all files in scope. Group them by layer:
 - **Web layer**: `apps/web/src/`
 - **Mobile layer**: `apps/mobile-expo/src/`
 - **Shared layer**: `packages/shared/src/`
-- **UI layer**: `packages/ui/src/`
+- **UI layer**: `packages/reference/src/`
 - **Config layer**: root configs, app.json, env examples
 
 ### Step 3 — Dispatch 10 Parallel Subagents

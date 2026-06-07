@@ -24,7 +24,7 @@ wrapper libraries** (React, Angular, Vue) — each as a separate consumable pack
 - Configuring `stencil.config.ts` and choosing output targets
 - Generating a **React** wrapper library (`@stencil/react-output-target`)
 - Generating an **Angular** wrapper library (`@stencil/angular-output-target`)
-- Porting an existing React component (e.g. from `packages/ui`) to a Web Component
+- Porting an existing React component (e.g. from `packages/reference`) to a Web Component
 - Scaffolding a Stencil package inside this monorepo (`packages/stencil`)
 - Testing Stencil components
 
@@ -39,7 +39,7 @@ wrapper libraries** (React, Angular, Vue) — each as a separate consumable pack
 | `references/05-output-targets.md`      | `dist`, `dist-custom-elements`, `www`, `dist-hydrate-script`, loader                                   |
 | `references/06-react-wrapper.md`       | React wrapper generation + events→callbacks + SSR + **pitfalls**                                       |
 | `references/07-angular-wrapper.md`     | Angular wrapper generation + `ngModel`/CVA + **pitfalls**                                              |
-| `references/08-porting-react-to-wc.md` | Mapping React patterns → Stencil (our `packages/ui` → WC)                                              |
+| `references/08-porting-react-to-wc.md` | Mapping React patterns → Stencil (our `packages/reference` → WC)                                              |
 | `references/09-testing.md`             | `@stencil/vitest` + `@stencil/playwright` (modern), legacy Jest note                                   |
 | `references/10-project-monorepo.md`    | **This repo**: self-contained `packages/stencil` discovery setup                                       |
 
@@ -94,4 +94,4 @@ export const config: Config = {
 2. Author the `@Component` in `packages/stencil/src/components/<name>/`.
 3. Add a spec test (`references/09-testing.md`).
 4. `npm run build` → inspect the generated React wrapper in the output dir.
-5. Compare the generated wrapper against the hand-written `packages/ui` equivalent.
+5. Compare the generated wrapper against the hand-written `packages/reference` equivalent.
