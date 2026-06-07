@@ -3,7 +3,7 @@ name: commit
 description: Prepare and propose a conventional commit for the current changes. Use when committing code, creating a git commit, or finalizing a set of changes.
 allowed-tools: Bash(git:*)
 metadata:
-  version: "1.0"
+  version: '1.0'
 ---
 
 # Commit
@@ -15,17 +15,17 @@ Prepare and propose a conventional commit for the current changes.
 1. Run `git status` to see changed files
 2. Run `git diff --staged` and `git diff` to analyze all changes
 3. Identify the scope based on changed files:
-   - `packages/reference` → scope `ui`
-   - `packages/layouts` → scope `layouts`
+   - `packages/reference` → scope `reference` (or `ui`)
    - `packages/shared` → scope `shared`
-   - `apps/media` → scope `media`
-   - `apps/home` → scope `home`
-   - `apps/host` → scope `host`
+   - `packages/stencil` → scope `stencil`
+   - `packages/tokens` → scope `tokens`
+   - root / monorepo config → scope `repo`
    - Multiple packages → use the most impacted scope
 4. Generate a conventional commit message
 5. Propose the exact commands to run (user executes them)
 
 ## Commit format
+
 ```
 type(scope): subject
 
@@ -33,9 +33,11 @@ type(scope): subject
 ```
 
 ## Allowed types
+
 `feat` `fix` `refactor` `style` `test` `docs` `chore` `build` `ci` `perf` `revert`
 
 ## Rules
+
 - Subject: lowercase, no trailing period, max 100 chars total
 - Body: bullet points for non-obvious changes
 - Never skip pre-commit hook (runs typecheck + lint + test automatically)

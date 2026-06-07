@@ -7,7 +7,7 @@
 >   browser tests with screenshots.
 > - **`@stencil/playwright`** — true end-to-end across browsers.
 >
-> This aligns well with this monorepo, which already uses **Vitest + Playwright**.
+> This aligns well with this monorepo, which already uses **Vitest** (catalog-pinned).
 
 ## Modern: `@stencil/vitest`
 

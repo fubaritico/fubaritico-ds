@@ -16,12 +16,12 @@ Scaffold a new workspace package from scratch.
 
 `$ARGUMENTS` = `[package-name] [type: lib|app]`
 
-## Type: app (Module Federation remote) → use `patterns-remote-setup.md`
+## Type: app (Storybook)
 
-In this monorepo an `app` is a **Module Federation remote**, not a bare package.
-Scaffolding one involves vite federation config, host wiring, a port + CSS prefix,
-Sentry, CI/CD, and Netlify. Do NOT use the bare template below for an app — follow
-the full 7-step guide in `.claude/rules/patterns-remote-setup.md` instead.
+In this monorepo the `apps/*` are **Storybook apps** — one per UI framework
+(`storybook-web-component` / `storybook-react` / `storybook-angular` / `storybook-vuejs`) —
+showcasing the generated components. They are currently empty scaffolds. Adapt the Storybook
+tooling per framework when wiring one.
 
 The steps below cover the **lib** case (a plain `packages/*` workspace package).
 
@@ -96,8 +96,9 @@ pnpm --filter [consumer-package] add @fubaritico-ds/$name@workspace:^
 
 ## Dependency Constraint Reminder
 
-Check `.claude/rules/monorepo.md` for allowed dependency directions.
-Packages must NEVER import from apps. Shared packages NEVER import from ui.
+Build order / directions: `tokens → shared → reference`; `stencil` is independent.
+Packages must NEVER import from apps. `shared`/`tokens` must not import from `reference`.
+Use the `monorepo-check` skill to validate the graph.
 
 ## Gotchas
 

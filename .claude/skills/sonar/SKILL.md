@@ -11,7 +11,7 @@ metadata:
 Fetch and display the SonarCloud analysis report for this project.
 
 ## Project config (hardcoded — do not change)
-- Project key: `fubaritico-ds-tmdb`
+- Project key: `fubaritico-ds`
 - Organization: `fubaritico`
 - API base: `https://sonarcloud.io`
 
@@ -26,13 +26,13 @@ Fetch and display the SonarCloud analysis report for this project.
 2. Fetch quality gate status:
    ```bash
    curl -s -u "$(grep -E '^SONAR_TOKEN=' .env | cut -d= -f2-):" \
-     "https://sonarcloud.io/api/qualitygates/project_status?projectKey=fubaritico-ds-tmdb"
+     "https://sonarcloud.io/api/qualitygates/project_status?projectKey=fubaritico-ds"
    ```
 
 3. Fetch all open issues (sorted by severity, up to 500):
    ```bash
    curl -s -u "$(grep -E '^SONAR_TOKEN=' .env | cut -d= -f2-):" \
-     "https://sonarcloud.io/api/issues/search?projectKeys=fubaritico-ds-tmdb&organization=fubaritico&ps=500&resolved=false&s=SEVERITY&asc=false"
+     "https://sonarcloud.io/api/issues/search?projectKeys=fubaritico-ds&organization=fubaritico&ps=500&resolved=false&s=SEVERITY&asc=false"
    ```
 
 ## Display format
@@ -49,7 +49,7 @@ Group issues in this order:
 - ⚪ INFO
 
 For each issue: `file:line — message (rule)`
-Strip the `fubaritico-ds-tmdb:` prefix from component names for readability.
+Strip the `fubaritico-ds:` prefix from component names for readability.
 
 ### Summary table
 | Severity | Count |

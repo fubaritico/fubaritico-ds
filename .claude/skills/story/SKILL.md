@@ -2,26 +2,27 @@
 name: story
 description: Create a Storybook story for a component. Mandatory after every component creation. Use when a new component is created or when adding stories to existing components.
 allowed-tools: Read Write
-argument-hint: "[ComponentName]"
+argument-hint: '[ComponentName]'
 metadata:
-  version: "1.0"
+  version: '1.0'
 ---
 
 # Story
 
 Create a Storybook story for a component. Mandatory after every component creation.
 
-Reference: @.claude/rules/component-patterns.md
+Reference: @.claude/rules/patterns-ui.md
 
 ## Arguments
+
 `$ARGUMENTS` = component name (e.g. `Cast`, `Button`, `Avatar`)
 
 ---
 
-## Design System component (packages/reference or packages/layouts)
+## Design System component (packages/reference)
 
 ```typescript jsx
-import { ComponentName } from '@fubaritico-ds/ui'
+import { ComponentName } from '@fubaritico-ds/reference'
 import type { Meta, StoryObj } from '@storybook/react'
 
 const meta: Meta<typeof ComponentName> = {
@@ -66,48 +67,54 @@ export const WithIcon: Story = { args: { icon: 'Play' } }
 ```
 
 **Rules**:
+
 - `layout: 'centered'`
 - `tags: ['autodocs']` always
 - `Playground` + `Showcase` minimum — add named stories for notable variants
-- No MSW, no `withRouter`
+- No mocks, no router — DS components are presentational
 - Show ALL variants/sizes/states in `Showcase`
 
 ---
 
-## App component (apps/media, apps/home — embedded query)
+## Stencil Web Component (packages/stencil)
+
+Showcased in the per-framework Storybook apps (`apps/storybook-*` — scaffolds, not wired yet).
+For the **web-component** Storybook, render the custom element directly by its tag:
 
 ```typescript jsx
-import { ComponentName } from '@fubaritico-ds/media'  // or /home
-import { componentHandlers } from '@fubaritico-ds/shared/mocks'
-import { withRouter } from '../../.storybook/decorators/withRouter'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/web-components'
+import { html } from 'lit'
 
-const meta = {
-  title: 'Media/ComponentName',  // or 'Home/ComponentName'
-  component: ComponentName,
-  parameters: { layout: 'fullscreen' },
-} satisfies Meta<typeof ComponentName>
+const meta: Meta = {
+  title: 'Web Components/ui-component-name',
+  component: 'ui-component-name',
+  parameters: { layout: 'centered' },
+  tags: ['autodocs'],
+  argTypes: {
+    variant: { control: 'select', options: ['primary', 'secondary'] },
+    size: { control: 'select', options: ['sm', 'md', 'lg'] },
+  },
+}
 
 export default meta
-type Story = StoryObj<typeof meta>
+type Story = StoryObj
 
-export const Movie: Story = {
-  parameters: { msw: { handlers: [componentHandlers.default] } },
-  decorators: [withRouter('/movie/278')],
-}
-export const Loading: Story = {
-  parameters: { msw: { handlers: [componentHandlers.loading] } },
-  decorators: [withRouter('/movie/278')],
-}
-export const Error: Story = {
-  parameters: { msw: { handlers: [componentHandlers.error] } },
-  decorators: [withRouter('/movie/278')],
+export const Playground: Story = {
+  args: { variant: 'primary', size: 'md' },
+  render: (args) =>
+    html`<ui-component-name
+      variant=${args.variant}
+      size=${args.size}
+    ></ui-component-name>`,
 }
 ```
 
+For the **react**/**angular** Storybooks, import the generated wrapper from
+`@fubaritico-ds/stencil/dist/{react,angular}` and follow the Design System pattern above.
+
 **Rules**:
-- `layout: 'fullscreen'`
-- `satisfies Meta<>` syntax (not `Meta<typeof X> =`)
-- Always 3 stories: success (Movie/Default) + Loading + Error
-- MSW handlers from `@fubaritico-ds/shared/mocks`
-- `withRouter` per story (curried with route), `withQueryClient` is global
+
+- `layout: 'centered'`, `tags: ['autodocs']`
+- `Playground` + `Showcase` minimum
+- No MSW, no router — Web Components are presentational
+- See the `stencil` skill for component authoring

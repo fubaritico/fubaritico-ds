@@ -22,7 +22,7 @@ Stack: **Vitest 3 + React Testing Library 16 + MSW**.
 ## Steps
 
 1. **Read the source** — read all files of the unit (component, hook, section) to understand props, branches, callbacks, async behavior
-2. **Determine the layer** — UI component (packages/reference, packages/layouts), app section (apps/\*), hook, or utility
+2. **Determine the layer** — React component (packages/reference), Stencil Web Component (packages/stencil), or utility/hook (packages/shared)
 3. **Write the test file** following the 5-level structure below
 4. **Run tests** — `pnpm test` (or `pnpm --filter <pkg> test`) to verify all pass
 
@@ -47,11 +47,11 @@ describe('ComponentName', () => {
   })
 
   describe('managed errors', () => {
-    // L3 — handled errors: error MSW handler → error message/hidden section, validation feedback, disabled state
+    // L3 — handled errors: error state/message, validation feedback, disabled state
   })
 
   describe('unmanaged errors', () => {
-    // L4 — unexpected: 500 handler, malformed data, unexpected null. If N/A: `// L4: N/A — no async operations`
+    // L4 — unexpected: malformed data, unexpected null. If N/A: `// L4: N/A — no async operations`
   })
 
   describe('edge cases', () => {
@@ -62,38 +62,38 @@ describe('ComponentName', () => {
 
 ## Layer-Specific Guidance
 
-### UI Components (`packages/reference`, `packages/layouts`)
+### React Components (`packages/reference`)
 
-- Render with `renderWithReactQuery` (or plain `render` for pure presentational atoms)
+- Render with helpers from `@fubaritico-ds/shared/test-utils` (or plain `render` for pure atoms)
 - Check: renders, each variant/size, disabled/loading states, accessibility roles/labels
 - L4 is usually N/A (no async) — add the comment
 
-### App Sections (`apps/*` — embedded queries)
+### Stencil Web Components (`packages/stencil`)
 
-- Mock `useParams`: `vi.mock('react-router-dom', () => ({ useParams: vi.fn() }))`
-- Mock the data hook at module level: `vi.mock('../../hooks/useDataHook', ...)`
-- Check: renders content (default), loading skeleton, error/empty (return null), variant branches (movie/tv)
-- Section title always visible; section hidden when no data
+- Use `@stencil/vitest` (`render`, `h`, matchers); files `*.spec.{ts,tsx}`, `environment: 'stencil'`
+- Check: renders with required `@Prop`s, each variant, emitted `@Event` (`e.detail`), `@State`/`@Method`
+- See `references/09-testing.md` in the `stencil` skill
 
-### Hooks (`apps/*/hooks`, `packages/shared`)
+### Utilities & hooks (`packages/shared`)
 
-- Use `renderHook` from `@testing-library/react`
-- Check: return shape, different valid params (all dynamic params in queryKey), error/isError, cleanup on unmount
+- Use `renderHook` from `@testing-library/react` for hooks
+- Check: return shape, valid param combinations, error handling, cleanup on unmount
+- DOM-dependent files opt into jsdom via `// @vitest-environment jsdom`
 
 ## Rules
 
 - **ALWAYS `userEvent`** — never `fireEvent`
 - **Never hardcode fallback values** in expectations — if the code shouldn't have fallbacks, the test shouldn't either
-- **Mock only external boundaries** — router, network (MSW), data hooks. Never mock the unit under test.
+- **Mock only external boundaries** — never mock the unit under test.
 - **One behavior per `it()`** — the name describes behavior, not implementation
 - **Accessibility-first queries** — `getByRole('button', { name: '...' })` over `getByTestId`
-- **MSW handlers** from `@fubaritico-ds/shared/mocks` — `{ default, loading, error }`
+- **Browser mocks** via `setupBrowserMocks()` from `@fubaritico-ds/shared/mocks`
 
 ## File Naming
 
-| Layer        | Test file location                     |
-| ------------ | -------------------------------------- |
-| UI / layouts | `ComponentName/ComponentName.test.tsx` |
-| App section  | `SectionName/SectionName.test.tsx`     |
-| Hook         | `hooks/useHook.test.ts`                |
-| Utility      | `utils/utilName.test.ts`               |
+| Layer             | Test file location                     |
+| ----------------- | -------------------------------------- |
+| React (reference) | `ComponentName/ComponentName.test.tsx` |
+| Stencil WC        | `ui-name/ui-name.spec.tsx`             |
+| Hook              | `hooks/useHook.test.ts`                |
+| Utility           | `utils/utilName.test.ts`               |

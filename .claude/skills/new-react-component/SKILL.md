@@ -2,9 +2,9 @@
 name: new-react-component
 description: Create a new React UI component in packages/reference following the project patterns. Use when scaffolding a design system component.
 allowed-tools: Read Write
-argument-hint: "[ComponentName]"
+argument-hint: '[ComponentName]'
 metadata:
-  version: "1.0"
+  version: '1.0'
 ---
 
 # New React Component
@@ -24,8 +24,9 @@ Reference the component patterns: @.claude/rules/component-patterns.md
 7. Run `/story $ARGUMENTS` to create the Storybook story
 
 ## Rules
+
 - `ui:` prefix on ALL Tailwind classes
-- No domain logic (no TMDB/movie concepts)
+- No domain logic — pure, presentational design-system components only
 - Extend appropriate HTML attributes
 - Export interface as named export, component as default
 - Use `clsx` for conditional classes
