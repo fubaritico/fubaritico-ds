@@ -50,7 +50,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings 0",
-    "typecheck": "tsc --noEmit",
+    "type-check": "tsc --noEmit",
     "local-release:patch": "./publish-local.sh patch",
     "local-release:minor": "./publish-local.sh minor",
     "local-release:major": "./publish-local.sh major",

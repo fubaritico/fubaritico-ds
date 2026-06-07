@@ -48,6 +48,9 @@
     "build:css": "postcss src/fonts/fonts.css -o dist/fonts.css && postcss src/tailwind/theme.css -o dist/theme.css && postcss src/tailwind/theme-no-fonts.css -o dist/theme-no-fonts.css && node script/copy-fonts.js",
     "build": "pnpm svg && tsc && mkdir -p dist/assets && mv dist/.temp-svg/* dist/assets/ 2>/dev/null && rm -rf dist/.temp-svg src/.temp-svg || true && pnpm build:css",
     "dev": "tsc --watch",
+    "type-check": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
     "local-release:patch": "pnpm build && ./publish-local.sh patch",
@@ -86,7 +89,9 @@
     "postcss-cli": "^11.0.1",
     "postcss-import": "^16.1.0",
     "glob": "13.0.6",
+    "jsdom": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }
