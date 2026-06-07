@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "lerna run build",
+    "build:packages": "lerna run build --ignore @fubaritico-ds/stencil",
     "dev": "lerna run --parallel --stream dev",
     "type-check": "lerna run type-check",
     "lint": "lerna run lint",

@@ -37,7 +37,7 @@ export default tseslint.config(
       '**/dist/**',
       '**/files/**',
       '**/scripts/**',
-      'coverage/**',
+      '**/coverage/**',
       'pnpm-lock.yaml',
       'pnpm-workspace.yaml',
       'commitlint.config.js',

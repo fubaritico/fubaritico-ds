@@ -37,6 +37,7 @@
     "dev": "stencil build --dev --watch --serve",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest --passWithNoTests",
+    "coverage": "vitest run --coverage --passWithNoTests",
     "type-check": "tsc --noEmit -p tsconfig.eslint.json",
     "lint": "eslint . --max-warnings 0"
   },
@@ -49,6 +50,7 @@
     "@stencil/vitest": "^1.12.1",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
     "@fubaritico-ds/tokens": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:",

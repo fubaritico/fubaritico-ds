@@ -1,0 +1,31 @@
+name: Accessibility (pa11y)
+
+# TODO milestone — non fonctionnel : pa11y a besoin d'un Storybook SERVI (les apps/storybook-*
+# sont des scaffolds vides). À activer quand un Storybook est buildable + servable. Manuel
+# uniquement (ne se déclenche pas sur push/PR). Le script root `a11y` (pa11y-ci) et `.pa11yci.json`
+# sont prêts ; il manque juste un serveur Storybook sur les ports ciblés.
+on:
+  workflow_dispatch:
+
+jobs:
+  pa11y:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+
+      # - name: Build Storybook
+      #   run: pnpm --filter @fubaritico-ds/storybook-web-component build
+      #
+      # - name: Serve Storybook & run pa11y
+      #   run: |
+      #     pnpm --filter @fubaritico-ds/storybook-web-component exec \
+      #       http-server storybook-static -p 6006 &
+      #     pnpm exec wait-on http://localhost:6006
+      #     pnpm a11y
+
+      - name: Not implemented yet
+        run: |
+          echo "pa11y not wired yet — no Storybook to serve."
+          exit 1

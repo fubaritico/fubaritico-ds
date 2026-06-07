@@ -1,0 +1,42 @@
+name: Build
+
+on:
+  workflow_call:
+
+jobs:
+  build-packages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+
+      # Excludes @fubaritico-ds/stencil: `stencil build` fails until PLAN step 5
+      # (src/global/ui-stencil.css) is done. Add stencil to the build once it's green.
+      - name: Build packages
+        run: pnpm build:packages
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ github.sha }}
+          path: packages/*/dist
+          retention-days: 1
+          if-no-files-found: error
+
+  # TODO milestone — non fonctionnel tant que les apps/storybook-* n'ont pas de package.json.
+  # Décommenter quand au moins un Storybook est buildable.
+  #
+  # build-storybook:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v6
+  #     - uses: ./.github/actions/setup
+  #     - name: Build Storybook (web-component)
+  #       run: pnpm --filter @fubaritico-ds/storybook-web-component build
+  #     - name: Upload storybook static
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: storybook-web-component-${{ github.sha }}
+  #         path: apps/storybook-web-component/storybook-static
+  #         retention-days: 1

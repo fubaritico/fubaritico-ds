@@ -1,0 +1,40 @@
+name: Deploy Storybook (Netlify)
+
+# TODO milestone — non fonctionnel : les apps/storybook-* sont des scaffolds vides (pas de
+# package.json) et aucun secret Netlify n'existe. Squelette calqué sur react-and-react-native-
+# financial-app. Manuel uniquement (workflow_dispatch) tant que ce n'est pas prêt.
+#
+# Quand prêt : un job par framework (web-component / react / angular / vuejs), déclenché sur succès
+# de la CI (workflow_run). Secrets requis : NETLIFY_AUTH_TOKEN + NETLIFY_SITE_ID_<framework>.
+on:
+  workflow_dispatch:
+  # workflow_run:
+  #   workflows: ['CI']
+  #   types: [completed]
+  #   branches: [main]
+
+jobs:
+  deploy-web-component:
+    runs-on: ubuntu-latest
+    # if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+
+      # - name: Build Storybook (web-component)
+      #   run: pnpm --filter @fubaritico-ds/storybook-web-component build
+      #
+      # - name: Deploy to Netlify
+      #   run: |
+      #     pnpm dlx netlify-cli deploy --prod --no-build \
+      #       --dir apps/storybook-web-component/storybook-static \
+      #       --site "$NETLIFY_SITE_ID_WEB_COMPONENT"
+      #   env:
+      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      #     NETLIFY_SITE_ID_WEB_COMPONENT: ${{ secrets.NETLIFY_SITE_ID_WEB_COMPONENT }}
+
+      - name: Not implemented yet
+        run: |
+          echo "Storybook deploy not wired yet — empty scaffolds + no Netlify secrets."
+          exit 1

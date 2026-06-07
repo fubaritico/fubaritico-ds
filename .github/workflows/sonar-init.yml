@@ -1,0 +1,26 @@
+name: Initialize SonarCloud Project
+
+# Manual one-shot: seeds the SonarCloud project from the main branch (first analysis).
+# Run once after registering the project on SonarCloud and adding the SONAR_TOKEN secret.
+on:
+  workflow_dispatch:
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Generate coverage (lcov for Sonar)
+        run: pnpm coverage
+
+      - name: Initialize SonarCloud with main branch
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

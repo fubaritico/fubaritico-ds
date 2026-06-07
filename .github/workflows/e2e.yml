@@ -1,0 +1,35 @@
+name: E2E (Playwright)
+
+# TODO milestone — non fonctionnel : ni Playwright ni composants/storybook n'existent encore.
+# Squelette calqué sur vite-mf-monorepo. À activer quand un harness e2e (Playwright) et au moins
+# un Storybook servi seront en place. Manuel uniquement tant que ce n'est pas le cas : `on:` ne
+# déclenche RIEN sur push/PR (ne rougit pas la CI).
+on:
+  workflow_dispatch:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+
+      # - name: Install Playwright browsers
+      #   run: pnpm --filter @fubaritico-ds/e2e exec playwright install --with-deps chromium
+      #
+      # - name: Run e2e
+      #   run: pnpm test:e2e:ci
+      #
+      # - name: Upload report
+      #   if: always()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: e2e-report-${{ github.sha }}
+      #     path: packages/e2e/playwright-report
+      #     retention-days: 7
+
+      - name: Not implemented yet
+        run: |
+          echo "E2E not wired yet — no Playwright harness / components / storybook."
+          exit 1

@@ -306,6 +306,9 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.2.3(@types/react@19.2.14)
+      '@vitest/coverage-v8':
+        specifier: 'catalog:'
+        version: 3.2.4(vitest@3.2.4(@types/node@22.14.0)(jiti@2.7.0)(jsdom@26.0.0)(lightningcss@1.29.2)(msw@2.8.3(@types/node@22.14.0)(typescript@5.7.2))(yaml@2.9.0))
       conventional-changelog:
         specifier: 'catalog:'
         version: 7.2.0(conventional-commits-filter@5.0.0)
@@ -358,6 +361,9 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.2.3(@types/react@19.2.14)
+      '@vitest/coverage-v8':
+        specifier: 'catalog:'
+        version: 3.2.4(vitest@3.2.4(@types/node@25.9.2)(jiti@2.7.0)(jsdom@26.1.0)(lightningcss@1.29.2)(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.3))(yaml@2.9.0))
       react:
         specifier: 'catalog:'
         version: 19.2.4
@@ -8860,6 +8866,25 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@22.14.0)(jiti@2.7.0)(jsdom@26.0.0)(lightningcss@1.29.2)(msw@2.8.3(@types/node@22.14.0)(typescript@5.7.2))(yaml@2.9.0))':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@bcoe/v8-coverage': 1.0.2
+      ast-v8-to-istanbul: 0.3.12
+      debug: 4.4.3
+      istanbul-lib-coverage: 3.2.2
+      istanbul-lib-report: 3.0.1
+      istanbul-lib-source-maps: 5.0.6
+      istanbul-reports: 3.2.0
+      magic-string: 0.30.21
+      magicast: 0.3.5
+      std-env: 3.10.0
+      test-exclude: 7.0.2
+      tinyrainbow: 2.0.0
+      vitest: 3.2.4(@types/node@22.14.0)(jiti@2.7.0)(jsdom@26.0.0)(lightningcss@1.29.2)(msw@2.8.3(@types/node@22.14.0)(typescript@5.7.2))(yaml@2.9.0)
+    transitivePeerDependencies:
+      - supports-color
+
   '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@25.9.2)(jiti@2.7.0)(jsdom@26.0.0)(lightningcss@1.29.2)(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.2))(yaml@2.9.0))':
     dependencies:
       '@ampproject/remapping': 2.3.0
@@ -8876,6 +8901,25 @@ snapshots:
       test-exclude: 7.0.2
       tinyrainbow: 2.0.0
       vitest: 3.2.4(@types/node@25.9.2)(jiti@2.7.0)(jsdom@26.0.0)(lightningcss@1.29.2)(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.2))(yaml@2.9.0)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@vitest/coverage-v8@3.2.4(vitest@3.2.4(@types/node@25.9.2)(jiti@2.7.0)(jsdom@26.1.0)(lightningcss@1.29.2)(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.3))(yaml@2.9.0))':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@bcoe/v8-coverage': 1.0.2
+      ast-v8-to-istanbul: 0.3.12
+      debug: 4.4.3
+      istanbul-lib-coverage: 3.2.2
+      istanbul-lib-report: 3.0.1
+      istanbul-lib-source-maps: 5.0.6
+      istanbul-reports: 3.2.0
+      magic-string: 0.30.21
+      magicast: 0.3.5
+      std-env: 3.10.0
+      test-exclude: 7.0.2
+      tinyrainbow: 2.0.0
+      vitest: 3.2.4(@types/node@25.9.2)(jiti@2.7.0)(jsdom@26.1.0)(lightningcss@1.29.2)(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.3))(yaml@2.9.0)
     transitivePeerDependencies:
       - supports-color
 
