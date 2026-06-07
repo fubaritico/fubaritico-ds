@@ -11,7 +11,7 @@ echo "📦 Installing dependencies..."
 pnpm install --frozen-lockfile
 
 echo "📦 Building packages..."
-pnpm build:packages
+pnpm build
 
 echo "✅ Project setup complete!"
 echo ""

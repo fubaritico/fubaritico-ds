@@ -1,19 +1,20 @@
 #!/bin/bash
-# Test accessibility on all running apps
-# Usage: ./scripts/test-a11y.sh
+# Accessibility scan (Pa11y CI) against the running Storybook.
+# Usage: start a Storybook first (once an apps/storybook-* app is wired), then: ./scripts/test-a11y.sh
 
 set -e
 
-echo "🔍 Checking if apps are running..."
-for port in 3000 3001 3002; do
-  if ! nc -z localhost $port 2>/dev/null; then
-    echo "❌ Port $port not responding. Start apps with: pnpm dev"
-    exit 1
-  fi
-done
+PORT=6006
 
-echo "✅ All apps running. Starting Pa11y scan..."
+echo "🔍 Checking if Storybook is running on :$PORT ..."
+if ! nc -z localhost $PORT 2>/dev/null; then
+  echo "❌ Port $PORT not responding. Start Storybook first."
+  echo "   (the apps/storybook-* apps are scaffolds — wire one before running a11y)"
+  exit 1
+fi
+
+echo "✅ Storybook running. Starting Pa11y scan..."
 pnpm a11y
 
 echo ""
-echo "📊 To export CSV report, run: pnpm a11y:report"
+echo "📊 To export a CSV report, run: pnpm a11y:report"

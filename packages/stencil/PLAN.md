@@ -28,7 +28,7 @@ React/Tailwind écrit à la main.
   `jsxFactory: "h"` + `jsxFragmentFactory: "Fragment"`, n'étend PAS le tsconfig racine — les deux modes
   JSX sont incompatibles) et un **bloc override** dans le `eslint.config.js` racine (pragma `h`, règles
   d'import React désactivées) plutôt qu'un ignore. Il est branché dans les vérifs racine
-  (`lint` / `type-check` / `test` / `build:packages`).
+  (`lint` / `type-check` / `test` / `build`).
 - **Tags préfixés `ui-`** pour refléter le design system `packages/reference`.
 - **Runner de test** : `@stencil/vitest` (le plan initial — confirmé bon). Le « runner intégré »
   `stencil test --spec` est **déprécié** en Stencil v4.43 (supprimé en v5) ET n'est **pas** zéro-dépendance
@@ -76,7 +76,7 @@ pas), `reactOutputTarget`, `angularOutputTarget` (standalone), `docs-readme`. _(
 - [ ] Compléter le champ `exports` de `package.json` (`.`, `./dist/*`, `./components/*`, `./loader`) — sinon erreurs de résolution d'import sur les wrappers (skill golden rule #6).
 - [ ] Ajouter un script `type-check` (`tsc --noEmit -p tsconfig.json`) au `package.json` du package.
 - [ ] **Brancher stencil dans les vérifs racine** : `type-check`, `test` (`stencil test --spec`) et
-      `build:packages` doivent inclure `@fubaritico-ds/stencil`. _(L'orchestration `dev`/`dev:apps` des apps
+      `build` doivent inclure `@fubaritico-ds/stencil`. _(L'orchestration `dev`/`dev:apps` des apps
       héritées reste à recâbler dans une passe dédiée — refs périmées `@fubaritico-ds/ui` / `@fubar-it-co/tmdb-client`.)_
 
 ### ⬜ Étape 5 — Style global (`globalStyle` pointe vers un fichier manquant → build casse aujourd'hui)

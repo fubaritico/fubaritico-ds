@@ -15,19 +15,15 @@ find . -name "node_modules" -type d -prune -exec rm -rf {} + 2>/dev/null || true
 echo "  → Removing dist folders..."
 find . -name "dist" -type d -prune -exec rm -rf {} + 2>/dev/null || true
 
-# Remove all Module Federation temp folders
-echo "  → Removing .__mf__temp folders..."
-find . -name ".__mf__temp" -type d -prune -exec rm -rf {} + 2>/dev/null || true
-
-# Remove all @mf-types folders
-echo "  → Removing @mf-types folders..."
-find . -name "@mf-types" -type d -prune -exec rm -rf {} + 2>/dev/null || true
+# Remove the Nx cache
+echo "  → Removing .nx cache..."
+rm -rf .nx 2>/dev/null || true
 
 echo "📦 Installing dependencies..."
 pnpm install --frozen-lockfile
 
 echo "📦 Building packages..."
-pnpm build:packages
+pnpm build
 
 echo "✅ Project reset complete!"
 echo ""

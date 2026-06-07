@@ -77,7 +77,7 @@ export const config: Config = {
      `jsxImportSource: '@stencil/core'` — is a supported _alternative_, not the default.) Keep this file
      standalone; do **not** extend the root React tsconfig (`react-jsx`) — the two JSX modes are incompatible.
 4. **Lerna / root verifs** — Stencil has its own `build`/`test`/`type-check` scripts. Wire them into the
-   root verifs (`type-check`, `test`, `build:packages`) so the pre-commit gate covers Stencil. Its own
+   root verifs (`type-check`, `test`, `build`) so the pre-commit gate covers Stencil. Its own
    compiler type-checks during `stencil build`; `stencil test --spec` runs its Jest-based specs.
 5. **Naming** — package name `@fubaritico-ds/stencil`; component tags prefixed `ui-` to mirror the
    `packages/reference` design system being ported.
