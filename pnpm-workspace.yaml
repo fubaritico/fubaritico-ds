@@ -2,6 +2,18 @@ packages:
   - 'packages/*'
   - 'apps/*'
 
+# @testing-library/jest-dom imports `vitest` from its `/vitest` entry without declaring it as a
+# dependency (it relied on the dep being hoisted). Declaring it as an optional peer makes pnpm
+# co-locate vitest wherever jest-dom is used with it (e.g. packages/reference), so the import resolves
+# without hoisting vitest to the root.
+packageExtensions:
+  '@testing-library/jest-dom':
+    peerDependencies:
+      vitest: '*'
+    peerDependenciesMeta:
+      vitest:
+        optional: true
+
 catalog:
   # React ecosystem
   react: 19.2.4

@@ -1,6 +1,10 @@
 # Dependencies
 node_modules/
 
+# Nx cache (Lerna is powered by Nx)
+.nx/cache
+.nx/workspace-data
+
 # IDE
 .vscode/*
 !.vscode/extensions.json
