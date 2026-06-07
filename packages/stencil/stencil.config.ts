@@ -1,6 +1,6 @@
+import { angularOutputTarget } from '@stencil/angular-output-target'
 import { Config } from '@stencil/core'
 import { reactOutputTarget } from '@stencil/react-output-target'
-import { angularOutputTarget } from '@stencil/angular-output-target'
 
 export const config: Config = {
   // Préfixe des fichiers générés + nom du dossier dist. Doit être unique par lib.
@@ -17,12 +17,15 @@ export const config: Config = {
     { type: 'dist', esmLoaderPath: '../loader' },
 
     // 2) Custom elements tree-shakeables — REQUIS par le wrapper React. Auto-enregistrement à l'import.
+    // externalRuntime: false → le runtime Stencil est inliné dans chaque composant (exigé par
+    // @stencil/react-output-target 1.x, qui refuse de valider la config sans ça).
     {
       type: 'dist-custom-elements',
       customElementsExportBehavior: 'auto-define-custom-elements',
+      externalRuntime: false,
     },
 
-    // 3) Wrapper React généré → on ouvrira dist/react/ pour comparer à packages/ui.
+    // 3) Wrapper React généré → on ouvrira dist/react/ pour comparer à packages/reference.
     reactOutputTarget({
       outDir: './dist/react/',
     }),

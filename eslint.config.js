@@ -142,5 +142,30 @@ export default tseslint.config(
         },
       ],
     },
+  },
+
+  // Stencil package — JSX compiles via the `h()` pragma (NOT React). Stencil is the subject of this
+  // project, so it IS linted by the root `pnpm lint`; here we only neutralize the React-specific rules
+  // that don't apply to Web Components and teach the React plugin the Stencil pragma.
+  // NOTE: validated against `stencil.config.ts` only for now — the `.tsx` rule set will be tuned when
+  // the first component (`ui-badge`, step 6) lands.
+  {
+    files: ['packages/stencil/**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: {
+        // Build tsconfig keeps include:["src"] (Stencil-correct); this one also covers stencil.config.ts.
+        project: ['./packages/stencil/tsconfig.eslint.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    settings: {
+      react: { version: 'detect', pragma: 'h', fragment: 'Fragment' },
+    },
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+      'react-hooks/exhaustive-deps': 'off',
+      'react-refresh/only-export-components': 'off',
+      'react/no-unknown-property': 'off',
+    },
   }
 )

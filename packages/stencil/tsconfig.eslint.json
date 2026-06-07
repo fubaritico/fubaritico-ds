@@ -1,0 +1,8 @@
+{
+  // Lint/type-check only. The build tsconfig (`tsconfig.json`) keeps `include: ["src"]` because
+  // Stencil refuses to have `stencil.config.ts` in the build project. This extended config adds the
+  // root-level config file so ESLint (typed rules) and `pnpm type-check` have a project for it and
+  // never hit TS18003 ("no inputs") while `src` is still empty.
+  "extends": "./tsconfig.json",
+  "include": ["src", "stencil.config.ts"]
+}

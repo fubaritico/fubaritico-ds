@@ -2,7 +2,7 @@
 
 Sandbox **Stencil** : socle d'un **design system** en Web Components, stylé en **BEM** avec des
 styles **overridables** (light DOM + variables CSS), alimenté par `@fubaritico-ds/tokens`.
-On y porte quelques composants de `packages/ui` (React/Tailwind) pour les **comparer** au code
+On y porte quelques composants de `packages/reference` (React/Tailwind) pour les **comparer** au code
 généré, et pour découvrir comment Stencil compile et génère des wrappers **React** et **Angular**
 à partir d'un seul projet.
 
@@ -242,14 +242,16 @@ framework → on écrit **son propre** custom output target. C'est exactement ç
   "name": "@fubaritico-ds/stencil", // nom workspace, cohérent avec les autres packages
   "version": "0.0.0", // aligné sur le monorepo (Lerna)
   "private": true, // sandbox : on ne publie pas sur npm
-  "type": "module", // ESM, comme packages/ui
+  "type": "module", // ESM, comme packages/reference
   "files": ["dist", "loader"], // ce qui serait publié un jour (non utilisé tant que private)
 
   "scripts": {
     "build": "stencil build", // génère tous les output targets
     "dev": "stencil build --dev --watch --serve", // app de dev Stencil (preview live)
-    "test": "stencil test --spec", // runner spec intégré (voir « Tests »)
-    "lint": "eslint . --max-warnings 0",
+    "test": "vitest run --passWithNoTests", // @stencil/vitest (voir « Tests »)
+    "test:watch": "vitest --passWithNoTests",
+    "type-check": "tsc --noEmit -p tsconfig.eslint.json", // ajouté étape 4
+    "lint": "eslint . --max-warnings 0", // résout la config flat racine (override stencil)
   },
 
   "dependencies": {
@@ -258,14 +260,19 @@ framework → on écrit **son propre** custom output target. C'est exactement ç
   "devDependencies": {
     "@stencil/angular-output-target": "^1.3.1", // génère le wrapper Angular
     "@stencil/react-output-target": "^1.5.3", // génère le wrapper React
+    "@stencil/vitest": "^1.12.1", // runner de test (voir « Tests »)
     "react": "catalog:",
     "react-dom": "catalog:", // peer du target React 1.x (génération typée)
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@fubaritico-ds/tokens": "workspace:*", // niveau 1 des CSS variables (tokens)
+    "vitest": "^3.1.2", // aligné sur le vitest racine
   },
 }
 ```
+
+> Les champs `exports` / `main` / `module` / `types` / `customElements` ainsi que le `type-check`
+> sont ajoutés à l'**étape 4** (intégration toolchain) — voir le PLAN.
 
 À retenir :
 
@@ -285,16 +292,21 @@ framework → on écrit **son propre** custom output target. C'est exactement ç
 
 ### Tests — choix du runner
 
-On utilise **`stencil test --spec`** (le runner de spec intégré à `@stencil/core`, basé sur Jest)
-plutôt que `@stencil/vitest`. Raisons :
+On utilise **`@stencil/vitest`** (le plan initial — confirmé bon). L'idée première d'utiliser le runner
+« intégré » `stencil test --spec` reposait sur deux prémisses **fausses**, vérifiées à l'exécution sur
+`@stencil/core@4.43.5` :
 
-- **aucune dépendance supplémentaire** (livré avec `@stencil/core`) ;
-- **zéro collision** avec le `vitest run` de la racine : nos fichiers sont nommés `*.spec.tsx`,
-  or le vitest racine cible `*.test.tsx` → ils ne se croisent jamais ;
-- **build vert plus sûr** pour une première itération.
+- ❌ « aucune dépendance supplémentaire / livré avec `@stencil/core` » → faux : la commande exige
+  d'installer `jest@29` + `@types/jest@29` + `jest-cli@29` (sinon erreur au lancement) ;
+- ❌ « solution pérenne » → faux : `stencil test --spec` (et les flags `--spec`/`--e2e`) sont
+  **dépréciés** en v4.43 et **supprimés en v5** ; Stencil redirige officiellement vers `@stencil/vitest`
+  (cf. `stenciljs/core#6584`).
 
-C'est une entorse assumée au plan initial (qui prévoyait `@stencil/vitest`). La migration vers
-`@stencil/vitest` reste triviale plus tard si on veut aligner sur le reste du repo.
+Côté collision : l'argument « `*.spec.tsx` vs `*.test.tsx` » était lui aussi caduc — c'est le
+`vitest.config.ts` racine avec `projects: ['packages/*']` qui décide. On en tire parti : la
+`vitest.config.ts` du package est **auto-découverte** par le `vitest run` racine (pas de modif du script
+`test` racine). Specs en `*.spec.{ts,tsx}`, environnement `stencil`. La config complète + le 1er spec
+arrivent à l'étape 6.
 
 ### Étape 2 — `tsconfig.json`
 
@@ -348,9 +360,10 @@ export const config: Config = {
     {
       type: 'dist-custom-elements',
       customElementsExportBehavior: 'auto-define-custom-elements',
+      externalRuntime: false, // EXIGÉ par @stencil/react-output-target 1.x (inline le runtime Stencil)
     },
 
-    // 3) wrapper React généré → dist/react/ (à comparer à packages/ui)
+    // 3) wrapper React généré → dist/react/ (à comparer à packages/reference)
     reactOutputTarget({ outDir: './dist/react/' }),
 
     // 4) wrapper Angular généré (standalone, s'appuie sur dist-custom-elements)
@@ -370,6 +383,9 @@ export const config: Config = {
 À retenir :
 
 - **`dist-custom-elements` est obligatoire** dès qu'on veut le wrapper React — `dist` seul ne suffit pas.
+- **`externalRuntime: false` est obligatoire** sur `dist-custom-elements` avec le React target 1.x :
+  sinon `@stencil/react-output-target` **refuse de valider la config** (« requires … `externalRuntime: false` »).
+  Le runtime Stencil est alors inliné dans chaque composant au lieu d'être importé de `@stencil/core`.
 - **`outputType: 'standalone'`** (Angular) s'appuie sur `dist-custom-elements` et génère des composants
   standalone (Angular 14+), sans loader ni `CUSTOM_ELEMENTS_SCHEMA`.
 - **`componentCorePackage`** doit correspondre exactement au `name` du `package.json`, sinon les imports

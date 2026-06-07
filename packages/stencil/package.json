@@ -8,11 +8,36 @@
     "dist",
     "loader"
   ],
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "collection": "dist/collection/collection-manifest.json",
+  "collection:main": "dist/collection/index.js",
+  "unpkg": "dist/ui-stencil/ui-stencil.esm.js",
+  "customElements": "dist/components/index.js",
+  "exports": {
+    ".": {
+      "types": "dist/types/index.d.ts",
+      "import": "./dist/ui-stencil/ui-stencil.esm.js",
+      "require": "./dist/ui-stencil/ui-stencil.cjs.js"
+    },
+    "./components/*": {
+      "types": "./dist/components/*.d.ts",
+      "import": "./dist/components/*.js"
+    },
+    "./loader": {
+      "types": "./loader/index.d.ts",
+      "import": "./loader/index.js",
+      "require": "./loader/index.cjs"
+    },
+    "./dist/*": "./dist/*"
+  },
   "scripts": {
     "build": "stencil build",
     "dev": "stencil build --dev --watch --serve",
-    "test": "stencil test --spec",
-    "test:watch": "stencil test --spec --watchAll",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest --passWithNoTests",
+    "type-check": "tsc --noEmit -p tsconfig.eslint.json",
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
@@ -21,10 +46,12 @@
   "devDependencies": {
     "@stencil/angular-output-target": "^1.3.1",
     "@stencil/react-output-target": "^1.5.3",
+    "@stencil/vitest": "^1.12.1",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@fubaritico-ds/tokens": "workspace:*",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "vitest": "catalog:"
   }
 }
