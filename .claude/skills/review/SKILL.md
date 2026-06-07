@@ -35,17 +35,12 @@ Filter to only: `*.ts`, `*.tsx`, `*.js`, `*.jsx`, `*.json` (exclude `node_module
 
 Read all files in scope. For each file, determine which reference guides apply:
 
-- `.native.tsx` → platform-safety.md, accessibility.md
-- `.web.tsx` → platform-safety.md, security.md, accessibility.md
-- `*.variants.ts` → platform-safety.md (forbidden classes)
-- `packages/reference/src/components/**` → architecture.md, quality.md
+- `packages/stencil/**/*.tsx` → platform-safety.md, accessibility.md, architecture.md
+- `packages/reference/src/**` → react-best-practices.md, accessibility.md, architecture.md, quality.md
+- `packages/shared/**` → architecture.md, quality.md, security.md
 - `packages/tokens/**` → architecture.md
-- `apps/api/src/routes/**` → security.md (SEC-013..016), architecture.md (ARCH-013..016), quality.md (QUAL-020..22)
-- `apps/api/src/schemas/**` → architecture.md (ARCH-014), quality.md (QUAL-023)
-- `apps/api/src/middleware/**` → security.md
-- `apps/**` → security.md, quality.md, accessibility.md, react-best-practices.md
-- All `*.tsx` → react-best-practices.md
-- All files → quality.md
+- All `*.tsx` → accessibility.md
+- All files → quality.md, security.md
 
 ### Step 3 — Dispatch 6 Parallel Custom Subagents
 
@@ -94,21 +89,22 @@ Verdict thresholds:
 Present findings grouped by severity (critical first), then by category.
 Format as a readable table, followed by the score summary and verdict.
 
-### Step 6 — Verify Ambiguous Findings (context7)
+### Step 6 — Verify Ambiguous Findings
 
 Before fixing, check findings where `needs_verification: true`:
 
-1. Run the `verification_query` through context7 to confirm the finding is valid
-2. If context7 confirms the issue → proceed with fix
-3. If context7 shows the usage is correct → discard the finding, adjust score
+1. Run the `verification_query` against `opensrc/` source (see CLAUDE.md → Source code reference) or the web
+2. If confirmed → proceed with fix
+3. If the usage is correct → discard the finding, adjust score
 4. This prevents false positives from outdated assumptions about library APIs
+
+There is **no context7** in this project — always verify via `opensrc/` or the web.
 
 Common verification scenarios:
 
-- Deprecated API detection (is this prop/method still valid in current SDK version?)
-- Prop signature changes (did accessibilityState shape change?)
-- Library-specific patterns (is this Supabase usage safe in current version?)
-- Expo/RN version-specific behavior
+- Deprecated API detection (is this prop/method still valid in the current `@stencil/core` version?)
+- Stencil decorator / output-target behavior
+- React 19 API correctness
 
 ### Step 7 — Fix Loop (max 3 iterations)
 
@@ -116,7 +112,7 @@ If verdict is NOT `ready`:
 
 1. Fix all `critical` findings immediately
 2. Fix `high` findings
-3. Re-run affected agents only (not all 5) on modified files
+3. Re-run affected agents only (not all 6) on modified files
 4. Repeat up to 3 times total
 
 ### Step 8 — Handle Remaining Violations
