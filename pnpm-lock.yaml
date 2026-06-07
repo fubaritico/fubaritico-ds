@@ -51,6 +51,9 @@ catalogs:
     autoprefixer:
       specifier: 10.4.21
       version: 10.4.21
+    class-variance-authority:
+      specifier: 0.7.1
+      version: 0.7.1
     clsx:
       specifier: 2.1.1
       version: 2.1.1
@@ -187,6 +190,9 @@ importers:
       '@heroicons/react':
         specifier: ^2.2.0
         version: 2.2.0(react@19.2.4)
+      class-variance-authority:
+        specifier: 'catalog:'
+        version: 0.7.1
       clsx:
         specifier: 'catalog:'
         version: 2.1.1
@@ -373,6 +379,31 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 3.2.4(@types/node@25.9.2)(jiti@2.7.0)(jsdom@26.1.0)(lightningcss@1.29.2)(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.3))(yaml@2.9.0)
+
+  packages/styles:
+    dependencies:
+      '@fubaritico-ds/tokens':
+        specifier: workspace:*
+        version: link:../tokens
+    devDependencies:
+      autoprefixer:
+        specifier: 'catalog:'
+        version: 10.4.21(postcss@8.5.3)
+      postcss:
+        specifier: 'catalog:'
+        version: 8.5.3
+      postcss-cli:
+        specifier: ^11.0.1
+        version: 11.0.1(jiti@2.7.0)(postcss@8.5.3)
+      postcss-import:
+        specifier: ^16.1.0
+        version: 16.1.1(postcss@8.5.3)
+      postcss-minify:
+        specifier: ^1.2.0
+        version: 1.2.0(postcss@8.5.3)
+      postcss-nested:
+        specifier: ^7.0.2
+        version: 7.0.2(postcss@8.5.3)
 
   packages/tokens:
     devDependencies:
@@ -2792,6 +2823,9 @@ packages:
   ci-info@4.4.0:
     resolution: {integrity: sha512-77PSwercCZU2Fc4sX94eF8k8Pxte6JAwL4/ICZLFjJLqegs7kCuAsqqj/70NQF6TvDpgFjkubQB2FW2ZZddvQg==}
     engines: {node: '>=8'}
+
+  class-variance-authority@0.7.1:
+    resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
 
   clean-stack@2.2.0:
     resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}
@@ -5538,6 +5572,17 @@ packages:
       yaml:
         optional: true
 
+  postcss-minify@1.2.0:
+    resolution: {integrity: sha512-Cvyz+hW5eBG0okSSOGDeussQy4v9mZHRhMevP2jwADqDS1v2gfoLo94+g4fCeVYtESZKqr+ViMPv3yPkWZFmFQ==}
+    peerDependencies:
+      postcss: ^8.0
+
+  postcss-nested@7.0.2:
+    resolution: {integrity: sha512-5osppouFc0VR9/VYzYxO03VaDa3e8F23Kfd6/9qcZTUI8P58GIYlArOET2Wq0ywSl2o2PjELhYOFI4W7l5QHKw==}
+    engines: {node: '>=18.0'}
+    peerDependencies:
+      postcss: ^8.2.14
+
   postcss-reporter@7.1.0:
     resolution: {integrity: sha512-/eoEylGWyy6/DOiMP5lmFRdmDKThqgn7D6hP2dXKJI/0rJSO1ADFNngZfDzxL0YAxFvws+Rtpuji1YIHj4mySA==}
     engines: {node: '>=10'}
@@ -5546,6 +5591,10 @@ packages:
 
   postcss-selector-parser@6.1.2:
     resolution: {integrity: sha512-Q8qQfPiZ+THO/3ZrOrO0cJJKfpYCagtMUkXbnEfmgUjwXg6z/WBeOyS9APBBPCTSiDV+s4SwQGu8yFsiMRIudg==}
+    engines: {node: '>=4'}
+
+  postcss-selector-parser@7.1.1:
+    resolution: {integrity: sha512-orRsuYpJVw8LdAwqqLykBj9ecS5/cRHlI5+nvTo8LcCKmzDmqVORXtOIYEEQuL9D4BxtA1lm5isAqzQZCoQ6Eg==}
     engines: {node: '>=4'}
 
   postcss-value-parser@4.2.0:
@@ -9494,6 +9543,10 @@ snapshots:
 
   ci-info@4.4.0: {}
 
+  class-variance-authority@0.7.1:
+    dependencies:
+      clsx: 2.1.1
+
   clean-stack@2.2.0: {}
 
   cli-cursor@3.1.0:
@@ -12707,6 +12760,17 @@ snapshots:
       postcss: 8.5.3
       yaml: 2.9.0
 
+  postcss-minify@1.2.0(postcss@8.5.3):
+    dependencies:
+      postcss: 8.5.3
+      postcss-selector-parser: 6.1.2
+      postcss-value-parser: 4.2.0
+
+  postcss-nested@7.0.2(postcss@8.5.3):
+    dependencies:
+      postcss: 8.5.3
+      postcss-selector-parser: 7.1.1
+
   postcss-reporter@7.1.0(postcss@8.5.3):
     dependencies:
       picocolors: 1.1.1
@@ -12714,6 +12778,11 @@ snapshots:
       thenby: 1.4.1
 
   postcss-selector-parser@6.1.2:
+    dependencies:
+      cssesc: 3.0.0
+      util-deprecate: 1.0.2
+
+  postcss-selector-parser@7.1.1:
     dependencies:
       cssesc: 3.0.0
       util-deprecate: 1.0.2

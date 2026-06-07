@@ -22,6 +22,12 @@
         "600": { "$value": "#d97706", "$type": "color" },
         "700": { "$value": "#b45309", "$type": "color" }
       },
+      "blue": {
+        "400": { "$value": "#42a5f5", "$type": "color" },
+        "500": { "$value": "#2196f3", "$type": "color" },
+        "600": { "$value": "#1976d2", "$type": "color" },
+        "700": { "$value": "#1565c0", "$type": "color" }
+      },
       "red": {
         "500": { "$value": "#ef4444", "$type": "color" },
         "600": { "$value": "#dc2626", "$type": "color" }

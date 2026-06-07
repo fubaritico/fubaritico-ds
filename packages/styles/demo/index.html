@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@fubaritico-ds/styles — Badge demo</title>
+
+    <!-- Theme palette/scales (override API) -->
+    <link rel="stylesheet" href="../../tokens/dist/css/variables.css" />
+    <!-- Portable native skin (layered) -->
+    <link rel="stylesheet" href="../dist/styles.css" />
+
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 2rem;
+        color: #171717;
+      }
+      h2 {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #6b6b6b;
+        margin-block: 2rem 0.75rem;
+      }
+      .row {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      /*
+        OVERRIDE DEMO #3 — a plain, UNLAYERED consumer selector.
+        It must beat the layered skin with NO !important and NO higher specificity.
+      */
+      .demo-selector-override .ui-badge {
+        background-color: #16a34a;
+        color: #fff;
+        border-radius: 0.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Badge — native BEM skin</h1>
+    <p>Primary token is now <strong>Material UI blue</strong> (<code>--color-primary: #1976d2</code>).</p>
+
+    <h2>Variants (md)</h2>
+    <div class="row">
+      <span class="ui-badge ui-badge--md">Default</span>
+      <span class="ui-badge ui-badge--secondary ui-badge--md">Secondary</span>
+      <span class="ui-badge ui-badge--outline ui-badge--md">Outline</span>
+      <span class="ui-badge ui-badge--destructive ui-badge--md">Destructive</span>
+    </div>
+
+    <h2>Sizes (default variant)</h2>
+    <div class="row">
+      <span class="ui-badge ui-badge--sm">Small</span>
+      <span class="ui-badge ui-badge--md">Medium</span>
+      <span class="ui-badge ui-badge--lg">Large</span>
+    </div>
+
+    <h2>Override #1 — component variable (surgical, white-label)</h2>
+    <div class="row">
+      <span
+        class="ui-badge ui-badge--md"
+        style="--ui-badge-bg: #9333ea; --ui-badge-fg: #fff"
+        >--ui-badge-bg: purple</span
+      >
+    </div>
+
+    <h2>Override #2 — global token (re-skins everything using it)</h2>
+    <div class="row" style="--color-primary: #db2777; --color-primary-foreground: #fff">
+      <span class="ui-badge ui-badge--md">--color-primary: pink (scoped to this row)</span>
+    </div>
+
+    <h2>Override #3 — plain unlayered selector (wins over the layer, no !important)</h2>
+    <div class="row demo-selector-override">
+      <span class="ui-badge ui-badge--md">.ui-badge &#123; … &#125; wins</span>
+    </div>
+  </body>
+</html>

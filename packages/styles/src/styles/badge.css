@@ -1,0 +1,76 @@
+/**
+ * Badge — native BEM skin.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-badge-*` vars on `.ui-badge` (surgical re-skin).
+ *   2. Redefine a global token (e.g. `--color-primary`) → re-skins everything that uses it.
+ *   3. Write any plain selector (e.g. `.ui-badge { ... }`): being unlayered, it beats this
+ *      layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens. Per-size paddings are component vars (concrete recipe).
+ */
+@layer ui.components {
+  .ui-badge {
+    /* ---- override API (component-scoped) ---- */
+    --ui-badge-bg: var(--color-primary);
+    --ui-badge-fg: var(--color-primary-foreground);
+    --ui-badge-border-color: transparent;
+    --ui-badge-radius: var(--radius-full);
+    --ui-badge-font-weight: var(--font-weight-medium);
+    --ui-badge-font-size: var(--font-size-sm);
+    --ui-badge-gap: var(--spacing-1);
+    --ui-badge-padding-block: 0.125rem;
+    --ui-badge-padding-inline: 0.625rem;
+
+    /* ---- base ---- */
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-badge-gap);
+    border: 1px solid var(--ui-badge-border-color);
+    border-radius: var(--ui-badge-radius);
+    font-weight: var(--ui-badge-font-weight);
+    font-size: var(--ui-badge-font-size);
+    line-height: var(--font-lineHeight-tight);
+    padding-block: var(--ui-badge-padding-block);
+    padding-inline: var(--ui-badge-padding-inline);
+    background-color: var(--ui-badge-bg);
+    color: var(--ui-badge-fg);
+  }
+
+  /* ---- variant modifiers (flat, single-class; only redefine vars) ---- */
+  .ui-badge--secondary {
+    --ui-badge-bg: var(--color-secondary);
+    --ui-badge-fg: var(--color-secondary-foreground);
+  }
+
+  .ui-badge--outline {
+    --ui-badge-bg: transparent;
+    --ui-badge-fg: var(--color-foreground);
+    --ui-badge-border-color: var(--color-input);
+  }
+
+  .ui-badge--destructive {
+    --ui-badge-bg: var(--color-destructive);
+    --ui-badge-fg: var(--color-destructive-foreground);
+  }
+
+  /* ---- size modifiers ---- */
+  .ui-badge--sm {
+    --ui-badge-font-size: var(--font-size-xs);
+    --ui-badge-padding-inline: 0.5rem;
+  }
+
+  /* .ui-badge--md: no rule — `md` is the default size, fully defined by the `.ui-badge` base. */
+
+  .ui-badge--lg {
+    --ui-badge-font-size: var(--font-size-sm);
+    --ui-badge-padding-block: 0.25rem;
+    --ui-badge-padding-inline: 0.75rem;
+  }
+
+  /* ---- element ---- */
+  .ui-badge__icon {
+    display: inline-flex;
+    flex: none;
+  }
+}

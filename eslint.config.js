@@ -35,6 +35,7 @@ export default tseslint.config(
       '**/sd.config.js',
       '**/*.cjs',
       '**/dist/**',
+      '**/.temp-svg/**',
       '**/files/**',
       '**/scripts/**',
       '**/coverage/**',

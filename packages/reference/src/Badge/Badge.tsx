@@ -2,68 +2,50 @@ import clsx from 'clsx'
 
 import { Icon } from '../Icon'
 
+import { badgeVariants } from './Badge.variants'
+
+import type { BadgeSize, BadgeVariant } from './Badge.variants'
 import type { IconName } from '../Icon'
-import type { ReactNode } from 'react'
+import type { ComponentProps } from 'react'
 
-export type BadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive'
-export type BadgeSize = 'sm' | 'md' | 'lg'
+export type { BadgeSize, BadgeVariant }
 
-export interface BadgeProps {
-  /** Badge content */
-  children: ReactNode
-  /** Visual variant */
+/** Leading-icon size, in pixels. */
+const BADGE_ICON_SIZE = 16
+
+export interface BadgeProps extends ComponentProps<'span'> {
+  /** Visual variant. */
   variant?: BadgeVariant
-  /** Size */
+  /** Size. */
   size?: BadgeSize
-  /** Optional icon (left) */
+  /** Optional leading icon. Decorative (aria-hidden); `children` must convey the meaning in text. */
   icon?: IconName
-  /** Custom text color class (overrides variant color) */
-  textClassName?: string
-  /** Additional class name */
-  className?: string
 }
 
-const sizeMap: Record<
-  BadgeSize,
-  { padding: string; text: string; iconSize: 16 }
-> = {
-  sm: { padding: 'ui:px-2 ui:py-0.5', text: 'ui:text-xs', iconSize: 16 },
-  md: { padding: 'ui:px-2.5 ui:py-0.5', text: 'ui:text-sm', iconSize: 16 },
-  lg: { padding: 'ui:px-3 ui:py-1', text: 'ui:text-sm', iconSize: 16 },
-}
-
-function Badge({
+/**
+ * Badge — native BEM skin (`@fubaritico-ds/styles`). Variant/size resolve to BEM classes via
+ * {@link badgeVariants}; colours and paddings are driven by the overridable `--ui-badge-*`
+ * component variables. Forwards any extra `span` attributes (`id`, `aria-*`, `onClick`, …).
+ *
+ * @param props - {@link BadgeProps}
+ * @returns The rendered badge element.
+ */
+export function Badge({
   children,
   variant = 'default',
   size = 'md',
   icon,
-  textClassName,
   className,
+  ...rest
 }: Readonly<BadgeProps>) {
-  const { padding, text, iconSize } = sizeMap[size]
-
   return (
     <span
-      className={clsx(
-        'ui:inline-flex ui:items-center ui:gap-1 ui:rounded-full ui:font-medium',
-        padding,
-        text,
-        {
-          'ui:bg-primary': variant === 'default',
-          'ui:text-primary-foreground': variant === 'default' && !textClassName,
-          'ui:bg-secondary': variant === 'secondary',
-          'ui:text-secondary-foreground':
-            variant === 'secondary' && !textClassName,
-          'ui:border ui:border-input ui:bg-transparent': variant === 'outline',
-          'ui:bg-destructive': variant === 'destructive',
-          'ui:text-destructive-foreground':
-            variant === 'destructive' && !textClassName,
-        },
-        textClassName,
-        className
-      )}
+      className={clsx(badgeVariants({ variant, size }), className)}
+      {...rest}
     >
-      {icon && <Icon name={icon} size={iconSize} />}
+      {icon && (
+        <Icon name={icon} size={BADGE_ICON_SIZE} className="ui-badge__icon" />
+      )}
       {children}
     </span>
   )

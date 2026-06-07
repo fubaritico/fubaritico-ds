@@ -1,0 +1,30 @@
+{
+  "name": "@fubaritico-ds/styles",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Portable native BEM skin (per-component CSS partials in @layer, component-scoped CSS variables for override). Theme palette = @fubaritico-ds/tokens. Re-exported by each framework package.",
+  "exports": {
+    ".": "./dist/styles.css",
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "pnpm clean && mkdir -p dist && postcss src/native-styles.css -o dist/styles.css"
+  },
+  "peerDependencies": {
+    "@fubaritico-ds/tokens": "workspace:*"
+  },
+  "devDependencies": {
+    "autoprefixer": "catalog:",
+    "postcss": "catalog:",
+    "postcss-cli": "^11.0.1",
+    "postcss-import": "^16.1.0",
+    "postcss-minify": "^1.2.0",
+    "postcss-nested": "^7.0.2"
+  }
+}

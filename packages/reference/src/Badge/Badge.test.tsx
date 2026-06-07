@@ -4,54 +4,72 @@ import { describe, expect, it } from 'vitest'
 import Badge from './Badge'
 
 describe('Badge', () => {
-  it('renders children', () => {
-    render(<Badge>Action</Badge>)
-    expect(screen.getByText('Action')).toBeInTheDocument()
+  describe('happy path', () => {
+    it('renders children', () => {
+      render(<Badge>Action</Badge>)
+      expect(screen.getByText('Action')).toBeInTheDocument()
+    })
+
+    it('applies the base BEM block and default size/variant', () => {
+      const { container } = render(<Badge>Default</Badge>)
+      const badge = container.firstChild
+      expect(badge).toHaveClass('ui-badge')
+      // default variant => no variant modifier; default size => md modifier
+      expect(badge).toHaveClass('ui-badge--md')
+      expect(badge).not.toHaveClass('ui-badge--secondary')
+    })
   })
 
-  it('renders with default variant', () => {
-    const { container } = render(<Badge>Default</Badge>)
-    expect(container.firstChild).toHaveClass('ui:bg-primary')
+  describe('variants', () => {
+    it('renders the secondary variant modifier', () => {
+      const { container } = render(<Badge variant="secondary">Secondary</Badge>)
+      expect(container.firstChild).toHaveClass('ui-badge--secondary')
+    })
+
+    it('renders the outline variant modifier', () => {
+      const { container } = render(<Badge variant="outline">Outline</Badge>)
+      expect(container.firstChild).toHaveClass('ui-badge--outline')
+    })
+
+    it('renders the destructive variant modifier', () => {
+      const { container } = render(<Badge variant="destructive">Error</Badge>)
+      expect(container.firstChild).toHaveClass('ui-badge--destructive')
+    })
+
+    it('applies each size modifier', () => {
+      const { container: sm } = render(<Badge size="sm">Small</Badge>)
+      expect(sm.firstChild).toHaveClass('ui-badge--sm')
+
+      const { container: md } = render(<Badge size="md">Medium</Badge>)
+      expect(md.firstChild).toHaveClass('ui-badge--md')
+
+      const { container: lg } = render(<Badge size="lg">Large</Badge>)
+      expect(lg.firstChild).toHaveClass('ui-badge--lg')
+    })
+
+    it('renders a leading icon with the BEM element class', () => {
+      const { container } = render(<Badge icon="Star">Featured</Badge>)
+      const svg = container.querySelector('svg')
+      expect(svg).toBeInTheDocument()
+      expect(svg).toHaveClass('ui-badge__icon')
+    })
   })
 
-  it('renders with secondary variant', () => {
-    const { container } = render(<Badge variant="secondary">Secondary</Badge>)
-    expect(container.firstChild).toHaveClass('ui:bg-secondary')
-  })
+  // L3 (managed errors): N/A — presentational atom with no validation/disabled/error states.
+  // L4 (unmanaged errors): N/A — no async/data path; nothing to throw or swallow.
 
-  it('renders with outline variant', () => {
-    const { container } = render(<Badge variant="outline">Outline</Badge>)
-    expect(container.firstChild).toHaveClass('ui:border')
-    expect(container.firstChild).toHaveClass('ui:bg-transparent')
-  })
+  describe('edge cases', () => {
+    it('merges a custom className after the skin classes', () => {
+      const { container } = render(
+        <Badge className="custom-class">Custom</Badge>
+      )
+      expect(container.firstChild).toHaveClass('ui-badge')
+      expect(container.firstChild).toHaveClass('custom-class')
+    })
 
-  it('renders with destructive variant', () => {
-    const { container } = render(<Badge variant="destructive">Error</Badge>)
-    expect(container.firstChild).toHaveClass('ui:bg-destructive')
-  })
-
-  it('renders with icon', () => {
-    const { container } = render(<Badge icon="Star">Featured</Badge>)
-    expect(container.querySelector('svg')).toBeInTheDocument()
-  })
-
-  it('applies size sm correctly', () => {
-    const { container } = render(<Badge size="sm">Small</Badge>)
-    expect(container.firstChild).toHaveClass('ui:text-xs')
-  })
-
-  it('applies size md correctly', () => {
-    const { container } = render(<Badge size="md">Medium</Badge>)
-    expect(container.firstChild).toHaveClass('ui:text-sm')
-  })
-
-  it('applies size lg correctly', () => {
-    const { container } = render(<Badge size="lg">Large</Badge>)
-    expect(container.firstChild).toHaveClass('ui:py-1')
-  })
-
-  it('applies custom className', () => {
-    const { container } = render(<Badge className="custom-class">Custom</Badge>)
-    expect(container.firstChild).toHaveClass('custom-class')
+    it('renders no icon when none is provided', () => {
+      const { container } = render(<Badge>No icon</Badge>)
+      expect(container.querySelector('svg')).toBeNull()
+    })
   })
 })

@@ -96,6 +96,7 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@fubaritico-ds/shared": "workspace:*",
+    "class-variance-authority": "catalog:",
     "clsx": "catalog:"
   }
 }
