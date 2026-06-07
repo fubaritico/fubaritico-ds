@@ -4,7 +4,7 @@ description: Common setup for all jobs — pnpm, Node (cached), frozen install. 
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v4
+    - uses: pnpm/action-setup@v6
       with:
         version: 10.8.1
 

@@ -20,7 +20,7 @@ jobs:
         run: pnpm coverage
 
       - name: Initialize SonarCloud with main branch
-        uses: SonarSource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarqube-scan-action@v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
