@@ -1,193 +1,119 @@
 # Architecture — fubaritico-ds
 
+> Multi-framework **design-system generator** built on **Stencil**. From one Web Component project
+> (`packages/stencil`) we produce native Web Components + generated **React** and **Angular** wrappers,
+> showcased in per-framework Storybook apps. `packages/reference` (React/Tailwind) is the hand-written
+> reference we port from.
+
 ## Tech Stack
-| Category | Technology | Version |
-|---|---|---|
-| Package Manager | pnpm | 10.8.1 |
-| Monorepo | Lerna | 8.2.2 |
-| Build | Vite | 6.2.0 |
-| Module Federation | @module-federation/vite | 1.11.0 |
-| Framework | React | 19.1.0 |
-| Routing | React Router | 7.5.2 |
-| Data fetching | TanStack Query | 5.74.4 |
-| Styling | Tailwind CSS | 4.1.0 |
-| Language | TypeScript | 5.7.2 |
-| Testing | Vitest | 3.x + React Testing Library 16.x |
-| API Client | heyAPI (generated, never edit manually) | — |
+
+| Category        | Technology                                     | Version |
+| --------------- | ---------------------------------------------- | ------- |
+| Package manager | pnpm (workspaces + catalog)                    | 10.8.1  |
+| Monorepo runner | Lerna (powered by Nx)                          | 8.2.x   |
+| Web Components  | Stencil (`@stencil/core`)                      | 4.43.5  |
+| WC → React      | `@stencil/react-output-target`                 | 1.5.x   |
+| WC → Angular    | `@stencil/angular-output-target`               | 1.3.x   |
+| Reference UI    | React                                          | 19.2.x  |
+| Styling         | Tailwind CSS v4 (CSS-first)                    | 4.x     |
+| Design tokens   | Style Dictionary (OKLCH, DTCG)                 | —       |
+| Language        | TypeScript                                     | ~5.7.2  |
+| Testing         | Vitest 3.2.4 (+ `@stencil/vitest`, RTL, jsdom) | —       |
+| Lint            | ESLint 9 (flat config)                         | —       |
 
 ## Project Structure
+
 ```
-apps/
-├── host/           port 3000 — consumes remotes
-│   └── src/
-│       ├── main.tsx, router.tsx, queryClient.ts, instrument.ts
-│       └── index.css
-├── home/           port 3001 — exposes ./Home, ./routes
-│   └── src/
-│       ├── main.tsx, routes.tsx, instrument.ts
-│       ├── index.css, remote-input.css, remote.css (generated)
-│       ├── components/
-│       │   ├── Home.tsx
-│       │   ├── HeroSection/, TrendingSection/
-│       │   ├── PopularSection/, FreeToWatchSection/
-│       │   └── [Section]/  → Section.tsx, Section.test.tsx, index.ts
-│       └── hooks/  → useTrending.ts, usePopularMovies.ts, ...
-├── media/          port 3002 — exposes ./Media, ./MediaErrorBoundary, ./routes
-│   └── src/
-│       ├── main.tsx, routes.tsx, instrument.ts
-│       ├── index.css, remote-input.css, remote.css (generated)
-│       ├── components/
-│       │   ├── Media.tsx, MediaErrorBoundary.tsx
-│       │   ├── MediaHero/, Synopsis/, Crew/, Cast/
-│       │   ├── Photos/, TrailersSection/
-│       │   ├── SimilarSection/, RecommendedSection/
-│       │   └── [Section]/  → Section.tsx, Section.test.tsx, index.ts
-│       ├── hooks/  → useMediaDetails.ts, useMovieCredits.ts, ...
-│       └── utils/  → typeGuards.ts, formatters.ts, ...
-└── photos/         port 3003 — exposes ./Photos, ./PhotosErrorBoundary, ./router
-                    nested child route under /movie/:id and /tv/:id
-    └── src/
-        ├── main.tsx, router.tsx, instrument.ts
-        ├── index.css, remote-input.css, remote.css (generated)
-        ├── components/Photos/  → Photos.tsx, PhotosModal.tsx, PhotosErrorBoundary.tsx
-        └── hooks/  → useMovieImages.ts
+apps/                       # empty scaffolds — no package.json yet
+├── storybook-web-component/
+├── storybook-react/
+├── storybook-angular/
+└── storybook-vuejs/
 
 packages/
-├── ui/             design system (ui: prefix) — 20+ components
-│   ├── tsup.config.ts, postcss.config.js, publish.sh
-│   └── src/
-│       ├── index.ts (barrel), styles.css
-│       └── [Component]/  → Component.tsx, Component.test.tsx, index.ts
-│           (Avatar, Badge, Button, Card, Carousel, HeroImage, Icon,
-│            IconButton, Image, Modal, MovieCard, Rating, Skeleton,
-│            Spinner, Tabs, Talent, TrailerCard, Typography)
-├── layouts/        Container, Section, Header, Footer, RootLayout (layout: prefix)
-│   ├── tsup.config.ts, postcss.config.js, publish.sh
-│   └── src/
-│       ├── index.ts (barrel), styles.css
-│       ├── Container/, Section/, Header/, Footer/, RootLayout/
-│       ├── next/         → Server Component RootLayout
-│       └── react-router/ → React Router entry point
-├── shared/         utils, mocks, test-utils, tailwind theme, vite plugins
-│   ├── postcss.config.js, publish.sh
-│   └── src/
-│       ├── tailwind/   → theme.css, theme-no-fonts.css
-│       ├── fonts/      → fonts.css (@fontsource imports)
-│       ├── utils/      → tmdbImage.ts, healthCheck.ts, retry.ts, ...
-│       ├── vite/       → tailwindRemoteCss.ts, notifyHostOnHmr.ts, ...
-│       ├── test-utils/ → renderWithReactQuery.tsx, renderWithRouter.tsx, ...
-│       └── mocks/
-│           ├── data/     → 16 mock data files (real TMDB payloads)
-│           └── handlers/ → 16 MSW handler files
-├── http-client/    TMDB heyAPI client → @fubar-it-co/tmdb-client (auto-generated)
-│   ├── openapi-ts.config.ts, publish.sh
-│   └── src/
-│       ├── index.ts, tmdb-config.ts
-│       └── client/  → *.gen.ts (DO NOT EDIT — pnpm generate)
-├── tokens/         design tokens (Style Dictionary, OKLCH, DTCG format)
-│   ├── sd.config.js, publish.sh
-│   ├── tokens/  → color/, font.json, radius.json, shadow.json, spacing.json
-│   └── dist/    → css/, js/, ts/, tailwind/ (generated)
-├── storybook/      stories for all components (port 6006)
-│   ├── .storybook/ → main.ts, preview.ts, decorators/
-│   └── src/stories/ → 39+ story files
-└── e2e/            Cucumber.js + Playwright
-    ├── cucumber.config.cjs
-    └── src/
-        ├── features/         → smoke.feature, browse-media.feature
-        ├── step-definitions/ → smoke.steps.ts, browse-media.steps.ts
-        ├── page-objects/     → HomePage.ts, MediaPage.ts, PhotosPage.ts
-        └── support/          → world.ts, hooks.ts
+├── reference/    @fubaritico-ds/reference — React/Tailwind DS components (the port source)
+│   ├── src/<Component>/  → Component.tsx, .types.ts, .test.tsx, index.ts
+│   ├── vitest.config.ts, vitest.setup.ts, tsconfig.json, tsconfig.build.json
+│   └── prefix: `ui:` on all Tailwind classes
+├── shared/       @fubaritico-ds/shared — utils, test-utils, browser mocks, theme, fonts, vite plugins
+│   └── src/{utils,hooks,tailwind,fonts,test-utils,mocks/browser,vite}/
+├── stencil/      @fubaritico-ds/stencil — the Stencil sandbox (SUBJECT of the project)
+│   ├── stencil.config.ts (5 output targets), tsconfig.json (jsx:react + h), tsconfig.eslint.json
+│   ├── vitest.config.ts (minimal now; full @stencil/vitest at step 6 — see PLAN.md)
+│   ├── src/global/ui-stencil.css, src/components/ui-*/   → tag prefix `ui-`
+│   └── dist/{components,react,angular} — generated artefacts to compare (not installable yet)
+└── tokens/       @fubaritico-ds/tokens — Style Dictionary → dist/{css,js,ts,tailwind}
 ```
 
-## CSS Architecture
-- Tailwind v4, CSS-first (no tailwind.config.js)
-- Shared theme: `packages/shared/src/tailwind/theme.css` (OKLCH tokens)
-- `theme-no-fonts.css`: for remotes (no @font-face, avoids broken font paths)
-- packages/reference: `ui:` prefix — `ui:flex ui:items-center`
-- packages/layouts: `layout:` prefix
-- apps/home: `hm:` prefix
-- apps/media: `mda:` prefix
-- apps/photos: `ph:` prefix
-- Remotes use `vite-plugin-css-injected-by-js` for CSS bundling
-- Custom utilities in `@layer utilities` with escaped prefix: `.mda\:hero-height`
+Only these **4 packages** exist. `apps/storybook-*` are placeholders.
 
-## Module Federation
-- Bootstrap pattern: app logic inline in `main.tsx` (no separate bootstrap file)
-- Each remote: standalone mode (own router + QueryClient) + MF exposition
-- Shared singletons: react, react-dom, react-router-dom, @tanstack/react-query
-- DTS: remotes generate types → host consumes via tsconfig paths `"*": ["./@mf-types/*"]`
-- Health checks: `/health` endpoint, retry with backoff (5 attempts)
+## Monorepo Orchestration (Lerna + Nx)
 
-## Scripts
+Root scripts **delegate** to each package's own script — root does not run `tsc`/`vitest`/`eslint` directly.
+
 ```bash
-pnpm dev              # all packages in parallel
-pnpm dev:ordered      # home → media → host (ordered)
-pnpm [package]:dev    # specific package
-
-pnpm lint             # ESLint entire project
-pnpm lint:fix         # ESLint auto-fix
-pnpm type-check       # TypeScript no-emit
-pnpm test             # Vitest
-pnpm coverage         # Vitest + coverage
-
-pnpm reset            # clean install (rm node_modules/dist + pnpm install)
-pnpm generate         # regenerate TMDB API client (packages/http-client)
-pnpm kill-ports       # kill dev servers on ports 3000-3003, 6006
-pnpm storybook        # Storybook on port 6006
+pnpm build        # lerna run build        (topo order via Nx)
+pnpm type-check   # lerna run type-check
+pnpm test         # lerna run test
+pnpm lint         # lerna run lint
+pnpm dev          # lerna run --parallel --stream dev
 ```
+
+- `nx.json` `targetDefaults`: `build`/`type-check`/`test` have `dependsOn: ['^build']` so dependencies
+  are built first (cross-package types come from `dist/*.d.ts` — there are no tsconfig `paths` to source).
+  `build` declares `outputs: ['{projectRoot}/dist']`.
+- Dependency order: **tokens → shared → reference**; **stencil** is independent.
+- `lerna.json`: `version: independent`, `npmClient: pnpm`.
+- Nx cache lives in `.nx/` (gitignored).
+- **TODO (planned): migrate Lerna → Turbo.**
+
+## Versions & pnpm catalog
+
+- Shared dep versions are pinned in `pnpm-workspace.yaml` `catalog:` and referenced as `"dep": "catalog:"`
+  in packages (e.g. `vitest`, `jsdom`, `react`). Keep test tooling on the catalog to avoid version splits.
+- `packageExtensions` in `pnpm-workspace.yaml` declares `vitest` as an optional peer of
+  `@testing-library/jest-dom` (its `/vitest` entry imports vitest without declaring it).
+- Root is NOT a test-running package — it has no `vitest`/`jsdom`/`@testing-library/*` deps.
+
+## Stencil output targets (`packages/stencil/stencil.config.ts`)
+
+1. `dist` (+ `esmLoaderPath: '../loader'`) — lazy bundle + loader for plain HTML usage
+2. `dist-custom-elements` (`auto-define-custom-elements`, **`externalRuntime: false`** — required by the
+   React target 1.x) — tree-shakeable WC, required by the React wrapper
+3. `reactOutputTarget` → `dist/react/`
+4. `angularOutputTarget` (standalone) → `dist/angular/`
+5. `docs-readme` — generated `readme.md` per component from JSDoc
+
+## Testing
+
+- Each package owns its Vitest config. Spec/test files: `*.test.tsx` (reference), `*.test.ts` (shared),
+  `*.spec.{ts,tsx}` (stencil, via `@stencil/vitest`). 5-level policy in `tests.md`.
+- `stencil test --spec` is **deprecated** (removed in Stencil v5) — use `@stencil/vitest`.
+
+## CSS / Styling
+
+- Tailwind v4, CSS-first (no `tailwind.config.js`).
+- `packages/reference`: `ui:` class prefix.
+- `packages/stencil`: BEM + overridable CSS variables (light DOM), global sheet `src/global/ui-stencil.css`,
+  fed by `@fubaritico-ds/tokens`; component tags prefixed `ui-`.
+- New package/app: define a new prefix, never reuse an existing one.
 
 ## Git & Commits
-Conventional commits — pre-commit hook runs: typecheck + lint + test.
+
+Conventional commits — pre-commit hook (husky) runs `type-check && lint && test`; commit-msg runs
+commitlint (body lines ≤ 100 chars). Husky is wired via the root `prepare: husky` script.
 
 Allowed types: `build chore ci docs feat fix perf refactor revert style test`
-
-Format: `type(scope): subject` (lowercase subject, no trailing period, max 100 chars)
-
-Examples:
-- `feat(media): add Cast section with top 10 actors`
-- `fix(ui): resolve Button disabled state for link variant`
-- `refactor(shared): extract test utilities to shared package`
-
-## CI/CD Workflows
-
-See [README.md — Continuous Integration & Deployment](../../README.md#continuous-integration--deployment).
+Format: `type(scope): subject` (lowercase, no trailing period, ≤ 100 chars).
+Scopes: `reference` (or `ui`), `shared`, `stencil`, `tokens`, `repo` (root/monorepo).
 
 ## Forbidden
-```
-❌ console.log          → use console.warn / console.error
-❌ explicit any         → strict TypeScript
-❌ CSS Modules          → Tailwind only
-❌ CSS-in-JS            → Tailwind only
-❌ edit http-client/src/client/  → regenerate with pnpm generate
-❌ delete index.css files        → required for standalone mode
-❌ disable cssInjectedByJsPlugin → required for remotes
-❌ unsorted imports     → ESLint enforced
-❌ unused vars/imports  → ESLint enforced
-```
 
-## TMDB Image URLs
-```typescript
-// Construct full URL with size
-`https://image.tmdb.org/t/p/${size}${path}`
-
-// OFFICIALLY SUPPORTED SIZES (from /configuration API endpoint)
-// Reference: https://www.themoviedb.org/talk/53c11d4ec3a3684cf4006400
-//
-// Posters:   w92, w154, w185, w342, w500, w780, original
-// Backdrops: w300, w780, w1280, original (used in our app: w300 mobile, w500 tablet, w780 desktop, w1280 ultrawide)
-// Profiles:  w45, w185, h632, original
-// Still:     w92, w185, w300, original
-// Logos:     w45, w92, w154, w185, w300, w500, original
-//
-// Note: Only use these officially supported sizes. While other dimensions might load,
-// they are not guaranteed to work and may be slower.
 ```
-
-## Responsive Breakpoints (mobile-first)
+❌ console.log              → use console.warn / console.error
+❌ explicit any             → strict TypeScript
+❌ CSS Modules / CSS-in-JS  → Tailwind (reference) / BEM+CSS vars (stencil)
+❌ edit generated artefacts → packages/stencil/dist/{react,angular}, components.d.ts (regen via build)
+❌ unsorted / unused imports → ESLint enforced
+❌ vitest version drift     → keep on the pnpm catalog (avoids SnapshotClient errors)
 ```
-sm:  640px   md: 768px   lg: 1024px   xl: 1280px   2xl: 1536px
-```
-
-## Section max-width
-`max-w-screen-xl` (1280px) via Section component from packages/layouts.

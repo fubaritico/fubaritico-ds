@@ -4,16 +4,16 @@
 
 Project to generate multi UI framework base on a stencilJS architecture. The project will be a tool to produce design system packages targeted for native web components, React, Angular and Vue. The component will visible in their respective storybook application.
 
-- `apps/storybook-web-component` - [TODO] Explain and describe this package
-- `apps/storybook-react` - [TODO] Explain and describe this package
-- `apps/storybook-angular` - [TODO] Explain and describe this package
-- `apps/storybook-vuejs` - [TODO] Explain and describe this package
-- `packages/reference` - Package used a s a reference for creating component in stencil
-- `packages/shared` - [TODO] Explain and describe this package
-- `packages/stencil` - Contains `README.md` and `PLANS.md` to create and structure the monorepo project
-- `packages/tokens` - [TODO] Explain and describe this package
+- `apps/storybook-web-component` - [scaffold, no `package.json` yet] Storybook showcasing the generated native Web Components
+- `apps/storybook-react` - [scaffold, no `package.json` yet] Storybook showcasing the generated React wrappers
+- `apps/storybook-angular` - [scaffold, no `package.json` yet] Storybook showcasing the generated Angular wrappers
+- `apps/storybook-vuejs` - [scaffold, no `package.json` yet] Storybook showcasing the generated Vue wrappers
+- `packages/reference` - React/Tailwind design-system components used as the **reference** to port into Stencil
+- `packages/shared` - shared utils, test-utils, browser mocks, Tailwind theme + fonts, vite plugins
+- `packages/stencil` - the **Stencil sandbox**: one Web Component project producing native WC + generated React/Angular wrappers (see its `README.md` + `PLAN.md`)
+- `packages/tokens` - design tokens (Style Dictionary, OKLCH, DTCG) → generated CSS/JS/TS/Tailwind
 
-[TODO] Add packages once created, to be updated.
+Only these 4 packages exist today; the `apps/storybook-*` are empty scaffolds. [TODO] update as packages/apps are added.
 
 ## Your role
 
@@ -37,8 +37,8 @@ npx opensrc@0.6 pypi:<package>      # Python package (e.g., npx opensrc pypi:req
 npx opensrc@0.6 crates:<package>    # Rust crate (e.g., npx opensrc crates:serde)
 npx opensrc@0.6 <owner>/<repo>      # GitHub repo (e.g., npx opensrc vercel/ai)
 # COMMAND UPDATE: the 0.6 version is working as expected, it brings back repos in a local opensrc dir and updates/creates AGENTS.md
-npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui/tamagui.git 
-# above commande fetches the repo if not present see online doc at: https://opensrc.sh/  
+npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui/tamagui.git
+# above commande fetches the repo if not present see online doc at: https://opensrc.sh/
 
 ```
 
@@ -50,21 +50,21 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
 - **Always run** — `pnpm type-check && pnpm lint && pnpm test` from root — MUST run after every code change, never skip
 - **Risky actions** (git push, reset --hard, rm -rf) require explicit permission EVERY TIME
 - **Never hallucinate** — if uncertain, read code first
-- **Always use context7** for any question about an API, library, or package
+- **Verify APIs against source** — for any question about an API, library, or package, read it in `opensrc/` (see Source code reference) or search the web; never guess
 - **Secrets** — live in `.env*` files — never in rules, memory, or code
 - **Never `console.log`** — use `console.warn` / `console.error`
 - **Never explicit `any`** — strict TypeScript
 - **Always run** `pnpm type-check && pnpm lint && pnpm test` then `/review` after every set of modifications
-- **Always ask** user to run pnpm dev, pnpm prod:server and pnpm storybook after having modified a component
+- **Always ask** user to run `pnpm dev` (or `stencil build` for the stencil package) and `pnpm storybook` after having modified a component
 - **Always create a Storybook story** after every component (`/story`)
 - **Model**: Haiku for questions/research, Sonnet for code/commits — suggest Haiku when appropriate
 - **For React**: instead of using `React.` for react types, import the type from react
 - **Shared responsibility** — you and the user share ownership of code quality. Care about every line; review your own output before presenting it.
 - **Research FIRST** — when something fails or behaves unexpectedly, search the web (GitHub issues, changelogs, docs) BEFORE modifying code. Most bugs are version incompatibilities or misconfigurations, not your code alone.
 - **If it works elsewhere, it works here** — never conclude "it can't work" or write workaround mocks. Find the root cause in your setup (resolution paths, singletons, config) and fix it.
-- **Never fallback values** — never serve hardcoded/stale data as silent degradation. If a runtime dependency (TMDB API, config) fails, surface the error; don't mask it.
+- **Never fallback values** — never serve hardcoded/stale data as silent degradation. If a runtime dependency (a build tool, generator, config) fails, surface the error; don't mask it.
 - **Never `--no-verify`** on commit without the developer's explicit agreement
-- **JSDoc everywhere (strict)** — every exported interface property, every function (`@param` + `@returns`), every hook, every type with properties, every constant. Exempt: generated `packages/http-client` + test files.
+- **JSDoc everywhere (strict)** — every exported interface property, every function (`@param` + `@returns`), every hook, every type with properties, every constant. Exempt: generated artefacts (`packages/stencil/dist/{react,angular}`, `components.d.ts`) + test files.
 - **Apply React skills** — apply `composition-patterns`, `react-best-practices`, and `react-view-transitions` when writing or reviewing component code
 
 ## Code Conventions
@@ -103,14 +103,12 @@ Read @known-issues.md
 
 ## Reference Files (load on demand — NOT auto-loaded)
 
-| File                           | When to load                            |
-| ------------------------------ | --------------------------------------- |
-| `architecture.md`              | Stack, scripts, CSS, Module Federation  |
-| `decision-tree.md`             | Skill triggers — check before coding    |
-| `patterns-ui.md`               | UI component, design system story       |
-| `testing-on-iphone-locally.md` | Mobile testing on iPhone via LAN        |
-| `tests.md`                     | Writing tests — 5-level policy          |
-| `troubleshooting.md`           | Debug, architectural decisions          |
+| File                 | When to load                                     |
+| -------------------- | ------------------------------------------------ |
+| `architecture.md`    | Stack, packages, scripts, monorepo orchestration |
+| `decision-tree.md`   | Skill triggers — check before coding             |
+| `patterns-ui.md`     | UI component, design system story                |
+| `tests.md`           | Writing tests — 5-level policy                   |
+| `troubleshooting.md` | Debug, architectural decisions                   |
 
 **Before coding**: ask which reference files are needed — do NOT start coding without the relevant files loaded.
-

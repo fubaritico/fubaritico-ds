@@ -4,19 +4,19 @@
 
 ## Skill Triggers — NEVER bypass
 
-| I'm about to...                        | Invoke                 |
-|----------------------------------------| ---------------------- |
-| Create a UI component (packages/react) | `/new-react-component` |
-| Create an app section (embedded query) | `/new-section`         |
-| Scaffold a new package or remote app   | `/add-package`         |
-| Write a Storybook story                | `/story`               |
-| Write tests                            | `/test`                |
-| Review code (after a set of changes)   | `/review`              |
-| Commit                                 | `/commit`              |
-| Propose a commit message only          | `/message-commit`      |
-| Fetch the SonarCloud report            | `/sonar`               |
-| Start a work session                   | `/start-session`       |
-| End a work session                     | `/end-session`         |
+| I'm about to...                                   | Invoke                 |
+| ------------------------------------------------- | ---------------------- |
+| Create a React UI component (packages/reference)  | `/new-react-component` |
+| Create a Stencil Web Component (packages/stencil) | `stencil` skill        |
+| Scaffold a new package                            | `/add-package`         |
+| Write a Storybook story                           | `/story`               |
+| Write tests                                       | `/test`                |
+| Review code (after a set of changes)              | `/review`              |
+| Commit                                            | `/commit`              |
+| Propose a commit message only                     | `/message-commit`      |
+| Fetch the SonarCloud report                       | `/sonar`               |
+| Start a work session                              | `/start-session`       |
+| End a work session                                | `/end-session`         |
 
 ## Apply when writing/reviewing component code (composition primitives)
 

@@ -1,11 +1,10 @@
 # Rules — Test Policy
 
-> Every new component, hook, section, route, utility, or bug fix MUST ship with tests.
+> Every new component, hook, utility, or bug fix MUST ship with tests.
 > No code is considered done without tests, a `/commit`, and `/end-session`.
 
-Stack: **Vitest 3 + React Testing Library 16 + MSW** (mocks from `packages/shared`).
-E2E (Cucumber + Playwright) lives in `packages/e2e` and is complementary — the 5-level
-policy below applies to unit/integration tests.
+Stack: **Vitest 3** — React Testing Library (jsdom) for `packages/reference`,
+**`@stencil/vitest`** for `packages/stencil`. Tests run per-package via `lerna run test`.
 
 ## Mandatory Completion Sequence
 
@@ -59,10 +58,9 @@ Errors the code explicitly handles — expected failures with user-facing feedba
 Unexpected failures — network errors, malformed data.
 
 ```
-- API returns 500 (error MSW handler) — component degrades gracefully
-- Query retry / isError surfaced
-- Malformed response (missing fields, wrong types) — `??` fallbacks hold
-- Unexpected null/undefined from the TMDB client
+- Malformed input (missing fields, wrong types) — `??` fallbacks hold
+- Unexpected null/undefined props or return values
+- Async errors surfaced, not swallowed
 ```
 
 ### Level 5 — Edge Cases
@@ -79,36 +77,38 @@ Boundary conditions and unusual but possible scenarios.
 
 ## Test Scope by Layer
 
-### UI Components (`packages/reference`, `packages/layouts`)
+### React UI Components (`packages/reference`)
 
 - Renders without crash (L1)
 - Each variant/size renders correctly (L2)
 - Disabled/loading/error states (L3)
 - Missing optional props, `??` fallbacks (L5)
 - Accessibility: role, label, aria-state attributes (L1–L2)
+- Runner: Vitest + RTL (jsdom), files `*.test.tsx`
 
-### App Sections (`apps/*` — embedded queries)
+### Stencil Web Components (`packages/stencil`)
 
-- Renders content with a `default` MSW handler (L1)
-- Loading skeleton with a `loading` handler, variant branches (L2)
-- Error/empty states with `error`/empty handlers (L3–L4)
-- `useParams` mocked for id-driven sections (L1)
-- Section title always visible; section hidden (return null) when no data (L3)
+- Use **`@stencil/vitest`** (`render`, `h`, matchers), files `*.spec.{ts,tsx}`, `environment: 'stencil'`
+- Renders with required `@Prop`s (L1); each prop/variant (L2)
+- Emits the right `@Event` (`e.detail`) on interaction (L2)
+- Reflects `@State` changes / `@Method` calls (L2–L3)
+- Missing optional props / slots empty (L5)
+- See `references/09-testing.md` in the `stencil` skill
 
-### Hooks (`apps/*/hooks`, `packages/shared`)
+### Utilities & hooks (`packages/shared`)
 
 - Returns expected shape on success (L1)
-- Different input combinations — all dynamic params in the queryKey (L2)
-- Error handling, isError (L3–L4)
-- Cleanup on unmount (L5)
+- Different valid input combinations (L2)
+- Error handling (L3–L4); cleanup on unmount (L5)
+- DOM-dependent files opt into jsdom via `// @vitest-environment jsdom`
 
 ## Test Utilities & Mocks
 
-- Use `renderWithReactQuery` / `renderWithRouter` from `@fubaritico-ds/shared/test-utils`
-- MSW handlers from `@fubaritico-ds/shared/mocks` — export `{ default, loading, error }`
+- React render helpers in `@fubaritico-ds/shared/test-utils`
+  (`renderWithReactQuery`, `renderWithRouter`, …)
+- Generic browser mocks via `setupBrowserMocks()` from `@fubaritico-ds/shared/mocks`
 - ALWAYS `userEvent` (never `fireEvent`)
-- Mock hooks at module level: `vi.mock('../../hooks/useDataHook', ...)`
-- Real TMDB payloads in `packages/shared/src/mocks/data/` (fetched via curl for accurate structure)
+- Mock modules at the top level with `vi.mock(...)`
 
 ## Naming Convention
 

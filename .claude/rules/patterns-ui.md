@@ -36,7 +36,8 @@ export default ComponentName
 
 ## Component with Types File (complex props)
 
-Separate `ComponentName.types.ts` for discriminated unions (see MovieCard, Button):
+Separate `ComponentName.types.ts` for discriminated unions (see Button):
+
 ```typescript
 // ComponentName.types.ts
 export type ComponentNameProps = ComponentAsVariantA | ComponentAsVariantB
@@ -56,9 +57,11 @@ packages/reference/src/ComponentName/
 └── index.ts               # export { default as ComponentName } from './ComponentName'
 ```
 
-`packages/layouts` — same structure, `layout:` prefix instead of `ui:`.
+> This file covers **React** components in `packages/reference` (`ui:` prefix). For **Stencil**
+> Web Components in `packages/stencil` (BEM + CSS variables, `ui-` tags), use the `stencil` skill.
 
 Rules:
+
 - `ui:` prefix on ALL Tailwind classes
 - No domain logic
 - Extend with `ComponentProps` (see below), never `HTMLAttributes`
@@ -92,6 +95,7 @@ export interface MenuItemProps extends Omit<ComponentProps<typeof ListboxItem>, 
 It also works uniformly for intrinsic elements (`'div'`, `'input'`) and custom components (`typeof Input`).
 
 ## Import Order (ESLint enforced)
+
 ```typescript
 // 1. External
 import clsx from 'clsx'
@@ -107,6 +111,7 @@ import type { FC } from 'react'
 ```
 
 ## Discriminated Union Pattern (polymorphic components)
+
 ```typescript
 // ComponentName.types.ts
 export type ComponentAsButton = BaseProps & ButtonHTMLAttributes<HTMLButtonElement> & { as?: 'button' }
@@ -154,6 +159,7 @@ Component.Navigation = ComponentNavigation
 ```
 
 Rules:
+
 - Throw error if sub-component used outside parent
 - Used for: Carousel, Tabs (existing) — apply when component has related sub-components
 
