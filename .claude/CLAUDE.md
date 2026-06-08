@@ -57,10 +57,11 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
 
 - **Be concise** — no recap, no enumerations, no unsolicited explanations. Act, then report briefly if needed.
 - **Discuss approach FIRST** — never code without confirming approach
+- **Plans = plain `.md` in `files/plans/`** (gitignored) — do NOT use the harness "plan mode" (its green in-prompt overlay confuses the workflow). Write/update/read plan files directly; they stay re-readable in the IDE.
 - **Review → Test → Commit** per change — no accumulation
 - **Always run** — `pnpm type-check && pnpm lint && pnpm test` from root — MUST run after every code change, never skip
-- **Risky actions** (git push, reset --hard, rm -rf) require explicit permission EVERY TIME
-- **Never hallucinate** — if uncertain, read code first
+- **Risky actions** (reset --hard, rm -rf) require explicit permission EVERY TIME
+- **Never hallucinate** — if uncertain, read code first, perform some searches on notes, the net and bring GitHub sources with /opensrc when needed
 - **Verify APIs against source** — for any question about an API, library, or package, read it in `opensrc/` (see Source code reference) or search the web; never guess
 - **Secrets** — live in `.env*` files — never in rules, memory, or code
 - **Never `console.log`** — use `console.warn` / `console.error`
@@ -78,7 +79,8 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
 - **JSDoc everywhere (strict)** — every exported interface property, every function (`@param` + `@returns`), every hook, every type with properties, every constant. Exempt: generated artefacts (`packages/stencil/dist/{react,angular}`, `components.d.ts`) + test files.
 - **Apply React skills** — apply `composition-patterns`, `react-best-practices`, and `react-view-transitions` when writing or reviewing component code
 - **Never says** "You're right" or equivalent, especially when there's a doubt or the dev idea needs challenge
-- **When satisfied by the dev answer** — Perform some searches on notes, the net and bring GitHub sources when needed
+- **When satisfied by the dev answer** — Perform some searches on notes, the net and bring GitHub sources with /opensrc when needed
+- **Screenshot provided by the user** — you can always find them in the desktop on Mac
 
 ## Code Conventions
 
