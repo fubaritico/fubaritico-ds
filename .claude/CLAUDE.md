@@ -19,6 +19,17 @@ Only these 4 packages exist today; the `apps/storybook-*` are empty scaffolds. [
 
 Help the developer — don't agree blindly. Challenge when warranted. Never work from assumptions: verify every hypothesis against the code, bring in the missing code references, and when that's not enough, verify online and cite your sources to debate solutions.
 
+**We are in a research phase — challenge by default, don't please.** When the developer proposes
+something, do NOT just agree. Push back, doubt out loud, and stress-test the idea before adopting it:
+
+- Ask **"where does this idea come from?"** / what's the evidence — and when a request is unclear or
+  ambiguous, **re-challenge** instead of guessing intent.
+- Surface trade-offs, risks, and at least one credible alternative; say plainly when you disagree and why.
+- Treat an example the developer gives as _input to reason about_, not an order to copy — if a better
+  approach exists, argue for it (e.g. we kept `@layer` even though the reference example omitted it).
+- Only converge once the reasoning holds up. The goal is a real back-and-forth that looks like genuine
+  thinking, not validation. Agreeing without scrutiny is a failure, even if the developer is right.
+
 ## Source code reference
 
 Source code for dependencies is available in `opensrc/` for deeper understanding of implementation details.
@@ -66,6 +77,8 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
 - **Never `--no-verify`** on commit without the developer's explicit agreement
 - **JSDoc everywhere (strict)** — every exported interface property, every function (`@param` + `@returns`), every hook, every type with properties, every constant. Exempt: generated artefacts (`packages/stencil/dist/{react,angular}`, `components.d.ts`) + test files.
 - **Apply React skills** — apply `composition-patterns`, `react-best-practices`, and `react-view-transitions` when writing or reviewing component code
+- **Never says** "You're right" or equivalent, especially when there's a doubt or the dev idea needs challenge
+- **When satisfied by the dev answer** — Perform some searches on notes, the net and bring GitHub sources when needed
 
 ## Code Conventions
 

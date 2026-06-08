@@ -10,7 +10,7 @@ triggers:
 
 # Review — Multi-Agent Code Reviewer
 
-Orchestrates 6 parallel domain-expert subagents to review changed files against project rules.
+Orchestrates 7 parallel domain-expert subagents to review changed files against project rules.
 Produces a structured JSON report with findings sorted by severity.
 
 ## Prerequisites
@@ -29,7 +29,7 @@ Determine which files to review (priority order):
 3. Staged files (`git diff --cached --name-only`)
 4. Files in last commit (`git diff --name-only HEAD~1`)
 
-Filter to only: `*.ts`, `*.tsx`, `*.js`, `*.jsx`, `*.json` (exclude `node_modules`, `build/`, `dist/`, lock files)
+Filter to only: `*.ts`, `*.tsx`, `*.js`, `*.jsx`, `*.json`, `*.css` (exclude `node_modules`, `build/`, `dist/`, lock files). `*.css` is in scope because the **native skin is the core deliverable** of this design system — never skip it.
 
 ### Step 2 — Load Context
 
@@ -39,15 +39,18 @@ Read all files in scope. For each file, determine which reference guides apply:
 - `packages/reference/src/**` → react-best-practices.md, accessibility.md, architecture.md, quality.md
 - `packages/shared/**` → architecture.md, quality.md, security.md
 - `packages/tokens/**` → architecture.md
+- `packages/styles/**` and any `*.css` → styles (BEM rules from `bem-structure` + ` audit-style`), architecture.md
+- `*.variants.ts` (CVA resolvers) → styles (class-name parity vs the skin), quality.md
 - All `*.tsx` → accessibility.md
 - All files → quality.md, security.md
 
-### Step 3 — Dispatch 6 Parallel Custom Subagents
+### Step 3 — Dispatch 7 Parallel Custom Subagents
 
-Launch all 6 **custom subagents** simultaneously using the Agent tool. Each subagent is defined
+Launch all 7 **custom subagents** simultaneously using the Agent tool. Each subagent is defined
 in `.claude/agents/review/` and has its own system prompt with domain-specific rules.
 
 Pass each subagent the list of files in scope as user message content (file paths + content).
+Always pass `*.css` and `*.variants.ts` to **`review-styles`** (the other agents largely ignore CSS).
 
 Subagents (by `name` / `agent_type`):
 
@@ -57,6 +60,8 @@ Subagents (by `name` / `agent_type`):
 4. **`review-quality`** — code quality (JSDoc, any types, console.log, dead code)
 5. **`review-accessibility`** — WCAG 2.1 AA compliance
 6. **`review-react`** — React best practices (memoization, composition, callbacks)
+7. **`review-styles`** — native CSS / BEM skin (BEM naming, low specificity, token usage, `@layer`
+   override-first, component variables, logical properties, CVA↔skin class parity)
 
 Each subagent returns ONLY a JSON array of findings (no prose). The finding schema
 is defined in `references/schema.json`.
@@ -69,14 +74,15 @@ Merge all findings into a single report. Calculate scores:
 category_score = max(0, 100 - (critical * 25) - (high * 10) - (medium * 3) - (low * 1))
 ```
 
-Weights for overall score:
+Weights for overall score (sum = 100%):
 
-- Platform Safety: 20%
+- Platform Safety: 15%
 - Security: 20%
 - Architecture: 15%
 - Quality: 15%
-- Accessibility: 15%
-- React Best Practices: 15%
+- Styles (CSS/BEM): 15%
+- Accessibility: 10%
+- React Best Practices: 10%
 
 Verdict thresholds:
 
