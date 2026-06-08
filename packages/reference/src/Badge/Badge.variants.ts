@@ -27,7 +27,7 @@ export const badgeVariants = cva('ui-badge', {
     },
     size: {
       sm: 'ui-badge--sm',
-      md: 'ui-badge--md',
+      md: '', // default size — fully defined by the `.ui-badge` base; no modifier emitted
       lg: 'ui-badge--lg',
     },
   },

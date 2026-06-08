@@ -10,13 +10,14 @@ describe('Badge', () => {
       expect(screen.getByText('Action')).toBeInTheDocument()
     })
 
-    it('applies the base BEM block and default size/variant', () => {
+    it('applies the base BEM block and emits no modifier for the defaults', () => {
       const { container } = render(<Badge>Default</Badge>)
       const badge = container.firstChild
       expect(badge).toHaveClass('ui-badge')
-      // default variant => no variant modifier; default size => md modifier
-      expect(badge).toHaveClass('ui-badge--md')
+      // default variant + default size (md) => base class only, no modifier
       expect(badge).not.toHaveClass('ui-badge--secondary')
+      expect(badge).not.toHaveClass('ui-badge--sm')
+      expect(badge).not.toHaveClass('ui-badge--lg')
     })
   })
 
@@ -40,8 +41,11 @@ describe('Badge', () => {
       const { container: sm } = render(<Badge size="sm">Small</Badge>)
       expect(sm.firstChild).toHaveClass('ui-badge--sm')
 
+      // md is the default size => base class only, no `ui-badge--md` modifier emitted
       const { container: md } = render(<Badge size="md">Medium</Badge>)
-      expect(md.firstChild).toHaveClass('ui-badge--md')
+      expect(md.firstChild).toHaveClass('ui-badge')
+      expect(md.firstChild).not.toHaveClass('ui-badge--sm')
+      expect(md.firstChild).not.toHaveClass('ui-badge--lg')
 
       const { container: lg } = render(<Badge size="lg">Large</Badge>)
       expect(lg.firstChild).toHaveClass('ui-badge--lg')
