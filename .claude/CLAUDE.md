@@ -110,21 +110,21 @@ Read @completed.md
 
 ### Next
 
-Primary working branch is **`main`** (master is secondary). Memory holds the durable context
-(`project-goal-stencil-discovery`, `monorepo-orchestration`, `reference-projects`, `tmdb-legacy-cleanup-backlog`).
+Primary working branch is **`main`** (pushed to `origin` = fubaritico/fubaritico-ds; CI green).
+Active thread: **white-label native-CSS design system** (BEM + CVA + tokens + `@layer`).
+Plan: `files/plans/badge-spike-native-css.md`. Memory: `white-label-native-css`,
+`project-goal-stencil-discovery`, `monorepo-orchestration`.
 
-1. **Create a git remote** (later) with `gh` and push `main`. No remote exists yet.
-2. **Build the CI** modeled on the two reference projects (paths in memory `reference-projects`):
-   `react-and-react-native-financial-app` and `vite-mf-monorepo`. Pipeline: Lerna+Nx
-   (lint/type-check/test/build) + pa11y (needs a Storybook running) + **Sonar** (user will register the
-   project on SonarCloud; `sonar` skill key = `fubaritico-ds`).
-3. **Finish the Stencil setup** — PLAN step 5: create `packages/stencil/src/global/ui-stencil.css`
-   and get `stencil build` green; then wire stencil into root `build` if needed.
-4. **Port reference → Stencil Web Components**: `ui-badge` → `ui-button` → `ui-rating`. Compare the
-   generated `dist/{react,angular}` wrappers to the hand-written React. Goal = understand Stencil, its
-   limitations, and the WC model (bottom-up / no Context). See `packages/stencil/README.md`.
+1. **Promote `badgeVariants` `reference` → `@fubaritico-ds/shared`** (cross-framework CVA resolver —
+   review-flagged priority). `reference` is a non-deliverable, so the resolver must live in a shipped package.
+2. **Extend the native-CSS migration** to the next component (e.g. Button): `styles` partial + CVA + BEM
+   tests; optionally scaffold `apps/storybook-web-component` (visual harness #2).
+3. **Finish Stencil setup** (PLAN step 5: `src/global/ui-stencil.css`, green `stencil build`), then wire
+   stencil into `build:packages` and converge its `globalStyle` onto the `styles` partials.
+4. Eventually: full Tailwind removal from `reference` (Phase 3).
 
-Decisions locked: keep **Lerna + Nx** (no Turbo). `packages/reference` is the port source.
+Decisions locked: **Lerna + Nx** (no Turbo). `reference` = guide/sandbox, **NOT a deliverable**.
+Skin = `@fubaritico-ds/styles` (BEM `@layer` + `--ui-*` component vars); theme/override API = tokens vars.
 
 ### Known Issues
 
