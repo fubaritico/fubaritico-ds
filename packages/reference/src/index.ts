@@ -8,6 +8,10 @@ export type { BadgeProps, BadgeSize, BadgeVariant } from './Badge'
 
 export { Button } from './Button'
 export type { ButtonProps } from './Button'
+// Router-coupled Button adapters are intentionally NOT re-exported here — import them from their
+// dedicated subpaths so the plain `Button` stays framework-free (presentational-first):
+//   import { LinkButton } from '@fubaritico-ds/reference/LinkButton'         (react-router)
+//   import { NextLinkButton } from '@fubaritico-ds/reference/NextLinkButton' (next)
 
 export { Card } from './Card'
 export type { CardProps, CardVariant } from './Card'

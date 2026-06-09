@@ -1,6 +1,3 @@
-export { Button } from '../react-router/Button'
-export type {
-  ButtonProps,
-  ButtonAsButton,
-  ButtonAsLink,
-} from '../react-router/Button'
+export { Button } from './Button'
+export type { ButtonProps } from './Button.types'
+export type { ButtonVisualProps } from './Button.shared'

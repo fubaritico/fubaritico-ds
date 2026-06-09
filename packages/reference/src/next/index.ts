@@ -1,12 +1,5 @@
 'use client'
 
-export { Button } from './Button'
-export type {
-  NextButtonProps,
-  NextButtonAsButton,
-  NextButtonAsLink,
-} from './Button'
-
 export { HeroImage } from './HeroImage'
 export type { NextHeroImageProps } from './HeroImage'
 

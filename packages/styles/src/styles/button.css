@@ -1,0 +1,123 @@
+/**
+ * Button — native BEM skin.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-button-*` vars on `.ui-button` (surgical re-skin).
+ *   2. Redefine a global token (e.g. `--color-primary`) → re-skins everything that uses it.
+ *   3. Write any plain selector (`.ui-button { ... }`): being unlayered, it beats this layered skin.
+ *
+ * Values come from @fubaritico-ds/tokens. Hover uses the dedicated `--color-*-hover` palette tokens
+ * (deterministic, white-label) — NOT an opacity hack. The skin is self-sufficient (own box-sizing +
+ * font-family) since the DS ships no global reset.
+ */
+@layer ui.components {
+  .ui-button {
+    /* ---- override API (component-scoped) ---- */
+    --ui-button-bg: var(--color-primary);
+    --ui-button-fg: var(--color-primary-foreground);
+    --ui-button-bg-hover: var(--color-primary-hover);
+    --ui-button-fg-hover: var(
+      --ui-button-fg
+    ); /* variants that recolour text on hover override this */
+    --ui-button-border-color: transparent;
+    --ui-button-radius: var(--radius-sm);
+    --ui-button-ring-color: var(--color-ring);
+    --ui-button-ring-offset: 2px;
+    --ui-button-transition-duration: var(--duration-fast);
+    --ui-button-transition-easing: var(--easing-standard);
+    --ui-button-font-family: var(--font-roboto);
+    --ui-button-font-weight: var(--font-weight-medium);
+    --ui-button-gap: var(--spacing-2);
+    /* size recipe (md default) */
+    --ui-button-height: var(--spacing-10);
+    --ui-button-padding-inline: var(--spacing-4);
+    --ui-button-font-size: var(--font-size-base);
+
+    /* ---- base (self-sufficient: no global reset) ---- */
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ui-button-gap);
+    height: var(--ui-button-height);
+    padding-inline: var(--ui-button-padding-inline);
+    border: 1px solid var(--ui-button-border-color);
+    border-radius: var(--ui-button-radius);
+    font-family: var(--ui-button-font-family);
+    font-weight: var(--ui-button-font-weight);
+    font-size: var(--ui-button-font-size);
+    background-color: var(--ui-button-bg);
+    color: var(--ui-button-fg);
+    cursor: pointer;
+    transition:
+      background-color var(--ui-button-transition-duration)
+        var(--ui-button-transition-easing),
+      border-color var(--ui-button-transition-duration)
+        var(--ui-button-transition-easing),
+      color var(--ui-button-transition-duration)
+        var(--ui-button-transition-easing);
+  }
+
+  .ui-button:hover {
+    background-color: var(--ui-button-bg-hover);
+    color: var(--ui-button-fg-hover);
+  }
+
+  .ui-button:focus-visible {
+    outline: 2px solid var(--ui-button-ring-color);
+    outline-offset: var(--ui-button-ring-offset);
+  }
+
+  .ui-button:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* ---- variant modifiers (flat, single-class; only redefine vars) ---- */
+  .ui-button--secondary {
+    --ui-button-bg: var(--color-secondary);
+    --ui-button-fg: var(--color-secondary-foreground);
+    --ui-button-bg-hover: var(--color-secondary-hover);
+  }
+
+  .ui-button--destructive {
+    --ui-button-bg: var(--color-destructive);
+    --ui-button-fg: var(--color-destructive-foreground);
+    --ui-button-bg-hover: var(--color-destructive-hover);
+  }
+
+  .ui-button--outline {
+    --ui-button-bg: var(--color-background);
+    --ui-button-fg: var(--color-foreground);
+    --ui-button-border-color: var(--color-input);
+    --ui-button-bg-hover: var(--color-accent);
+    --ui-button-fg-hover: var(--color-accent-foreground);
+  }
+
+  .ui-button--ghost {
+    --ui-button-bg: transparent;
+    --ui-button-fg: var(--color-foreground);
+    --ui-button-bg-hover: var(--color-accent);
+    --ui-button-fg-hover: var(--color-accent-foreground);
+  }
+
+  /* ---- size modifiers ---- */
+  .ui-button--sm {
+    --ui-button-height: var(--spacing-8);
+    --ui-button-padding-inline: var(--spacing-3);
+    --ui-button-font-size: var(--font-size-sm);
+  }
+
+  /* `md` is the default size (base) — the CVA resolver emits '' for it, so no `.ui-button--md` rule. */
+
+  .ui-button--lg {
+    --ui-button-height: var(--spacing-12);
+    --ui-button-padding-inline: var(--spacing-6);
+    --ui-button-font-size: var(--font-size-lg);
+  }
+
+  /* ---- icon position ---- */
+  .ui-button--icon-right {
+    flex-direction: row-reverse;
+  }
+}

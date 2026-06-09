@@ -10,3 +10,4 @@
 @layer ui.reset, ui.base, ui.components;
 
 @import './styles/badge.css';
+@import './styles/button.css';
