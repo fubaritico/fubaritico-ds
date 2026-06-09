@@ -16,12 +16,6 @@
         "default": "./dist/index.js"
       }
     },
-    "./react-router": {
-      "import": {
-        "types": "./dist/react-router/index.d.ts",
-        "default": "./dist/react-router/index.js"
-      }
-    },
     "./next": {
       "import": {
         "types": "./dist/next/index.d.ts",
