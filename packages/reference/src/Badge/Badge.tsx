@@ -1,5 +1,6 @@
-import { BADGE_ICON_CLASS, badgeVariants } from '@fubaritico-ds/variants'
 import clsx from 'clsx'
+
+import { BADGE_ICON_CLASS, badgeVariants } from '@fubaritico-ds/variants'
 
 import { Icon } from '../Icon'
 

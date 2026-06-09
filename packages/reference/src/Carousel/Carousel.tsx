@@ -1,4 +1,3 @@
-import { useIsMobile } from '@fubaritico-ds/shared'
 import clsx from 'clsx'
 import {
   useCallback,
@@ -7,6 +6,8 @@ import {
   useRef,
   useState,
 } from 'react'
+
+import { useIsMobile } from '@fubaritico-ds/shared'
 
 import CarouselCounter from './CarouselCounter'
 import CarouselError from './CarouselError'

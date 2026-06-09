@@ -117,6 +117,11 @@ export default tseslint.config(
           'newlines-between': 'always',
           pathGroups: [
             {
+              pattern: '@fubaritico-ds/**',
+              group: 'internal',
+              position: 'before',
+            },
+            {
               pattern: 'list/**',
               group: 'external',
               position: 'before',
@@ -127,6 +132,7 @@ export default tseslint.config(
               position: 'before',
             },
           ],
+          pathGroupsExcludedImportTypes: ['builtin', 'type'],
           alphabetize: {
             order: 'asc',
             orderImportKind: 'asc',

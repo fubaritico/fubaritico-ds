@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { getBlurDataUrl } from '@fubaritico-ds/shared'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { getBlurDataUrl } from '@fubaritico-ds/shared'
 
 import Image from './Image'
 

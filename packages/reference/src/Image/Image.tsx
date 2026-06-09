@@ -1,6 +1,7 @@
-import { getBlurDataUrl } from '@fubaritico-ds/shared'
 import clsx from 'clsx'
 import { useCallback, useEffect, useRef, useState } from 'react'
+
+import { getBlurDataUrl } from '@fubaritico-ds/shared'
 
 import { Icon } from '../Icon'
 

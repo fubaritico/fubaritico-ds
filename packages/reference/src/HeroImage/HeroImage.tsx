@@ -1,5 +1,6 @@
-import { getOptimizedImageUrl } from '@fubaritico-ds/shared'
 import { useState } from 'react'
+
+import { getOptimizedImageUrl } from '@fubaritico-ds/shared'
 
 import { Skeleton } from '../Skeleton'
 
