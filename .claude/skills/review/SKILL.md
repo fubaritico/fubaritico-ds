@@ -29,7 +29,7 @@ Determine which files to review (priority order):
 3. Staged files (`git diff --cached --name-only`)
 4. Files in last commit (`git diff --name-only HEAD~1`)
 
-Filter to only: `*.ts`, `*.tsx`, `*.js`, `*.jsx`, `*.json`, `*.css` (exclude `node_modules`, `build/`, `dist/`, lock files). `*.css` is in scope because the **native skin is the core deliverable** of this design system — never skip it.
+Filter to only: `*.ts`, `*.tsx`, `*.js`, `*.jsx`, `*.json`, `*.css` (exclude `node_modules`, `build/`, `dist/`, lock files). `*.css` is in scope because the **native skin is the core deliverable** of this design system — never skip it. Component `README.md` usage docs are checked separately in Step 2b (see `component-docs.md`).
 
 ### Step 2 — Load Context
 
@@ -43,8 +43,21 @@ Read all files in scope. For each file, determine which reference guides apply:
 - `packages/variants/**` (CVA resolvers — the shipped home, pure TS) → styles (CVA↔skin class-name
   parity), platform-safety (MUST stay React/DOM-free), quality.md, architecture.md
 - `*.variants.ts` (legacy/local CVA resolvers, if any) → styles (class-name parity vs the skin), quality.md
+- `packages/reference/src/**/README.md` → component-docs.md (co-located usage doc plan)
 - All `*.tsx` → accessibility.md
 - All files → quality.md, security.md
+
+#### Step 2b — Component doc-page presence (orchestrator check, not a subagent)
+
+For every **component** touched in scope (a `packages/reference/src/<Component>/` directory), verify a
+usage doc exists at `packages/reference/src/<Component>/README.md` and follows
+`component-docs.md`. Emit a finding directly (category `quality`, the orchestrator owns it):
+
+- **missing README** → `high` ("Component <X> ships no usage doc README").
+- **README missing a mandatory section** (or its `> N/A` note) → `medium`.
+- **code sample that imports the barrel** (Tailwind leak) **or doesn't match the public API** → `medium`.
+
+A component is never `ready` without a compliant doc page.
 
 ### Step 3 — Dispatch 7 Parallel Custom Subagents
 
@@ -153,3 +166,5 @@ Optional (user decides) for:
 - Config-only changes (tsconfig, package.json)
 - Documentation-only changes
 - Changelog updates
+
+IMPORTANT: give the developer the table of findings (Critical, high, medium, low), this is mandatory.

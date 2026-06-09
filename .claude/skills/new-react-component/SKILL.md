@@ -22,6 +22,10 @@ Reference the component patterns: @.claude/rules/component-patterns.md
 5. Create `packages/reference/src/$ARGUMENTS/index.ts` re-exporting the component
 6. Add export to `packages/reference/src/index.ts`
 7. Run `/story $ARGUMENTS` to create the Storybook story
+8. Create the **usage doc** `packages/reference/src/$ARGUMENTS/README.md` (co-located README) following the
+   mandatory plan in @.claude/rules/component-docs.md (identity → capabilities → import → basic usage →
+   variants → edge cases → props → a11y → **Notes** = consumer-facing callouts for exceptions / misuse
+   risks / gotchas). Plain Markdown with copy-pastable ` ```tsx ` examples — no Storybook blocks.
 
 ## Rules
 

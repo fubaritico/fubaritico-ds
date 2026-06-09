@@ -75,7 +75,11 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
 ## Critical Workflow Rules
 
 - **Be concise** — no recap, no enumerations, no unsolicited explanations. Act, then report briefly if needed.
-- **Discuss approach FIRST** — never code without confirming approach
+- **Discuss approach FIRST, then execute the WHOLE block** — confirm the _approach_ ONCE before
+  coding. Once it's agreed (or the dev says "go"/"fais-le"), execute the entire task end-to-end —
+  edits, tests, commit — WITHOUT re-asking on each sub-step. Do NOT re-confirm obvious or
+  already-decided things; that's friction. Only stop again for a genuinely undecided fork or an
+  irreversible/outward-facing action.
 - **Plans = plain `.md` in `files/plans/`** (gitignored) — do NOT use the harness "plan mode" (its green in-prompt overlay confuses the workflow). Write/update/read plan files directly; they stay re-readable in the IDE.
 - **Review → Test → Commit** per change — no accumulation
 - **Always run** — `pnpm type-check && pnpm lint && pnpm test` from root — MUST run after every code change, never skip
