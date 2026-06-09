@@ -186,11 +186,13 @@ describe('Image', () => {
     const unobserveMock = vi.fn()
     const disconnectMock = vi.fn()
 
-    window.IntersectionObserver = vi.fn(() => ({
-      observe: observeMock,
-      unobserve: unobserveMock,
-      disconnect: disconnectMock,
-    })) as never
+    window.IntersectionObserver = vi.fn(function () {
+      return {
+        observe: observeMock,
+        unobserve: unobserveMock,
+        disconnect: disconnectMock,
+      }
+    }) as never
 
     render(<Image {...defaultProps} loading="lazy" />)
 
@@ -201,11 +203,13 @@ describe('Image', () => {
   it('does not use IntersectionObserver when loading is eager', () => {
     const observeMock = vi.fn()
 
-    window.IntersectionObserver = vi.fn(() => ({
-      observe: observeMock,
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-    })) as never
+    window.IntersectionObserver = vi.fn(function () {
+      return {
+        observe: observeMock,
+        unobserve: vi.fn(),
+        disconnect: vi.fn(),
+      }
+    }) as never
 
     render(<Image {...defaultProps} loading="eager" />)
 

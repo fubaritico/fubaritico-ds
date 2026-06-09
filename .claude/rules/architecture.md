@@ -18,7 +18,7 @@
 | Styling         | Tailwind CSS v4 (CSS-first)                    | 4.x     |
 | Design tokens   | Style Dictionary (OKLCH, DTCG)                 | —       |
 | Language        | TypeScript                                     | ~5.7.2  |
-| Testing         | Vitest 3.2.4 (+ `@stencil/vitest`, RTL, jsdom) | —       |
+| Testing         | Vitest 4.1.8 (+ `@stencil/vitest`, RTL, jsdom) | —       |
 | Lint            | ESLint 9 (flat config)                         | —       |
 
 ## Project Structure
@@ -110,7 +110,7 @@ commitlint (body lines ≤ 100 chars). Husky is wired via the root `prepare: hus
 
 Allowed types: `build chore ci docs feat fix perf refactor revert style test`
 Format: `type(scope): subject` (lowercase, no trailing period, ≤ 100 chars).
-Scopes: `reference` (or `ui`), `shared`, `stencil`, `tokens`, `repo` (root/monorepo).
+Scopes: `reference` (or `ui`), `shared`, `stencil`, `styles`, `tokens`, `variants`, `repo` (root/monorepo).
 
 ## Forbidden
 
