@@ -19,60 +19,69 @@ Reference: @.claude/rules/patterns-ui.md
 
 ---
 
-## Design System component (packages/reference)
+## Design System component → `apps/storybook-react` (Storybook 10)
+
+Stories live **IN the app**, NOT co-located:
+`apps/storybook-react/stories/reference/<Component>.stories.tsx`, importing the built component from
+`@fubaritico-ds/reference`. Group under **`Reference/*`** (the Stencil-generated React wrappers go under
+`Generated/*` later). `layout: 'centered'` AND the native skin (tokens + `@fubaritico-ds/styles`) are
+set **globally** in `.storybook/preview.ts` — do NOT repeat `layout` per meta, and do NOT use Tailwind.
 
 ```typescript jsx
 import { ComponentName } from '@fubaritico-ds/reference'
-import type { Meta, StoryObj } from '@storybook/react'
 
-const meta: Meta<typeof ComponentName> = {
-  title: 'Design System/ComponentName',
+import type { Meta, StoryObj } from '@storybook/react-vite'
+
+const meta = {
+  title: 'Reference/ComponentName',
   component: ComponentName,
-  parameters: { layout: 'centered' },
   tags: ['autodocs'],
   argTypes: {
     variant: { control: 'select', options: ['primary', 'secondary'] },
-    size: { control: 'select', options: ['sm', 'md', 'lg'] },
-    // ... all controllable props
+    size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] },
+    // Hide non-control rows (see "Disabling controls" below):
+    onClose: { table: { disable: true } }, // callbacks
+    open: { table: { disable: true } }, // controlled state
+    children: { table: { disable: true } }, // JSX slots (keep as a control ONLY if it's plain text)
   },
-}
+  args: { variant: 'primary', size: 'md' },
+} satisfies Meta<typeof ComponentName>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-// Interactive playground — one story with args
-export const Playground: Story = {
-  args: { variant: 'primary', size: 'md', children: 'Label' },
-}
+// Interactive playground — driven by the controls panel
+export const Playground: Story = {}
 
-// Visual showcase — all variants/sizes/states in one render
-export const Showcase: Story = {
+// Visual showcase — render-only, all variants in one view. NO Tailwind → inline styles.
+export const Variants: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
-    <div className="flex flex-col gap-8">
-      <section>
-        <h3>Variants</h3>
-        <div className="flex gap-3">
-          <ComponentName variant="primary" />
-          <ComponentName variant="secondary" />
-        </div>
-      </section>
-      {/* sizes, disabled states, with icons, etc. */}
+    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+      <ComponentName variant="primary" />
+      <ComponentName variant="secondary" />
     </div>
   ),
 }
-
-// Additional named stories for specific use cases if needed
-export const WithIcon: Story = { args: { icon: 'Play' } }
 ```
+
+### Disabling controls (house convention — two DIFFERENT tools)
+
+- **Hide a single prop's row** → `argTypes: { prop: { table: { disable: true } } }`. Use for
+  **callbacks** (`onClose`, `onChange`), **JSX slot props** (`children` when not plain text), and
+  **controlled-state** props (`open`, `value`). Keeps the real controls (`variant`, `size`) usable.
+- **Disable the WHOLE controls panel** → `parameters: { controls: { disable: true } }`. Use ONLY for
+  pure `render()` showcase stories that ignore args entirely.
 
 **Rules**:
 
-- `layout: 'centered'`
-- `tags: ['autodocs']` always
-- `Playground` + `Showcase` minimum — add named stories for notable variants
-- No mocks, no router — DS components are presentational
-- Show ALL variants/sizes/states in `Showcase`
+- Types from `@storybook/react-vite` (Storybook 10), NOT `@storybook/react`.
+- `satisfies Meta<typeof Component>` + `type Story = StoryObj<typeof meta>` (typed args/argTypes).
+- `tags: ['autodocs']` always. `layout: 'centered'` is global (preview) — don't repeat it.
+- NO Tailwind classes in stories (the React Storybook loads only tokens + the native skin) — use inline
+  styles or the component's own BEM classes for showcase layout.
+- `Playground` (controls) + at least one render-showcase minimum — add named stories for notable variants.
+- No mocks, no router — DS components are presentational. Only story-ize components already migrated to the skin.
 
 ---
 
@@ -109,8 +118,10 @@ export const Playground: Story = {
 }
 ```
 
-For the **react**/**angular** Storybooks, import the generated wrapper from
-`@fubaritico-ds/stencil/dist/{react,angular}` and follow the Design System pattern above.
+For the **react** Storybook, put generated-wrapper stories in
+`apps/storybook-react/stories/generated/<Component>.stories.tsx`, group `Generated/*`, importing the
+wrapper from `@fubaritico-ds/stencil/dist/react` and types from `@storybook/react-vite` — same pattern
+as the Design System section above. (Angular/Vue/web-component get their own per-framework apps.)
 
 **Rules**:
 

@@ -40,7 +40,9 @@ Read all files in scope. For each file, determine which reference guides apply:
 - `packages/shared/**` → architecture.md, quality.md, security.md
 - `packages/tokens/**` → architecture.md
 - `packages/styles/**` and any `*.css` → styles (BEM rules from `bem-structure` + ` audit-style`), architecture.md
-- `*.variants.ts` (CVA resolvers) → styles (class-name parity vs the skin), quality.md
+- `packages/variants/**` (CVA resolvers — the shipped home, pure TS) → styles (CVA↔skin class-name
+  parity), platform-safety (MUST stay React/DOM-free), quality.md, architecture.md
+- `*.variants.ts` (legacy/local CVA resolvers, if any) → styles (class-name parity vs the skin), quality.md
 - All `*.tsx` → accessibility.md
 - All files → quality.md, security.md
 
@@ -50,7 +52,8 @@ Launch all 7 **custom subagents** simultaneously using the Agent tool. Each suba
 in `.claude/agents/review/` and has its own system prompt with domain-specific rules.
 
 Pass each subagent the list of files in scope as user message content (file paths + content).
-Always pass `*.css` and `*.variants.ts` to **`review-styles`** (the other agents largely ignore CSS).
+Always pass `*.css`, `packages/variants/**`, and any `*.variants.ts` to **`review-styles`** (the other
+agents largely ignore CSS); also pass `packages/variants/**` to **`review-platform-safety`** (React-free check).
 
 Subagents (by `name` / `agent_type`):
 

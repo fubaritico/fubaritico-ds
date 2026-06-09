@@ -9,11 +9,13 @@ Project to generate multi UI framework base on a stencilJS architecture. The pro
 - `apps/storybook-angular` - [scaffold, no `package.json` yet] Storybook showcasing the generated Angular wrappers
 - `apps/storybook-vuejs` - [scaffold, no `package.json` yet] Storybook showcasing the generated Vue wrappers
 - `packages/reference` - React/Tailwind design-system components used as a **reference / guide only — NOT a deliverable**. It exists to give ready-made example components that help build the real DS (like the sibling example repos). It is a sandbox to port from / validate approaches in; it may be **deleted once the work is finished**, or kept. Never treat it as a shipped package (e.g. don't permanently wire skin re-export, CI deploy, or public API guarantees around it).
-- `packages/shared` - shared utils, test-utils, browser mocks, Tailwind theme + fonts, vite plugins
+- `packages/shared` - shared utils, test-utils, browser mocks, Tailwind theme + fonts, vite plugins (React-flavored)
 - `packages/stencil` - the **Stencil sandbox**: one Web Component project producing native WC + generated React/Angular wrappers (see its `README.md` + `PLAN.md`)
+- `packages/styles` - `@fubaritico-ds/styles` — portable native **BEM skin** (CSS-only, `@layer` + `--ui-*` component vars), fed by tokens. The shipped skin.
 - `packages/tokens` - design tokens (Style Dictionary, OKLCH, DTCG) → generated CSS/JS/TS/Tailwind
+- `packages/variants` - `@fubaritico-ds/variants` — **framework-agnostic CVA resolvers** (pure TS, no React/DOM; dep `class-variance-authority` only) emitting the skin's BEM class names. Reused by reference + Stencil/Angular/Vue. **The home for variant→class logic** (decided over `shared`/`styles`).
 
-Only these 4 packages exist today; the `apps/storybook-*` are empty scaffolds. [TODO] update as packages/apps are added.
+These **6 packages** exist today; the `apps/storybook-*` are empty scaffolds. [TODO] update as packages/apps are added.
 
 ## Your role
 
@@ -112,19 +114,32 @@ Read @completed.md
 
 Primary working branch is **`main`** (pushed to `origin` = fubaritico/fubaritico-ds; CI green).
 Active thread: **white-label native-CSS design system** (BEM + CVA + tokens + `@layer`).
-Plan: `files/plans/badge-spike-native-css.md`. Memory: `white-label-native-css`,
-`project-goal-stencil-discovery`, `monorepo-orchestration`.
+Plan: `files/plans/native-css-migration.md`. Memory: `native-css-migration-backlog`,
+`white-label-native-css`, `project-goal-stencil-discovery`, `monorepo-orchestration`.
 
-1. **Promote `badgeVariants` `reference` → `@fubaritico-ds/shared`** (cross-framework CVA resolver —
-   review-flagged priority). `reference` is a non-deliverable, so the resolver must live in a shipped package.
-2. **Extend the native-CSS migration** to the next component (e.g. Button): `styles` partial + CVA + BEM
-   tests; optionally scaffold `apps/storybook-web-component` (visual harness #2).
+**DONE this session** (commits `b487b4c`, `01e6b63`): CVA resolver promoted out of `reference` into a
+NEW dedicated package **`@fubaritico-ds/variants`** (NOT `shared` — see decision below); Badge migrated
+onto it; `@fubaritico-ds/*` enforced as an `internal` import group in eslint.
+
+Workflow locked with the dev — do these in order:
+
+1. **Migrate the EXISTING `reference` primitives onto the Badge pattern**, one commit per component,
+   **web-only** (strip Tailwind `ui:` → BEM in `styles` + CVA resolver in `variants` where there are
+   variants + 5-level BEM tests). "The pattern" = **Badge itself**. Scope = **DS primitives only**
+   (TMDB composites HeroImage/MovieCard/Talent/TrailerCard are EXCLUDED — not migrated).
+   Suggested order: atoms (Button → Typography → Spinner/Skeleton → Avatar → Icon/IconButton → Card)
+   → molecules (Input, Rating, Image) → compounds (Tabs, Menu, Listbox, Drawer, Modal, Carousel, Typeahead).
+2. **Then** the dev hands over NEW components to copy in, **one-by-one**, adapted web-only:
+   Alert · DataTable · BottomSheet · Checkbox · DatePicker · Dropdown · Pagination · ProgressBar · Tooltip
+   \+ a new **`icons`** package to adapt. (See `native-css-migration-backlog` memory.)
 3. **Finish Stencil setup** (PLAN step 5: `src/global/ui-stencil.css`, green `stencil build`), then wire
    stencil into `build:packages` and converge its `globalStyle` onto the `styles` partials.
-4. Eventually: full Tailwind removal from `reference` (Phase 3).
 
 Decisions locked: **Lerna + Nx** (no Turbo). `reference` = guide/sandbox, **NOT a deliverable**.
 Skin = `@fubaritico-ds/styles` (BEM `@layer` + `--ui-*` component vars); theme/override API = tokens vars.
+**CVA variant resolvers live in `@fubaritico-ds/variants`** (dedicated pure-TS package) — decided AGAINST
+`shared` (React grab-bag) and against a `styles` JS-entry; rationale: variants are shared across frameworks
+(React/WC/Angular/Vue) and must stay React/DOM-free. Migration is **web-only** (no `.native`/react-native/NativeWind).
 
 ### Known Issues
 

@@ -18,7 +18,9 @@ Prepare and propose a conventional commit for the current changes.
    - `packages/reference` → scope `reference` (or `ui`)
    - `packages/shared` → scope `shared`
    - `packages/stencil` → scope `stencil`
+   - `packages/styles` → scope `styles`
    - `packages/tokens` → scope `tokens`
+   - `packages/variants` → scope `variants`
    - root / monorepo config → scope `repo`
    - Multiple packages → use the most impacted scope
 4. Generate a conventional commit message

@@ -20,3 +20,21 @@ Put here the completed tasks and plans to avoid cluttering the context window.
 - Added BEM skills (`bem-structure`, ` audit-style`); cleaned `settings.local.json` (removed obsolete RN/Expo skills + context7); refined `CLAUDE.md` rules (plans in `files/plans/`, challenge-by-default, push allowed).
 - All green: `type-check && lint && test && build:packages`. Plan: `files/plans/badge-spike-native-css.md`.
 - **Decision locked**: `packages/reference` is a **guide/sandbox, NOT a deliverable** (may be deleted at the end). Real deliverables = framework packages consuming `@fubaritico-ds/{tokens,styles}`.
+
+### 2026-06-09 — CVA resolver package `@fubaritico-ds/variants` + import group
+
+- **New package `packages/variants`** (`@fubaritico-ds/variants`): framework-agnostic CVA resolvers
+  (pure TS, no React/DOM, dep `class-variance-authority` only) emitting the skin's BEM classes.
+  Home for variant→class logic — **decided over `shared`** (React grab-bag) **and over a `styles`
+  JS-entry** (keeps `styles` CSS-only), after challenging the dev twice. Rationale: variants are
+  reused across React/WC/Angular/Vue and must stay React-free. tsconfig (type-check) + tsconfig.build
+  (emit, excludes tests) + vitest (node) + scoped eslint override. Commit `b487b4c`.
+- **Badge migrated** off `reference`-local `Badge.variants.ts` onto `@fubaritico-ds/variants`
+  (`badgeVariants` + `BADGE_ICON_CLASS`); `class-variance-authority` dropped from `reference` deps.
+  13 resolver tests (5-level). `architecture.md` documents 6 packages + `variants → reference` order.
+- **eslint `@fubaritico-ds/*` import group** (commit `01e6b63`): `import/order` pathGroup
+  (`group: internal`, `pathGroupsExcludedImportTypes: ['builtin','type']` keeps `import type` last);
+  6 reference files auto-reordered. Makes the documented import convention actually enforced.
+- **Plan**: `files/plans/native-css-migration.md`. **Memory**: `native-css-migration-backlog`.
+- **Workflow locked**: migrate EXISTING reference primitives onto the Badge pattern first (web-only,
+  primitives only, one commit each) → THEN copy in 9 new components one-by-one (+ `icons` package).
