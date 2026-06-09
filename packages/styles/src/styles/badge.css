@@ -16,6 +16,7 @@
     --ui-badge-fg: var(--color-primary-foreground);
     --ui-badge-border-color: transparent;
     --ui-badge-radius: var(--radius-full);
+    --ui-badge-font-family: var(--font-inter);
     --ui-badge-font-weight: var(--font-weight-medium);
     --ui-badge-font-size: var(--font-size-sm);
     --ui-badge-line-height: var(--font-lineHeight-tight);
@@ -33,6 +34,7 @@
     gap: var(--ui-badge-gap);
     border: 1px solid var(--ui-badge-border-color);
     border-radius: var(--ui-badge-radius);
+    font-family: var(--ui-badge-font-family);
     font-weight: var(--ui-badge-font-weight);
     font-size: var(--ui-badge-font-size);
     line-height: var(--ui-badge-line-height);
