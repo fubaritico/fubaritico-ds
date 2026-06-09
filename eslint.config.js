@@ -168,5 +168,18 @@ export default tseslint.config(
       'react-refresh/only-export-components': 'off',
       'react/no-unknown-property': 'off',
     },
+  },
+
+  // Variants package — framework-agnostic CVA resolvers (pure TS, no React/JSX). Scoped project so the
+  // typed parser uses this package's own tsconfig instead of iterating the (empty-src) stencil tsconfig
+  // matched by the base `./packages/*/tsconfig.json` glob, which would otherwise throw TS18003.
+  {
+    files: ['packages/variants/**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        project: ['./packages/variants/tsconfig.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
   }
 )

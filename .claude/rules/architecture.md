@@ -42,10 +42,14 @@ packages/
 │   ├── vitest.config.ts (minimal now; full @stencil/vitest at step 6 — see PLAN.md)
 │   ├── src/global/ui-stencil.css, src/components/ui-*/   → tag prefix `ui-`
 │   └── dist/{components,react,angular} — generated artefacts to compare (not installable yet)
-└── tokens/       @fubaritico-ds/tokens — Style Dictionary → dist/{css,js,ts,tailwind}
+├── styles/       @fubaritico-ds/styles — portable native BEM skin (CSS-only, @layer + --ui-* vars)
+│   └── src/native-styles.css + src/styles/<component>.css → dist/styles.css (PostCSS)
+├── tokens/       @fubaritico-ds/tokens — Style Dictionary → dist/{css,js,ts,tailwind}
+└── variants/     @fubaritico-ds/variants — framework-agnostic CVA resolvers (pure BEM class
+    └── src/<component>.ts → dist (tsc); no React/DOM; dep: class-variance-authority only
 ```
 
-Only these **4 packages** exist. `apps/storybook-*` are placeholders.
+These **6 packages** exist. `apps/storybook-*` are placeholders.
 
 ## Monorepo Orchestration (Lerna + Nx)
 
@@ -62,7 +66,8 @@ pnpm dev          # lerna run --parallel --stream dev
 - `nx.json` `targetDefaults`: `build`/`type-check`/`test` have `dependsOn: ['^build']` so dependencies
   are built first (cross-package types come from `dist/*.d.ts` — there are no tsconfig `paths` to source).
   `build` declares `outputs: ['{projectRoot}/dist']`.
-- Dependency order: **tokens → shared → reference**; **stencil** is independent.
+- Dependency order: **tokens → shared → reference**; **variants → reference** (variants depends on
+  no internal package — only `class-variance-authority`); **stencil** and **styles** (CSS-only) are independent.
 - `lerna.json`: `version: independent`, `npmClient: pnpm`.
 - Nx cache lives in `.nx/` (gitignored).
 - **TODO (planned): migrate Lerna → Turbo.**

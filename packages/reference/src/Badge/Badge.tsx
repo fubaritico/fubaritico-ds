@@ -1,11 +1,10 @@
+import { BADGE_ICON_CLASS, badgeVariants } from '@fubaritico-ds/variants'
 import clsx from 'clsx'
 
 import { Icon } from '../Icon'
 
-import { badgeVariants } from './Badge.variants'
-
-import type { BadgeSize, BadgeVariant } from './Badge.variants'
 import type { IconName } from '../Icon'
+import type { BadgeSize, BadgeVariant } from '@fubaritico-ds/variants'
 import type { ComponentProps } from 'react'
 
 export type { BadgeSize, BadgeVariant }
@@ -44,7 +43,7 @@ export function Badge({
       {...rest}
     >
       {icon && (
-        <Icon name={icon} size={BADGE_ICON_SIZE} className="ui-badge__icon" />
+        <Icon name={icon} size={BADGE_ICON_SIZE} className={BADGE_ICON_CLASS} />
       )}
       {children}
     </span>
