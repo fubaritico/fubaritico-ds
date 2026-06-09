@@ -87,7 +87,7 @@ export { Portal } from './Portal'
 export type { PortalProps } from './Portal'
 
 export { Spinner } from './Spinner'
-export type { SpinnerProps } from './Spinner'
+export type { SpinnerProps, SpinnerSize } from './Spinner'
 
 export { Typeahead } from './Typeahead'
 export type {

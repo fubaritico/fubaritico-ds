@@ -1,0 +1,73 @@
+/**
+ * Spinner — native BEM skin.
+ *
+ * A headless loading indicator: the ring inherits `currentColor`, so dropped into any context it
+ * takes the surrounding text colour (override with `color` or the component vars below).
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-spinner-*` vars on `.ui-spinner` (surgical re-skin).
+ *   2. Redefine a global token (e.g. `--color-primary`) and set `--ui-spinner-indicator` to it.
+ *   3. Write any plain selector (e.g. `.ui-spinner { ... }`): being unlayered, it beats this
+ *      layered skin with no specificity war.
+ *
+ * Sizes come from @fubaritico-ds/tokens spacing scale; the ring thickness is a literal per size
+ * (no border-width token exists). `md` is the base — the CVA resolver emits no modifier for it.
+ */
+@layer ui.components {
+  /* Keyframes live in the same layer as the rule that consumes them. */
+  @keyframes ui-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .ui-spinner {
+    /* ---- override API (component-scoped) ---- */
+    --ui-spinner-size: var(
+      --spacing-12
+    ); /* 3rem — matches the legacy size-12 default */
+    --ui-spinner-thickness: 4px;
+    --ui-spinner-radius: var(--radius-full);
+    --ui-spinner-indicator: currentColor;
+    /* Track = a faint tint of the indicator colour, so it always follows the indicator
+       (set `--ui-spinner-indicator` and the track re-tints for free). */
+    --ui-spinner-track: color-mix(
+      in srgb,
+      var(--ui-spinner-indicator) 20%,
+      transparent
+    );
+    --ui-spinner-duration: 1s; /* one full rotation; no motion-duration token fits a full spin */
+
+    /* ---- base ---- */
+    /* Self-sufficient box model: the skin survives in hosts with no reset (the DS ships none). */
+    box-sizing: border-box;
+    display: inline-block;
+    inline-size: var(--ui-spinner-size);
+    block-size: var(--ui-spinner-size);
+    border: var(--ui-spinner-thickness) solid var(--ui-spinner-track);
+    border-block-start-color: var(--ui-spinner-indicator);
+    border-radius: var(--ui-spinner-radius);
+    animation: ui-spin var(--ui-spinner-duration) linear infinite;
+  }
+
+  /* ---- size modifiers ---- */
+  .ui-spinner--sm {
+    --ui-spinner-size: var(--spacing-6); /* 1.5rem */
+    --ui-spinner-thickness: 2px;
+  }
+
+  /* `md` is the default size (base) — the CVA resolver emits '' for it, so no `.ui-spinner--md` rule. */
+
+  .ui-spinner--lg {
+    --ui-spinner-size: var(--spacing-16); /* 4rem */
+    --ui-spinner-thickness: 6px;
+  }
+
+  /* ---- reduced motion ---- */
+  /* The spin is the only loading affordance, so we keep it but slow it right down. */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-spinner {
+      --ui-spinner-duration: 2s;
+    }
+  }
+}
