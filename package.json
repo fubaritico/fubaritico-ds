@@ -7,6 +7,8 @@
     "build": "lerna run build",
     "build:packages": "lerna run build --ignore @fubaritico-ds/stencil",
     "dev": "lerna run --parallel --stream dev",
+    "storybook:ref": "pnpm --filter @fubaritico-ds/storybook-react storybook",
+    "build-storybook:ref": "pnpm --filter @fubaritico-ds/storybook-react build-storybook",
     "type-check": "lerna run type-check",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint:fix",
