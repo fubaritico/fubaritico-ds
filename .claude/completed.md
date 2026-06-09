@@ -11,6 +11,28 @@ Put here the completed tasks and plans to avoid cluttering the context window.
 - SonarCloud project initialized (key `fubaritico-ds`, org `fubaritico`); `sonar-init` ran green; sonar now active in CI.
 - `nx.json`: `lint`/`coverage` added to `targetDefaults` (`dependsOn: ['^build']`). Coverage v8 + lcov on shared/reference/stencil.
 
+### 2026-06-09 — Button + Typography migrated; component-README doc rule
+
+- **Button** migrated to the native skin and split into Button / LinkButton / NextLinkButton
+  (commit `532cb3c`) — LinkButton keeps `react-router-dom` as a routing **adapter** (presentational
+  primitive `Button` stays framework-free).
+- **TMDB MovieCard composites removed** (base + `next/` + `react-router/` dirs) + dropped the
+  `./react-router` package export (`5953964`) — out of migration scope, infra-named dirs.
+- **Typography** migrated to the native skin: BEM `.ui-typography` skin (`@layer`, logical props),
+  `typographyVariants` CVA resolver, semantic `--typography-*` token scale (fluid headings via
+  `clamp`, fixed body roles), `font.letterSpacing` tokens (`e1b3ba8`). 5-level tests + story.
+- **/review** ran on the migration → 1 fix applied: `ComponentProps` (ref-as-prop) instead of
+  `ComponentPropsWithoutRef` (`f27d34b`). Discarded false positives (import-order — lint is green;
+  STYLE-008 `--ui-*` layer — tokens already are the override surface; STYLE-011 left/right — MUI
+  parity, physical on purpose).
+- **`label` variant fix** (`5d3ae53`): renders a `<span>` (was an orphan `<label>`, WCAG 1.3.1); a
+  real form label is an explicit opt-in via `as="label"` with **`htmlFor` required at compile time**.
+- **New rule — every component ships a co-located `README.md`** usage doc (`.claude/rules/component-docs.md`):
+  structured like a DS site page (identity, capabilities, import, basic/variants/edge examples, props,
+  a11y, consumer-facing **Notes** for gotchas/misuse). Wired into `new-react-component` (scaffold) +
+  `review` (Step 2b presence check). First applied to Typography (`c8f18e7`). CLAUDE.md workflow rule
+  tightened: confirm the approach ONCE, then execute the whole block without re-asking.
+
 ### 2026-06-08/09 — White-label native-CSS pivot + Badge spike
 
 - **New `packages/styles`** (`@fubaritico-ds/styles`, CSS-only): portable native **BEM skin** in `@layer ui.components`, **component-scoped `--ui-*` variables** for override, PostCSS bundle (import+nested+autoprefixer+minify) → `dist/styles.css`. peerDep on tokens.

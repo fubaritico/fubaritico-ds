@@ -138,9 +138,13 @@ Active thread: **white-label native-CSS design system** (BEM + CVA + tokens + `@
 Plan: `files/plans/native-css-migration.md`. Memory: `native-css-migration-backlog`,
 `white-label-native-css`, `project-goal-stencil-discovery`, `monorepo-orchestration`.
 
-**DONE this session** (commits `b487b4c`, `01e6b63`): CVA resolver promoted out of `reference` into a
-NEW dedicated package **`@fubaritico-ds/variants`** (NOT `shared` — see decision below); Badge migrated
-onto it; `@fubaritico-ds/*` enforced as an `internal` import group in eslint.
+**DONE so far**: Badge, **Button** (split Button/LinkButton/NextLinkButton), **Typography** migrated
+onto the native skin. TMDB MovieCard composites removed. New rule: every component ships a co-located
+`README.md` usage doc (`.claude/rules/component-docs.md`) — enforced in `new-react-component` + `review`.
+
+**NEXT step (most actionable): migrate `Spinner` / `Skeleton`** onto the Badge pattern (web-only: BEM
+in `styles` + CVA resolver in `variants` if variants + 5-level tests + story + **co-located README.md**),
+one commit each. Then continue the atom order: Avatar → Icon/IconButton → Card.
 
 Workflow locked with the dev — do these in order:
 
