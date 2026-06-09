@@ -1,0 +1,77 @@
+{
+  "typography": {
+    "$description": "Semantic typography scale — per-variant size/weight/line-height. Headings are fluid (clamp between two scale steps); body/supporting roles are fixed. Neutral + semantic (maps 1:1 to the rendered element). No color (inherited from the parent).",
+    "h1": {
+      "size": {
+        "$value": "clamp({font.size.2xl}, 1rem + 2.5vw, {font.size.5xl})",
+        "$type": "dimension"
+      },
+      "weight": { "$value": "{font.weight.bold}", "$type": "fontWeight" },
+      "lineHeight": { "$value": "{font.lineHeight.tight}", "$type": "number" }
+    },
+    "h2": {
+      "size": {
+        "$value": "clamp({font.size.xl}, 0.9rem + 1.8vw, {font.size.4xl})",
+        "$type": "dimension"
+      },
+      "weight": { "$value": "{font.weight.bold}", "$type": "fontWeight" },
+      "lineHeight": { "$value": "{font.lineHeight.tight}", "$type": "number" }
+    },
+    "h3": {
+      "size": {
+        "$value": "clamp({font.size.lg}, 0.95rem + 0.9vw, {font.size.3xl})",
+        "$type": "dimension"
+      },
+      "weight": { "$value": "{font.weight.semibold}", "$type": "fontWeight" },
+      "lineHeight": { "$value": "{font.lineHeight.snug}", "$type": "number" }
+    },
+    "h4": {
+      "size": {
+        "$value": "clamp({font.size.base}, 0.9rem + 0.5vw, {font.size.2xl})",
+        "$type": "dimension"
+      },
+      "weight": { "$value": "{font.weight.semibold}", "$type": "fontWeight" },
+      "lineHeight": { "$value": "{font.lineHeight.snug}", "$type": "number" }
+    },
+    "h5": {
+      "size": {
+        "$value": "clamp({font.size.sm}, 0.83rem + 0.22vw, {font.size.xl})",
+        "$type": "dimension"
+      },
+      "weight": { "$value": "{font.weight.medium}", "$type": "fontWeight" },
+      "lineHeight": { "$value": "{font.lineHeight.normal}", "$type": "number" }
+    },
+    "h6": {
+      "size": {
+        "$value": "clamp({font.size.sm}, 0.85rem + 0.13vw, {font.size.lg})",
+        "$type": "dimension"
+      },
+      "weight": { "$value": "{font.weight.medium}", "$type": "fontWeight" },
+      "lineHeight": { "$value": "{font.lineHeight.normal}", "$type": "number" }
+    },
+    "body": {
+      "size": { "$value": "{font.size.base}", "$type": "dimension" },
+      "weight": { "$value": "{font.weight.normal}", "$type": "fontWeight" },
+      "lineHeight": { "$value": "{font.lineHeight.relaxed}", "$type": "number" }
+    },
+    "caption": {
+      "size": { "$value": "{font.size.xs}", "$type": "dimension" },
+      "weight": { "$value": "{font.weight.normal}", "$type": "fontWeight" },
+      "lineHeight": { "$value": "{font.lineHeight.normal}", "$type": "number" }
+    },
+    "overline": {
+      "size": { "$value": "{font.size.xs}", "$type": "dimension" },
+      "weight": { "$value": "{font.weight.semibold}", "$type": "fontWeight" },
+      "lineHeight": { "$value": "{font.lineHeight.normal}", "$type": "number" },
+      "letterSpacing": {
+        "$value": "{font.letterSpacing.wider}",
+        "$type": "dimension"
+      }
+    },
+    "label": {
+      "size": { "$value": "{font.size.sm}", "$type": "dimension" },
+      "weight": { "$value": "{font.weight.medium}", "$type": "fontWeight" },
+      "lineHeight": { "$value": "{font.lineHeight.normal}", "$type": "number" }
+    }
+  }
+}

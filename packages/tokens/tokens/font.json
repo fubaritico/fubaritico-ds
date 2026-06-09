@@ -1,8 +1,17 @@
 {
   "font": {
-    "roboto": { "$value": "'Roboto', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'", "$type": "fontFamily" },
-    "roboto-condensed": { "$value": "'Roboto Condensed', 'Roboto', ui-sans-serif, system-ui, sans-serif", "$type": "fontFamily" },
-    "inter": { "$value": "'Inter', 'Roboto', ui-sans-serif, system-ui, sans-serif", "$type": "fontFamily" },
+    "roboto": {
+      "$value": "'Roboto', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+      "$type": "fontFamily"
+    },
+    "roboto-condensed": {
+      "$value": "'Roboto Condensed', 'Roboto', ui-sans-serif, system-ui, sans-serif",
+      "$type": "fontFamily"
+    },
+    "inter": {
+      "$value": "'Inter', 'Roboto', ui-sans-serif, system-ui, sans-serif",
+      "$type": "fontFamily"
+    },
     "size": {
       "$description": "Font size scale",
       "xs": { "$value": "0.75rem", "$type": "dimension" },
@@ -39,6 +48,14 @@
       "normal": { "$value": "1.5", "$type": "number" },
       "relaxed": { "$value": "1.625", "$type": "number" },
       "loose": { "$value": "2", "$type": "number" }
+    },
+    "letterSpacing": {
+      "$description": "Letter spacing scale",
+      "tight": { "$value": "-0.025em", "$type": "dimension" },
+      "normal": { "$value": "0", "$type": "dimension" },
+      "wide": { "$value": "0.025em", "$type": "dimension" },
+      "wider": { "$value": "0.05em", "$type": "dimension" },
+      "widest": { "$value": "0.1em", "$type": "dimension" }
     }
   }
 }
