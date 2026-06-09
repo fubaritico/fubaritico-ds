@@ -10,8 +10,10 @@
  *   3. Write any plain selector (e.g. `.ui-spinner { ... }`): being unlayered, it beats this
  *      layered skin with no specificity war.
  *
- * Sizes come from @fubaritico-ds/tokens spacing scale; the ring thickness is a literal per size
- * (no border-width token exists). `md` is the base — the CVA resolver emits no modifier for it.
+ * Sizes come from @fubaritico-ds/tokens spacing scale; the ring thickness is derived from the size
+ * (≈12.5% of the diameter) so it scales automatically — bigger spinner, thicker ring — and the size
+ * modifiers only need to set `--ui-spinner-size`. `md` is the base — the CVA resolver emits no
+ * modifier for it.
  */
 @layer ui.components {
   /* Keyframes live in the same layer as the rule that consumes them. */
@@ -26,7 +28,8 @@
     --ui-spinner-size: var(
       --spacing-12
     ); /* 3rem — matches the legacy size-12 default */
-    --ui-spinner-thickness: 4px;
+    /* Thickness tracks the diameter (≈12.5%) so it scales with every size automatically. */
+    --ui-spinner-thickness: calc(var(--ui-spinner-size) / 8);
     --ui-spinner-radius: var(--radius-full);
     --ui-spinner-indicator: currentColor;
     /* Track = a faint tint of the indicator colour, so it always follows the indicator
@@ -50,17 +53,15 @@
     animation: ui-spin var(--ui-spinner-duration) linear infinite;
   }
 
-  /* ---- size modifiers ---- */
+  /* ---- size modifiers (thickness follows size via the calc above) ---- */
   .ui-spinner--sm {
-    --ui-spinner-size: var(--spacing-6); /* 1.5rem */
-    --ui-spinner-thickness: 2px;
+    --ui-spinner-size: var(--spacing-6); /* 1.5rem → ~3px ring */
   }
 
   /* `md` is the default size (base) — the CVA resolver emits '' for it, so no `.ui-spinner--md` rule. */
 
   .ui-spinner--lg {
-    --ui-spinner-size: var(--spacing-16); /* 4rem */
-    --ui-spinner-thickness: 6px;
+    --ui-spinner-size: var(--spacing-16); /* 4rem → ~8px ring */
   }
 
   /* ---- reduced motion ---- */
