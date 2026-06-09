@@ -2,6 +2,28 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-06-10 — Spinner migrated + doc-debt backfill + storybook-state fix
+
+- **Doc debt cleared** for the already-migrated Button family: co-located `README.md` added for
+  **Button** + **Badge** (`c76e217`), then **LinkButton** + **NextLinkButton** (`2c414a7`). Rule
+  refined with the dev: the README is **post-migration** — written once a component is migrated, whatever
+  it is. `IconButton`'s README is therefore deferred until IconButton itself is migrated (still Tailwind).
+- **Spinner migrated** to the native skin (`77262f5`), **now with `sm`/`md`/`lg` sizes** (dev request,
+  like Button): `.ui-spinner` BEM skin (`@layer`, `--ui-spinner-*` override vars, headless
+  `currentColor` ring, logical props, `@keyframes` inside the layer, `prefers-reduced-motion` slows the
+  spin), `spinnerVariants` CVA resolver (md = base), `Spinner` extends `ComponentProps<'div'>` with an
+  overridable `aria-label` + `role="status"`. 5-level tests (component + resolver), co-located README,
+  stale Tailwind snapshot dropped. Story added under `Reference/Spinner` (`a0a6c2b`).
+- **/review** ran → verdict `ready`. 4 fixes applied (export `SpinnerSize` from the barrel +
+  `Spinner/index.ts`; `--ui-spinner-radius` var for Badge parity; track derived from
+  `--ui-spinner-indicator`; keyframes moved inside `@layer`). Discarded false-positives: JSDoc/`Readonly<>`
+  findings that contradict the validated Badge pattern; reduced-motion "stop" (a spinner is _essential_
+  motion, WCAG-exempt); border-width tokenisation (deliberate literal, Badge precedent).
+- **Stale docs corrected** (`61efd07`): CLAUDE.md + `architecture.md` wrongly listed every
+  `apps/storybook-*` as an empty scaffold — **`storybook-react` is set up** (Storybook 10 + React-Vite,
+  stories in `apps/storybook-react/stories/reference/*.stories.tsx`, preview loads tokens + skin, run via
+  `pnpm storybook:ref`). Only `angular`/`vuejs`/`web-component` remain empty scaffolds.
+
 ### 2026-06-07 — CI + git remote
 
 - **git remote created**: `origin` = https://github.com/fubaritico/fubaritico-ds (public, org `fubaritico`), `main` pushed. Needed `gh auth refresh -s workflow` + `gh auth setup-git`.

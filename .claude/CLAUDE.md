@@ -140,13 +140,18 @@ Active thread: **white-label native-CSS design system** (BEM + CVA + tokens + `@
 Plan: `files/plans/native-css-migration.md`. Memory: `native-css-migration-backlog`,
 `white-label-native-css`, `project-goal-stencil-discovery`, `monorepo-orchestration`.
 
-**DONE so far**: Badge, **Button** (split Button/LinkButton/NextLinkButton), **Typography** migrated
-onto the native skin. TMDB MovieCard composites removed. New rule: every component ships a co-located
-`README.md` usage doc (`.claude/rules/component-docs.md`) — enforced in `new-react-component` + `review`.
+**DONE so far**: Badge, **Button** (split Button/LinkButton/NextLinkButton), **Typography**, **Spinner**
+(with `sm`/`md`/`lg` sizes) migrated onto the native skin. TMDB MovieCard composites removed. Rule: every
+component ships a co-located `README.md` usage doc (`.claude/rules/component-docs.md`, written
+**post-migration**) — enforced in `new-react-component` + `review`. README doc-debt backfilled for
+Button/Badge/LinkButton/NextLinkButton. Each migrated component also ships a Storybook story under
+`Reference/*` in `apps/storybook-react` (set up; run `pnpm storybook:ref`).
 
-**NEXT step (most actionable): migrate `Spinner` / `Skeleton`** onto the Badge pattern (web-only: BEM
-in `styles` + CVA resolver in `variants` if variants + 5-level tests + story + **co-located README.md**),
-one commit each. Then continue the atom order: Avatar → Icon/IconButton → Card.
+**NEXT step (most actionable): migrate `Skeleton`** onto the Badge pattern (web-only: BEM in `styles` +
+CVA resolver in `variants` for its `rectangle`/`circle`/`line` shape variants + 5-level tests + story +
+**co-located README.md**). NB: the shimmer keyframes currently live in `packages/reference/src/styles.css`
+(`.ui-skeleton-shimmer::before`) and must be ported into the skin. Then continue the atom order:
+Avatar → Icon/IconButton → Card.
 
 Workflow locked with the dev — do these in order:
 
