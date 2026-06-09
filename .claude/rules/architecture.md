@@ -24,11 +24,12 @@
 ## Project Structure
 
 ```
-apps/                       # empty scaffolds — no package.json yet
-├── storybook-web-component/
-├── storybook-react/
-├── storybook-angular/
-└── storybook-vuejs/
+apps/
+├── storybook-react/         # SET UP — Storybook 10 + React-Vite; stories in stories/reference/*.stories.tsx
+│                            #   (NOT co-located); preview loads tokens + native skin; run `pnpm storybook:ref`
+├── storybook-web-component/ # empty scaffold — no package.json yet
+├── storybook-angular/       # empty scaffold — no package.json yet
+└── storybook-vuejs/         # empty scaffold — no package.json yet
 
 packages/
 ├── reference/    @fubaritico-ds/reference — React/Tailwind DS components (the port source)
@@ -49,7 +50,8 @@ packages/
     └── src/<component>.ts → dist (tsc); no React/DOM; dep: class-variance-authority only
 ```
 
-These **6 packages** exist. `apps/storybook-*` are placeholders.
+These **6 packages** exist. `apps/storybook-react` is set up and wired (consumes
+`reference` + `styles` + `tokens`); the other three `apps/storybook-*` are still placeholders.
 
 ## Monorepo Orchestration (Lerna + Nx)
 

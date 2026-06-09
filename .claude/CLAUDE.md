@@ -4,8 +4,8 @@
 
 Project to generate multi UI framework base on a stencilJS architecture. The project will be a tool to produce design system packages targeted for native web components, React, Angular and Vue. The component will visible in their respective storybook application.
 
+- `apps/storybook-react` - **set up** (`@fubaritico-ds/storybook-react`, Storybook 10 + React-Vite). Showcases the migrated `reference` components under `Reference/*`; stories live IN the app at `stories/reference/*.stories.tsx` (NOT co-located); preview loads tokens + the native skin. Run via root `pnpm storybook:ref`. The Stencil-generated React wrappers will go under `Generated/*` later.
 - `apps/storybook-web-component` - [scaffold, no `package.json` yet] Storybook showcasing the generated native Web Components
-- `apps/storybook-react` - [scaffold, no `package.json` yet] Storybook showcasing the generated React wrappers
 - `apps/storybook-angular` - [scaffold, no `package.json` yet] Storybook showcasing the generated Angular wrappers
 - `apps/storybook-vuejs` - [scaffold, no `package.json` yet] Storybook showcasing the generated Vue wrappers
 - `packages/reference` - React/Tailwind design-system components used as a **reference / guide only — NOT a deliverable**. It exists to give ready-made example components that help build the real DS (like the sibling example repos). It is a sandbox to port from / validate approaches in; it may be **deleted once the work is finished**, or kept. Never treat it as a shipped package (e.g. don't permanently wire skin re-export, CI deploy, or public API guarantees around it).
@@ -15,7 +15,9 @@ Project to generate multi UI framework base on a stencilJS architecture. The pro
 - `packages/tokens` - design tokens (Style Dictionary, OKLCH, DTCG) → generated CSS/JS/TS/Tailwind
 - `packages/variants` - `@fubaritico-ds/variants` — **framework-agnostic CVA resolvers** (pure TS, no React/DOM; dep `class-variance-authority` only) emitting the skin's BEM class names. Reused by reference + Stencil/Angular/Vue. **The home for variant→class logic** (decided over `shared`/`styles`).
 
-These **6 packages** exist today; the `apps/storybook-*` are empty scaffolds. [TODO] update as packages/apps are added.
+These **6 packages** exist today. `apps/storybook-react` is set up and wired; the other three
+(`storybook-web-component`, `storybook-angular`, `storybook-vuejs`) are still empty scaffolds.
+[TODO] update as packages/apps are added.
 
 ## Your role
 
