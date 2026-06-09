@@ -1,4 +1,7 @@
-import { Badge } from '@fubaritico-ds/reference'
+// Import from the per-component subpath (CSS-free), NOT the package barrel
+// (`@fubaritico-ds/reference`) whose `import './styles.css'` side-effect pulls Tailwind preflight
+// into the skin-based Storybook and strips the skin's box-model. See the /story skill.
+import { Badge } from '@fubaritico-ds/reference/Badge'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
@@ -36,27 +39,22 @@ type Story = StoryObj<typeof meta>
 /** Interactive playground driven by the controls panel. */
 export const Playground: Story = {}
 
-/** All visual variants side by side. */
-export const Variants: Story = {
+/** Every case (all variants + all sizes) in one view; controls disabled. */
+export const Showcase: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
-    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-      <Badge variant="default">Default</Badge>
-      <Badge variant="secondary">Secondary</Badge>
-      <Badge variant="outline">Outline</Badge>
-      <Badge variant="destructive">Destructive</Badge>
-    </div>
-  ),
-}
-
-/** All sizes side by side. */
-export const Sizes: Story = {
-  parameters: { controls: { disable: true } },
-  render: () => (
-    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-      <Badge size="sm">Small</Badge>
-      <Badge size="md">Medium</Badge>
-      <Badge size="lg">Large</Badge>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <Badge variant="default">Default</Badge>
+        <Badge variant="secondary">Secondary</Badge>
+        <Badge variant="outline">Outline</Badge>
+        <Badge variant="destructive">Destructive</Badge>
+      </div>
+      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <Badge size="sm">Small</Badge>
+        <Badge size="md">Medium</Badge>
+        <Badge size="lg">Large</Badge>
+      </div>
     </div>
   ),
 }

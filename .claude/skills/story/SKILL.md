@@ -22,20 +22,30 @@ Reference: @.claude/rules/patterns-ui.md
 ## Design System component → `apps/storybook-react` (Storybook 10)
 
 Stories live **IN the app**, NOT co-located:
-`apps/storybook-react/stories/reference/<Component>.stories.tsx`, importing the built component from
-`@fubaritico-ds/reference`. Group under **`Reference/*`** (the Stencil-generated React wrappers go under
-`Generated/*` later). `layout: 'centered'` AND the native skin (tokens + `@fubaritico-ds/styles`) are
-set **globally** in `.storybook/preview.ts` — do NOT repeat `layout` per meta, and do NOT use Tailwind.
+`apps/storybook-react/stories/reference/<Component>.stories.tsx`. Group under **`Reference/*`** (the
+Stencil-generated React wrappers go under `Generated/*` later). `layout: 'centered'` AND the native skin
+(tokens + `@fubaritico-ds/styles`) are set **globally** in `.storybook/preview.ts` — do NOT repeat
+`layout` per meta, and do NOT use Tailwind.
+
+**CRITICAL — import from the CSS-free subpath, NOT the barrel.** `@fubaritico-ds/reference` (barrel) runs
+`import './styles.css'` (= `@import "tailwindcss"`), which injects Tailwind **preflight** (a global
+`* { padding:0; margin:0 }` reset) into the skin-based Storybook and **strips the skin's box-model**
+(layers ignore specificity → the reset wins). Import the per-component subpath
+`@fubaritico-ds/reference/<Component>` → `dist/<Component>` (CSS-free, no Tailwind). Only story-ize
+components already migrated to the skin.
+
+Three stories per component: **Playground** (controls) + **Doc** (autodocs, automatic) + **Showcase**
+(ALL cases in one render, controls disabled). The Showcase replaces per-variant/per-size stories.
 
 ```typescript jsx
-import { ComponentName } from '@fubaritico-ds/reference'
+import { ComponentName } from '@fubaritico-ds/reference/ComponentName'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 const meta = {
   title: 'Reference/ComponentName',
   component: ComponentName,
-  tags: ['autodocs'],
+  tags: ['autodocs'], // → the "Doc" page
   argTypes: {
     variant: { control: 'select', options: ['primary', 'secondary'] },
     size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] },
@@ -53,13 +63,16 @@ type Story = StoryObj<typeof meta>
 // Interactive playground — driven by the controls panel
 export const Playground: Story = {}
 
-// Visual showcase — render-only, all variants in one view. NO Tailwind → inline styles.
-export const Variants: Story = {
+// Showcase — render-only, ALL cases (variants + sizes + states) in one view. NO Tailwind → inline styles.
+export const Showcase: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
-    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-      <ComponentName variant="primary" />
-      <ComponentName variant="secondary" />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <ComponentName variant="primary" />
+        <ComponentName variant="secondary" />
+      </div>
+      {/* sizes, disabled/loading states, with-icon, etc. */}
     </div>
   ),
 }
@@ -80,7 +93,8 @@ export const Variants: Story = {
 - `tags: ['autodocs']` always. `layout: 'centered'` is global (preview) — don't repeat it.
 - NO Tailwind classes in stories (the React Storybook loads only tokens + the native skin) — use inline
   styles or the component's own BEM classes for showcase layout.
-- `Playground` (controls) + at least one render-showcase minimum — add named stories for notable variants.
+- `Playground` (controls) + `Showcase` (ALL cases, controls disabled). `Doc` is autodocs (automatic).
+- Import from `@fubaritico-ds/reference/<Component>` (CSS-free subpath) — NEVER the barrel (Tailwind leak).
 - No mocks, no router — DS components are presentational. Only story-ize components already migrated to the skin.
 
 ---

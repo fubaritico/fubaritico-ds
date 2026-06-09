@@ -25,6 +25,9 @@
     --ui-badge-padding-inline: 0.625rem; /* --spacing-2.5 */
 
     /* ---- base ---- */
+    /* Self-sufficient: the skin sets its own box model so it survives in hosts with no reset
+       (the DS never ships a global reset — see CLAUDE.md decision). */
+    box-sizing: border-box;
     display: inline-flex;
     align-items: center;
     gap: var(--ui-badge-gap);
