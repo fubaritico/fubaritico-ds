@@ -1,0 +1,16 @@
+{
+  "duration": {
+    "$description": "Motion durations for transitions and animations",
+    "fast": { "$value": "150ms", "$type": "duration" },
+    "normal": { "$value": "250ms", "$type": "duration" },
+    "slow": { "$value": "400ms", "$type": "duration" }
+  },
+  "easing": {
+    "$description": "Motion easing curves",
+    "standard": {
+      "$value": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "$type": "cubicBezier"
+    },
+    "linear": { "$value": "linear", "$type": "cubicBezier" }
+  }
+}
