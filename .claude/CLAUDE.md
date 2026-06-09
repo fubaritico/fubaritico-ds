@@ -159,8 +159,9 @@ Workflow locked with the dev — do these in order:
    **web-only** (strip Tailwind `ui:` → BEM in `styles` + CVA resolver in `variants` where there are
    variants + 5-level BEM tests). "The pattern" = **Badge itself**. Scope = **DS primitives only**
    (TMDB composites HeroImage/MovieCard/Talent/TrailerCard are EXCLUDED — not migrated).
-   Suggested order: atoms (Button → Typography → Spinner/Skeleton → Avatar → Icon/IconButton → Card)
-   → molecules (Input, Rating, Image) → compounds (Tabs, Menu, Listbox, Drawer, Modal, Carousel, Typeahead).
+   Suggested order: atoms (✅ Button → ✅ Typography → ✅ Spinner → **Skeleton** → Avatar →
+   Icon/IconButton → Card) → molecules (Input, Rating, Image) → compounds (Tabs, Menu, Listbox,
+   Drawer, Modal, Carousel, Typeahead).
 2. **Then** the dev hands over NEW components to copy in, **one-by-one**, adapted web-only:
    Alert · DataTable · BottomSheet · Checkbox · DatePicker · Dropdown · Pagination · ProgressBar · Tooltip
    \+ a new **`icons`** package to adapt. (See `native-css-migration-backlog` memory.)
