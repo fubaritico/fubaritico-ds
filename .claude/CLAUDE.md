@@ -32,6 +32,23 @@ something, do NOT just agree. Push back, doubt out loud, and stress-test the ide
 - Only converge once the reasoning holds up. The goal is a real back-and-forth that looks like genuine
   thinking, not validation. Agreeing without scrutiny is a failure, even if the developer is right.
 
+### Challenge rule — presentational-first (capabilities = the asset, headless mindset)
+
+A component's value IS its **capabilities — what it can DO**: behaviour, states, interactions,
+keyboard navigation, focus management, a11y, composition/slots, and its variant/size API. This is the
+**headless mindset** (Radix / Headless UI / Ariakit): the **behaviour + accessibility are the asset**;
+styling is a swappable **skin** (`@fubaritico-ds/styles`), theming is **tokens**, and the variant→class
+mapping is the **resolver** (`@fubaritico-ds/variants`). Routing/data are thin **adapters**, never the
+subject. Organize, name and reason about components by their **capability/presentational identity**, NOT
+by the infrastructure they happen to be wired to (routing lib, data source, framework). Concretely:
+
+- **No infrastructure-named directories** as an organizing principle (e.g. `react-router/`, `next/`).
+  Routing/data are thin **adapters** around a shared presentational core, living WITH the component.
+- A presentational **primitive must not drag a framework dependency** (e.g. plain `Button` must not
+  pull `react-router-dom`). Router/data variants are separate, separately-importable components.
+- **Challenge by default** any design that organizes by infrastructure, couples a presentational
+  primitive to a framework, or buries the presentational API under routing/data plumbing.
+
 ## Source code reference
 
 Source code for dependencies is available in `opensrc/` for deeper understanding of implementation details.
