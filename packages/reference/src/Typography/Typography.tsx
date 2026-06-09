@@ -18,7 +18,9 @@ export const defaultVariantMapping: Record<TypographyVariant, ElementType> = {
   body: 'p',
   caption: 'span',
   overline: 'span',
-  label: 'label',
+  // `label` is a VISUAL role → renders a <span>, never an orphan <label>. For a real form label,
+  // opt in with `as="label"` (which makes `htmlFor` required at the type level).
+  label: 'span',
   inherit: 'p',
 }
 

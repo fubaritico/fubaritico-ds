@@ -30,4 +30,7 @@ export type TypographyProps<C extends ElementType = 'p'> =
   TypographyOwnProps & {
     /** Override the rendered element. Wins over `variantMapping`. */
     as?: C
-  } & Omit<ComponentProps<C>, keyof TypographyOwnProps | 'as'>
+  } & Omit<ComponentProps<C>, keyof TypographyOwnProps | 'as'> &
+    // Rendering a real `<label>` (via `as="label"`) requires `htmlFor` — a `<label>` with no associated
+    // control is a WCAG 1.3.1 violation. Enforced at compile time so the orphan case can't ship.
+    (C extends 'label' ? { htmlFor: string } : object)

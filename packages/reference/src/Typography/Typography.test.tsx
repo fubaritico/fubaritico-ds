@@ -25,7 +25,7 @@ describe('Typography', () => {
       ['h6', 'h6'],
       ['caption', 'span'],
       ['overline', 'span'],
-      ['label', 'label'],
+      ['label', 'span'],
     ] as const)(
       'maps variant "%s" to the <%s> element with its modifier',
       (variant, tag) => {
@@ -37,6 +37,18 @@ describe('Typography', () => {
         expect(el).toHaveClass(`ui-typography--${variant}`)
       }
     )
+
+    it('renders a real <label> (with its for attribute) when as="label"', () => {
+      const { container } = render(
+        <Typography as="label" htmlFor="email" variant="label">
+          Email
+        </Typography>
+      )
+      const el = container.querySelector('label')
+      expect(el).toBeInTheDocument()
+      expect(el).toHaveAttribute('for', 'email')
+      expect(el).toHaveClass('ui-typography--label')
+    })
 
     it('renders the inherit variant as <p> with no variant modifier', () => {
       const { container } = render(
