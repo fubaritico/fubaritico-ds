@@ -1,0 +1,30 @@
+{
+  "name": "@fubaritico-ds/storybook-react",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "type-check": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .storybook stories"
+  },
+  "dependencies": {
+    "@fubaritico-ds/reference": "workspace:*",
+    "@fubaritico-ds/shared": "workspace:*",
+    "@fubaritico-ds/styles": "workspace:*",
+    "@fubaritico-ds/tokens": "workspace:*"
+  },
+  "devDependencies": {
+    "@storybook/addon-docs": "catalog:",
+    "@storybook/react-vite": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "storybook": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}

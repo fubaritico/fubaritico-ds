@@ -85,6 +85,11 @@ catalog:
   '@vitest/coverage-v8': 4.1.8
   jsdom: 26.0.0
 
+  # Storybook (shared across the per-framework storybook apps)
+  storybook: 10.4.3
+  '@storybook/react-vite': 10.4.3
+  '@storybook/addon-docs': 10.4.3
+
   # release tools
   conventional-changelog: 7.2.0
 

@@ -35,6 +35,7 @@ export default tseslint.config(
       '**/sd.config.js',
       '**/*.cjs',
       '**/dist/**',
+      '**/storybook-static/**',
       '**/.temp-svg/**',
       '**/files/**',
       '**/scripts/**',
@@ -184,6 +185,18 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         project: ['./packages/variants/tsconfig.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+
+  // Storybook React app — scoped project so the typed parser uses the app's own tsconfig instead of
+  // iterating the (empty-src) stencil tsconfig matched by the base glob (same TS18003 poison as variants).
+  {
+    files: ['apps/storybook-react/**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: {
+        project: ['./apps/storybook-react/tsconfig.json'],
         tsconfigRootDir: import.meta.dirname,
       },
     },
