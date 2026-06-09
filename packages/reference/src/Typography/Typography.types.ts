@@ -2,7 +2,7 @@ import type {
   TypographyAlign,
   TypographyVariant,
 } from '@fubaritico-ds/variants'
-import type { ComponentPropsWithoutRef, ElementType } from 'react'
+import type { ComponentProps, ElementType } from 'react'
 
 /**
  * Typography's own (non-element) props — neutral + semantic, modeled on MUI Typography.
@@ -30,4 +30,4 @@ export type TypographyProps<C extends ElementType = 'p'> =
   TypographyOwnProps & {
     /** Override the rendered element. Wins over `variantMapping`. */
     as?: C
-  } & Omit<ComponentPropsWithoutRef<C>, keyof TypographyOwnProps | 'as'>
+  } & Omit<ComponentProps<C>, keyof TypographyOwnProps | 'as'>
