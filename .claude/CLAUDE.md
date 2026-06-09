@@ -150,8 +150,22 @@ Button/Badge/LinkButton/NextLinkButton. Each migrated component also ships a Sto
 **NEXT step (most actionable): migrate `Skeleton`** onto the Badge pattern (web-only: BEM in `styles` +
 CVA resolver in `variants` for its `rectangle`/`circle`/`line` shape variants + 5-level tests + story +
 **co-located README.md**). NB: the shimmer keyframes currently live in `packages/reference/src/styles.css`
-(`.ui-skeleton-shimmer::before`) and must be ported into the skin. Then continue the atom order:
-Avatar → Icon/IconButton → Card.
+(`.ui-skeleton-shimmer::before`) and must be ported into the skin.
+
+**Migration queue (dependency-ordered, evidence-based — deps before the things that compose them).**
+Each = one commit: BEM in `styles` + CVA resolver in `variants` (if variants) + 5-level tests + story +
+co-located README. `ui:` footprint shown to gauge effort.
+
+- **Icon (0 `ui:`) and Portal (0 `ui:`) are NOT migrated** — Icon is just a heroicons SVG size-wrapper,
+  Portal is pure `createPortal` behaviour. They carry no skin, so they block nothing.
+- Atoms (leaves): 1. **Skeleton** (38) → 2. **Avatar** (49, →Icon) → 3. **IconButton** (45, →Icon —
+  do early: it unblocks Drawer + Carousel) → 4. **Card** (20).
+- Molecules: 5. **Input** (61, →Icon — do before Typeahead) → 6. **Rating** (32, →Icon) → 7. **Image** (25, →Icon).
+- Compounds (dep-ordered): 8. **Listbox** (37 — before Menu + Typeahead) → 9. **Menu** (5, →Listbox) → 10. **Modal** (8, →Portal) → 11. **Drawer** (38, →IconButton+Portal) → 12. **Tabs** (49) → 13. **Carousel** (138 — biggest; →Icon+IconButton) → 14. **Typeahead** (23, →Input+Listbox+Portal —
+  the capstone: it composes three migrated parts, so it validates the whole pattern on a real compound).
+
+Constraints satisfied: IconButton(3) < Drawer(11)/Carousel(13); Listbox(8) < Menu(9)/Typeahead(14);
+Input(5) < Typeahead(14). `IconButton`'s deferred README is written when it lands at step 3.
 
 Workflow locked with the dev — do these in order:
 
@@ -159,9 +173,7 @@ Workflow locked with the dev — do these in order:
    **web-only** (strip Tailwind `ui:` → BEM in `styles` + CVA resolver in `variants` where there are
    variants + 5-level BEM tests). "The pattern" = **Badge itself**. Scope = **DS primitives only**
    (TMDB composites HeroImage/MovieCard/Talent/TrailerCard are EXCLUDED — not migrated).
-   Suggested order: atoms (✅ Button → ✅ Typography → ✅ Spinner → **Skeleton** → Avatar →
-   Icon/IconButton → Card) → molecules (Input, Rating, Image) → compounds (Tabs, Menu, Listbox,
-   Drawer, Modal, Carousel, Typeahead).
+   Order = the **Migration queue** above (✅ Badge/Button/Typography/Spinner done; Skeleton next).
 2. **Then** the dev hands over NEW components to copy in, **one-by-one**, adapted web-only:
    Alert · DataTable · BottomSheet · Checkbox · DatePicker · Dropdown · Pagination · ProgressBar · Tooltip
    \+ a new **`icons`** package to adapt. (See `native-css-migration-backlog` memory.)
