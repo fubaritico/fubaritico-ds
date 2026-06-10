@@ -51,6 +51,10 @@ by the infrastructure they happen to be wired to (routing lib, data source, fram
 - **Challenge by default** any design that organizes by infrastructure, couples a presentational
   primitive to a framework, or buries the presentational API under routing/data plumbing.
 
+## NOTICE FOR THE AGENT
+
+THIS FILE AND ALL OTHER DEPENDENT FILES MUST NOT EXCEED 200 LINES. If so, split them in the most relevant way.
+
 ## Source code reference
 
 Source code for dependencies is available in `opensrc/` for deeper understanding of implementation details.
@@ -103,7 +107,7 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
 - **Never `--no-verify`** on commit without the developer's explicit agreement
 - **JSDoc everywhere (strict)** — every exported interface property, every function (`@param` + `@returns`), every hook, every type with properties, every constant. Exempt: generated artefacts (`packages/stencil/dist/{react,angular}`, `components.d.ts`) + test files.
 - **Apply React skills** — apply `composition-patterns`, `react-best-practices`, and `react-view-transitions` when writing or reviewing component code
-- **Never says** "You're right" or equivalent, especially when there's a doubt or the dev idea needs challenge
+- **Never say** "You're right" or equivalent, especially when there's a doubt or the dev idea needs challenge
 - **When satisfied by the dev answer** — Perform some searches on notes, the net and bring GitHub sources with /opensrc when needed
 - **Screenshot provided by the user** — you can always find them in the desktop on Mac
 
@@ -141,50 +145,36 @@ Plan: `files/plans/native-css-migration.md`. Memory: `native-css-migration-backl
 `white-label-native-css`, `project-goal-stencil-discovery`, `monorepo-orchestration`.
 
 **DONE so far**: Badge, **Button** (split Button/LinkButton/NextLinkButton), **Typography**, **Spinner**
-(with `sm`/`md`/`lg` sizes) migrated onto the native skin. TMDB MovieCard composites removed. Rule: every
-component ships a co-located `README.md` usage doc (`.claude/rules/component-docs.md`, written
-**post-migration**) — enforced in `new-react-component` + `review`. README doc-debt backfilled for
-Button/Badge/LinkButton/NextLinkButton. Each migrated component also ships a Storybook story under
-`Reference/*` in `apps/storybook-react` (set up; run `pnpm storybook:ref`).
+(with `sm`/`md`/`lg` sizes), **Skeleton** (`rectangle`/`circle`/`line` + `rounded`; dimensions as logical
+inline styles; reduced-motion removes the shimmer; RTL-aware sweep) migrated onto the native skin. TMDB
+MovieCard composites removed. Rule: every component ships a co-located `README.md` usage doc
+(`.claude/rules/component-docs.md`, written **post-migration**) — enforced in `new-react-component` +
+`review`. README doc-debt backfilled for Button/Badge/LinkButton/NextLinkButton. Each migrated component
+also ships a Storybook story under `Reference/*` in `apps/storybook-react` (set up; run `pnpm storybook:ref`).
 
-**NEXT step (most actionable): migrate `Skeleton`** onto the Badge pattern (web-only: BEM in `styles` +
-CVA resolver in `variants` for its `rectangle`/`circle`/`line` shape variants + 5-level tests + story +
-**co-located README.md**). NB: the shimmer keyframes currently live in `packages/reference/src/styles.css`
-(`.ui-skeleton-shimmer::before`) and must be ported into the skin.
+**NEXT step (most actionable): migrate `Avatar`** (49 `ui:`, →Icon) onto the Badge pattern (web-only:
+BEM in `styles` + CVA resolver in `variants` for its variants/sizes + 5-level tests + story +
+**co-located README.md**). NB: Icon is NOT migrated (heroicons SVG size-wrapper, carries no skin) — Avatar
+composes it as-is. The shimmer keyframes Skeleton needed are now ported; check whether Avatar reuses any
+of the leftover animation block in `packages/reference/src/styles.css`.
 
-**Migration queue (dependency-ordered, evidence-based — deps before the things that compose them).**
-Each = one commit: BEM in `styles` + CVA resolver in `variants` (if variants) + 5-level tests + story +
-co-located README. `ui:` footprint shown to gauge effort.
+**Migration queue** (full detail + rationale in `native-css-migration-backlog` memory +
+`files/plans/native-css-migration.md`; `ui:` footprint in parens; deps before composers). Each = 1
+commit: BEM in `styles` + CVA resolver in `variants` (if variants) + 5-level tests + story + co-located README.
 
-- **Icon (0 `ui:`) and Portal (0 `ui:`) are NOT migrated** — Icon is just a heroicons SVG size-wrapper,
-  Portal is pure `createPortal` behaviour. They carry no skin, so they block nothing.
-- Atoms (leaves): 1. **Skeleton** (38) → 2. **Avatar** (49, →Icon) → 3. **IconButton** (45, →Icon —
-  do early: it unblocks Drawer + Carousel) → 4. **Card** (20).
-- Molecules: 5. **Input** (61, →Icon — do before Typeahead) → 6. **Rating** (32, →Icon) → 7. **Image** (25, →Icon).
-- Compounds (dep-ordered): 8. **Listbox** (37 — before Menu + Typeahead) → 9. **Menu** (5, →Listbox) → 10. **Modal** (8, →Portal) → 11. **Drawer** (38, →IconButton+Portal) → 12. **Tabs** (49) → 13. **Carousel** (138 — biggest; →Icon+IconButton) → 14. **Typeahead** (23, →Input+Listbox+Portal —
-  the capstone: it composes three migrated parts, so it validates the whole pattern on a real compound).
+- Atoms: ✅ Skeleton (38) → **Avatar (49, →Icon)** ← next → IconButton (45, →Icon; unblocks Drawer+Carousel) → Card (20).
+- Molecules: Input (61, →Icon, before Typeahead) → Rating (32, →Icon) → Image (25, →Icon).
+- Compounds: Listbox (37) → Menu (5, →Listbox) → Modal (8, →Portal) → Drawer (38, →IconButton+Portal) → Tabs (49) → Carousel (138; →Icon+IconButton) → Typeahead (23, →Input+Listbox+Portal, capstone).
+- **Icon & Portal NOT migrated** (no skin: heroicons SVG wrapper / `createPortal`) — they block nothing.
 
-Constraints satisfied: IconButton(3) < Drawer(11)/Carousel(13); Listbox(8) < Menu(9)/Typeahead(14);
-Input(5) < Typeahead(14). `IconButton`'s deferred README is written when it lands at step 3.
+Phase 1 = migrate existing primitives onto the Badge pattern, web-only (✅ Badge/Button/Typography/Spinner/
+Skeleton; TMDB composites EXCLUDED). Phase 2 = dev hands over 9 NEW components one-by-one (Alert·DataTable·
+BottomSheet·Checkbox·DatePicker·Dropdown·Pagination·ProgressBar·Tooltip) + a new `icons` package. Phase 3 =
+finish Stencil (PLAN step 5, green `stencil build`) → wire into `build:packages`, converge `globalStyle` onto `styles`.
 
-Workflow locked with the dev — do these in order:
-
-1. **Migrate the EXISTING `reference` primitives onto the Badge pattern**, one commit per component,
-   **web-only** (strip Tailwind `ui:` → BEM in `styles` + CVA resolver in `variants` where there are
-   variants + 5-level BEM tests). "The pattern" = **Badge itself**. Scope = **DS primitives only**
-   (TMDB composites HeroImage/MovieCard/Talent/TrailerCard are EXCLUDED — not migrated).
-   Order = the **Migration queue** above (✅ Badge/Button/Typography/Spinner done; Skeleton next).
-2. **Then** the dev hands over NEW components to copy in, **one-by-one**, adapted web-only:
-   Alert · DataTable · BottomSheet · Checkbox · DatePicker · Dropdown · Pagination · ProgressBar · Tooltip
-   \+ a new **`icons`** package to adapt. (See `native-css-migration-backlog` memory.)
-3. **Finish Stencil setup** (PLAN step 5: `src/global/ui-stencil.css`, green `stencil build`), then wire
-   stencil into `build:packages` and converge its `globalStyle` onto the `styles` partials.
-
-Decisions locked: **Lerna + Nx** (no Turbo). `reference` = guide/sandbox, **NOT a deliverable**.
-Skin = `@fubaritico-ds/styles` (BEM `@layer` + `--ui-*` component vars); theme/override API = tokens vars.
-**CVA variant resolvers live in `@fubaritico-ds/variants`** (dedicated pure-TS package) — decided AGAINST
-`shared` (React grab-bag) and against a `styles` JS-entry; rationale: variants are shared across frameworks
-(React/WC/Angular/Vue) and must stay React/DOM-free. Migration is **web-only** (no `.native`/react-native/NativeWind).
+Decisions locked: **Lerna + Nx** (no Turbo); `reference` = guide/sandbox **NOT a deliverable**; skin =
+`@fubaritico-ds/styles` (BEM `@layer` + `--ui-*` vars, theme via tokens); **CVA resolvers in
+`@fubaritico-ds/variants`** (pure TS, React/DOM-free, shared across frameworks); migration **web-only**.
 
 ### Known Issues
 

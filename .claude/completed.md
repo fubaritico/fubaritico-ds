@@ -2,6 +2,26 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-06-10 — Skeleton migrated onto the native skin
+
+- **Skeleton migrated** (`07cf01e`): `.ui-skeleton` BEM skin (`@layer`, `--ui-skeleton-*` override
+  vars, shimmer `::before` with an overridable `--ui-skeleton-shimmer-direction`, keyframes ported from
+  `packages/reference/src/styles.css`), `skeletonVariants` CVA resolver (`rectangle`/`circle`/`line`
+  shapes + a `rounded` boolean → `--square` via `compoundVariants`; `rectangle` is the base).
+- **Two deliberate divergences from the Badge/Spinner precedent**: (1) `width`/`height` are no longer
+  Tailwind classes — they're CSS length values applied as logical inline styles (`inlineSize`/
+  `blockSize`), alongside `aspectRatio`; the skin owns only the look, not dimensions. (2) Under
+  `prefers-reduced-motion` the shimmer is **removed** (non-essential decorative motion — the block
+  alone conveys "loading"), unlike the Spinner whose essential motion only slows.
+- 5-level tests (component + resolver), co-located README, `Reference/Skeleton` story. Stale Tailwind
+  snapshot dropped. `SkeletonShape` exported from both barrels (parity with `SpinnerSize`).
+- **/review** ran → verdict `ready`. 8 fixes applied (order-independent `--square` selector via a
+  compound `.ui-skeleton--line.ui-skeleton--square`; `--ui-skeleton-shimmer-direction` var; RTL
+  `:dir(rtl)::before { animation-direction: reverse }`; `Readonly<SkeletonProps>`; `SkeletonShape`
+  exports ×2; resolver no-op comments). Discarded false-positives: import-order (lint green, identical
+  to Badge/Spinner), `--color-white-80` "missing" (it exists in tokens), inline-style-object
+  over-memoization (presentational atom, no `memo` boundary).
+
 ### 2026-06-10 — Spinner migrated + doc-debt backfill + storybook-state fix
 
 - **Doc debt cleared** for the already-migrated Button family: co-located `README.md` added for
