@@ -1,0 +1,90 @@
+/**
+ * Skeleton — native BEM skin.
+ *
+ * A loading placeholder: a tinted block with a shimmer sweep (`::before`). The block itself
+ * conveys "loading", so the shimmer is non-essential decorative motion.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-skeleton-*` vars on `.ui-skeleton` (surgical re-skin).
+ *   2. Redefine a global token (e.g. `--color-muted`) → re-skins everything that uses it.
+ *   3. Write any plain selector (e.g. `.ui-skeleton { ... }`): being unlayered, it beats this
+ *      layered skin with no specificity war.
+ *
+ * Dimensions (width/height/aspect-ratio) are NOT a skin concern — they are per-instance inline
+ * styles set by the consumer. The skin only owns the look (background, radius, shimmer). The
+ * shape modifiers redefine only `--ui-skeleton-radius`. `rectangle` is the base.
+ */
+@layer ui.components {
+  /* Keyframes live in the same layer as the rule that consumes them. */
+  @keyframes ui-skeleton-shimmer {
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  .ui-skeleton {
+    /* ---- override API (component-scoped) ---- */
+    --ui-skeleton-bg: var(--color-muted);
+    --ui-skeleton-radius: var(--radius-lg);
+    /* The moving highlight swept across the block. */
+    --ui-skeleton-shimmer-color: var(--color-white-80);
+    /* Sweep angle — overridable for a vertical shimmer on horizontal layouts. */
+    --ui-skeleton-shimmer-direction: 90deg;
+    --ui-skeleton-duration: 2s;
+
+    /* ---- base ---- */
+    /* Self-sufficient box model: the skin survives in hosts with no reset (the DS ships none). */
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--ui-skeleton-radius);
+    background-color: var(--ui-skeleton-bg);
+  }
+
+  .ui-skeleton::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /* Physical axis: the sweep starts off the inline-start edge. RTL is handled below. */
+    transform: translateX(-100%);
+    background: linear-gradient(
+      var(--ui-skeleton-shimmer-direction),
+      transparent,
+      var(--ui-skeleton-shimmer-color),
+      transparent
+    );
+    animation: ui-skeleton-shimmer var(--ui-skeleton-duration) infinite;
+  }
+
+  /* RTL: reverse the sweep so it still travels inline-start → inline-end. */
+  .ui-skeleton:dir(rtl)::before {
+    animation-direction: reverse;
+  }
+
+  /* ---- shape modifiers (only redefine the radius) ---- */
+  /* `rectangle` is the base (--radius-lg) — the CVA resolver emits '' for it, no modifier rule. */
+  .ui-skeleton--circle {
+    --ui-skeleton-radius: var(--radius-full);
+  }
+
+  .ui-skeleton--line {
+    --ui-skeleton-radius: var(--radius-sm);
+  }
+
+  /* `rounded={false}` squares the corners. The `line` + `square` pair is given an order-independent
+     win via the higher-specificity compound selector (so the bundler can't let `--line`'s radius
+     leak through). Circle never receives `--square`, so it stays fully round regardless of `rounded`. */
+  .ui-skeleton--square,
+  .ui-skeleton--line.ui-skeleton--square {
+    --ui-skeleton-radius: var(--radius-none);
+  }
+
+  /* ---- reduced motion ---- */
+  /* Unlike the spinner, the shimmer is NOT the loading affordance — the block already conveys it.
+     So we remove the non-essential motion entirely (WCAG 2.3.3). The placeholder stays visible. */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-skeleton::before {
+      animation: none;
+    }
+  }
+}

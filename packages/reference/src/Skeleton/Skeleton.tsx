@@ -1,50 +1,56 @@
 import clsx from 'clsx'
 
-import type { ComponentProps } from 'react'
+import { skeletonVariants } from '@fubaritico-ds/variants'
+
+import type { SkeletonShape } from '@fubaritico-ds/variants'
+import type { CSSProperties, ComponentProps } from 'react'
+
+export type { SkeletonShape }
 
 export interface SkeletonProps extends ComponentProps<'div'> {
-  /** Shape variant */
-  variant?: 'rectangle' | 'circle' | 'line'
-  /** Width (Tailwind class or custom value) */
+  /** Shape variant — controls the corner radius (`rectangle` | `circle` | `line`). */
+  variant?: SkeletonShape
+  /** Inline size as any CSS length (e.g. `'200px'`, `'100%'`). Applied as an inline style. */
   width?: string
-  /** Height (Tailwind class or custom value) */
+  /** Block size as any CSS length (e.g. `'1rem'`, `'40px'`). Applied as an inline style. */
   height?: string
-  /** Aspect ratio (e.g., "2/3", "16/9", "1/1") */
+  /** Aspect ratio (e.g. `'16 / 9'`, `'1 / 1'`). Applied as an inline style. */
   aspectRatio?: string
-  /** Apply rounded corners (default: true for rectangle/line, always true for circle) */
+  /** Round the corners. Default `true` for `rectangle`/`line`; `circle` is always fully round. */
   rounded?: boolean
 }
 
 /**
- * Skeleton - Atomic loading placeholder component
+ * Skeleton — native BEM skin (`@fubaritico-ds/styles`). A loading placeholder: a tinted block
+ * with a shimmer sweep. The shape resolves to BEM classes via {@link skeletonVariants}; the look
+ * (background, radius, shimmer) is driven by the overridable `--ui-skeleton-*` component variables.
+ * Dimensions (`width`/`height`/`aspectRatio`) are per-instance inline styles, not skin concerns.
+ * Forwards any extra `div` attributes (`id`, `aria-*`, `style`, …).
  *
- * Composable primitive for building loading states with shimmer effect.
+ * @param props - {@link SkeletonProps}
+ * @returns The rendered skeleton placeholder element.
  */
-function Skeleton({
+export function Skeleton({
   variant = 'rectangle',
   width,
   height,
   aspectRatio,
   rounded = true,
   className,
+  style,
   ...rest
 }: Readonly<SkeletonProps>) {
+  const dimensionStyle: CSSProperties = {
+    inlineSize: width,
+    blockSize: height,
+    aspectRatio,
+    ...style,
+  }
+
   return (
     <div
-      className={clsx(
-        'ui:relative ui:overflow-hidden ui:bg-muted',
-        'ui-skeleton-shimmer',
-        {
-          'ui:rounded-lg': variant === 'rectangle' && rounded,
-          'ui:rounded-full': variant === 'circle',
-          'ui:rounded': variant === 'line' && rounded,
-        },
-        width,
-        height,
-        className
-      )}
-      data-testid="skeleton"
-      style={aspectRatio ? { aspectRatio } : undefined}
+      className={clsx(skeletonVariants({ variant, rounded }), className)}
+      style={dimensionStyle}
       {...rest}
     />
   )

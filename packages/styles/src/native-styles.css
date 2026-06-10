@@ -11,5 +11,6 @@
 
 @import './styles/badge.css';
 @import './styles/button.css';
+@import './styles/skeleton.css';
 @import './styles/spinner.css';
 @import './styles/typography.css';
