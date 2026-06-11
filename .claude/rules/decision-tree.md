@@ -11,6 +11,7 @@
 | Scaffold a new package                            | `/add-package`         |
 | Write a Storybook story                           | `/story`               |
 | Write tests                                       | `/test`                |
+| Decide where a component's state lives            | `/state-storage`       |
 | Review code (after a set of changes)              | `/review`              |
 | Commit                                            | `/commit`              |
 | Propose a commit message only                     | `/message-commit`      |
