@@ -167,4 +167,6 @@ Optional (user decides) for:
 - Documentation-only changes
 - Changelog updates
 
-IMPORTANT: give the developer the table of findings (Critical, high, medium, low), this is mandatory.
+---
+
+IMPORTANT: Give the developer the table of findings (Critical, high, medium, low), the report must contain these columns: `ID`, `Sév`, `Catégorie`, `Description`, `Statut`. THIS IS MANDATORY.
