@@ -176,6 +176,10 @@ Decisions locked: **Lerna + Nx** (no Turbo); `reference` = guide/sandbox **NOT a
 `@fubaritico-ds/styles` (BEM `@layer` + `--ui-*` vars, theme via tokens); **CVA resolvers in
 `@fubaritico-ds/variants`** (pure TS, React/DOM-free, shared across frameworks); migration **web-only**.
 
+For **stateful/compound** components (Listbox, Menu, Modal, Drawer, Tabs, Typeahead) use the
+**`/state-storage`** skill to pick the lightest state tier (local · createStore · Zustand · simplified
+Machine) + behavior-hooks. Atoms stay Tier-1 local. Memory: `storage-levels-playbook`.
+
 ### Known Issues
 
 Read @known-issues.md

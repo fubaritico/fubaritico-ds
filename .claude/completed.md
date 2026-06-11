@@ -2,6 +2,26 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-06-12 — Headless UI deep-dive + `/state-storage` skill (no component change)
+
+- **Research turn, no code/component change.** Deep analysis of **Headless UI React v2.2.10** internals
+  → personal working docs in `files/analysis/` (gitignored): `headlessui-state-machine.md` (the `Machine`
+  store-reducer + selectors + effects, why state lives OUTSIDE React), `headlessui-context-vs-machine.md`
+  (the re-render gain: Context = O(N) on all consumers vs Machine + per-slice = ~O(1)),
+  `headlessui-combobox-vertical-slice.md` (end-to-end: `as`-render → machine → `dataRef` → keyboard →
+  form → transitions), `state-externalization-3-levels-and-hooks.md` (4 storage tiers + behavior-hooks).
+- **New committed skill `/state-storage`** (`8c22477`): decides the **lightest sufficient** state tier —
+  **local · createStore · Zustand · simplified Machine** — challenge-by-default; `references/` carry the
+  full per-tier code + the **real behavior-hooks source** (useEvent/useControllable/useOutsideClick/…).
+  Wired into `decision-tree.md`. Memory: **`storage-levels-playbook`**.
+- **`/review` SKILL hardened** (`6cfa3cf`, dev's own edit): findings-table columns now mandatory
+  (`ID`, `Sév`, `Catégorie`, `Description`, `Statut`).
+- **Key insights locked**: HeadlessUI's `Machine` is framework-agnostic _by design but NOT shared_ (Vue
+  reimplements with its own reactivity) — machines are justified by **render-volume + keyboard +
+  cross-instance coordination**, NOT by being unstyled. Most DS components stay **Tier-1 local**; a
+  machine is only for **Listbox/Typeahead**. The `useSyncExternalStore` gotcha (derived slice → loop →
+  use `…WithSelector`). Pushed `origin/main` (`aeb64b6..6cfa3cf`).
+
 ### 2026-06-10 — Skeleton migrated onto the native skin
 
 - **Skeleton migrated** (`07cf01e`): `.ui-skeleton` BEM skin (`@layer`, `--ui-skeleton-*` override
