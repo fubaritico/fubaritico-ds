@@ -38,7 +38,7 @@ interface AvatarConfigValue {
 /**
  * STABLE cascade actions — register/unregister/report. Never change identity, so candidate effects
  * can depend on them without thrashing. Split from the dynamic mode (below) on purpose: bundling the
- * changing `modeFor` with the actions would re-run every candidate's register effect on each update
+ * changing `getCandidateMode` with the actions would re-run every candidate's register effect on each update
  * (infinite loop). Same stable-vs-dynamic split as the config/cascade contexts.
  */
 interface AvatarCascadeActions {
@@ -53,7 +53,7 @@ interface AvatarCascadeActions {
 /** DYNAMIC cascade state — resolves a candidate's render mode from the current registry. */
 interface AvatarCascadeState {
   /** Resolve the render mode for a candidate from the current registry. */
-  modeFor: (id: string) => AvatarCandidateMode
+  getCandidateMode: (id: string) => AvatarCandidateMode
 }
 
 /**
@@ -158,7 +158,7 @@ export function useAvatarCascadeController(): {
   const activeItem = items.find((x) => x.status !== 'failed')
 
   // Resolve a candidate's render mode from the winner; recreated whenever the winner changes.
-  const modeFor = useCallback(
+  const getCandidateMode = useCallback(
     (id: string): AvatarCandidateMode => {
       if (id !== activeItem?.id) return 'hidden'
       return activeItem.status === 'ready' ? 'show' : 'loading'
@@ -172,7 +172,7 @@ export function useAvatarCascadeController(): {
     [register, unregister, report]
   )
   // Dynamic state: changes with the registry → candidates re-render to pick up their new mode.
-  const state = useMemo(() => ({ modeFor }), [modeFor])
+  const state = useMemo(() => ({ getCandidateMode }), [getCandidateMode])
 
   return { actions, state }
 }
@@ -210,5 +210,5 @@ export function useCascadeCandidate(
     actions.report(id, status)
   }, [actions, id, status])
 
-  return state.modeFor(id)
+  return state.getCandidateMode(id)
 }
