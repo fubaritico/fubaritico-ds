@@ -59,20 +59,21 @@ Icon-only fallback:
 </Avatar>
 ```
 
-Custom loading visual via the render-prop:
+Custom loading visual via the render-prop — drop in a `Spinner` (or a `Skeleton`, or nothing):
 
 ```tsx
 <Avatar aria-label="Jane Doe">
   <Avatar.Fallback>
     <Avatar.Image src={url}>
-      {(status) =>
-        status === 'loading' ? <Skeleton variant="circle" /> : null
-      }
+      {(status) => (status === 'loading' ? <Spinner size="sm" /> : null)}
     </Avatar.Image>
     <Avatar.Icon />
   </Avatar.Fallback>
 </Avatar>
 ```
+
+The `Spinner` centres in the avatar and inherits `currentColor` (`--ui-avatar-fg`). Use
+`<Skeleton variant="circle" />` instead for a placeholder block — the choice is yours (headless).
 
 React to the loading status:
 

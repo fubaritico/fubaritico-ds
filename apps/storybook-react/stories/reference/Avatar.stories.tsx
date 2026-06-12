@@ -2,6 +2,7 @@
 // (`@fubaritico-ds/reference`) whose `import './styles.css'` side-effect pulls Tailwind preflight
 // into the skin-based Storybook and strips the skin's box-model. See the /story skill.
 import { Avatar } from '@fubaritico-ds/reference/Avatar'
+import { Spinner } from '@fubaritico-ds/reference/Spinner'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
@@ -85,6 +86,19 @@ export const Showcase: Story = {
           <Avatar.Fallback>
             <Avatar.Image src={BROKEN_SRC} />
             <Avatar.Initials>JD</Avatar.Initials>
+            <Avatar.Icon />
+          </Avatar.Fallback>
+        </Avatar>
+      </div>
+      {/* Loading affordance via the Image render-prop: a Spinner shows while the image loads. */}
+      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        <Avatar size="lg" aria-label="Loading with a spinner">
+          <Avatar.Fallback>
+            <Avatar.Image src={SAMPLE_SRC}>
+              {(status) =>
+                status === 'loading' ? <Spinner size="sm" /> : null
+              }
+            </Avatar.Image>
             <Avatar.Icon />
           </Avatar.Fallback>
         </Avatar>
