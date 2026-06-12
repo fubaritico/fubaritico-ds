@@ -1,14 +1,14 @@
 {
   "radius": {
-    "$description": "Border radius scale",
+    "$description": "Border radius scale — deliberately light: capped at 6px (0.375rem). Only `none` (0), `sm` (4px) and the 6px tier are used; anything rounder reads as too heavy for this DS. `md`/`lg`/`xl`/`2xl`/`3xl` are flattened to the 6px cap so the scale never produces a chunky corner.",
     "none": { "$value": "0", "$type": "dimension" },
     "sm": { "$value": "0.25rem", "$type": "dimension" },
-    "default": { "$value": "0.5rem", "$type": "dimension" },
-    "md": { "$value": "0.5rem", "$type": "dimension" },
-    "lg": { "$value": "0.75rem", "$type": "dimension" },
-    "xl": { "$value": "1rem", "$type": "dimension" },
-    "2xl": { "$value": "1.5rem", "$type": "dimension" },
-    "3xl": { "$value": "2rem", "$type": "dimension" },
+    "default": { "$value": "0.375rem", "$type": "dimension" },
+    "md": { "$value": "0.375rem", "$type": "dimension" },
+    "lg": { "$value": "0.375rem", "$type": "dimension" },
+    "xl": { "$value": "0.375rem", "$type": "dimension" },
+    "2xl": { "$value": "0.375rem", "$type": "dimension" },
+    "3xl": { "$value": "0.375rem", "$type": "dimension" },
     "full": { "$value": "9999px", "$type": "dimension" }
   }
 }
