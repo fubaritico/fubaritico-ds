@@ -145,27 +145,29 @@ Plan: `files/plans/native-css-migration.md`. Memory: `native-css-migration-backl
 `white-label-native-css`, `project-goal-stencil-discovery`, `monorepo-orchestration`.
 
 **DONE so far**: Badge, **Button** (split Button/LinkButton/NextLinkButton), **Typography**, **Spinner**,
-**Skeleton**, **Avatar**, and **IconButton** migrated onto the native skin. **DS primary is now neutral**
-(`neutral.900`; brand colour = opt-in emphasis — shadcn/Radix; memory `neutral-default-emphasis-strategy`).
-**IconButton** is an **Open/Closed extension of Button** (renders `<Button>` + a `.ui-icon-button` shape
-layer; Button untouched; `ghost-dark` is IconButton-only). Avatar is a **React 19 compound**
-(`Avatar.{Image,Fallback,Icon,Initials}`, **resolver** Model A, split contexts + guarded access hooks) —
-the **reference template** for the heavy compounds (Listbox/Typeahead). Compound pattern + hook docs live
+**Skeleton**, **Avatar**, **IconButton**, and **Card** migrated onto the native skin. **DS primary is now
+neutral** (`neutral.900`; brand colour = opt-in emphasis — shadcn/Radix; memory
+`neutral-default-emphasis-strategy`). **IconButton** = Open/Closed extension of Button. **Avatar** = React 19
+compound (resolver Model A, split contexts + guarded hooks). **Card** = SURFACE + slotted compound
+(`Card.{Header,Body,Footer}`, marker-context guard → slots throw outside `<Card>`, NO shared state; chrome
+on the root, padding on the slots, no dividers, Open/Closed for media/clickable — memory
+`card-slotted-compound`). **Typography** now ships `body1` (16px) + `body2` (14px) — MUI parity, `body`
+removed. **Radius scale capped at 6px** (memory `ds-lightness-radius-shadow`). Compound pattern + hook docs
 in `patterns-ui.md` + `new-react-component`. `react/jsx-no-leaked-render` enforced; tokens strictly
-kebab-case. TMDB composites removed. Every migrated component ships a co-located `README.md` + a
-`Reference/*` Storybook story (run `pnpm storybook:ref`).
+kebab-case. Every migrated component ships a co-located `README.md` + a `Reference/*` story
+(run `pnpm storybook:ref`).
 
-**NEXT step (most actionable): migrate `Card`** (20 `ui:`, flat presentational atom) onto the Badge
-pattern (web-only: BEM in `styles` + CVA resolver in `variants` if it has variants + 5-level tests +
-story + co-located README). Pattern reminder: if a component is really "a tuned X", extend X by
-composition (Open/Closed) instead of duplicating its skin — see IconButton/Button.
+**NEXT step (most actionable): migrate `Input`** (61 `ui:`, →Icon; first Molecule, needed before
+Typeahead) onto the established pattern (web-only: BEM in `styles` + CVA resolver in `variants` + 5-level
+tests + story + co-located README). Pattern reminders: separate axes (variant = look, not spacing/layout);
+if a component is really "a tuned X", extend/compose X (Open/Closed) instead of duplicating its skin.
 
 **Migration queue** (full detail + rationale in `native-css-migration-backlog` memory +
 `files/plans/native-css-migration.md`; `ui:` footprint in parens; deps before composers). Each = 1
 commit: BEM in `styles` + CVA resolver in `variants` (if variants) + 5-level tests + story + co-located README.
 
-- Atoms: ✅ Skeleton → ✅ Avatar (compound) → ✅ IconButton (extension of Button) → **Card (20)** ← next.
-- Molecules: Input (61, →Icon, before Typeahead) → Rating (32, →Icon) → Image (25, →Icon).
+- Atoms: ✅ Skeleton → ✅ Avatar (compound) → ✅ IconButton (extension of Button) → ✅ Card (slotted compound).
+- Molecules: **Input (61, →Icon, before Typeahead)** ← next → Rating (32, →Icon) → Image (25, →Icon).
 - Compounds: Listbox (37) → Menu (5, →Listbox) → Modal (8, →Portal) → Drawer (38, →IconButton+Portal) → Tabs (49) → Carousel (138; →Icon+IconButton) → Typeahead (23, →Input+Listbox+Portal, capstone).
 - **Icon & Portal NOT migrated** (no skin: heroicons SVG wrapper / `createPortal`) — they block nothing.
 

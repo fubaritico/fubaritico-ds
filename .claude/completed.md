@@ -2,6 +2,29 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-06-12 — Card (slotted compound) + Typography body1/body2 + radius cap 6px
+
+- **Card migrated** (`2d30644`) as a presentational SURFACE + slotted compound. Root `.ui-card` owns
+  chrome only (bg / 1px border / light shadow / 6px radius / flex column / `overflow:hidden` to clip
+  edge-to-edge media); padding lives on the slots `Card.Header/Body/Footer`. A minimal MARKER context
+  makes the slots **throw outside `<Card>`** (Avatar-style guarded hook, NO shared state). Axes separated;
+  **no dividers** between regions (removed on dev request — grouped by spacing only). Variants = surface
+  only (`default` sm-shadow, `outline` border, `elevated` md-shadow, `ghost` none). `.ui-card` sets
+  `--ui-card-font-family` (Inter) so raw text isn't browser-serif. Open/Closed: media/clickable cards
+  COMPOSE the surface, no new props. `cardVariants` + slot class constants in `variants`; 5-level tests;
+  co-located README; `Reference/Card` story composing Typography + Button. Memory: `card-slotted-compound`.
+- **Typography body→body1/body2** (`ffb6a0b`): MUI parity — `body` renamed to `body1` (16px, default) +
+  new `body2` (14px, compact). Propagated tokens→styles→variants→reference(+types/tests/README)→story.
+  Card body text uses `body2` (so a `h6` title doesn't read smaller than the body). **Breaking**:
+  `variant="body"` no longer exists.
+- **Radius scale capped at 6px** (`a902e20`): `sm` stays 4px; `default/md/lg/xl/2xl/3xl` flattened to 6px
+  (dev: nothing rounder than 6px reads right). Re-skins Card + Skeleton corners (both on lg) to 6px via the
+  token layer, no component code change. Memory: `ds-lightness-radius-shadow`.
+- **/review** ran per change: Card → 3 fixes (slot border-width vars — later removed with the dividers;
+  story `alt=""`; `useCardContext`→`void`), 3 rejected (CardVariantProps parity, one-file slots, REACT
+  map false positive). Typo/tokens → ready, 1 rejected (import-order false positive — lint green, Badge
+  pattern). All pushed `adb6f79..2d30644`.
+
 ### 2026-06-12 — DS primary → neutral + IconButton (Open/Closed extension of Button)
 
 - **Primary neutral strategy** (`4cebb80`): `color.semantic.primary.default` `blue.600` → `neutral.900`
