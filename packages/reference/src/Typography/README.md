@@ -6,8 +6,8 @@ inherited from the parent).
 
 ## Capabilities
 
-- **Semantic + neutral variants** — `h1`–`h6`, `body`, `caption`, `overline`, `label`, `inherit`.
-  Each maps to a sensible default element, overridable per instance.
+- **Semantic + neutral variants** — `h1`–`h6`, `body1` (16px, default), `body2` (14px, compact),
+  `caption`, `overline`, `label`, `inherit`. Each maps to a sensible default element, overridable per instance.
 - **Polymorphic** — choose the rendered element with `as` (e.g. `as="span"`), or remap a whole
   variant with `variantMapping`. `as` wins over `variantMapping`.
 - **`inherit` variant** — applies no type styles at all; the text inherits everything from its parent.
@@ -34,7 +34,8 @@ import { Typography } from '@fubaritico-ds/reference/Typography'
 <Typography variant="h2">Section heading</Typography>
 <Typography variant="overline">Section</Typography>
 <Typography variant="caption">Helper text</Typography>
-<Typography variant="body" gutterBottom>Paragraph with a bottom gutter.</Typography>
+<Typography variant="body1">Default paragraph (16px).</Typography>
+<Typography variant="body2" gutterBottom>Compact paragraph (14px) with a bottom gutter.</Typography>
 <Typography variant="h3" align="center">Centered heading</Typography>
 <Typography noWrap title="Full untruncated text…">Truncated on overflow…</Typography>
 ```
@@ -54,14 +55,14 @@ import { Typography } from '@fubaritico-ds/reference/Typography'
 
 ## Props
 
-| Prop             | Type                                                                     | Default     | Description                                                     |
-| ---------------- | ------------------------------------------------------------------------ | ----------- | --------------------------------------------------------------- |
-| `variant`        | `'h1'…'h6' \| 'body' \| 'caption' \| 'overline' \| 'label' \| 'inherit'` | `'body'`    | Visual type role. `inherit` applies no styles.                  |
-| `as`             | `ElementType`                                                            | from map    | Override the rendered element. Wins over `variantMapping`.      |
-| `variantMapping` | `Partial<Record<TypographyVariant, ElementType>>`                        | —           | Per-instance override of the default variant → element mapping. |
-| `align`          | `'inherit' \| 'left' \| 'center' \| 'right' \| 'justify'`                | `'inherit'` | Text alignment.                                                 |
-| `gutterBottom`   | `boolean`                                                                | `false`     | Adds a bottom margin.                                           |
-| `noWrap`         | `boolean`                                                                | `false`     | Truncates to a single line with an ellipsis.                    |
+| Prop             | Type                                                                                 | Default     | Description                                                     |
+| ---------------- | ------------------------------------------------------------------------------------ | ----------- | --------------------------------------------------------------- |
+| `variant`        | `'h1'…'h6' \| 'body1' \| 'body2' \| 'caption' \| 'overline' \| 'label' \| 'inherit'` | `'body1'`   | Visual type role. `inherit` applies no styles.                  |
+| `as`             | `ElementType`                                                                        | from map    | Override the rendered element. Wins over `variantMapping`.      |
+| `variantMapping` | `Partial<Record<TypographyVariant, ElementType>>`                                    | —           | Per-instance override of the default variant → element mapping. |
+| `align`          | `'inherit' \| 'left' \| 'center' \| 'right' \| 'justify'`                            | `'inherit'` | Text alignment.                                                 |
+| `gutterBottom`   | `boolean`                                                                            | `false`     | Adds a bottom margin.                                           |
+| `noWrap`         | `boolean`                                                                            | `false`     | Truncates to a single line with an ellipsis.                    |
 
 Plus all native attributes of the rendered element (`ComponentProps<C>`, including `ref` and
 `className`). When `as="label"`, `htmlFor` is **required**.

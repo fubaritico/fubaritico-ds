@@ -57,11 +57,19 @@
   }
 
   /* ---- body & supporting roles (Inter, fixed sizes) ---- */
-  .ui-typography--body {
+  /* `body1` is the default paragraph (16px); `body2` is the compact body (14px) — MUI parity. */
+  .ui-typography--body1 {
     font-family: var(--font-inter);
-    font-size: var(--typography-body-size);
-    font-weight: var(--typography-body-weight);
-    line-height: var(--typography-body-line-height);
+    font-size: var(--typography-body1-size);
+    font-weight: var(--typography-body1-weight);
+    line-height: var(--typography-body1-line-height);
+  }
+
+  .ui-typography--body2 {
+    font-family: var(--font-inter);
+    font-size: var(--typography-body2-size);
+    font-weight: var(--typography-body2-weight);
+    line-height: var(--typography-body2-line-height);
   }
 
   .ui-typography--caption {

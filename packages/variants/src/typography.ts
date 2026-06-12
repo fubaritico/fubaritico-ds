@@ -13,7 +13,8 @@ export type TypographyVariant =
   | 'h4'
   | 'h5'
   | 'h6'
-  | 'body'
+  | 'body1'
+  | 'body2'
   | 'caption'
   | 'overline'
   | 'label'
@@ -35,7 +36,7 @@ export type TypographyAlign =
  * `--typography-*` tokens; it never sets `color` (inherited from the parent).
  *
  * @param props - Typography options (all optional — CVA defaults apply).
- * @param props.variant - Type role; defaults to `'body'`.
+ * @param props.variant - Type role; defaults to `'body1'`.
  * @param props.align - Text alignment; defaults to `'inherit'`.
  * @param props.gutterBottom - Adds a bottom margin when `true`.
  * @param props.noWrap - Truncates with an ellipsis when `true`.
@@ -50,7 +51,8 @@ export const typographyVariants = cva('ui-typography', {
       h4: 'ui-typography--h4',
       h5: 'ui-typography--h5',
       h6: 'ui-typography--h6',
-      body: 'ui-typography--body',
+      body1: 'ui-typography--body1',
+      body2: 'ui-typography--body2',
       caption: 'ui-typography--caption',
       overline: 'ui-typography--overline',
       label: 'ui-typography--label',
@@ -73,7 +75,7 @@ export const typographyVariants = cva('ui-typography', {
     },
   },
   defaultVariants: {
-    variant: 'body',
+    variant: 'body1',
     align: 'inherit',
     gutterBottom: false,
     noWrap: false,

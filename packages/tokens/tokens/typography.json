@@ -49,10 +49,15 @@
       "weight": { "$value": "{font.weight.medium}", "$type": "fontWeight" },
       "lineHeight": { "$value": "{font.lineHeight.normal}", "$type": "number" }
     },
-    "body": {
+    "body1": {
       "size": { "$value": "{font.size.base}", "$type": "dimension" },
       "weight": { "$value": "{font.weight.normal}", "$type": "fontWeight" },
       "lineHeight": { "$value": "{font.lineHeight.relaxed}", "$type": "number" }
+    },
+    "body2": {
+      "size": { "$value": "{font.size.sm}", "$type": "dimension" },
+      "weight": { "$value": "{font.weight.normal}", "$type": "fontWeight" },
+      "lineHeight": { "$value": "{font.lineHeight.normal}", "$type": "number" }
     },
     "caption": {
       "size": { "$value": "{font.size.xs}", "$type": "dimension" },

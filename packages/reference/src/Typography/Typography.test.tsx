@@ -5,12 +5,12 @@ import { Typography } from './Typography'
 
 describe('Typography', () => {
   describe('happy path', () => {
-    it('renders body in a <p> by default with the base + body classes', () => {
+    it('renders body1 in a <p> by default with the base + body1 classes', () => {
       const { container } = render(<Typography>Body text</Typography>)
       const el = container.querySelector('p')
       expect(el).toBeInTheDocument()
       expect(el).toHaveClass('ui-typography')
-      expect(el).toHaveClass('ui-typography--body')
+      expect(el).toHaveClass('ui-typography--body1')
       expect(el).toHaveTextContent('Body text')
     })
   })
@@ -23,6 +23,8 @@ describe('Typography', () => {
       ['h4', 'h4'],
       ['h5', 'h5'],
       ['h6', 'h6'],
+      ['body1', 'p'],
+      ['body2', 'p'],
       ['caption', 'span'],
       ['overline', 'span'],
       ['label', 'span'],
@@ -99,7 +101,7 @@ describe('Typography', () => {
 
     it('honours a per-instance variantMapping override', () => {
       const { container } = render(
-        <Typography variant="body" variantMapping={{ body: 'span' }}>
+        <Typography variant="body1" variantMapping={{ body1: 'span' }}>
           Body as span
         </Typography>
       )
@@ -110,7 +112,7 @@ describe('Typography', () => {
     it('merges a consumer className with the resolved skin classes', () => {
       render(<Typography className="my-class">Merged</Typography>)
       const cls = screen.getByText('Merged').className
-      expect(cls).toContain('ui-typography--body')
+      expect(cls).toContain('ui-typography--body1')
       expect(cls).toContain('my-class')
     })
   })

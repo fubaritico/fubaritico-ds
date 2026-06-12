@@ -22,7 +22,8 @@ const meta = {
         'h4',
         'h5',
         'h6',
-        'body',
+        'body1',
+        'body2',
         'caption',
         'overline',
         'label',
@@ -40,7 +41,7 @@ const meta = {
     variantMapping: { table: { disable: true } },
   },
   args: {
-    variant: 'body',
+    variant: 'body1',
     children: 'The quick brown fox jumps over the lazy dog.',
   },
 } satisfies Meta<typeof Typography>
@@ -71,8 +72,11 @@ export const Showcase: Story = {
       <Typography variant="h4">Heading 4</Typography>
       <Typography variant="h5">Heading 5</Typography>
       <Typography variant="h6">Heading 6</Typography>
-      <Typography variant="body">
-        Body — the quick brown fox jumps over the lazy dog.
+      <Typography variant="body1">
+        Body 1 (16px) — the quick brown fox jumps over the lazy dog.
+      </Typography>
+      <Typography variant="body2">
+        Body 2 (14px) — the quick brown fox jumps over the lazy dog.
       </Typography>
       <Typography variant="label">Label</Typography>
       <Typography variant="caption">Caption</Typography>

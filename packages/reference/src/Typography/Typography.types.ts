@@ -9,7 +9,7 @@ import type { ComponentProps, ElementType } from 'react'
  * Headless: it sets type structure only (never `color`).
  */
 export interface TypographyOwnProps {
-  /** Visual type role; defaults to `'body'`. */
+  /** Visual type role; defaults to `'body1'`. */
   variant?: TypographyVariant
   /** Per-instance override of the default variant → element mapping. */
   variantMapping?: Partial<Record<TypographyVariant, ElementType>>

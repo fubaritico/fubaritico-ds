@@ -4,8 +4,8 @@ import { typographyVariants } from './typography.js'
 
 describe('typographyVariants', () => {
   describe('happy path', () => {
-    it('returns base + body (default) when called with no args', () => {
-      expect(typographyVariants()).toBe('ui-typography ui-typography--body')
+    it('returns base + body1 (default) when called with no args', () => {
+      expect(typographyVariants()).toBe('ui-typography ui-typography--body1')
     })
   })
 
@@ -17,7 +17,8 @@ describe('typographyVariants', () => {
       ['h4', 'ui-typography ui-typography--h4'],
       ['h5', 'ui-typography ui-typography--h5'],
       ['h6', 'ui-typography ui-typography--h6'],
-      ['body', 'ui-typography ui-typography--body'],
+      ['body1', 'ui-typography ui-typography--body1'],
+      ['body2', 'ui-typography ui-typography--body2'],
       ['caption', 'ui-typography ui-typography--caption'],
       ['overline', 'ui-typography ui-typography--overline'],
       ['label', 'ui-typography ui-typography--label'],
@@ -40,7 +41,7 @@ describe('typographyVariants', () => {
 
     it('emits no align modifier for "inherit"', () => {
       expect(typographyVariants({ align: 'inherit' })).toBe(
-        'ui-typography ui-typography--body'
+        'ui-typography ui-typography--body1'
       )
     })
 
@@ -62,7 +63,7 @@ describe('typographyVariants', () => {
           gutterBottom: undefined,
           noWrap: undefined,
         })
-      ).toBe('ui-typography ui-typography--body')
+      ).toBe('ui-typography ui-typography--body1')
     })
   })
 

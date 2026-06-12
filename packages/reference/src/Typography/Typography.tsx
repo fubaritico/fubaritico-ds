@@ -15,7 +15,8 @@ export const defaultVariantMapping: Record<TypographyVariant, ElementType> = {
   h4: 'h4',
   h5: 'h5',
   h6: 'h6',
-  body: 'p',
+  body1: 'p',
+  body2: 'p',
   caption: 'span',
   overline: 'span',
   // `label` is a VISUAL role → renders a <span>, never an orphan <label>. For a real form label,
@@ -34,7 +35,7 @@ export const defaultVariantMapping: Record<TypographyVariant, ElementType> = {
  * @returns The rendered typographic element.
  */
 export function Typography<C extends ElementType = 'p'>({
-  variant = 'body',
+  variant = 'body1',
   as,
   variantMapping,
   gutterBottom,
