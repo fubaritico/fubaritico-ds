@@ -1,21 +1,23 @@
 # Avatar
 
-A circular media slot that represents a person or entity — it resolves the best available
-representation in order: the **image**, then the consumer **initials**, then a generic **User icon**.
+A circular media slot for a person or entity, composed from sub-components. You declare an ordered
+list of **candidates** (image, initials, icon) inside `Avatar.Fallback`; the **resolution cascade**
+renders the first viable one — image when it loads, else initials, else the icon.
 
 ## Capabilities
 
-- **Three-tier fallback** — renders the image when `src` loads, the `initials` when there is no
-  image, and the `User` icon when neither is available. The choice is automatic.
-- **Graceful image failure** — if the image errors at runtime (`onError`), it drops to the next tier
-  (initials, then icon) without layout shift.
-- **Fixed square footprint** — the block always reserves its size, so a missing image never
-  collapses the surrounding layout.
-- **Size API** — `xs · sm · md · lg · xl · 2xl · 3xl`; each scales the footprint and the initials.
-- **Skinnable** — colours, radius and footprint are driven by overridable `--ui-avatar-*` CSS
-  variables (white-label); size resolves to a BEM class via the framework-agnostic resolver.
-- **Attribute passthrough** — extra `<img>` attributes (`id`, `data-*`, `loading`, …) are forwarded
-  to the image element when one is rendered.
+- **Resolution cascade** — `Avatar.Fallback` renders the **first viable candidate** in document order.
+  Supports multiple image sources (e.g. gravatar → CDN → initials → icon).
+- **Anti-flash** — while an image candidate is still loading it **blocks** later candidates, so the
+  initials never flash before the image resolves. On error/empty it fails over to the next candidate.
+- **Loading status** — `Avatar.Image` exposes `onLoadingStatusChange` (`idle`/`loading`/`loaded`/
+  `error`) and an optional **render-prop child** for a custom loading visual (e.g. a skeleton).
+- **Split contexts** — a _stable_ config context (`size`) trickles to `Avatar.Icon`; a _dynamic_
+  cascade context coordinates resolution. A status change never re-renders the size consumers.
+- **Typed icon** — `Avatar.Icon` `name` is typed (`IconName`) → autocompletion, can't be mistyped;
+  it is infallible (always a valid last resort) and `aria-hidden`.
+- **Single accessible name** — the root carries `role="img"` + `aria-label` across every tier.
+- **Skinnable** — colours/footprint via overridable `--ui-avatar-*` CSS variables; size → BEM class.
 
 ## Import
 
@@ -26,87 +28,131 @@ import { Avatar } from '@fubaritico-ds/reference/Avatar'
 ## Basic usage
 
 ```tsx
-<Avatar src="https://example.com/jane.jpg" alt="Jane Doe" />
+<Avatar aria-label="Jane Doe">
+  <Avatar.Fallback>
+    <Avatar.Image src="https://example.com/jane.jpg" />
+    <Avatar.Initials>JD</Avatar.Initials>
+    <Avatar.Icon />
+  </Avatar.Fallback>
+</Avatar>
 ```
 
 ## Variants & options
 
-Image avatar:
+Initials-only (no image):
 
 ```tsx
-<Avatar src="https://example.com/jane.jpg" alt="Jane Doe" size="lg" />
+<Avatar aria-label="Jane Doe" size="lg">
+  <Avatar.Fallback>
+    <Avatar.Initials>JD</Avatar.Initials>
+  </Avatar.Fallback>
+</Avatar>
 ```
 
-Initials fallback (no image):
+Icon-only fallback:
 
 ```tsx
-<Avatar alt="Jane Doe" initials="JD" />
+<Avatar aria-label="Unknown user">
+  <Avatar.Fallback>
+    <Avatar.Icon name="User" />
+  </Avatar.Fallback>
+</Avatar>
 ```
 
-Icon fallback (no image, no initials):
+Custom loading visual via the render-prop:
 
 ```tsx
-<Avatar alt="Unknown user" />
+<Avatar aria-label="Jane Doe">
+  <Avatar.Fallback>
+    <Avatar.Image src={url}>
+      {(status) =>
+        status === 'loading' ? <Skeleton variant="circle" /> : null
+      }
+    </Avatar.Image>
+    <Avatar.Icon />
+  </Avatar.Fallback>
+</Avatar>
 ```
 
-Every size:
+React to the loading status:
 
 ```tsx
-<Avatar alt="Jane Doe" initials="JD" size="xs" />
-<Avatar alt="Jane Doe" initials="JD" size="sm" />
-<Avatar alt="Jane Doe" initials="JD" size="md" />
-<Avatar alt="Jane Doe" initials="JD" size="lg" />
-<Avatar alt="Jane Doe" initials="JD" size="xl" />
-<Avatar alt="Jane Doe" initials="JD" size="2xl" />
-<Avatar alt="Jane Doe" initials="JD" size="3xl" />
+<Avatar.Image src={url} onLoadingStatusChange={(s) => console.warn(s)} />
 ```
+
+Every size: `xs · sm · md · lg · xl · 2xl · 3xl` (on the root).
 
 ## Edge cases
 
-A broken or unreachable image falls back automatically:
+Multiple image sources — the first that loads wins:
 
 ```tsx
-<Avatar src="https://invalid.url/broken.jpg" alt="Jane Doe" initials="JD" />
+<Avatar aria-label="Jane Doe">
+  <Avatar.Fallback>
+    <Avatar.Image src={gravatarUrl} />
+    <Avatar.Image src={cdnUrl} />
+    <Avatar.Initials>JD</Avatar.Initials>
+    <Avatar.Icon />
+  </Avatar.Fallback>
+</Avatar>
 ```
 
-Long initials are truncated to the first two characters:
+Standalone image (no fallback chain):
 
 ```tsx
-<Avatar alt="Jane Doe Smith" initials="JDS" /> {/* renders "JD" */}
+<Avatar aria-label="Jane Doe">
+  <Avatar.Image src={url} />
+</Avatar>
 ```
 
-A `null` or empty `src` is treated like a missing image:
-
-```tsx
-<Avatar src={null} alt="Jane Doe" initials="JD" />
-```
+Long initials are truncated to the first 2 characters: `<Avatar.Initials>JDS</Avatar.Initials>` → `JD`.
 
 ## Props / API reference
 
-| Prop        | Type                                         | Default | Description                                                              |
-| ----------- | -------------------------------------------- | ------- | ------------------------------------------------------------------------ |
-| `src`       | `string \| null`                             | —       | Image URL. When absent or it fails to load, the fallback is shown.       |
-| `alt`       | `string`                                     | —       | **Required.** Alt text describing the person — even when no image shows. |
-| `size`      | `'xs'\|'sm'\|'md'\|'lg'\|'xl'\|'2xl'\|'3xl'` | `'md'`  | Footprint and initials scale.                                            |
-| `initials`  | `string`                                     | —       | Initials fallback, truncated to the first 2 characters.                  |
-| `className` | `string`                                     | —       | Merged onto the root element.                                            |
-| `...rest`   | `ComponentProps<'img'>` (minus `src`)        | —       | Forwarded to the `<img>` element **only when an image is rendered**.     |
+### `Avatar` (root)
+
+| Prop         | Type                                         | Default | Description                                            |
+| ------------ | -------------------------------------------- | ------- | ------------------------------------------------------ |
+| `aria-label` | `string`                                     | —       | **Required.** Accessible name for the whole avatar.    |
+| `size`       | `'xs'\|'sm'\|'md'\|'lg'\|'xl'\|'2xl'\|'3xl'` | `'md'`  | Footprint + icon/initials scale; trickles via context. |
+| `...rest`    | `ComponentProps<'div'>`                      | —       | Forwarded to the root element.                         |
+
+### `Avatar.Image`
+
+| Prop                    | Type                    | Default | Description                                                 |
+| ----------------------- | ----------------------- | ------- | ----------------------------------------------------------- |
+| `src`                   | `string \| null`        | —       | Image URL. Empty/null → yields to the next candidate.       |
+| `alt`                   | `string`                | `''`    | Decorative by default (the root names the avatar).          |
+| `onLoadingStatusChange` | `(status) => void`      | —       | Fires on each `idle`/`loading`/`loaded`/`error` transition. |
+| `children`              | `(status) => ReactNode` | —       | Render-prop for the loading visual (shown while pending).   |
+
+### `Avatar.Fallback`
+
+| Prop       | Type        | Default | Description                                       |
+| ---------- | ----------- | ------- | ------------------------------------------------- |
+| `children` | `ReactNode` | —       | Ordered candidates; the first viable one renders. |
+
+### `Avatar.Initials` · `Avatar.Icon`
+
+| Prop       | Type       | Default  | Description                                        |
+| ---------- | ---------- | -------- | -------------------------------------------------- |
+| `children` | `string`   | —        | (Initials) text, truncated to 2 chars.             |
+| `name`     | `IconName` | `'User'` | (Icon) typed icon name; reads `size` from context. |
 
 ## Accessibility
 
-- `alt` is **required** and describes the person.
-- When an image renders, the `<img alt>` is the accessible name. When the initials or icon fallback
-  renders, the **root element carries `role="img"` and `aria-label={alt}`**, so the avatar always
-  exposes a meaningful name to assistive technology (the decorative icon stays `aria-hidden`).
+- The **root** carries the accessible name (`role="img"` + `aria-label`) in every tier.
+- `Avatar.Image` is **decorative** (`alt=""` by default) — the root already names the avatar.
+- `Avatar.Icon` is `aria-hidden`.
 
 ## Notes
 
-> **Note** — extra `img` attributes (`data-*`, `loading`, `id`, …) are forwarded to the `<img>` > **only when an image is rendered**. In the initials/icon fallback there is no `<img>`, so those
-> attributes are not applied.
+> **Warning** — `aria-label` is **required** on `<Avatar>`: it is the only accessible name, and it must
+> hold even when the image fails and a fallback renders.
 
-> **Note** — `initials` are truncated to the **first two characters**. Pass the two you want shown
-> (e.g. `"JD"`), not a full name.
+> **Note** — while an image candidate is loading, the cascade shows **nothing** (or your render-prop)
+> rather than flashing the initials. Provide a loading visual via the `Avatar.Image` render-prop if you
+> want a placeholder during the load.
 
-> **Warning** — the avatar reserves a fixed square footprint per `size`; it has no intrinsic content
-> sizing. Overriding the footprint means redefining `--ui-avatar-size` (or the `size` prop), not
-> width/height utilities on the child.
+> **Note** — `Avatar.Image` `alt` is decorative by default. Pass a meaningful `alt` only if you do NOT
+> set the root `aria-label`, to avoid the name being announced twice.

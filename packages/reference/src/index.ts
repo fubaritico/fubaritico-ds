@@ -1,7 +1,15 @@
 import './styles.css'
 
 export { Avatar } from './Avatar'
-export type { AvatarProps, AvatarSize } from './Avatar'
+export type {
+  AvatarProps,
+  AvatarSize,
+  AvatarImageProps,
+  AvatarFallbackProps,
+  AvatarIconProps,
+  AvatarInitialsProps,
+  AvatarImageStatus,
+} from './Avatar'
 
 export { Badge } from './Badge'
 export type { BadgeProps, BadgeSize, BadgeVariant } from './Badge'

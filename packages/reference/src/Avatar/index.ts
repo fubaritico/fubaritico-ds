@@ -1,2 +1,7 @@
 export { default as Avatar } from './Avatar'
 export type { AvatarProps, AvatarSize } from './Avatar'
+export type { AvatarImageProps } from './AvatarImage'
+export type { AvatarFallbackProps } from './AvatarFallback'
+export type { AvatarIconProps } from './AvatarIcon'
+export type { AvatarInitialsProps } from './AvatarInitials'
+export type { AvatarImageStatus } from './AvatarContext'

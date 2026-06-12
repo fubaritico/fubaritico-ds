@@ -6,11 +6,12 @@ import { Avatar } from '@fubaritico-ds/reference/Avatar'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 const SAMPLE_SRC = 'https://i.pravatar.cc/150?img=12'
+const BROKEN_SRC = 'https://invalid.example/nope.jpg'
 
 /**
- * Avatar — circular media slot migrated to the native BEM skin (`@fubaritico-ds/styles`); the size
- * resolves to a BEM class via `@fubaritico-ds/variants`. It resolves the best representation in
- * order: image → initials → `User` icon, with automatic fallback on image load failure.
+ * Avatar — compound, headless-style media slot migrated to the native BEM skin
+ * (`@fubaritico-ds/styles`). Declare ordered candidates inside `Avatar.Fallback`; the resolution
+ * cascade renders the first viable one (image → initials → icon), blocking on a loading image.
  */
 const meta = {
   title: 'Reference/Avatar',
@@ -21,15 +22,11 @@ const meta = {
       control: 'inline-radio',
       options: ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'],
     },
-    src: { control: 'text' },
-    alt: { control: 'text' },
-    initials: { control: 'text' },
+    'aria-label': { control: 'text' },
   },
   args: {
     size: 'md',
-    src: SAMPLE_SRC,
-    alt: 'Jane Doe',
-    initials: 'JD',
+    'aria-label': 'Jane Doe',
   },
 } satisfies Meta<typeof Avatar>
 
@@ -37,29 +34,60 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** Interactive playground driven by the controls panel. */
-export const Playground: Story = {}
+/** Interactive playground — full cascade (image → initials → icon) driven by the controls. */
+export const Playground: Story = {
+  render: (args) => (
+    <Avatar {...args}>
+      <Avatar.Fallback>
+        <Avatar.Image src={SAMPLE_SRC} />
+        <Avatar.Initials>JD</Avatar.Initials>
+        <Avatar.Icon />
+      </Avatar.Fallback>
+    </Avatar>
+  ),
+}
 
-/** Every size and every fallback tier (image · initials · icon) in one view; controls disabled. */
+/** Every size and every resolution tier (image · initials · icon · broken→fallback) in one view. */
 export const Showcase: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      {/* Sizes (image) */}
+      {/* Sizes (image tier) */}
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <Avatar src={SAMPLE_SRC} alt="Jane Doe" size="xs" />
-        <Avatar src={SAMPLE_SRC} alt="Jane Doe" size="sm" />
-        <Avatar src={SAMPLE_SRC} alt="Jane Doe" size="md" />
-        <Avatar src={SAMPLE_SRC} alt="Jane Doe" size="lg" />
-        <Avatar src={SAMPLE_SRC} alt="Jane Doe" size="xl" />
-        <Avatar src={SAMPLE_SRC} alt="Jane Doe" size="2xl" />
-        <Avatar src={SAMPLE_SRC} alt="Jane Doe" size="3xl" />
+        {(['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl'] as const).map((size) => (
+          <Avatar key={size} size={size} aria-label="Jane Doe">
+            <Avatar.Fallback>
+              <Avatar.Image src={SAMPLE_SRC} />
+              <Avatar.Icon />
+            </Avatar.Fallback>
+          </Avatar>
+        ))}
       </div>
-      {/* Fallback tiers: image → initials → icon */}
+      {/* Resolution tiers: image → initials → icon, and a broken source falling back */}
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <Avatar src={SAMPLE_SRC} alt="Jane Doe" size="lg" />
-        <Avatar alt="Jane Doe" initials="JD" size="lg" />
-        <Avatar alt="Unknown user" size="lg" />
+        <Avatar size="lg" aria-label="Loaded image">
+          <Avatar.Fallback>
+            <Avatar.Image src={SAMPLE_SRC} />
+            <Avatar.Icon />
+          </Avatar.Fallback>
+        </Avatar>
+        <Avatar size="lg" aria-label="Initials only">
+          <Avatar.Fallback>
+            <Avatar.Initials>JD</Avatar.Initials>
+          </Avatar.Fallback>
+        </Avatar>
+        <Avatar size="lg" aria-label="Icon only">
+          <Avatar.Fallback>
+            <Avatar.Icon name="User" />
+          </Avatar.Fallback>
+        </Avatar>
+        <Avatar size="lg" aria-label="Broken image, falls back to initials">
+          <Avatar.Fallback>
+            <Avatar.Image src={BROKEN_SRC} />
+            <Avatar.Initials>JD</Avatar.Initials>
+            <Avatar.Icon />
+          </Avatar.Fallback>
+        </Avatar>
       </div>
     </div>
   ),

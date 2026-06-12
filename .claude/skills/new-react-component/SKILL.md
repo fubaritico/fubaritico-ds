@@ -11,7 +11,12 @@ metadata:
 
 Create a new UI component in `packages/reference` following the project patterns.
 
-Reference the component patterns: @.claude/rules/component-patterns.md
+Reference the component patterns: @.claude/rules/patterns-ui.md
+
+> For compound / context components, the **Compound Components Pattern (React 19)** section in
+> `patterns-ui.md` is mandatory: a dedicated access hook per context (encapsulated `use()` + guard —
+> throw if required, return null if standalone), `<Context value>` providers, `use()`, `ref`-as-prop,
+> `useEffectEvent`, and split-by-frequency contexts.
 
 ## Steps
 
@@ -35,3 +40,19 @@ Reference the component patterns: @.claude/rules/component-patterns.md
 - Export interface as named export, component as default
 - Use `clsx` for conditional classes
 - **Story is mandatory** — always run `/story` after creating the component
+
+## Documentation rules (mandatory — enforced by `/review`)
+
+Documentation is not optional decoration; it states intent so the next reader (or `/review`) can
+verify behaviour. Apply ALL of:
+
+- **Every custom hook** ships a JSDoc header: ONE sentence on _what it does_ + `@param` + `@returns`.
+  Required even for one-line hooks (e.g. a context-access hook). The throw/return-null contract MUST
+  be stated (see the Compound Components Pattern in `patterns-ui.md`).
+- **Every hook CALL inside a component/hook** gets a one-line comment saying _what it does and why_ —
+  `useEffect`, `useMemo`, `useCallback`, `use`, `useLayoutEffect`, `useEffectEvent`, non-trivial
+  `useState`. The reader must understand the effect's purpose without reverse-engineering the deps.
+  (A bare header above the hook is NOT enough — annotate the call site.)
+- **Every component** ships a JSDoc header (what it is + `@param props` + `@returns`).
+- **Every exported interface property / type / constant** is documented (project strict-JSDoc rule).
+- Comments explain **why / what-for**, not a restatement of the code.

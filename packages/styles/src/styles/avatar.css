@@ -26,6 +26,9 @@
     --ui-avatar-font-family: var(--font-inter);
     --ui-avatar-font-weight: var(--font-weight-medium);
     --ui-avatar-font-size: var(--font-size-base); /* md base */
+    --ui-avatar-line-height: var(
+      --font-line-height-none
+    ); /* 1 — single-line initials */
 
     /* ---- base ---- */
     /* Self-sufficient box model: the skin survives in hosts with no reset (the DS ships none). */
@@ -87,9 +90,7 @@
   .ui-avatar__initials {
     font-weight: var(--ui-avatar-font-weight);
     font-size: var(--ui-avatar-font-size);
-    line-height: var(
-      --font-line-height-none
-    ); /* 1 — single-line, vertically centred */
+    line-height: var(--ui-avatar-line-height);
     text-transform: uppercase;
   }
 
