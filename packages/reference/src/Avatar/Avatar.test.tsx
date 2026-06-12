@@ -3,84 +3,126 @@ import { describe, expect, it } from 'vitest'
 
 import Avatar from './Avatar'
 
+import type { AvatarSize } from './Avatar'
+
 describe('Avatar', () => {
-  it('renders with image when src is provided', () => {
-    render(<Avatar src="https://example.com/avatar.jpg" alt="John Doe" />)
-    const img = screen.getByRole('img')
-    expect(img).toBeInTheDocument()
-    expect(img).toHaveAttribute('src', 'https://example.com/avatar.jpg')
-    expect(img).toHaveAttribute('alt', 'John Doe')
+  describe('happy path', () => {
+    it('renders the image when a src is provided', () => {
+      render(<Avatar src="https://example.com/a.jpg" alt="John Doe" />)
+      const img = screen.getByRole('img')
+      expect(img).toHaveAttribute('src', 'https://example.com/a.jpg')
+      expect(img).toHaveAttribute('alt', 'John Doe')
+      expect(img).toHaveClass('ui-avatar__image')
+    })
+
+    it('renders the initials when no src is provided', () => {
+      render(<Avatar alt="John Doe" initials="JD" />)
+      const initials = screen.getByText('JD')
+      expect(initials).toBeInTheDocument()
+      expect(initials).toHaveClass('ui-avatar__initials')
+    })
+
+    it('renders the User icon when there is neither src nor initials', () => {
+      const { container } = render(<Avatar alt="Unknown user" />)
+      const icon = container.querySelector('svg')
+      expect(icon).toBeInTheDocument()
+      expect(icon).toHaveClass('ui-avatar__icon')
+    })
+
+    it('exposes the alt as the accessible name on the fallback container', () => {
+      // No <img> in the fallback tiers → the container itself carries role="img" + aria-label.
+      render(<Avatar alt="Unknown user" />)
+      expect(
+        screen.getByRole('img', { name: 'Unknown user' })
+      ).toBeInTheDocument()
+    })
   })
 
-  it('renders initials when no src is provided', () => {
-    render(<Avatar alt="John Doe" initials="JD" />)
-    expect(screen.getByText('JD')).toBeInTheDocument()
-  })
-
-  it('truncates initials to 2 characters', () => {
-    render(<Avatar alt="John Doe Smith" initials="JDS" />)
-    expect(screen.getByText('JD')).toBeInTheDocument()
-  })
-
-  it('renders fallback icon when no src or initials', () => {
-    render(<Avatar alt="Unknown user" />)
-    expect(screen.queryByRole('img')).not.toBeInTheDocument()
-    expect(screen.queryByText(/./)).not.toBeInTheDocument()
-    const svg = document.querySelector('svg')
-    expect(svg).toBeInTheDocument()
-  })
-
-  it('shows fallback on image error', () => {
-    render(<Avatar src="https://invalid.url/broken.jpg" alt="Broken" />)
-    const img = screen.getByRole('img')
-    fireEvent.error(img)
-    expect(screen.queryByRole('img')).not.toBeInTheDocument()
-  })
-
-  it('shows initials on image error when initials provided', () => {
-    render(
-      <Avatar src="https://invalid.url/broken.jpg" alt="John" initials="JD" />
+  describe('variants', () => {
+    it.each([
+      ['xs', 'ui-avatar--xs'],
+      ['sm', 'ui-avatar--sm'],
+      ['lg', 'ui-avatar--lg'],
+      ['xl', 'ui-avatar--xl'],
+      ['2xl', 'ui-avatar--2xl'],
+      ['3xl', 'ui-avatar--3xl'],
+    ] as [AvatarSize, string][])(
+      'applies the %s size modifier',
+      (size, modifier) => {
+        const { container } = render(<Avatar alt="Test" size={size} />)
+        expect(container.firstChild).toHaveClass('ui-avatar', modifier)
+      }
     )
-    const img = screen.getByRole('img')
-    fireEvent.error(img)
-    expect(screen.getByText('JD')).toBeInTheDocument()
+
+    it('emits only the base class for the default md size', () => {
+      const { container } = render(<Avatar alt="Test" />)
+      expect(container.firstChild).toHaveClass('ui-avatar')
+      expect(container.firstChild).not.toHaveClass('ui-avatar--md')
+    })
+
+    it('merges a custom className with the resolved classes', () => {
+      const { container } = render(<Avatar alt="Test" className="custom" />)
+      expect(container.firstChild).toHaveClass('ui-avatar', 'custom')
+    })
   })
 
-  it('applies size classes correctly', () => {
-    const { container, rerender } = render(<Avatar alt="Test" size="xs" />)
-    expect(container.firstChild).toHaveClass('ui:h-6', 'ui:w-6')
+  describe('managed errors', () => {
+    it('falls back to the icon when the image fails to load', () => {
+      const { container } = render(
+        <Avatar src="https://invalid.url/x.jpg" alt="Broken" />
+      )
+      // Before the error, the only role="img" is the real <img> (the container has no role yet).
+      fireEvent.error(screen.getByRole('img')) // image error is a DOM media event, not a user action
+      // No real <img> tag remains; the fallback container takes over the role="img".
+      expect(container.querySelector('img')).not.toBeInTheDocument()
+      expect(container.querySelector('svg')).toBeInTheDocument()
+    })
 
-    rerender(<Avatar alt="Test" size="sm" />)
-    expect(container.firstChild).toHaveClass('ui:h-8', 'ui:w-8')
-
-    rerender(<Avatar alt="Test" size="md" />)
-    expect(container.firstChild).toHaveClass('ui:h-10', 'ui:w-10')
-
-    rerender(<Avatar alt="Test" size="lg" />)
-    expect(container.firstChild).toHaveClass('ui:h-12', 'ui:w-12')
-
-    rerender(<Avatar alt="Test" size="xl" />)
-    expect(container.firstChild).toHaveClass('ui:h-16', 'ui:w-16')
-
-    rerender(<Avatar alt="Test" size="2xl" />)
-    expect(container.firstChild).toHaveClass('ui:h-24', 'ui:w-24')
-
-    rerender(<Avatar alt="Test" size="3xl" />)
-    expect(container.firstChild).toHaveClass('ui:h-32', 'ui:w-32')
+    it('falls back to the initials on image error when initials are provided', () => {
+      render(
+        <Avatar src="https://invalid.url/x.jpg" alt="John" initials="JD" />
+      )
+      fireEvent.error(screen.getByRole('img'))
+      expect(screen.getByText('JD')).toBeInTheDocument()
+    })
   })
 
-  it('has rounded-full class for circular shape', () => {
-    const { container } = render(<Avatar alt="Test" />)
-    expect(container.firstChild).toHaveClass('ui:rounded-full')
+  describe('unmanaged errors', () => {
+    it('treats a null src like a missing image (renders initials)', () => {
+      const { container } = render(
+        <Avatar src={null} alt="No image" initials="NI" />
+      )
+      expect(container.querySelector('img')).not.toBeInTheDocument()
+      expect(screen.getByText('NI')).toBeInTheDocument()
+    })
+
+    it('treats an empty-string src like a missing image (renders the icon)', () => {
+      const { container } = render(<Avatar src="" alt="Empty" />)
+      expect(container.querySelector('img')).not.toBeInTheDocument()
+      expect(container.querySelector('svg')).toBeInTheDocument()
+    })
   })
 
-  it('applies custom className', () => {
-    const { container } = render(<Avatar alt="Test" className="custom-class" />)
-    expect(container.firstChild).toHaveClass('custom-class')
-  })
+  describe('edge cases', () => {
+    it('truncates initials longer than 2 characters', () => {
+      render(<Avatar alt="John Doe Smith" initials="JDS" />)
+      expect(screen.getByText('JD')).toBeInTheDocument()
+    })
 
-  it('handles null src gracefully', () => {
-    render(<Avatar src={null} alt="No image" initials="NI" />)
-    expect(screen.getByText('NI')).toBeInTheDocument()
+    it('forwards extra img attributes to the rendered image', () => {
+      render(
+        <Avatar
+          src="https://example.com/a.jpg"
+          alt="With testid"
+          data-testid="avatar-img"
+        />
+      )
+      expect(screen.getByTestId('avatar-img')).toBeInTheDocument()
+    })
+
+    it('renders unicode initials truncated to 2 characters', () => {
+      render(<Avatar alt="Émile Ñoño" initials="ÉÑ" />)
+      expect(screen.getByText('ÉÑ')).toBeInTheDocument()
+    })
   })
 })

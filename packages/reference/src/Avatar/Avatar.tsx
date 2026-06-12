@@ -1,69 +1,68 @@
 import clsx from 'clsx'
 import { useState } from 'react'
 
+import {
+  AVATAR_ICON_CLASS,
+  AVATAR_IMAGE_CLASS,
+  AVATAR_INITIALS_CLASS,
+  avatarVariants,
+} from '@fubaritico-ds/variants'
+
 import { Icon } from '../Icon'
 
+import type { IconSize } from '../Icon'
+import type { AvatarSize } from '@fubaritico-ds/variants'
 import type { ComponentProps } from 'react'
 
-export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
+export type { AvatarSize }
+
+/**
+ * Fallback-icon pixel size per avatar size. The Icon takes a numeric `size` prop (not a class), so
+ * this mapping lives here rather than in the framework-agnostic resolver. Values stay within
+ * {@link IconSize}; `xs` uses 16 (the smallest valid icon size) inside its 1.5rem footprint.
+ */
+const AVATAR_ICON_SIZE: Record<AvatarSize, IconSize> = {
+  xs: 16,
+  sm: 16,
+  md: 20,
+  lg: 24,
+  xl: 32,
+  '2xl': 48,
+  '3xl': 64,
+}
 
 export interface AvatarProps extends Omit<ComponentProps<'img'>, 'src'> {
-  /** Image source URL */
+  /** Image source URL. When absent or it fails to load, the fallback (initials, then icon) shows. */
   src?: string | null
-  /** Alt text for the image */
+  /** Alt text describing the person — required even when an image may be missing. */
   alt: string
-  /** Size of the avatar */
+  /** Avatar size; defaults to `'md'`. */
   size?: AvatarSize
-  /** Fallback initials to display when no image */
+  /** Fallback initials shown when there is no image (truncated to the first 2 characters). */
   initials?: string
-  /** For testing purposes */
-  testId?: string
 }
 
 /**
- * A map defining styles and sizes for different avatar sizes.
+ * Avatar — native BEM skin (`@fubaritico-ds/styles`). A circular media slot that resolves, in order:
+ * the image, then the consumer initials, then the `User` icon. Size resolves to a BEM class via
+ * {@link avatarVariants}; colours and the footprint are driven by the overridable `--ui-avatar-*`
+ * component variables. Extra `img` attributes (`id`, `data-*`, `loading`, …) are forwarded to the
+ * `<img>` element when an image is rendered.
  *
- * The `sizeMap` object links predefined avatar size keys to their corresponding
- * stylistic properties, including container dimensions, icon size, and text styles.
- *
- * Each avatar size is represented as a key-value pair, where the key is a string
- * corresponding to the avatar size (e.g., 'xs', 'md', 'xl'), and the value is an
- * object containing the following properties:
- *
- * - `container`: A string representing the CSS classes for the avatar's container dimensions.
- * - `icon`: A number indicating the size of the icon in the avatar (in pixels).
- * - `text`: A string specifying the CSS classes for text size.
- *
- * This map enables consistent and scalable styling for avatars across different sizes.
+ * @param props - {@link AvatarProps}
+ * @returns The rendered avatar element.
  */
-const sizeMap: Record<
-  AvatarSize,
-  { container: string; icon: number; text: string }
-> = {
-  xs: { container: 'ui:h-6 ui:w-6', icon: 12, text: 'ui:text-xs' },
-  sm: { container: 'ui:h-8 ui:w-8', icon: 16, text: 'ui:text-sm' },
-  md: { container: 'ui:h-10 ui:w-10', icon: 20, text: 'ui:text-base' },
-  lg: { container: 'ui:h-12 ui:w-12', icon: 24, text: 'ui:text-lg' },
-  xl: { container: 'ui:h-16 ui:w-16', icon: 32, text: 'ui:text-xl' },
-  '2xl': { container: 'ui:h-24 ui:w-24', icon: 48, text: 'ui:text-2xl' },
-  '3xl': { container: 'ui:h-32 ui:w-32', icon: 64, text: 'ui:text-3xl' },
-}
-
-function Avatar({
+export function Avatar({
   className,
   src,
   alt,
   size = 'md',
   initials,
-  testId,
   ...rest
 }: Readonly<AvatarProps>) {
   const [hasError, setHasError] = useState(false)
-  const { container, icon, text } = sizeMap[size]
 
-  const showImage = src && !hasError
-  const showInitials = !showImage && initials
-  const showFallback = !showImage && !initials
+  const showImage = Boolean(src) && !hasError
 
   const handleError = () => {
     setHasError(true)
@@ -71,30 +70,27 @@ function Avatar({
 
   return (
     <div
-      className={clsx(
-        'ui:relative ui:inline-flex ui:items-center ui:justify-center ui:overflow-hidden ui:rounded-full',
-        'ui:bg-muted ui:text-muted-foreground',
-        container,
-        className
-      )}
+      // When an image renders, its own `alt` is the accessible name. In the initials/icon fallback
+      // there is no <img>, so the container itself carries the name (the icon is aria-hidden).
+      {...(showImage ? {} : { role: 'img', 'aria-label': alt })}
+      className={clsx(avatarVariants({ size }), className)}
     >
-      {showImage && (
+      {showImage ? (
         <img
-          src={src}
+          src={src ?? undefined}
           alt={alt}
           onError={handleError}
-          className="ui:h-full ui:w-full ui:object-cover"
-          data-testid={testId}
+          className={AVATAR_IMAGE_CLASS}
           {...rest}
         />
-      )}
-      {showInitials && (
-        <span className={clsx('ui:font-medium ui:uppercase', text)}>
-          {initials.slice(0, 2)}
-        </span>
-      )}
-      {showFallback && (
-        <Icon name="User" size={icon as 16 | 20 | 24 | 32 | 48 | 64} />
+      ) : initials ? (
+        <span className={AVATAR_INITIALS_CLASS}>{initials.slice(0, 2)}</span>
+      ) : (
+        <Icon
+          name="User"
+          size={AVATAR_ICON_SIZE[size]}
+          className={AVATAR_ICON_CLASS}
+        />
       )}
     </div>
   )

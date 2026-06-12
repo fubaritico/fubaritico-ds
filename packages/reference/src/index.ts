@@ -77,9 +77,6 @@ export type { TabsProps, TabsVariant } from './Tabs'
 export { Skeleton } from './Skeleton'
 export type { SkeletonProps, SkeletonShape } from './Skeleton'
 
-export { Talent } from './Talent'
-export type { TalentProps } from './Talent'
-
 export { Typography } from './Typography'
 export type { TypographyProps, TypographyVariant } from './Typography'
 

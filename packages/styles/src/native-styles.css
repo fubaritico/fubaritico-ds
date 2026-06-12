@@ -9,6 +9,7 @@
  */
 @layer ui.reset, ui.base, ui.components;
 
+@import './styles/avatar.css';
 @import './styles/badge.css';
 @import './styles/button.css';
 @import './styles/skeleton.css';

@@ -1,0 +1,101 @@
+/**
+ * Avatar — native BEM skin.
+ *
+ * A circular media slot: shows a cover-fit image, or — when there is none — a centred fallback
+ * (consumer initials or the User icon). The block always reserves its square footprint so a missing
+ * image never collapses the layout.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-avatar-*` vars on `.ui-avatar` (surgical re-skin).
+ *   2. Redefine a global token (e.g. `--color-muted`) → re-skins everything that uses it.
+ *   3. Write any plain selector (e.g. `.ui-avatar { ... }`): being unlayered, it beats this
+ *      layered skin with no specificity war.
+ *
+ * Sizes come from @fubaritico-ds/tokens spacing scale; each size modifier sets `--ui-avatar-size`
+ * (the square footprint) and `--ui-avatar-font-size` (the initials scale). `md` is the base — the
+ * CVA resolver emits no modifier for it. The fallback icon's pixel size is NOT a skin concern (the
+ * Icon takes a numeric prop) and is resolved in the React component.
+ */
+@layer ui.components {
+  .ui-avatar {
+    /* ---- override API (component-scoped) ---- */
+    --ui-avatar-size: var(--spacing-10); /* 2.5rem — md base */
+    --ui-avatar-bg: var(--color-muted);
+    --ui-avatar-fg: var(--color-muted-foreground);
+    --ui-avatar-radius: var(--radius-full);
+    --ui-avatar-font-family: var(--font-inter);
+    --ui-avatar-font-weight: var(--font-weight-medium);
+    --ui-avatar-font-size: var(--font-size-base); /* md base */
+
+    /* ---- base ---- */
+    /* Self-sufficient box model: the skin survives in hosts with no reset (the DS ships none). */
+    box-sizing: border-box;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    inline-size: var(--ui-avatar-size);
+    block-size: var(--ui-avatar-size);
+    border-radius: var(--ui-avatar-radius);
+    background-color: var(--ui-avatar-bg);
+    color: var(--ui-avatar-fg);
+    font-family: var(--ui-avatar-font-family);
+    /* Set on the block too (not only `__initials`) so raw text dropped directly inside the avatar
+       is still sized by the component var — matches the Badge precedent. */
+    font-size: var(--ui-avatar-font-size);
+  }
+
+  /* ---- size modifiers (md is the base — no `.ui-avatar--md` rule) ---- */
+  .ui-avatar--xs {
+    --ui-avatar-size: var(--spacing-6); /* 1.5rem */
+    --ui-avatar-font-size: var(--font-size-xs);
+  }
+
+  .ui-avatar--sm {
+    --ui-avatar-size: var(--spacing-8); /* 2rem */
+    --ui-avatar-font-size: var(--font-size-sm);
+  }
+
+  .ui-avatar--lg {
+    --ui-avatar-size: var(--spacing-12); /* 3rem */
+    --ui-avatar-font-size: var(--font-size-lg);
+  }
+
+  .ui-avatar--xl {
+    --ui-avatar-size: var(--spacing-16); /* 4rem */
+    --ui-avatar-font-size: var(--font-size-xl);
+  }
+
+  .ui-avatar--2xl {
+    --ui-avatar-size: var(--spacing-24); /* 6rem */
+    --ui-avatar-font-size: var(--font-size-2xl);
+  }
+
+  .ui-avatar--3xl {
+    --ui-avatar-size: var(--spacing-32); /* 8rem */
+    --ui-avatar-font-size: var(--font-size-3xl);
+  }
+
+  /* ---- elements ---- */
+  .ui-avatar__image {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  .ui-avatar__initials {
+    font-weight: var(--ui-avatar-font-weight);
+    font-size: var(--ui-avatar-font-size);
+    line-height: var(
+      --font-line-height-none
+    ); /* 1 — single-line, vertically centred */
+    text-transform: uppercase;
+  }
+
+  /* The fallback Icon inherits `color` (--ui-avatar-fg) via currentColor. */
+  .ui-avatar__icon {
+    display: inline-flex;
+    flex: none;
+  }
+}
