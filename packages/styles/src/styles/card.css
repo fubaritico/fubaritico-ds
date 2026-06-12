@@ -1,0 +1,101 @@
+/**
+ * Card — native BEM skin.
+ *
+ * A surface container (`.ui-card`) plus three padded slot elements (`.ui-card__body` /
+ * `.ui-card__header` / `.ui-card__footer`). The axes are kept separate: the ROOT owns only the
+ * chrome (background, border, shadow, radius) and the flex column; the SPACING (padding, inner gap)
+ * lives on the slots. So a media child (e.g. an `<img>`) placed directly in the root sits
+ * edge-to-edge and is clipped to the radius by `overflow: hidden`, while text wrapped in
+ * `.ui-card__body` gets the padding. A bare `.ui-card` with no slot is intentionally unpadded.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-card-*` vars (surgical re-skin).
+ *   2. Redefine a global token (e.g. `--color-card`) → re-skins everything that uses it.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-card {
+    /* ---- override API (component-scoped) ---- */
+    --ui-card-bg: var(--color-card);
+    --ui-card-fg: var(--color-card-foreground);
+    /* Border is always 1px (transparent by default) so switching to `outline` causes no layout
+       shift — only the colour changes. */
+    --ui-card-border-color: transparent;
+    --ui-card-border-width: 1px;
+    --ui-card-radius: var(--radius-lg);
+    /* Light by default — a card is a quiet surface, not a floating panel. */
+    --ui-card-shadow: var(--shadow-sm);
+    /* Without this the inner text falls back to the browser serif default (Times New Roman). */
+    --ui-card-font-family: var(--font-inter);
+
+    /* ---- base ---- */
+    /* Self-sufficient box model: the skin survives in hosts with no reset (the DS ships none). */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    /* Clips an edge-to-edge media child (a direct <img>) to the rounded corners. The element's own
+       outset box-shadow is NOT clipped (it renders outside the border-box). */
+    overflow: hidden;
+    border: var(--ui-card-border-width) solid var(--ui-card-border-color);
+    border-radius: var(--ui-card-radius);
+    background-color: var(--ui-card-bg);
+    color: var(--ui-card-fg);
+    box-shadow: var(--ui-card-shadow);
+    font-family: var(--ui-card-font-family);
+  }
+
+  /* ---- variant modifiers (flat, single-class; only redefine vars) ---- */
+  /* `default` is the base (bg + shadow, transparent border) — the resolver emits '' for it. */
+  .ui-card--outline {
+    --ui-card-bg: transparent;
+    --ui-card-border-color: var(--color-border);
+    --ui-card-shadow: var(--shadow-none);
+  }
+
+  .ui-card--elevated {
+    --ui-card-shadow: var(--shadow-md);
+  }
+
+  .ui-card--ghost {
+    --ui-card-bg: transparent;
+    --ui-card-shadow: var(--shadow-none);
+  }
+
+  /* ---- slot elements (padded regions; self-sufficient so they also work standalone) ---- */
+  .ui-card__body {
+    --ui-card-body-padding: var(--spacing-4);
+    --ui-card-body-gap: var(--spacing-2);
+
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-card-body-gap);
+    padding: var(--ui-card-body-padding);
+    /* Grow to fill so a Footer is pushed to the bottom on fixed-height cards. */
+    flex: 1 1 auto;
+  }
+
+  .ui-card__header {
+    --ui-card-header-padding: var(--spacing-4);
+    --ui-card-header-gap: var(--spacing-1);
+
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-card-header-gap);
+    padding: var(--ui-card-header-padding);
+  }
+
+  .ui-card__footer {
+    --ui-card-footer-padding: var(--spacing-4);
+    --ui-card-footer-gap: var(--spacing-2);
+
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: var(--ui-card-footer-gap);
+    padding: var(--ui-card-footer-padding);
+  }
+}

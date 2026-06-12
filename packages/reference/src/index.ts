@@ -22,7 +22,7 @@ export type { ButtonProps } from './Button'
 //   import { NextLinkButton } from '@fubaritico-ds/reference/NextLinkButton' (next)
 
 export { Card } from './Card'
-export type { CardProps, CardVariant } from './Card'
+export type { CardProps, CardVariant, CardSlotProps } from './Card'
 
 export { Drawer } from './Drawer'
 export type {
