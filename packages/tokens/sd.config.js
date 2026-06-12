@@ -1,6 +1,24 @@
 import StyleDictionary from 'style-dictionary'
 
 /**
+ * Joins a token path into a strictly kebab-case custom-property name.
+ *
+ * Splits camelCase humps (`lineHeight` → `line-height`, `letterSpacing` → `letter-spacing`) while
+ * leaving numeric segments intact (`2xl`, `3xl`, `0.5` stay verbatim — the built-in `name/kebab`
+ * transform would mangle them to `2-xl` / `0-5`, which is why these formats join the path manually).
+ * This enforces the kebab-case naming rule for EVERY token, present and future.
+ *
+ * @param {string[]} path - The token's path segments.
+ * @returns {string} The kebab-case custom-property name (without the leading `--`).
+ */
+const toKebabName = (path) =>
+  path
+    .map((segment) =>
+      segment.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()
+    )
+    .join('-')
+
+/**
  * Custom format for Tailwind CSS v4 @theme directive
  */
 StyleDictionary.registerFormat({
@@ -9,7 +27,7 @@ StyleDictionary.registerFormat({
     const lines = ['@theme {']
 
     dictionary.allTokens.forEach((token) => {
-      const name = token.path.join('-')
+      const name = toKebabName(token.path)
       const value = token.$value ?? token.value
 
       lines.push(`  --${name}: ${value};`)
@@ -32,7 +50,7 @@ StyleDictionary.registerFormat({
     const lines = [`${selector} {`]
 
     dictionary.allTokens.forEach((token) => {
-      const name = token.path.join('-')
+      const name = toKebabName(token.path)
       const value = token.$value ?? token.value
 
       lines.push(`  --${name}: ${value};`)

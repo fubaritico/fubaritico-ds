@@ -19,7 +19,7 @@
     --ui-badge-font-family: var(--font-inter);
     --ui-badge-font-weight: var(--font-weight-medium);
     --ui-badge-font-size: var(--font-size-sm);
-    --ui-badge-line-height: var(--font-lineHeight-tight);
+    --ui-badge-line-height: var(--font-line-height-tight);
     --ui-badge-gap: var(--spacing-1);
     /* Literals: --spacing-0.5 / --spacing-2.5 have a dot in their name → not referenceable as native custom properties. */
     --ui-badge-padding-block: 0.125rem; /* --spacing-0.5 */

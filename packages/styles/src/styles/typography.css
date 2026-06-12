@@ -18,42 +18,42 @@
     font-family: var(--font-roboto);
     font-size: var(--typography-h1-size);
     font-weight: var(--typography-h1-weight);
-    line-height: var(--typography-h1-lineHeight);
+    line-height: var(--typography-h1-line-height);
   }
 
   .ui-typography--h2 {
     font-family: var(--font-roboto);
     font-size: var(--typography-h2-size);
     font-weight: var(--typography-h2-weight);
-    line-height: var(--typography-h2-lineHeight);
+    line-height: var(--typography-h2-line-height);
   }
 
   .ui-typography--h3 {
     font-family: var(--font-roboto);
     font-size: var(--typography-h3-size);
     font-weight: var(--typography-h3-weight);
-    line-height: var(--typography-h3-lineHeight);
+    line-height: var(--typography-h3-line-height);
   }
 
   .ui-typography--h4 {
     font-family: var(--font-roboto);
     font-size: var(--typography-h4-size);
     font-weight: var(--typography-h4-weight);
-    line-height: var(--typography-h4-lineHeight);
+    line-height: var(--typography-h4-line-height);
   }
 
   .ui-typography--h5 {
     font-family: var(--font-roboto);
     font-size: var(--typography-h5-size);
     font-weight: var(--typography-h5-weight);
-    line-height: var(--typography-h5-lineHeight);
+    line-height: var(--typography-h5-line-height);
   }
 
   .ui-typography--h6 {
     font-family: var(--font-roboto);
     font-size: var(--typography-h6-size);
     font-weight: var(--typography-h6-weight);
-    line-height: var(--typography-h6-lineHeight);
+    line-height: var(--typography-h6-line-height);
   }
 
   /* ---- body & supporting roles (Inter, fixed sizes) ---- */
@@ -61,22 +61,22 @@
     font-family: var(--font-inter);
     font-size: var(--typography-body-size);
     font-weight: var(--typography-body-weight);
-    line-height: var(--typography-body-lineHeight);
+    line-height: var(--typography-body-line-height);
   }
 
   .ui-typography--caption {
     font-family: var(--font-inter);
     font-size: var(--typography-caption-size);
     font-weight: var(--typography-caption-weight);
-    line-height: var(--typography-caption-lineHeight);
+    line-height: var(--typography-caption-line-height);
   }
 
   .ui-typography--overline {
     font-family: var(--font-inter);
     font-size: var(--typography-overline-size);
     font-weight: var(--typography-overline-weight);
-    line-height: var(--typography-overline-lineHeight);
-    letter-spacing: var(--typography-overline-letterSpacing);
+    line-height: var(--typography-overline-line-height);
+    letter-spacing: var(--typography-overline-letter-spacing);
     text-transform: uppercase;
   }
 
@@ -84,7 +84,7 @@
     font-family: var(--font-inter);
     font-size: var(--typography-label-size);
     font-weight: var(--typography-label-weight);
-    line-height: var(--typography-label-lineHeight);
+    line-height: var(--typography-label-line-height);
   }
 
   /* `inherit` emits no modifier — the base alone inherits the parent's font entirely. */
