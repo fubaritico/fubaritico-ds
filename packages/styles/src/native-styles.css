@@ -12,6 +12,7 @@
 @import './styles/avatar.css';
 @import './styles/badge.css';
 @import './styles/button.css';
+@import './styles/icon-button.css'; /* extension of button.css — MUST load after it */
 @import './styles/skeleton.css';
 @import './styles/spinner.css';
 @import './styles/typography.css';

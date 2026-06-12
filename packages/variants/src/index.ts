@@ -4,6 +4,7 @@
 export * from './avatar.js'
 export * from './badge.js'
 export * from './button.js'
+export * from './icon-button.js'
 export * from './skeleton.js'
 export * from './spinner.js'
 export * from './typography.js'

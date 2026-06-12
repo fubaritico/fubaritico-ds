@@ -1,0 +1,50 @@
+/**
+ * IconButton — shape extension of the Button skin (Open/Closed).
+ *
+ * NOT a standalone block: `.ui-icon-button` is always MIXED onto `.ui-button`
+ * (`class="ui-button ui-button--ghost ui-icon-button"`). It reuses every Button capability —
+ * colours, hover, focus-visible, disabled, box-sizing, font-family — and only adds the
+ * icon-fitting geometry (square, circular, zero padding). Button itself is never modified.
+ *
+ * Import order matters: this partial loads AFTER button.css, so within `@layer ui.components`
+ * these single-class rules win the geometry props they override on `.ui-button`.
+ *
+ * Override surface: redefine `--ui-icon-button-size` on `.ui-icon-button`, or any reused
+ * `--ui-button-*` var. Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-icon-button {
+    /* ---- override API (component-scoped) ---- */
+    --ui-icon-button-size: var(--spacing-10); /* md */
+    --ui-icon-button-radius: var(--radius-full);
+
+    /* ---- icon-fitting geometry (overrides Button's rectangular recipe) ---- */
+    inline-size: var(--ui-icon-button-size);
+    block-size: var(--ui-icon-button-size);
+    padding: 0;
+    border-radius: var(--ui-icon-button-radius);
+  }
+
+  /* ---- size modifiers (only set the square size; the icon px is handled by Button's iconSizeMap) ---- */
+  .ui-icon-button--sm {
+    --ui-icon-button-size: var(--spacing-8);
+  }
+
+  /* `md` is the default size (base) — the resolver emits '' for it, so no `.ui-icon-button--md` rule. */
+
+  .ui-icon-button--lg {
+    --ui-icon-button-size: var(--spacing-12);
+  }
+
+  /* ---- on-dark variant (IconButton-only): redefines the reused --ui-button-* vars ----
+     TODO(tokens): these reach into the PRIMITIVE neutral scale on purpose — no semantic
+     "on-dark surface" alias exists yet. Decision deferred WITH the Drawer/bottom-sheet work
+     (see memory `neutral-default-emphasis-strategy`): mint `--color-on-dark-*` semantic tokens
+     then swap them in here. Behind the `--ui-button-*` vars so a consumer can still override. */
+  .ui-icon-button--ghost-dark {
+    --ui-button-bg: transparent;
+    --ui-button-fg: var(--color-primitive-neutral-400);
+    --ui-button-bg-hover: var(--color-primitive-neutral-800);
+    --ui-button-fg-hover: var(--color-primitive-neutral-0);
+  }
+}

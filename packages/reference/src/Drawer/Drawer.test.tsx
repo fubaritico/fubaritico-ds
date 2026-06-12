@@ -4,9 +4,9 @@ import { describe, expect, it, vi } from 'vitest'
 
 import Drawer from './Drawer'
 
-const renderDrawer = (
-  props: Partial<React.ComponentProps<typeof Drawer>> = {}
-) =>
+import type { ComponentProps } from 'react'
+
+const renderDrawer = (props: Partial<ComponentProps<typeof Drawer>> = {}) =>
   render(
     <Drawer open onClose={vi.fn()} {...props}>
       <Drawer.Header>Title</Drawer.Header>
@@ -127,7 +127,8 @@ describe('Drawer', () => {
     renderDrawer({ variant: 'dark' })
 
     const closeBtn = screen.getByRole('button', { name: 'Close' })
-    expect(closeBtn.className).toContain('ui:text-neutral-400')
+    // IconButton migrated to the native skin: ghost-dark now emits the BEM extension class.
+    expect(closeBtn.className).toContain('ui-icon-button--ghost-dark')
   })
 
   it('should throw if Header is used outside Drawer', () => {
