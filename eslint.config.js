@@ -99,6 +99,12 @@ export default tseslint.config(
           allowExpressions: true,
         },
       ],
+      // Forbid `{value && <JSX/>}` when `value` is non-boolean (string/number) — the empty-string /
+      // zero leak. Allowed safe forms: a ternary (`cond ? <JSX/> : null`) or coercion (`!!value &&`).
+      'react/jsx-no-leaked-render': [
+        'error',
+        { validStrategies: ['ternary', 'coerce'] },
+      ],
       'react/jsx-filename-extension': ['off'],
       'import/prefer-default-export': ['off'],
       'import/no-extraneous-dependencies': ['off'],
