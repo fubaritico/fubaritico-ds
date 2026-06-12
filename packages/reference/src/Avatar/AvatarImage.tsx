@@ -27,6 +27,17 @@ export interface AvatarImageProps
 }
 
 /**
+ * Maps an image load status to its cascade viability. Exhaustive by construction (`Record` over the
+ * full {@link AvatarImageStatus} union), so a new status can't silently fall through to a default.
+ */
+const STATUS_TO_CANDIDATE: Record<AvatarImageStatus, AvatarCandidateStatus> = {
+  idle: 'pending',
+  loading: 'pending',
+  loaded: 'ready',
+  error: 'failed',
+}
+
+/**
  * Avatar image candidate. Renders the `<img>` whenever there is a `src` (so `onLoad`/`onError` can
  * fire) but keeps it hidden until it is the active, loaded candidate. While loading it is the
  * blocking candidate — the cascade shows its optional loading render-prop and holds back later
@@ -70,8 +81,7 @@ export function AvatarImage({
     notify(status)
   }, [status])
 
-  const candidateStatus: AvatarCandidateStatus =
-    status === 'loaded' ? 'ready' : status === 'error' ? 'failed' : 'pending'
+  const candidateStatus = STATUS_TO_CANDIDATE[status]
 
   // Register in the surrounding cascade and get our render mode (show / loading / hidden).
   const mode = useCascadeCandidate(candidateStatus)
@@ -90,7 +100,7 @@ export function AvatarImage({
           {...rest}
         />
       ) : null}
-      {mode === 'loading' ? children?.(status) : null}
+      {mode === 'loading' && children?.(status)}
     </>
   )
 }
