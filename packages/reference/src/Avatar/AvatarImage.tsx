@@ -2,14 +2,14 @@ import { useEffect, useEffectEvent, useState } from 'react'
 
 import { AVATAR_IMAGE_CLASS } from '@fubaritico-ds/variants'
 
-import { useCascadeCandidate } from './AvatarContext'
+import { useResolverCandidate } from './AvatarContext'
 
 import type { AvatarCandidateStatus, AvatarImageStatus } from './AvatarContext'
 import type { ComponentProps, ReactNode } from 'react'
 
 export interface AvatarImageProps
   extends Omit<ComponentProps<'img'>, 'src' | 'alt' | 'children'> {
-  /** Image source URL. An empty/null value yields immediately to the next cascade candidate. */
+  /** Image source URL. An empty/null value yields immediately to the next resolver candidate. */
   src?: string | null
   /**
    * Decorative by default (the `<Avatar>` root carries the accessible name); defaults to `''`.
@@ -27,7 +27,7 @@ export interface AvatarImageProps
 }
 
 /**
- * Maps an image load status to its cascade viability. Exhaustive by construction (`Record` over the
+ * Maps an image load status to its resolver viability. Exhaustive by construction (`Record` over the
  * full {@link AvatarImageStatus} union), so a new status can't silently fall through to a default.
  */
 const STATUS_TO_CANDIDATE: Record<AvatarImageStatus, AvatarCandidateStatus> = {
@@ -40,7 +40,7 @@ const STATUS_TO_CANDIDATE: Record<AvatarImageStatus, AvatarCandidateStatus> = {
 /**
  * Avatar image candidate. Renders the `<img>` whenever there is a `src` (so `onLoad`/`onError` can
  * fire) but keeps it hidden until it is the active, loaded candidate. While loading it is the
- * blocking candidate — the cascade shows its optional loading render-prop and holds back later
+ * blocking candidate — the resolver shows its optional loading render-prop and holds back later
  * candidates (anti-flash). On error/empty it fails over to the next candidate.
  *
  * @param props - {@link AvatarImageProps}
@@ -83,8 +83,8 @@ export function AvatarImage({
 
   const candidateStatus = STATUS_TO_CANDIDATE[status]
 
-  // Register in the surrounding cascade and get our render mode (show / loading / hidden).
-  const mode = useCascadeCandidate(candidateStatus)
+  // Register in the surrounding resolver and get our render mode (show / loading / hidden).
+  const mode = useResolverCandidate(candidateStatus)
 
   return (
     <>

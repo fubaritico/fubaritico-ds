@@ -1,6 +1,6 @@
 import { AVATAR_INITIALS_CLASS } from '@fubaritico-ds/variants'
 
-import { useCascadeCandidate } from './AvatarContext'
+import { useResolverCandidate } from './AvatarContext'
 
 export interface AvatarInitialsProps {
   /** The initials text. Truncated to the first 2 characters; uppercased by the skin. */
@@ -16,8 +16,8 @@ export interface AvatarInitialsProps {
  */
 export function AvatarInitials({ children }: Readonly<AvatarInitialsProps>) {
   const text = children?.trim() ?? ''
-  // Viable only when there is non-empty text; otherwise the cascade skips to the next candidate.
-  const mode = useCascadeCandidate(text ? 'ready' : 'failed')
+  // Viable only when there is non-empty text; otherwise the resolver skips to the next candidate.
+  const mode = useResolverCandidate(text ? 'ready' : 'failed')
 
   if (mode !== 'show') return null
 

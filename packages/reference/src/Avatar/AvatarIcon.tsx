@@ -2,7 +2,7 @@ import { AVATAR_ICON_CLASS } from '@fubaritico-ds/variants'
 
 import { Icon } from '../Icon'
 
-import { useAvatarConfig, useCascadeCandidate } from './AvatarContext'
+import { useAvatarConfig, useResolverCandidate } from './AvatarContext'
 
 import type { IconName, IconSize } from '../Icon'
 import type { AvatarSize } from '@fubaritico-ds/variants'
@@ -37,8 +37,8 @@ const AVATAR_ICON_SIZE: Record<AvatarSize, IconSize> = {
 export function AvatarIcon({ name = 'User' }: Readonly<AvatarIconProps>) {
   // Read the size that trickles down from the root (stable config context) → maps to an icon px size.
   const { size } = useAvatarConfig()
-  // Always viable → the infallible terminal candidate; the cascade decides show vs hidden.
-  const mode = useCascadeCandidate('ready')
+  // Always viable → the infallible terminal candidate; the resolver decides show vs hidden.
+  const mode = useResolverCandidate('ready')
 
   if (mode !== 'show') return null
 

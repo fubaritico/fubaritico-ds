@@ -14,7 +14,7 @@ import type { AvatarSize } from '@fubaritico-ds/variants'
 export type AvatarImageStatus = 'idle' | 'loading' | 'loaded' | 'error'
 
 /**
- * Internal cascade viability of a candidate:
+ * Internal resolver viability of a candidate:
  * - `pending` — still resolving (an image being loaded); blocks later candidates (anti-flash).
  * - `ready`   — can be shown (a loaded image, present initials, an icon).
  * - `failed`  — cannot be shown (errored/empty image, empty initials); yields to the next candidate.
@@ -22,7 +22,7 @@ export type AvatarImageStatus = 'idle' | 'loading' | 'loaded' | 'error'
 export type AvatarCandidateStatus = 'pending' | 'ready' | 'failed'
 
 /**
- * The render mode the cascade assigns to a candidate:
+ * The render mode the resolver assigns to a candidate:
  * - `show`    — render the real content (this candidate won).
  * - `loading` — render the loading affordance (this is the blocking pending candidate).
  * - `hidden`  — render nothing (an earlier candidate won, or this one failed).
@@ -36,12 +36,12 @@ interface AvatarConfigValue {
 }
 
 /**
- * STABLE cascade actions — register/unregister/report. Never change identity, so candidate effects
+ * STABLE resolver actions — register/unregister/report. Never change identity, so candidate effects
  * can depend on them without thrashing. Split from the dynamic mode (below) on purpose: bundling the
  * changing `getCandidateMode` with the actions would re-run every candidate's register effect on each update
- * (infinite loop). Same stable-vs-dynamic split as the config/cascade contexts.
+ * (infinite loop). Same stable-vs-dynamic split as the config/resolver contexts.
  */
-interface AvatarCascadeActions {
+interface AvatarResolverActions {
   /** Register a candidate (by stable id) in document order. */
   register: (id: string) => void
   /** Remove a candidate on unmount. */
@@ -50,8 +50,8 @@ interface AvatarCascadeActions {
   report: (id: string, status: AvatarCandidateStatus) => void
 }
 
-/** DYNAMIC cascade state — resolves a candidate's render mode from the current registry. */
-interface AvatarCascadeState {
+/** DYNAMIC resolver state — resolves a candidate's render mode from the current registry. */
+interface AvatarResolverState {
   /** Resolve the render mode for a candidate from the current registry. */
   getCandidateMode: (id: string) => AvatarCandidateMode
 }
@@ -62,13 +62,13 @@ interface AvatarCascadeState {
  */
 export const AvatarConfigContext = createContext<AvatarConfigValue | null>(null)
 
-/** Stable cascade actions context (register/report). Provided by {@link AvatarFallback}. */
-export const AvatarCascadeActionsContext =
-  createContext<AvatarCascadeActions | null>(null)
+/** Stable resolver actions context (register/report). Provided by {@link AvatarFallback}. */
+export const AvatarResolverActionsContext =
+  createContext<AvatarResolverActions | null>(null)
 
-/** Dynamic cascade state context (mode resolution). Provided by {@link AvatarFallback}. */
-export const AvatarCascadeStateContext =
-  createContext<AvatarCascadeState | null>(null)
+/** Dynamic resolver state context (mode resolution). Provided by {@link AvatarFallback}. */
+export const AvatarResolverStateContext =
+  createContext<AvatarResolverState | null>(null)
 
 /**
  * Reads the stable avatar configuration (`size`). Throws if used outside an `<Avatar>` — sub-components
@@ -85,13 +85,13 @@ export function useAvatarConfig(): AvatarConfigValue {
 }
 
 /**
- * Reads the stable cascade actions (register/report). Throws if used outside a {@link AvatarFallback}
- * — a candidate is meaningless without the resolution cascade (symmetric with {@link useAvatarConfig}).
+ * Reads the stable resolver actions (register/report). Throws if used outside a {@link AvatarFallback}
+ * — a candidate is meaningless without a resolver (symmetric with {@link useAvatarConfig}).
  *
- * @returns The {@link AvatarCascadeActions}.
+ * @returns The {@link AvatarResolverActions}.
  */
-export function useAvatarCascadeActions(): AvatarCascadeActions {
-  const ctx = use(AvatarCascadeActionsContext)
+export function useAvatarResolverActions(): AvatarResolverActions {
+  const ctx = use(AvatarResolverActionsContext)
   if (!ctx) {
     throw new Error('Avatar candidates must be used within <Avatar.Fallback>')
   }
@@ -99,12 +99,12 @@ export function useAvatarCascadeActions(): AvatarCascadeActions {
 }
 
 /**
- * Reads the dynamic cascade state (mode resolution). Throws if used outside a {@link AvatarFallback}.
+ * Reads the dynamic resolver state (mode resolution). Throws if used outside a {@link AvatarFallback}.
  *
- * @returns The {@link AvatarCascadeState}.
+ * @returns The {@link AvatarResolverState}.
  */
-export function useAvatarCascadeState(): AvatarCascadeState {
-  const ctx = use(AvatarCascadeStateContext)
+export function useAvatarResolverState(): AvatarResolverState {
+  const ctx = use(AvatarResolverStateContext)
   if (!ctx) {
     throw new Error('Avatar candidates must be used within <Avatar.Fallback>')
   }
@@ -112,7 +112,7 @@ export function useAvatarCascadeState(): AvatarCascadeState {
 }
 
 /**
- * Builds the cascade controller for {@link AvatarFallback}: stable `actions` + dynamic `state`.
+ * Builds the resolver controller for {@link AvatarFallback}: stable `actions` + dynamic `state`.
  *
  * Candidates register in document order (a layout effect runs before paint, so the registry settles
  * with no visible flicker). The winner is the FIRST candidate that is not `failed`: if it is `ready`
@@ -120,9 +120,9 @@ export function useAvatarCascadeState(): AvatarCascadeState {
  *
  * @returns The memoized `actions` (stable) and `state` (dynamic) values to feed both providers.
  */
-export function useAvatarCascadeController(): {
-  actions: AvatarCascadeActions
-  state: AvatarCascadeState
+export function useAvatarResolverController(): {
+  actions: AvatarResolverActions
+  state: AvatarResolverState
 } {
   // Ordered registry of candidates (document order) + their current viability.
   const [items, setItems] = useState<
@@ -178,22 +178,22 @@ export function useAvatarCascadeController(): {
 }
 
 /**
- * Registers the calling candidate in the cascade and returns its render mode.
+ * Registers the calling candidate in the resolver and returns its render mode.
  *
  * Reads the STABLE actions context for register/report (so the effects don't thrash) and the DYNAMIC
  * state context for the resolved mode. Both throw outside a {@link AvatarFallback}: a candidate
- * MUST live inside the resolution cascade.
+ * MUST live inside a resolver (`Avatar.Fallback`).
  *
  * @param status - The candidate's current viability.
  * @returns The {@link AvatarCandidateMode} this candidate should render with.
  */
-export function useCascadeCandidate(
+export function useResolverCandidate(
   status: AvatarCandidateStatus
 ): AvatarCandidateMode {
-  // Stable cascade actions — used by the registration effects below (throws if no Fallback).
-  const actions = useAvatarCascadeActions()
-  // Dynamic cascade state — resolves this candidate's mode (throws if no Fallback).
-  const state = useAvatarCascadeState()
+  // Stable resolver actions — used by the registration effects below (throws if no Fallback).
+  const actions = useAvatarResolverActions()
+  // Dynamic resolver state — resolves this candidate's mode (throws if no Fallback).
+  const state = useAvatarResolverState()
   // Stable per-candidate id for the registry; preserved across re-renders.
   const id = useId()
 

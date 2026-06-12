@@ -12,7 +12,7 @@ const BROKEN_SRC = 'https://invalid.example/nope.jpg'
 /**
  * Avatar — compound, headless-style media slot migrated to the native BEM skin
  * (`@fubaritico-ds/styles`). Declare ordered candidates inside `Avatar.Fallback`; the resolution
- * cascade renders the first viable one (image → initials → icon), blocking on a loading image.
+ * resolver renders the first viable one (image → initials → icon), blocking on a loading image.
  */
 const meta = {
   title: 'Reference/Avatar',
@@ -35,7 +35,7 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** Interactive playground — full cascade (image → initials → icon) driven by the controls. */
+/** Interactive playground — full resolver chain (image → initials → icon) driven by the controls. */
 export const Playground: Story = {
   render: (args) => (
     <Avatar {...args}>

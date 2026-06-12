@@ -1,19 +1,19 @@
 # Avatar
 
 A circular media slot for a person or entity, composed from sub-components. You declare an ordered
-list of **candidates** (image, initials, icon) inside `Avatar.Fallback`; the **resolution cascade**
+list of **candidates** (image, initials, icon) inside `Avatar.Fallback`; the **resolver**
 renders the first viable one — image when it loads, else initials, else the icon.
 
 ## Capabilities
 
-- **Resolution cascade** — `Avatar.Fallback` renders the **first viable candidate** in document order.
+- **Resolver** — `Avatar.Fallback` renders the **first viable candidate** in document order.
   Supports multiple image sources (e.g. gravatar → CDN → initials → icon).
 - **Anti-flash** — while an image candidate is still loading it **blocks** later candidates, so the
   initials never flash before the image resolves. On error/empty it fails over to the next candidate.
 - **Loading status** — `Avatar.Image` exposes `onLoadingStatusChange` (`idle`/`loading`/`loaded`/
   `error`) and an optional **render-prop child** for a custom loading visual (e.g. a skeleton).
 - **Split contexts** — a _stable_ config context (`size`) trickles to `Avatar.Icon`; a _dynamic_
-  cascade context coordinates resolution. A status change never re-renders the size consumers.
+  resolver context coordinates resolution. A status change never re-renders the size consumers.
 - **Typed icon** — `Avatar.Icon` `name` is typed (`IconName`) → autocompletion, can't be mistyped;
   it is infallible (always a valid last resort) and `aria-hidden`.
 - **Single accessible name** — the root carries `role="img"` + `aria-label` across every tier.
@@ -144,9 +144,9 @@ Long initials are truncated to the first 2 characters: `<Avatar.Initials>JDS</Av
 > hold even when the image fails and a fallback renders.
 
 > **Warning** — candidates (`Avatar.Image`, `Avatar.Initials`, `Avatar.Icon`) MUST live inside an
-> `Avatar.Fallback` — they throw otherwise (a candidate has no meaning without the resolution cascade).
+> `Avatar.Fallback` — they throw otherwise (a candidate has no meaning without a resolver).
 
-> **Note** — while an image candidate is loading, the cascade shows **nothing** (or your render-prop)
+> **Note** — while an image candidate is loading, the resolver shows **nothing** (or your render-prop)
 > rather than flashing the initials. Provide a loading visual via the `Avatar.Image` render-prop if you
 > want a placeholder during the load.
 

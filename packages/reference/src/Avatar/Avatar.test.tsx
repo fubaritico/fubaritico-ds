@@ -105,7 +105,7 @@ describe('Avatar', () => {
     })
   })
 
-  describe('cascade resolution', () => {
+  describe('candidate resolution', () => {
     it('a loaded image wins over initials and icon', () => {
       const { container } = render(
         <Avatar aria-label="Jane">
@@ -257,7 +257,7 @@ describe('Avatar', () => {
     })
 
     it('throws when a candidate is used outside <Avatar.Fallback>', () => {
-      // Candidates are meaningless without the resolution cascade.
+      // Candidates are meaningless without a resolver.
       expect(() =>
         render(
           <Avatar aria-label="Jane">
