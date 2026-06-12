@@ -97,14 +97,6 @@ Multiple image sources — the first that loads wins:
 </Avatar>
 ```
 
-Standalone image (no fallback chain):
-
-```tsx
-<Avatar aria-label="Jane Doe">
-  <Avatar.Image src={url} />
-</Avatar>
-```
-
 Long initials are truncated to the first 2 characters: `<Avatar.Initials>JDS</Avatar.Initials>` → `JD`.
 
 ## Props / API reference
@@ -149,6 +141,9 @@ Long initials are truncated to the first 2 characters: `<Avatar.Initials>JDS</Av
 
 > **Warning** — `aria-label` is **required** on `<Avatar>`: it is the only accessible name, and it must
 > hold even when the image fails and a fallback renders.
+
+> **Warning** — candidates (`Avatar.Image`, `Avatar.Initials`, `Avatar.Icon`) MUST live inside an
+> `Avatar.Fallback` — they throw otherwise (a candidate has no meaning without the resolution cascade).
 
 > **Note** — while an image candidate is loading, the cascade shows **nothing** (or your render-prop)
 > rather than flashing the initials. Provide a loading visual via the `Avatar.Image` render-prop if you

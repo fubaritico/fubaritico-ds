@@ -256,15 +256,15 @@ describe('Avatar', () => {
       expect(screen.getByText('ÉÑ')).toBeInTheDocument()
     })
 
-    it('works standalone without a Fallback (image shows once loaded)', () => {
-      const { container } = render(
-        <Avatar aria-label="Jane">
-          <Avatar.Image src="https://x/a.jpg" />
-        </Avatar>
-      )
-      const img = container.querySelector('img')
-      fireEvent.load(img!)
-      expect(img).not.toHaveAttribute('hidden')
+    it('throws when a candidate is used outside <Avatar.Fallback>', () => {
+      // Candidates are meaningless without the resolution cascade.
+      expect(() =>
+        render(
+          <Avatar aria-label="Jane">
+            <Avatar.Image src="https://x/a.jpg" />
+          </Avatar>
+        )
+      ).toThrow(/<Avatar\.Fallback>/)
     })
   })
 })

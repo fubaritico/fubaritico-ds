@@ -85,24 +85,30 @@ export function useAvatarConfig(): AvatarConfigValue {
 }
 
 /**
- * Reads the stable cascade actions (register/report). Unlike {@link useAvatarConfig} it does NOT
- * throw: returns `null` outside a {@link AvatarFallback}, since a candidate is allowed to render
- * standalone (no cascade → no registration).
+ * Reads the stable cascade actions (register/report). Throws if used outside a {@link AvatarFallback}
+ * — a candidate is meaningless without the resolution cascade (symmetric with {@link useAvatarConfig}).
  *
- * @returns The {@link AvatarCascadeActions}, or `null` when there is no surrounding cascade.
+ * @returns The {@link AvatarCascadeActions}.
  */
-export function useAvatarCascadeActions(): AvatarCascadeActions | null {
-  return use(AvatarCascadeActionsContext)
+export function useAvatarCascadeActions(): AvatarCascadeActions {
+  const ctx = use(AvatarCascadeActionsContext)
+  if (!ctx) {
+    throw new Error('Avatar candidates must be used within <Avatar.Fallback>')
+  }
+  return ctx
 }
 
 /**
- * Reads the dynamic cascade state (mode resolution). Returns `null` outside a {@link AvatarFallback}
- * (standalone candidate).
+ * Reads the dynamic cascade state (mode resolution). Throws if used outside a {@link AvatarFallback}.
  *
- * @returns The {@link AvatarCascadeState}, or `null` when there is no surrounding cascade.
+ * @returns The {@link AvatarCascadeState}.
  */
-export function useAvatarCascadeState(): AvatarCascadeState | null {
-  return use(AvatarCascadeStateContext)
+export function useAvatarCascadeState(): AvatarCascadeState {
+  const ctx = use(AvatarCascadeStateContext)
+  if (!ctx) {
+    throw new Error('Avatar candidates must be used within <Avatar.Fallback>')
+  }
+  return ctx
 }
 
 /**
@@ -175,9 +181,8 @@ export function useAvatarCascadeController(): {
  * Registers the calling candidate in the cascade and returns its render mode.
  *
  * Reads the STABLE actions context for register/report (so the effects don't thrash) and the DYNAMIC
- * state context for the resolved mode. Outside a {@link AvatarFallback} (no state context) the
- * candidate is autonomous: it renders whenever it is `ready`/`pending` (standalone
- * `<Avatar><Avatar.Image/></Avatar>` still works).
+ * state context for the resolved mode. Both throw outside a {@link AvatarFallback}: a candidate
+ * MUST live inside the resolution cascade.
  *
  * @param status - The candidate's current viability.
  * @returns The {@link AvatarCandidateMode} this candidate should render with.
@@ -185,16 +190,15 @@ export function useAvatarCascadeController(): {
 export function useCascadeCandidate(
   status: AvatarCandidateStatus
 ): AvatarCandidateMode {
-  // Stable cascade actions (null when standalone) — used by the registration effects below.
+  // Stable cascade actions — used by the registration effects below (throws if no Fallback).
   const actions = useAvatarCascadeActions()
-  // Dynamic cascade state (null when standalone) — resolves this candidate's mode.
+  // Dynamic cascade state — resolves this candidate's mode (throws if no Fallback).
   const state = useAvatarCascadeState()
   // Stable per-candidate id for the registry; preserved across re-renders.
   const id = useId()
 
   // Register on mount / unregister on unmount. Layout effect → settles before paint (no flicker).
   useLayoutEffect(() => {
-    if (!actions) return
     actions.register(id)
     return () => {
       actions.unregister(id)
@@ -203,13 +207,8 @@ export function useCascadeCandidate(
 
   // Push this candidate's viability to the registry on every status change.
   useLayoutEffect(() => {
-    actions?.report(id, status)
+    actions.report(id, status)
   }, [actions, id, status])
 
-  if (!state) {
-    if (status === 'ready') return 'show'
-    if (status === 'pending') return 'loading'
-    return 'hidden'
-  }
   return state.modeFor(id)
 }
