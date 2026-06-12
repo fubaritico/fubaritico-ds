@@ -2,6 +2,29 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-06-12 — DS primary → neutral + IconButton (Open/Closed extension of Button)
+
+- **Primary neutral strategy** (`4cebb80`): `color.semantic.primary.default` `blue.600` → `neutral.900`
+  (#171717), hover → `neutral.800`; foreground (white) + destructive untouched. Re-skins Button + Badge
+  primary. **DS strategy locked**: the default is **neutral**, brand colour is **opt-in emphasis**
+  (shadcn/Radix); the blue was only a white-label proof. Memory: `neutral-default-emphasis-strategy`.
+- **IconButton migrated** (`10de488`) as an **Open/Closed (the "O" of SOLID) extension of Button**:
+  renders `<Button>` + a `.ui-icon-button` shape layer (square/circular, zero padding) — Button.tsx /
+  button.css / `buttonVariants` **untouched**. `iconButtonVariants` (in `variants`) emits only the shape
+  classes; colours reuse `buttonVariants`, icon px reuses Button's `iconSizeMap`. `ghost-dark` is
+  IconButton-only (redefines the reused `--ui-button-*` vars, mapped to primitive neutrals with a
+  `TODO(tokens)` to mint semantic on-dark tokens WITH Drawer). Flat atom, NOT a compound. 5-level
+  userEvent tests, `Reference/IconButton` story, co-located README.
+- **/review** (7 agents): 6 fixes applied (`--ui-icon-button-radius` var; `ButtonProps` via the `../Button`
+  barrel; dedicated L4 comment; story `DARK_SURFACE_BG` const; Drawer test `React.`→named import). 3
+  false-positives rejected (ghost-dark ring contrast OK on dark ~4.5:1; import-order — lint green, matches
+  `Button.shared`; `sm`=32px is WCAG 2.5.5 **AAA**, project targets **AA** where 24px suffices).
+- **Pre-existing a11y debt FIXED, not deferred** (`bacc280`): focus-ring `--color-ring` `neutral.400` →
+  `neutral.500` (#6b6b6b, ≥3:1 on white ~5.3:1 AND on the dark ghost-dark surface ~3.4:1 — WCAG 1.4.11);
+  `button.css` now suppresses its colour transition under `prefers-reduced-motion` (WCAG 2.3.3). New
+  workflow rule (`80c2d78`): **fix pre-existing issues a review surfaces in touched files — no
+  out-of-scope deferral**. All pushed (`d9f0cd7..80c2d78`).
+
 ### 2026-06-12 — Avatar: migrated, then rewritten as a React 19 compound
 
 - **Tokens kebab-case** (`d6b0f3e`): `toKebabName` helper in `sd.config.js` splits camelCase humps
