@@ -120,4 +120,12 @@
   .ui-button--icon-right {
     flex-direction: row-reverse;
   }
+
+  /* Non-essential decorative motion: suppress the colour transition when the user opts out
+     (WCAG 2.3.3; mirrors the Skeleton/Spinner reduced-motion precedent). */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-button {
+      transition: none;
+    }
+  }
 }

@@ -28,8 +28,14 @@
         }
       },
       "primary": {
-        "default": { "$value": "{color.primitive.neutral.900}", "$type": "color" },
-        "hover": { "$value": "{color.primitive.neutral.800}", "$type": "color" },
+        "default": {
+          "$value": "{color.primitive.neutral.900}",
+          "$type": "color"
+        },
+        "hover": {
+          "$value": "{color.primitive.neutral.800}",
+          "$type": "color"
+        },
         "foreground": {
           "$value": "{color.primitive.neutral.0}",
           "$type": "color"
@@ -102,7 +108,7 @@
       },
       "ring": {
         "default": {
-          "$value": "{color.primitive.neutral.400}",
+          "$value": "{color.primitive.neutral.500}",
           "$type": "color"
         }
       },
