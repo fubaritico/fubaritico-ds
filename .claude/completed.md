@@ -2,6 +2,29 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-06-12 — Avatar: migrated, then rewritten as a React 19 compound
+
+- **Tokens kebab-case** (`d6b0f3e`): `toKebabName` helper in `sd.config.js` splits camelCase humps
+  only (`lineHeight`→`line-height`), preserving numeric segments (`2xl`/`3xl`/`0.5`). All `--font-*` /
+  `--typography-*` vars now kebab; skin consumers (badge/typography css) updated. The TS tokens object
+  stays camelCase (JS dot-access ergonomics — the rule targets CSS custom-property names).
+- **Avatar flat migration** (`facecc5`): `.ui-avatar` BEM skin + `avatarVariants` resolver + flat API
+  (`src/alt/initials/size`); composes `Icon` as-is. **Talent** composite removed (obsolete consumer of
+  the dropped `testId`).
+- **Avatar compound rewrite** (`4136a10`): full **React 19 compound** — `Avatar.{Image,Fallback,Icon,
+Initials}`, resolution **resolver** (Model A: first viable wins; a pending image blocks later
+  candidates = anti-flash), **split contexts** (stable config / dynamic resolver) with guarded access
+  hooks, React 19 idioms (`<Context value>`, `use()`, `useEffectEvent`, `ref`-as-prop). a11y: root
+  `role="img"` + required `aria-label`; image/initials/icon decorative. 5-level tests, story, README.
+  Docs: **Compound Components (React 19)** section in `patterns-ui.md` + documentation rules in
+  `new-react-component` (fixed the broken `component-patterns.md` ref → `patterns-ui.md`).
+- **Hardening / review** (`bfe4eab`,`ba69b4d`,`0e6c7e4`,`470da87`,`096ee0f`,`8f9cee1`): candidates MUST
+  live inside `Avatar.Fallback` (access hooks throw, standalone mode dropped); loading **Spinner** via
+  the `Avatar.Image` render-prop (doc + Showcase, no baked-in default); `STATUS_TO_CANDIDATE` Record
+  map (no nested ternary); enforced **`react/jsx-no-leaked-render`** (eslint); `modeFor`→
+  `getCandidateMode`; `Cascade`→`Resolver` everywhere. Avatar is now the **reference template** for the
+  heavy compounds (Listbox/Typeahead). All pushed to `origin/main` (`952b757..8f9cee1`).
+
 ### 2026-06-12 — Headless UI deep-dive + `/state-storage` skill (no component change)
 
 - **Research turn, no code/component change.** Deep analysis of **Headless UI React v2.2.10** internals

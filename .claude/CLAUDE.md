@@ -144,25 +144,26 @@ Active thread: **white-label native-CSS design system** (BEM + CVA + tokens + `@
 Plan: `files/plans/native-css-migration.md`. Memory: `native-css-migration-backlog`,
 `white-label-native-css`, `project-goal-stencil-discovery`, `monorepo-orchestration`.
 
-**DONE so far**: Badge, **Button** (split Button/LinkButton/NextLinkButton), **Typography**, **Spinner**
-(with `sm`/`md`/`lg` sizes), **Skeleton** (`rectangle`/`circle`/`line` + `rounded`; dimensions as logical
-inline styles; reduced-motion removes the shimmer; RTL-aware sweep) migrated onto the native skin. TMDB
-MovieCard composites removed. Rule: every component ships a co-located `README.md` usage doc
-(`.claude/rules/component-docs.md`, written **post-migration**) — enforced in `new-react-component` +
-`review`. README doc-debt backfilled for Button/Badge/LinkButton/NextLinkButton. Each migrated component
-also ships a Storybook story under `Reference/*` in `apps/storybook-react` (set up; run `pnpm storybook:ref`).
+**DONE so far**: Badge, **Button** (split Button/LinkButton/NextLinkButton), **Typography**, **Spinner**,
+**Skeleton**, and **Avatar** migrated onto the native skin. Avatar went further: rewritten as a **React 19
+compound** (`Avatar.{Image,Fallback,Icon,Initials}`, resolution **resolver** Model A, split contexts +
+guarded access hooks, `<Context value>`/`use()`/`useEffectEvent`/`ref`-prop) — it is now the **reference
+template** for the heavy compounds (Listbox/Typeahead). The Compound Components (React 19) pattern + hook
+documentation rules live in `patterns-ui.md` + `new-react-component`. `react/jsx-no-leaked-render` is now
+enforced (eslint). Tokens are strictly kebab-case (`toKebabName` in `sd.config.js`). TMDB composites
+(MovieCard, Talent) removed. Every migrated component ships a co-located `README.md` + a `Reference/*`
+Storybook story (run `pnpm storybook:ref`).
 
-**NEXT step (most actionable): migrate `Avatar`** (49 `ui:`, →Icon) onto the Badge pattern (web-only:
-BEM in `styles` + CVA resolver in `variants` for its variants/sizes + 5-level tests + story +
-**co-located README.md**). NB: Icon is NOT migrated (heroicons SVG size-wrapper, carries no skin) — Avatar
-composes it as-is. The shimmer keyframes Skeleton needed are now ported; check whether Avatar reuses any
-of the leftover animation block in `packages/reference/src/styles.css`.
+**NEXT step (most actionable): migrate `IconButton`** (45 `ui:`, →Icon; **unblocks Drawer + Carousel**)
+onto the Badge pattern (web-only: BEM in `styles` + CVA resolver in `variants` + 5-level tests + story +
+co-located README). NB: Icon is NOT migrated (heroicons SVG wrapper, no skin) — IconButton composes it
+as-is. IconButton is a presentational atom (Tier-1 local state), NOT a compound — keep it flat.
 
 **Migration queue** (full detail + rationale in `native-css-migration-backlog` memory +
 `files/plans/native-css-migration.md`; `ui:` footprint in parens; deps before composers). Each = 1
 commit: BEM in `styles` + CVA resolver in `variants` (if variants) + 5-level tests + story + co-located README.
 
-- Atoms: ✅ Skeleton (38) → **Avatar (49, →Icon)** ← next → IconButton (45, →Icon; unblocks Drawer+Carousel) → Card (20).
+- Atoms: ✅ Skeleton (38) → ✅ Avatar (compound) → **IconButton (45, →Icon; unblocks Drawer+Carousel)** ← next → Card (20).
 - Molecules: Input (61, →Icon, before Typeahead) → Rating (32, →Icon) → Image (25, →Icon).
 - Compounds: Listbox (37) → Menu (5, →Listbox) → Modal (8, →Portal) → Drawer (38, →IconButton+Portal) → Tabs (49) → Carousel (138; →Icon+IconButton) → Typeahead (23, →Input+Listbox+Portal, capstone).
 - **Icon & Portal NOT migrated** (no skin: heroicons SVG wrapper / `createPortal`) — they block nothing.
