@@ -87,7 +87,7 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
   already-decided things; that's friction. Only stop again for a genuinely undecided fork or an
   irreversible/outward-facing action.
 - **Plans = plain `.md` in `files/plans/`** (gitignored) — do NOT use the harness "plan mode" (its green in-prompt overlay confuses the workflow). Write/update/read plan files directly; they stay re-readable in the IDE.
-- **Review → Test → Commit** per change — no accumulation
+- **Review → Test → Commit** per change — no accumulation; **fix pre-existing issues a review surfaces in files you touch** — never defer them as "out of scope" (no tech-debt accumulation)
 - **Always run** — `pnpm type-check && pnpm lint && pnpm test` from root — MUST run after every code change, never skip
 - **Risky actions** (reset --hard, rm -rf) require explicit permission EVERY TIME
 - **Never hallucinate** — if uncertain, read code first, perform some searches on notes, the net and bring GitHub sources with /opensrc when needed
