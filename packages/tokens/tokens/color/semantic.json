@@ -28,8 +28,8 @@
         }
       },
       "primary": {
-        "default": { "$value": "{color.primitive.blue.600}", "$type": "color" },
-        "hover": { "$value": "{color.primitive.blue.700}", "$type": "color" },
+        "default": { "$value": "{color.primitive.neutral.900}", "$type": "color" },
+        "hover": { "$value": "{color.primitive.neutral.800}", "$type": "color" },
         "foreground": {
           "$value": "{color.primitive.neutral.0}",
           "$type": "color"
