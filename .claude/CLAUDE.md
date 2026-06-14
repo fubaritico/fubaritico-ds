@@ -145,22 +145,26 @@ Plan: `files/plans/native-css-migration.md`. Memory: `native-css-migration-backl
 `white-label-native-css`, `project-goal-stencil-discovery`, `monorepo-orchestration`.
 
 **DONE so far**: Badge, **Button** (split Button/LinkButton/NextLinkButton), **Typography**, **Spinner**,
-**Skeleton**, **Avatar**, **IconButton**, and **Card** migrated onto the native skin. **DS primary is now
-neutral** (`neutral.900`; brand colour = opt-in emphasis — shadcn/Radix; memory
-`neutral-default-emphasis-strategy`). **IconButton** = Open/Closed extension of Button. **Avatar** = React 19
-compound (resolver Model A, split contexts + guarded hooks). **Card** = SURFACE + slotted compound
-(`Card.{Header,Body,Footer}`, marker-context guard → slots throw outside `<Card>`, NO shared state; chrome
-on the root, padding on the slots, no dividers, Open/Closed for media/clickable — memory
-`card-slotted-compound`). **Typography** now ships `body1` (16px) + `body2` (14px) — MUI parity, `body`
-removed. **Radius scale capped at 6px** (memory `ds-lightness-radius-shadow`). Compound pattern + hook docs
-in `patterns-ui.md` + `new-react-component`. `react/jsx-no-leaked-render` enforced; tokens strictly
-kebab-case. Every migrated component ships a co-located `README.md` + a `Reference/*` story
-(run `pnpm storybook:ref`).
+**Skeleton**, **Avatar**, **IconButton**, **Card** (all atoms), and **Input** (first Molecule, `587712b`)
+migrated onto the native skin. **DS primary is now neutral** (`neutral.900`; brand colour = opt-in emphasis —
+shadcn/Radix; memory `neutral-default-emphasis-strategy`). **IconButton** = Open/Closed extension of Button.
+**Avatar** = React 19 compound (resolver Model A, split contexts + guarded hooks). **Card** = SURFACE +
+slotted compound (`Card.{Header,Body,Footer}`, marker-context guard → slots throw outside `<Card>`, NO shared
+state — memory `card-slotted-compound`). **Input** = control (`.ui-input`) + affix + a **generic reusable
+`field.css`** (`.ui-field`, for future Select/Textarea/Checkbox); prop `size` (not `inputSize`) via
+`Omit<…,'size'>`; error = red.600 text + icon (not colour-only); minted `neutral.450`/`--color-input-border`
+for an AA input border (scoped). **Typography** ships `body1`/`body2` (MUI; `body` removed). **Radius capped
+at 6px** (memory `ds-lightness-radius-shadow`). `react/jsx-no-leaked-render` enforced; tokens kebab-case.
+Every migrated component ships a co-located `README.md` + a `Reference/*` story (run `pnpm storybook:ref`).
 
-**NEXT step (most actionable): migrate `Input`** (61 `ui:`, →Icon; first Molecule, needed before
-Typeahead) onto the established pattern (web-only: BEM in `styles` + CVA resolver in `variants` + 5-level
-tests + story + co-located README). Pattern reminders: separate axes (variant = look, not spacing/layout);
-if a component is really "a tuned X", extend/compose X (Open/Closed) instead of duplicating its skin.
+**NEXT step (most actionable): migrate `Rating`** (32 `ui:`, →Icon; Molecule) onto the established pattern
+(web-only: BEM in `styles` + CVA resolver in `variants` + 5-level tests + story + co-located README), then
+Image. Pattern reminders: separate axes (variant = look, not spacing/layout); reuse `.ui-field` (field.css)
+for any labelled/messaged form control; if a component is really "a tuned X", extend/compose X (Open/Closed).
+
+**A11Y FOLLOW-UP (do with Button)**: Button's `outline` variant borrows the shared `--color-input`
+(neutral.300 #d4d4d4, ~1.48:1 on white) → same WCAG 1.4.11 (<3:1) gap the Input border just fixed. When
+revisiting Button, repoint its outline border (e.g. to `--color-input-border` or its own token).
 
 **Migration queue** (full detail + rationale in `native-css-migration-backlog` memory +
 `files/plans/native-css-migration.md`; `ui:` footprint in parens; deps before composers). Each = 1

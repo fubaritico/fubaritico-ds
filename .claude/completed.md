@@ -2,6 +2,29 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-06-14 — Input migrated (first Molecule) + AA hardening + generic field block
+
+- **Input migrated** (`587712b`) onto the native skin — first Molecule. Three decoupled BEM blocks:
+  `.ui-input` (control, self-sufficient like `.ui-button`) + `.ui-input-affix` (trailing-icon wrapper)
+  in `input.css`; the **field layer extracted to a GENERIC reusable `field.css`** (`.ui-field` /
+  `__label` / `__message` + `--error`, imported before input.css) so Select/Textarea/Checkbox can reuse
+  it without the Input control skin. Resolvers `inputVariants` (size/invalid/hasIcon) + `inputAffixVariants`
+  - `inputFieldVariants` + 4 static class constants; `md` = base (no modifier). 5-level component +
+    resolver tests, `Reference/Input` story, co-located README.
+- **API**: prop `inputSize` → **`size`** with `Omit<ComponentProps<'input'>, 'size'>` (DS-consistent with
+  every other component; sheds the native `size` char-width attr). `const Input: FC` → `export function
+Input` (house style — all migrated components use it).
+- **a11y fixes** (from /review): error message text → `--color-destructive-hover` (red.600 #dc2626,
+  ~5.9:1; red.500 was 3.73:1, failed AA text) + prefixed with an `ExclamationCircle` icon so the error
+  isn't colour-only (WCAG 1.4.1). Minted primitive **`neutral.450` (#949494)** + alias
+  `--color-input-border` so the input border clears WCAG 1.4.11 (~3:1); **scoped to input** (the shared
+  `--color-input` neutral.300 left untouched → Button's outline keeps the same latent gap, noted below).
+- **/review** (7 agents) → 6 findings fixed + 1 design decision applied (border token, dev chose
+  "mint minimal-passing token, scoped"); 3 re-reviews clean. Rejected false positives: import-order
+  (lint green), `:focus-visible` (conformant 2.4.7). known-issues.md updated with the Input gotchas.
+- **DEFERRED a11y debt**: Button `outline` borrows `--color-input` (#d4d4d4, ~1.48:1) — same WCAG 1.4.11
+  failure as the input border had; fix when revisiting Button.
+
 ### 2026-06-12 — Card (slotted compound) + Typography body1/body2 + radius cap 6px
 
 - **Card migrated** (`2d30644`) as a presentational SURFACE + slotted compound. Root `.ui-card` owns
