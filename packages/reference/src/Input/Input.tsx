@@ -1,26 +1,65 @@
 import clsx from 'clsx'
 import { useId } from 'react'
 
+import {
+  INPUT_ICON_CLASS,
+  INPUT_LABEL_CLASS,
+  INPUT_MESSAGE_CLASS,
+  INPUT_MESSAGE_ERROR_CLASS,
+  inputAffixVariants,
+  inputFieldVariants,
+  inputVariants,
+} from '@fubaritico-ds/variants'
+
 import { Icon } from '../Icon'
 
-import type { IconName } from '../Icon'
-import type { ComponentProps, FC } from 'react'
+import type { IconName, IconSize } from '../Icon'
+import type { InputSize } from '@fubaritico-ds/variants'
+import type { ComponentProps } from 'react'
 
-export type InputSize = 'sm' | 'md' | 'lg'
+export type { InputSize }
+
+/** Semantic of the helper message — drives the colour, `aria-invalid` and `role="alert"`. */
 export type InputMessageType = 'error' | 'info'
 
-export interface InputProps extends ComponentProps<'input'> {
-  inputSize?: InputSize
+/**
+ * Props of the {@link Input} component.
+ *
+ * The native `size` attribute (character width) is intentionally omitted: `size` is repurposed as the
+ * design-system size axis (sm/md/lg), matching every other DS component. Control the width via CSS.
+ */
+export interface InputProps extends Omit<ComponentProps<'input'>, 'size'> {
+  /** Control size; defaults to `'md'`. */
+  size?: InputSize
+  /** Optional decorative trailing icon (heroicons subset). */
   icon?: IconName
+  /** Optional label rendered above the control and linked to it via `htmlFor`. */
   label?: string
+  /** Optional helper/error message rendered below the control. */
   message?: string
+  /** Semantic of {@link InputProps.message}; defaults to `'info'`. */
   messageType?: InputMessageType
 }
 
-const iconSizeMap = { sm: 16, md: 20, lg: 24 } as const
+/** Pixel size of the trailing icon per control size (the SVG dimension, not a class). */
+const iconSizeMap: Record<InputSize, IconSize> = { sm: 16, md: 20, lg: 24 }
 
-const Input: FC<InputProps> = ({
-  inputSize = 'md',
+/** Fixed pixel size of the inline error-message icon (proportional to the 12–14px message text). */
+const ERROR_ICON_SIZE: IconSize = 16
+
+/**
+ * Text input control with optional label, trailing icon and helper/error message.
+ *
+ * A presentational, accessible form primitive: it wires the label/message to the control
+ * (`htmlFor` + `aria-describedby`), surfaces errors (`aria-invalid` + `role="alert"` + a leading
+ * error icon so the state is not conveyed by colour alone), and renders the native skin classes.
+ * The trailing icon is purely decorative (`aria-hidden`, non-interactive).
+ *
+ * @param props - {@link InputProps}.
+ * @returns The rendered input — bare, icon-wrapped, or wrapped in a field layer with label/message.
+ */
+export function Input({
+  size = 'md',
   icon,
   label,
   message,
@@ -28,7 +67,7 @@ const Input: FC<InputProps> = ({
   className,
   id: externalId,
   ...rest
-}) => {
+}: Readonly<InputProps>) {
   const autoId = useId()
   const inputId = externalId ?? autoId
   const messageId = message ? `${inputId}-message` : undefined
@@ -40,82 +79,49 @@ const Input: FC<InputProps> = ({
       aria-invalid={hasError || undefined}
       aria-describedby={messageId}
       className={clsx(
-        'ui:w-full ui:rounded ui:border ui:bg-background ui:font-roboto ui:text-foreground ui:transition-[border-color,background-color]',
-        'ui:placeholder:text-muted-foreground',
-        'ui:focus:outline-2 ui:focus:outline-offset-2',
-        'ui:disabled:pointer-events-none ui:disabled:opacity-50',
-        hasError
-          ? 'ui:border-destructive ui:focus:outline-destructive'
-          : 'ui:border-input ui:focus:outline-primary',
-        {
-          'ui:h-8 ui:px-3 ui:text-base ui:sm:text-sm': inputSize === 'sm',
-          'ui:h-10 ui:px-4 ui:text-base': inputSize === 'md',
-          'ui:h-12 ui:px-6 ui:text-lg': inputSize === 'lg',
-        },
-        icon && {
-          'ui:pr-8': inputSize === 'sm',
-          'ui:pr-10': inputSize === 'md',
-          'ui:pr-12': inputSize === 'lg',
-        },
+        inputVariants({ size, invalid: hasError, hasIcon: !!icon }),
         className
       )}
       {...rest}
     />
   )
 
-  const inputWithIcon = icon ? (
-    <div className="ui:relative ui:w-full">
+  const control = icon ? (
+    <div className={inputAffixVariants({ size })}>
       {input}
-      <span
-        className={clsx(
-          'ui:pointer-events-none ui:absolute ui:top-1/2 ui:-translate-y-1/2 ui:text-muted-foreground',
-          {
-            'ui:right-2': inputSize === 'sm',
-            'ui:right-3': inputSize === 'md',
-            'ui:right-4': inputSize === 'lg',
-          }
-        )}
-      >
-        <Icon name={icon} size={iconSizeMap[inputSize]} />
+      <span className={INPUT_ICON_CLASS}>
+        <Icon name={icon} size={iconSizeMap[size]} />
       </span>
     </div>
   ) : (
     input
   )
 
-  if (!label && !message) return inputWithIcon
+  if (!label && !message) return control
 
   return (
-    <div className="ui:flex ui:w-full ui:flex-col ui:gap-1.5">
-      {label && (
-        <label
-          htmlFor={inputId}
-          className={clsx('ui:font-roboto ui:font-medium ui:text-foreground', {
-            'ui:text-xs': inputSize === 'sm',
-            'ui:text-sm': inputSize === 'md',
-            'ui:text-base': inputSize === 'lg',
-          })}
-        >
+    <div className={inputFieldVariants({ size })}>
+      {label ? (
+        <label htmlFor={inputId} className={INPUT_LABEL_CLASS}>
           {label}
         </label>
-      )}
-      {inputWithIcon}
-      {message && (
+      ) : null}
+      {control}
+      {message ? (
         <p
           id={messageId}
           role={hasError ? 'alert' : undefined}
           className={clsx(
-            'ui:font-roboto',
-            {
-              'ui:text-xs': inputSize === 'sm',
-              'ui:text-sm': inputSize === 'md' || inputSize === 'lg',
-            },
-            hasError ? 'ui:text-destructive' : 'ui:text-muted-foreground'
+            INPUT_MESSAGE_CLASS,
+            hasError && INPUT_MESSAGE_ERROR_CLASS
           )}
         >
+          {hasError ? (
+            <Icon name="ExclamationCircle" size={ERROR_ICON_SIZE} />
+          ) : null}
           {message}
         </p>
-      )}
+      ) : null}
     </div>
   )
 }

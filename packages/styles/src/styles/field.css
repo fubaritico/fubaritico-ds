@@ -1,0 +1,73 @@
+/**
+ * Field — native BEM skin (form-field layer).
+ *
+ * A REUSABLE wrapper that stacks a label, a control and a helper/error message in a column.
+ * It is deliberately generic (`.ui-field`, not `.ui-input-field`) so any form control — Input,
+ * Select, Textarea, Checkbox, … — can compose it without importing the Input control skin.
+ *
+ * Size (sm/md/lg) only drives the label/message font sizes via component vars; the control inside
+ * carries its own size. `md` is the base (no modifier emitted).
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-field-*` vars (surgical re-skin).
+ *   2. Redefine a global token (e.g. `--color-foreground`) → re-skins everything that uses it.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-field {
+    /* ---- override API (component-scoped) ---- */
+    --ui-field-label-size: var(--font-size-sm);
+    --ui-field-message-size: var(--font-size-sm);
+    --ui-field-gap: var(--spacing-2);
+    --ui-field-font-family: var(--font-roboto);
+    --ui-field-label-color: var(--color-foreground);
+    --ui-field-label-weight: var(--font-weight-medium);
+    --ui-field-message-color: var(--color-muted-foreground);
+    /* red.600 (not the base red.500): as TEXT this needs ≥4.5:1 on white (WCAG 1.4.3); red.500
+       (#ef4444) only reaches ~3.7:1, red.600 (#dc2626) reaches ~5.9:1. The border/ring may stay
+       red.500 — those are UI-component boundaries that only need ≥3:1. */
+    --ui-field-message-error-color: var(--color-destructive-hover);
+    --ui-field-message-error-gap: var(--spacing-1);
+
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-field-gap);
+    inline-size: 100%;
+  }
+
+  .ui-field--sm {
+    --ui-field-label-size: var(--font-size-xs);
+    --ui-field-message-size: var(--font-size-xs);
+  }
+
+  .ui-field--lg {
+    --ui-field-label-size: var(--font-size-base);
+    /* The message stays at the md size (`sm`) on lg, by design — it's a secondary annotation. */
+  }
+
+  .ui-field__label {
+    color: var(--ui-field-label-color);
+    font-family: var(--ui-field-font-family);
+    font-size: var(--ui-field-label-size);
+    font-weight: var(--ui-field-label-weight);
+  }
+
+  .ui-field__message {
+    color: var(--ui-field-message-color);
+    font-family: var(--ui-field-font-family);
+    font-size: var(--ui-field-message-size);
+  }
+
+  /* Error message: recoloured AND prefixed by a leading icon (rendered by the consumer) so the error
+     state is never conveyed by colour alone (WCAG 1.4.1). The icon inherits the error colour via
+     `currentColor` and is laid out inline. */
+  .ui-field__message--error {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-field-message-error-gap);
+    color: var(--ui-field-message-error-color);
+  }
+}

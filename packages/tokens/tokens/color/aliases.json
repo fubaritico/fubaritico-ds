@@ -3,49 +3,173 @@
     "$description": "Short aliases for Tailwind CSS classes",
     "white": { "$value": "{color.primitive.neutral.0}", "$type": "color" },
     "white-80": { "$value": "rgba(255, 255, 255, 0.8)", "$type": "color" },
-    "background": { "$value": "{color.semantic.background.default}", "$type": "color" },
-    "background-subtle": { "$value": "{color.semantic.background.subtle}", "$type": "color" },
-    "background-muted": { "$value": "{color.semantic.background.muted}", "$type": "color" },
-    "foreground": { "$value": "{color.semantic.foreground.default}", "$type": "color" },
-    "foreground-muted": { "$value": "{color.semantic.foreground.muted}", "$type": "color" },
-    "foreground-subtle": { "$value": "{color.semantic.foreground.subtle}", "$type": "color" },
-    "primary": { "$value": "{color.semantic.primary.default}", "$type": "color" },
-    "primary-hover": { "$value": "{color.semantic.primary.hover}", "$type": "color" },
-    "primary-foreground": { "$value": "{color.semantic.primary.foreground}", "$type": "color" },
-    "secondary": { "$value": "{color.semantic.secondary.default}", "$type": "color" },
-    "secondary-hover": { "$value": "{color.semantic.secondary.hover}", "$type": "color" },
-    "secondary-foreground": { "$value": "{color.semantic.secondary.foreground}", "$type": "color" },
+    "background": {
+      "$value": "{color.semantic.background.default}",
+      "$type": "color"
+    },
+    "background-subtle": {
+      "$value": "{color.semantic.background.subtle}",
+      "$type": "color"
+    },
+    "background-muted": {
+      "$value": "{color.semantic.background.muted}",
+      "$type": "color"
+    },
+    "foreground": {
+      "$value": "{color.semantic.foreground.default}",
+      "$type": "color"
+    },
+    "foreground-muted": {
+      "$value": "{color.semantic.foreground.muted}",
+      "$type": "color"
+    },
+    "foreground-subtle": {
+      "$value": "{color.semantic.foreground.subtle}",
+      "$type": "color"
+    },
+    "primary": {
+      "$value": "{color.semantic.primary.default}",
+      "$type": "color"
+    },
+    "primary-hover": {
+      "$value": "{color.semantic.primary.hover}",
+      "$type": "color"
+    },
+    "primary-foreground": {
+      "$value": "{color.semantic.primary.foreground}",
+      "$type": "color"
+    },
+    "secondary": {
+      "$value": "{color.semantic.secondary.default}",
+      "$type": "color"
+    },
+    "secondary-hover": {
+      "$value": "{color.semantic.secondary.hover}",
+      "$type": "color"
+    },
+    "secondary-foreground": {
+      "$value": "{color.semantic.secondary.foreground}",
+      "$type": "color"
+    },
     "card": { "$value": "{color.semantic.card.background}", "$type": "color" },
-    "card-foreground": { "$value": "{color.semantic.card.foreground}", "$type": "color" },
-    "header": { "$value": "{color.semantic.header.background}", "$type": "color" },
-    "header-foreground": { "$value": "{color.semantic.header.foreground}", "$type": "color" },
-    "footer": { "$value": "{color.semantic.footer.background}", "$type": "color" },
-    "footer-foreground": { "$value": "{color.semantic.footer.foreground}", "$type": "color" },
+    "card-foreground": {
+      "$value": "{color.semantic.card.foreground}",
+      "$type": "color"
+    },
+    "header": {
+      "$value": "{color.semantic.header.background}",
+      "$type": "color"
+    },
+    "header-foreground": {
+      "$value": "{color.semantic.header.foreground}",
+      "$type": "color"
+    },
+    "footer": {
+      "$value": "{color.semantic.footer.background}",
+      "$type": "color"
+    },
+    "footer-foreground": {
+      "$value": "{color.semantic.footer.foreground}",
+      "$type": "color"
+    },
     "border": { "$value": "{color.semantic.border.default}", "$type": "color" },
-    "border-muted": { "$value": "{color.semantic.border.muted}", "$type": "color" },
+    "border-muted": {
+      "$value": "{color.semantic.border.muted}",
+      "$type": "color"
+    },
     "input": { "$value": "{color.semantic.input.border}", "$type": "color" },
+    "input-border": {
+      "$value": "{color.primitive.neutral.450}",
+      "$type": "color"
+    },
     "ring": { "$value": "{color.semantic.ring.default}", "$type": "color" },
-    "badge": { "$value": "{color.semantic.badge.default.background}", "$type": "color" },
-    "badge-foreground": { "$value": "{color.semantic.badge.default.foreground}", "$type": "color" },
-    "badge-dark": { "$value": "{color.semantic.badge.dark.background}", "$type": "color" },
-    "badge-dark-foreground": { "$value": "{color.semantic.badge.dark.foreground}", "$type": "color" },
-    "badge-primary": { "$value": "{color.semantic.badge.primary.background}", "$type": "color" },
-    "badge-primary-foreground": { "$value": "{color.semantic.badge.primary.foreground}", "$type": "color" },
-    "rating-filled": { "$value": "{color.semantic.rating.filled}", "$type": "color" },
-    "rating-empty": { "$value": "{color.semantic.rating.empty}", "$type": "color" },
-    "skeleton": { "$value": "{color.semantic.skeleton.base}", "$type": "color" },
-    "skeleton-highlight": { "$value": "{color.semantic.skeleton.highlight}", "$type": "color" },
-    "destructive": { "$value": "{color.semantic.destructive.default}", "$type": "color" },
-    "destructive-hover": { "$value": "{color.semantic.destructive.hover}", "$type": "color" },
-    "destructive-foreground": { "$value": "{color.semantic.destructive.foreground}", "$type": "color" },
-    "success": { "$value": "{color.semantic.success.default}", "$type": "color" },
-    "success-hover": { "$value": "{color.semantic.success.hover}", "$type": "color" },
-    "success-foreground": { "$value": "{color.semantic.success.foreground}", "$type": "color" },
-    "muted": { "$value": "{color.semantic.background.muted}", "$type": "color" },
-    "muted-foreground": { "$value": "{color.semantic.foreground.muted}", "$type": "color" },
-    "accent": { "$value": "{color.semantic.secondary.default}", "$type": "color" },
-    "accent-foreground": { "$value": "{color.semantic.secondary.foreground}", "$type": "color" },
-    "popover": { "$value": "{color.semantic.card.background}", "$type": "color" },
-    "popover-foreground": { "$value": "{color.semantic.card.foreground}", "$type": "color" }
+    "badge": {
+      "$value": "{color.semantic.badge.default.background}",
+      "$type": "color"
+    },
+    "badge-foreground": {
+      "$value": "{color.semantic.badge.default.foreground}",
+      "$type": "color"
+    },
+    "badge-dark": {
+      "$value": "{color.semantic.badge.dark.background}",
+      "$type": "color"
+    },
+    "badge-dark-foreground": {
+      "$value": "{color.semantic.badge.dark.foreground}",
+      "$type": "color"
+    },
+    "badge-primary": {
+      "$value": "{color.semantic.badge.primary.background}",
+      "$type": "color"
+    },
+    "badge-primary-foreground": {
+      "$value": "{color.semantic.badge.primary.foreground}",
+      "$type": "color"
+    },
+    "rating-filled": {
+      "$value": "{color.semantic.rating.filled}",
+      "$type": "color"
+    },
+    "rating-empty": {
+      "$value": "{color.semantic.rating.empty}",
+      "$type": "color"
+    },
+    "skeleton": {
+      "$value": "{color.semantic.skeleton.base}",
+      "$type": "color"
+    },
+    "skeleton-highlight": {
+      "$value": "{color.semantic.skeleton.highlight}",
+      "$type": "color"
+    },
+    "destructive": {
+      "$value": "{color.semantic.destructive.default}",
+      "$type": "color"
+    },
+    "destructive-hover": {
+      "$value": "{color.semantic.destructive.hover}",
+      "$type": "color"
+    },
+    "destructive-foreground": {
+      "$value": "{color.semantic.destructive.foreground}",
+      "$type": "color"
+    },
+    "success": {
+      "$value": "{color.semantic.success.default}",
+      "$type": "color"
+    },
+    "success-hover": {
+      "$value": "{color.semantic.success.hover}",
+      "$type": "color"
+    },
+    "success-foreground": {
+      "$value": "{color.semantic.success.foreground}",
+      "$type": "color"
+    },
+    "muted": {
+      "$value": "{color.semantic.background.muted}",
+      "$type": "color"
+    },
+    "muted-foreground": {
+      "$value": "{color.semantic.foreground.muted}",
+      "$type": "color"
+    },
+    "accent": {
+      "$value": "{color.semantic.secondary.default}",
+      "$type": "color"
+    },
+    "accent-foreground": {
+      "$value": "{color.semantic.secondary.foreground}",
+      "$type": "color"
+    },
+    "popover": {
+      "$value": "{color.semantic.card.background}",
+      "$type": "color"
+    },
+    "popover-foreground": {
+      "$value": "{color.semantic.card.foreground}",
+      "$type": "color"
+    }
   }
 }

@@ -1,0 +1,147 @@
+/**
+ * Input — native BEM skin.
+ *
+ * Two blocks here keep the axes decoupled:
+ *   - `.ui-input`        the control itself (the `<input>`), self-sufficient like `.ui-button`.
+ *   - `.ui-input-affix`  the relative wrapper that positions a decorative trailing icon.
+ *
+ * The field layer (label + control + message) is a SEPARATE, reusable block — `.ui-field` — and lives
+ * in its own `field.css` so other form controls (Select, Textarea, Checkbox…) can reuse it without
+ * importing the Input control skin.
+ *
+ * Size (sm/md/lg) is a cross-cutting axis: it lives on `.ui-input` (the control sizing) and on
+ * `.ui-input-affix` (the icon inset), because each can render on its own (a bare `<input>` has no
+ * field wrapper). `md` is the base — its modifier is never emitted (the resolver returns '').
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-input-*` vars (surgical re-skin).
+ *   2. Redefine a global token (e.g. `--color-input`) → re-skins everything that uses it.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens. The skin is self-sufficient (own box-sizing + font-family)
+ * since the DS ships no global reset.
+ */
+@layer ui.components {
+  .ui-input {
+    /* ---- override API (component-scoped) ---- */
+    --ui-input-bg: var(--color-background);
+    --ui-input-fg: var(--color-foreground);
+    --ui-input-placeholder: var(--color-muted-foreground);
+    /* neutral.450 (#949494), the lightest grey that clears WCAG 1.4.11 (≥3:1 ~3.0:1) on white — the
+       input border IS the only boundary of the control, so it must be identifiable. Scoped to the
+       input via the dedicated `--color-input-border` token (the shared `--color-input`, neutral.300,
+       stays for other consumers — Button's outline borrows it and has the same latent gap). */
+    --ui-input-border-color: var(--color-input-border);
+    --ui-input-radius: var(--radius-sm);
+    --ui-input-ring-color: var(--color-ring);
+    --ui-input-ring-offset: 2px;
+    --ui-input-transition-duration: var(--duration-fast);
+    --ui-input-transition-easing: var(--easing-standard);
+    --ui-input-font-family: var(--font-roboto);
+    /* size recipe (md default) */
+    --ui-input-height: var(--spacing-10);
+    --ui-input-padding-inline: var(--spacing-4);
+    --ui-input-font-size: var(--font-size-base);
+    /* End-padding reserved for the trailing icon — only applied under `--has-icon`. */
+    --ui-input-icon-reserve: var(--spacing-6);
+
+    /* ---- base (self-sufficient: no global reset) ---- */
+    box-sizing: border-box;
+    inline-size: 100%;
+    block-size: var(--ui-input-height);
+    padding-inline: var(--ui-input-padding-inline);
+    border: 1px solid var(--ui-input-border-color);
+    border-radius: var(--ui-input-radius);
+    background-color: var(--ui-input-bg);
+    color: var(--ui-input-fg);
+    font-family: var(--ui-input-font-family);
+    font-size: var(--ui-input-font-size);
+    transition:
+      border-color var(--ui-input-transition-duration)
+        var(--ui-input-transition-easing),
+      background-color var(--ui-input-transition-duration)
+        var(--ui-input-transition-easing);
+  }
+
+  .ui-input::placeholder {
+    color: var(--ui-input-placeholder);
+  }
+
+  .ui-input:focus-visible {
+    outline: 2px solid var(--ui-input-ring-color);
+    outline-offset: var(--ui-input-ring-offset);
+  }
+
+  .ui-input:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* ---- state modifier ---- */
+  .ui-input--invalid {
+    --ui-input-border-color: var(--color-destructive);
+    --ui-input-ring-color: var(--color-destructive);
+  }
+
+  /* ---- icon modifier ---- */
+  /* Reserve room on the trailing edge so the text never runs under the icon. The start padding is
+     untouched; only the inline-end grows by the size-scaled reserve. */
+  .ui-input--has-icon {
+    padding-inline-end: calc(
+      var(--ui-input-padding-inline) + var(--ui-input-icon-reserve)
+    );
+  }
+
+  /* ---- size modifiers ---- */
+  .ui-input--sm {
+    --ui-input-height: var(--spacing-8);
+    --ui-input-padding-inline: var(--spacing-3);
+    --ui-input-font-size: var(--font-size-sm);
+    --ui-input-icon-reserve: var(--spacing-5);
+  }
+
+  /* `md` is the default size (base) — fully defined by `.ui-input`; the resolver emits no modifier. */
+
+  .ui-input--lg {
+    --ui-input-height: var(--spacing-12);
+    --ui-input-padding-inline: var(--spacing-6);
+    --ui-input-font-size: var(--font-size-lg);
+  }
+
+  /* ---- affix (icon positioning wrapper) ---- */
+  .ui-input-affix {
+    /* Inset of the trailing icon from the inline-end edge (md default). */
+    --ui-input-icon-inset: var(--spacing-3);
+    --ui-input-affix-icon-color: var(--color-muted-foreground);
+
+    position: relative;
+    inline-size: 100%;
+  }
+
+  .ui-input-affix--sm {
+    --ui-input-icon-inset: var(--spacing-2);
+  }
+
+  .ui-input-affix--lg {
+    --ui-input-icon-inset: var(--spacing-4);
+  }
+
+  /* Decorative trailing icon: vertically centred, non-interactive, muted. */
+  .ui-input-affix__icon {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: var(--ui-input-icon-inset);
+    transform: translateY(-50%);
+    display: inline-flex;
+    color: var(--ui-input-affix-icon-color);
+    pointer-events: none;
+  }
+
+  /* Non-essential decorative motion: suppress the transition when the user opts out (WCAG 2.3.3;
+     mirrors the Button/Skeleton/Spinner reduced-motion precedent). */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-input {
+      transition: none;
+    }
+  }
+}
