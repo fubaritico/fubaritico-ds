@@ -2,6 +2,34 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-06-17 — Rating migrated (grayscale, display-only Molecule)
+
+- **Rating migrated** (`f3c572b`) onto the native skin. **Display-only** (no interaction/keyboard —
+  a settable rating would be a separate interactive control; dev's Phase-2 shape = half-step clickable
+  stars + callbacks, nothing more). Two looks: `circle` (SVG progress ring, the BASE — resolver emits
+  '') + `stars` (5-star row, `--ui-rating-fill` clip). BEM `rating.css` (`.ui-rating` + `__circle/__svg/
+__track/__indicator/__stars*/__value`); `ratingVariants` thin resolver (variant + size only) + element
+  class constants; SVG geometry (svg px/stroke/dash) + star icon px stay INLINE (Skeleton precedent —
+  skin owns look, not geometry). 5-level component + resolver tests, `Reference/Rating` story, README.
+- **GRAYSCALE by design** (dev decision): repointed `color.semantic.rating.filled` amber.400 →
+  **neutral.900**; empty stays neutral.300. **Traffic-light REMOVED** (no green/amber/red threshold, no
+  `getColorClass`, no `warning` token) — score read from fill proportion + the number (never colour →
+  1.4.1). Brand re-skin is opt-in via `--ui-rating-indicator-color`.
+- **API**: `trackClassName` dropped → override via `--ui-rating-track-color`; prop `size` axis sm/md/lg;
+  `RatingProps extends Omit<ComponentProps<'div'>, 'role'>` (role locked). a11y: `role="img"` + computed
+  `aria-label` ("Rating: X out of Y", English default, overridable; announced when `showValue=false`),
+  SVG/stars `aria-hidden`. **RTL-safe**: stars pass only `--ui-rating-fill` (%); skin owns clip direction
+  (`:dir(rtl)` flips it) — the old inline physical `clip-path` broke RTL.
+- **/review** (7 agents) → **9 fixed, 8 rejected**. Fixed: font-weight/line-height via override var
+  (STYLE-008 ×2), aria-label aligned to visible value (1.3.1), RTL clip (PLAT-002), `clsx`-on-statics →
+  template literal (QUAL-011), `export function` house style (PLAT-001 ×3), resolver test gaps (PLAT-004),
+  String()/magic-100 cleanup (QUAL-013), README English-default warning. Rejected (documented): ARCH-002
+  high (empty=neutral.300 vs 1.4.11 — display-only, score redundant via 17:1 fill + number, dev's explicit
+  choice; a11y agent concurred no violation); import-order ×5 (lint green, agents contradicted); QUAL-008
+  L3 bare comment (matches `input.test.ts`); ARCH-004 `internal/` dir (diverges from Avatar/Button); A11Y-007
+  wrapper aria-hidden (icons already hidden); ARCH-005/ARCH-002-low/REACT-008 (house style / Input precedent /
+  presentational atom). known-issues.md documents the Rating gotchas. Plan: `files/plans/rating-migration.md`.
+
 ### 2026-06-14 — Input migrated (first Molecule) + AA hardening + generic field block
 
 - **Input migrated** (`587712b`) onto the native skin — first Molecule. Three decoupled BEM blocks:

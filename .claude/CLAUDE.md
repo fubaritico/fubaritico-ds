@@ -145,8 +145,9 @@ Plan: `files/plans/native-css-migration.md`. Memory: `native-css-migration-backl
 `white-label-native-css`, `project-goal-stencil-discovery`, `monorepo-orchestration`.
 
 **DONE so far**: Badge, **Button** (split Button/LinkButton/NextLinkButton), **Typography**, **Spinner**,
-**Skeleton**, **Avatar**, **IconButton**, **Card** (all atoms), and **Input** (first Molecule, `587712b`)
-migrated onto the native skin. **DS primary is now neutral** (`neutral.900`; brand colour = opt-in emphasis —
+**Skeleton**, **Avatar**, **IconButton**, **Card** (all atoms), **Input** (first Molecule, `587712b`),
+and **Rating** (`f3c572b`, grayscale display-only Molecule) migrated onto the native skin. **DS primary
+is now neutral** (`neutral.900`; brand colour = opt-in emphasis —
 shadcn/Radix; memory `neutral-default-emphasis-strategy`). **IconButton** = Open/Closed extension of Button.
 **Avatar** = React 19 compound (resolver Model A, split contexts + guarded hooks). **Card** = SURFACE +
 slotted compound (`Card.{Header,Body,Footer}`, marker-context guard → slots throw outside `<Card>`, NO shared
@@ -157,10 +158,11 @@ for an AA input border (scoped). **Typography** ships `body1`/`body2` (MUI; `bod
 at 6px** (memory `ds-lightness-radius-shadow`). `react/jsx-no-leaked-render` enforced; tokens kebab-case.
 Every migrated component ships a co-located `README.md` + a `Reference/*` story (run `pnpm storybook:ref`).
 
-**NEXT step (most actionable): migrate `Rating`** (32 `ui:`, →Icon; Molecule) onto the established pattern
-(web-only: BEM in `styles` + CVA resolver in `variants` + 5-level tests + story + co-located README), then
-Image. Pattern reminders: separate axes (variant = look, not spacing/layout); reuse `.ui-field` (field.css)
-for any labelled/messaged form control; if a component is really "a tuned X", extend/compose X (Open/Closed).
+**NEXT step (most actionable): migrate `Image`** (25 `ui:`, →Icon; last Molecule) onto the established
+pattern (web-only: BEM in `styles` + CVA resolver in `variants` + 5-level tests + story + co-located
+README). Then the Compounds tier begins (Listbox → Menu → Modal → …). Pattern reminders: separate axes
+(variant = look, not spacing/layout); geometry/intrinsic sizing stays inline (Skeleton/Rating precedent —
+skin owns look only); if a component is really "a tuned X", extend/compose X (Open/Closed).
 
 **A11Y FOLLOW-UP (do with Button)**: Button's `outline` variant borrows the shared `--color-input`
 (neutral.300 #d4d4d4, ~1.48:1 on white) → same WCAG 1.4.11 (<3:1) gap the Input border just fixed. When
@@ -171,7 +173,7 @@ revisiting Button, repoint its outline border (e.g. to `--color-input-border` or
 commit: BEM in `styles` + CVA resolver in `variants` (if variants) + 5-level tests + story + co-located README.
 
 - Atoms: ✅ Skeleton → ✅ Avatar (compound) → ✅ IconButton (extension of Button) → ✅ Card (slotted compound).
-- Molecules: **Input (61, →Icon, before Typeahead)** ← next → Rating (32, →Icon) → Image (25, →Icon).
+- Molecules: ✅ Input (61, →Icon) → ✅ Rating (32, →Icon, grayscale display-only) → **Image (25, →Icon)** ← next.
 - Compounds: Listbox (37) → Menu (5, →Listbox) → Modal (8, →Portal) → Drawer (38, →IconButton+Portal) → Tabs (49) → Carousel (138; →Icon+IconButton) → Typeahead (23, →Input+Listbox+Portal, capstone).
 - **Icon & Portal NOT migrated** (no skin: heroicons SVG wrapper / `createPortal`) — they block nothing.
 
