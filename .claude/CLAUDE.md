@@ -106,6 +106,11 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
 - **Never fallback values** — never serve hardcoded/stale data as silent degradation. If a runtime dependency (a build tool, generator, config) fails, surface the error; don't mask it.
 - **Never `--no-verify`** on commit without the developer's explicit agreement
 - **JSDoc everywhere (strict)** — every exported interface property, every function (`@param` + `@returns`), every hook, every type with properties, every constant. Exempt: generated artefacts (`packages/stencil/dist/{react,angular}`, `components.d.ts`) + test files.
+- **Modular / pluggable architecture (ESSENTIAL, SOLID)** — every element MUST run **standalone**, be
+  **pluggable/unpluggable/replaceable**, and **depend on a mock** for any collaborator. Dependency
+  injection always; contracts at the seams; no hard code-to-code coupling, no global singletons / ambient
+  build artefacts reached through. If a unit can't be taken apart and tested alone, rework it. Full rule:
+  `rules/modular-architecture.md` (load before building ANY component or the DataTable).
 - **Apply React skills** — apply `composition-patterns`, `react-best-practices`, and `react-view-transitions` when writing or reviewing component code
 - **Never say** "You're right" or equivalent, especially when there's a doubt or the dev idea needs challenge
 - **When satisfied by the dev answer** — Perform some searches on notes, the net and bring GitHub sources with /opensrc when needed
@@ -144,51 +149,38 @@ Active thread: **white-label native-CSS design system** (BEM + CVA + tokens + `@
 Plan: `files/plans/native-css-migration.md`. Memory: `native-css-migration-backlog`,
 `white-label-native-css`, `project-goal-stencil-discovery`, `monorepo-orchestration`.
 
-**DONE so far**: Badge, **Button** (split Button/LinkButton/NextLinkButton), **Typography**, **Spinner**,
-**Skeleton**, **Avatar**, **IconButton**, **Card** (all atoms), **Input** (first Molecule, `587712b`),
-and **Rating** (`f3c572b`, grayscale display-only Molecule) migrated onto the native skin. **DS primary
-is now neutral** (`neutral.900`; brand colour = opt-in emphasis —
-shadcn/Radix; memory `neutral-default-emphasis-strategy`). **IconButton** = Open/Closed extension of Button.
-**Avatar** = React 19 compound (resolver Model A, split contexts + guarded hooks). **Card** = SURFACE +
-slotted compound (`Card.{Header,Body,Footer}`, marker-context guard → slots throw outside `<Card>`, NO shared
-state — memory `card-slotted-compound`). **Input** = control (`.ui-input`) + affix + a **generic reusable
-`field.css`** (`.ui-field`, for future Select/Textarea/Checkbox); prop `size` (not `inputSize`) via
-`Omit<…,'size'>`; error = red.600 text + icon (not colour-only); minted `neutral.450`/`--color-input-border`
-for an AA input border (scoped). **Typography** ships `body1`/`body2` (MUI; `body` removed). **Radius capped
-at 6px** (memory `ds-lightness-radius-shadow`). `react/jsx-no-leaked-render` enforced; tokens kebab-case.
-Every migrated component ships a co-located `README.md` + a `Reference/*` story (run `pnpm storybook:ref`).
+**DONE so far** (full per-component log in `completed.md`): Badge, Button (split
+Button/LinkButton/NextLinkButton), Typography (`body1`/`body2`), Spinner, Skeleton, Avatar (R19 compound),
+IconButton (Open/Closed ext of Button), Card (slotted compound) — all atoms; **Input** (first Molecule,
+generic reusable `.ui-field`/`field.css`) and **Rating** (`f3c572b`, grayscale display-only) — Molecules.
+**DS primary = neutral** (brand = opt-in emphasis; memory `neutral-default-emphasis-strategy`); radius
+capped at 6px; `react/jsx-no-leaked-render` enforced; tokens kebab-case. Every migrated component ships a
+co-located `README.md` + a `Reference/*` story (`pnpm storybook:ref`).
 
 **NEXT step (most actionable): migrate `Image`** (25 `ui:`, →Icon; last Molecule) onto the established
-pattern (web-only: BEM in `styles` + CVA resolver in `variants` + 5-level tests + story + co-located
-README). Then the Compounds tier begins (Listbox → Menu → Modal → …). Pattern reminders: separate axes
-(variant = look, not spacing/layout); geometry/intrinsic sizing stays inline (Skeleton/Rating precedent —
-skin owns look only); if a component is really "a tuned X", extend/compose X (Open/Closed).
+pattern (BEM + CVA resolver + 5-level tests + story + README), then the Compounds tier (Listbox → Menu →
+Modal → …). Reminders: separate axes (variant = look); geometry/intrinsic sizing stays inline
+(Skeleton/Rating precedent); a "tuned X" extends/composes X (Open/Closed).
 
-**A11Y FOLLOW-UP (do with Button)**: Button's `outline` variant borrows the shared `--color-input`
-(neutral.300 #d4d4d4, ~1.48:1 on white) → same WCAG 1.4.11 (<3:1) gap the Input border just fixed. When
-revisiting Button, repoint its outline border (e.g. to `--color-input-border` or its own token).
+**A11Y FOLLOW-UP (with Button)**: Button `outline` borrows `--color-input` (neutral.300, ~1.48:1) → same WCAG 1.4.11 gap as the Input border had; repoint when revisiting Button.
 
-**Migration queue** (full detail + rationale in `native-css-migration-backlog` memory +
-`files/plans/native-css-migration.md`; `ui:` footprint in parens; deps before composers). Each = 1
-commit: BEM in `styles` + CVA resolver in `variants` (if variants) + 5-level tests + story + co-located README.
+**Migration queue** (full detail in `native-css-migration-backlog` memory + the plan; deps before
+composers; each = 1 commit: BEM + CVA resolver + 5-level tests + story + README):
 
 - Atoms: ✅ Skeleton → ✅ Avatar (compound) → ✅ IconButton (extension of Button) → ✅ Card (slotted compound).
 - Molecules: ✅ Input (61, →Icon) → ✅ Rating (32, →Icon, grayscale display-only) → **Image (25, →Icon)** ← next.
 - Compounds: Listbox (37) → Menu (5, →Listbox) → Modal (8, →Portal) → Drawer (38, →IconButton+Portal) → Tabs (49) → Carousel (138; →Icon+IconButton) → Typeahead (23, →Input+Listbox+Portal, capstone).
 - **Icon & Portal NOT migrated** (no skin: heroicons SVG wrapper / `createPortal`) — they block nothing.
 
-Phase 1 = migrate existing primitives onto the Badge pattern, web-only (✅ Badge/Button/Typography/Spinner/
-Skeleton/Avatar/IconButton; TMDB composites EXCLUDED). Phase 2 = dev hands over 9 NEW components one-by-one (Alert·DataTable·
-BottomSheet·Checkbox·DatePicker·Dropdown·Pagination·ProgressBar·Tooltip) + a new `icons` package. Phase 3 =
-finish Stencil (PLAN step 5, green `stencil build`) → wire into `build:packages`, converge `globalStyle` onto `styles`.
+Phase 1 = migrate existing primitives onto the Badge pattern, web-only (TMDB composites EXCLUDED).
+Phase 2 = dev hands over 9 NEW components one-by-one (Alert·DataTable·BottomSheet·Checkbox·DatePicker·
+Dropdown·Pagination·ProgressBar·Tooltip) + a new `icons` package. Phase 3 = finish Stencil (green
+`stencil build`) → wire into `build:packages`, converge `globalStyle` onto `styles`.
 
 Decisions locked: **Lerna + Nx** (no Turbo); `reference` = guide/sandbox **NOT a deliverable**; skin =
-`@fubaritico-ds/styles` (BEM `@layer` + `--ui-*` vars, theme via tokens); **CVA resolvers in
-`@fubaritico-ds/variants`** (pure TS, React/DOM-free, shared across frameworks); migration **web-only**.
-
-For **stateful/compound** components (Listbox, Menu, Modal, Drawer, Tabs, Typeahead) use the
-**`/state-storage`** skill to pick the lightest state tier (local · createStore · Zustand · simplified
-Machine) + behavior-hooks. Atoms stay Tier-1 local. Memory: `storage-levels-playbook`.
+`@fubaritico-ds/styles`; **CVA resolvers in `@fubaritico-ds/variants`** (pure TS, React/DOM-free); web-only.
+For **stateful/compound** components use the **`/state-storage`** skill (lightest tier: local · createStore
+· Zustand · Machine); atoms stay Tier-1 local. Memory: `storage-levels-playbook`.
 
 ### Known Issues
 
@@ -196,12 +188,13 @@ Read @known-issues.md
 
 ## Reference Files (load on demand — NOT auto-loaded)
 
-| File                 | When to load                                     |
-| -------------------- | ------------------------------------------------ |
-| `architecture.md`    | Stack, packages, scripts, monorepo orchestration |
-| `decision-tree.md`   | Skill triggers — check before coding             |
-| `patterns-ui.md`     | UI component, design system story                |
-| `tests.md`           | Writing tests — 5-level policy                   |
-| `troubleshooting.md` | Debug, architectural decisions                   |
+| File                      | When to load                                               |
+| ------------------------- | ---------------------------------------------------------- |
+| `architecture.md`         | Stack, packages, scripts, monorepo orchestration           |
+| `modular-architecture.md` | SOLID/pluggable/standalone rule — ANY component, DataTable |
+| `decision-tree.md`        | Skill triggers — check before coding                       |
+| `patterns-ui.md`          | UI component, design system story                          |
+| `tests.md`                | Writing tests — 5-level policy                             |
+| `troubleshooting.md`      | Debug, architectural decisions                             |
 
 **Before coding**: ask which reference files are needed — do NOT start coding without the relevant files loaded.
