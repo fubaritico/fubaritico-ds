@@ -1,89 +1,96 @@
-import clsx from 'clsx'
+import {
+  RATING_CIRCLE_CLASS,
+  RATING_INDICATOR_CLASS,
+  RATING_SVG_CLASS,
+  RATING_TRACK_CLASS,
+  RATING_VALUE_CENTERED_CLASS,
+  RATING_VALUE_CLASS,
+} from '@fubaritico-ds/variants'
 
-import type { RatingSize } from './Rating'
+import type { RatingSize } from '@fubaritico-ds/variants'
 
-const circleSizeMap: Record<
-  RatingSize,
-  { size: number; stroke: number; fontSize: string }
-> = {
-  sm: { size: 32, stroke: 3, fontSize: 'ui:text-xs' },
-  md: { size: 48, stroke: 4, fontSize: 'ui:text-sm' },
-  lg: { size: 64, stroke: 5, fontSize: 'ui:text-base' },
-}
-
-const getColorClass = (percent: number): string => {
-  if (percent >= 70) return 'ui:text-green-600'
-  if (percent >= 40) return 'ui:text-amber-600'
-  return 'ui:text-red-500'
+/**
+ * Per-size SVG geometry (pixels). Geometry is NOT a skin concern (the skin only owns colour/motion),
+ * so the ring's dimensions live here as inline SVG attributes — mirroring the Skeleton precedent.
+ */
+const circleSizeMap: Record<RatingSize, { size: number; stroke: number }> = {
+  sm: { size: 32, stroke: 3 },
+  md: { size: 48, stroke: 4 },
+  lg: { size: 64, stroke: 5 },
 }
 
 export interface CircleRatingProps {
-  /** Percentage value (0-100) for the progress ring */
+  /** Percentage (0–100) driving the progress arc fill. */
   percent: number
-  /** Size of the rating circle */
+  /** Size of the ring. */
   size: RatingSize
-  /** Whether to display the numeric value in the center */
+  /** Whether to render the centred numeric value. */
   showValue: boolean
-  /** The actual rating value (used for display) */
+  /** The (clamped) rating value, used for display. */
   value: number
-  /** Maximum rating value (used for display formatting) */
+  /** Maximum rating value, used for display formatting. */
   max: number
-  /** Custom class for the background track circle */
-  trackClassName?: string
 }
 
-function CircleRating({
+/**
+ * Circle look of {@link Rating} — an SVG progress ring with a centred value.
+ *
+ * The track + indicator colours and the rotation come from the native skin (`.ui-rating__*`); only the
+ * computed geometry (radius, circumference, dash offset) is inline. The whole SVG is `aria-hidden` —
+ * the accessible name lives on the `Rating` root.
+ *
+ * @param props - Circle rating options.
+ * @param props.percent - Progress percentage (0–100).
+ * @param props.size - Ring size.
+ * @param props.showValue - Whether to render the centred value.
+ * @param props.value - Clamped rating value.
+ * @param props.max - Maximum rating value.
+ * @returns The rendered ring.
+ */
+export function CircleRating({
   percent,
   size,
   showValue,
   value,
   max,
-  trackClassName,
 }: Readonly<CircleRatingProps>) {
-  const { size: svgSize, stroke, fontSize } = circleSizeMap[size]
+  const { size: svgSize, stroke } = circleSizeMap[size]
   const radius = (svgSize - stroke) / 2
   const circumference = 2 * Math.PI * radius
   const offset = circumference - (percent / 100) * circumference
 
   return (
-    <div className="ui:relative ui:inline-flex ui:items-center ui:justify-center">
-      <svg width={svgSize} height={svgSize} className="ui:-rotate-90">
+    <div className={RATING_CIRCLE_CLASS}>
+      <svg
+        className={RATING_SVG_CLASS}
+        width={svgSize}
+        height={svgSize}
+        aria-hidden
+      >
         <circle
+          className={RATING_TRACK_CLASS}
           cx={svgSize / 2}
           cy={svgSize / 2}
           r={radius}
-          fill="none"
-          stroke="currentColor"
           strokeWidth={stroke}
-          className={trackClassName ?? 'ui:text-gray-200'}
         />
         <circle
+          className={RATING_INDICATOR_CLASS}
           cx={svgSize / 2}
           cy={svgSize / 2}
           r={radius}
-          fill="none"
-          stroke="currentColor"
           strokeWidth={stroke}
-          strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
-          className={clsx(
-            'ui:transition-all ui:duration-500',
-            getColorClass(percent)
-          )}
         />
       </svg>
-      {showValue && (
+      {showValue ? (
         <span
-          className={clsx(
-            'ui:absolute ui:font-bold',
-            fontSize,
-            getColorClass(percent)
-          )}
+          className={`${RATING_VALUE_CLASS} ${RATING_VALUE_CENTERED_CLASS}`}
         >
           {max === 100 ? Math.round(percent) : value.toFixed(1)}
         </span>
-      )}
+      ) : null}
     </div>
   )
 }

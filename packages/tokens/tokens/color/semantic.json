@@ -145,7 +145,10 @@
         }
       },
       "rating": {
-        "filled": { "$value": "{color.primitive.amber.400}", "$type": "color" },
+        "filled": {
+          "$value": "{color.primitive.neutral.900}",
+          "$type": "color"
+        },
         "empty": { "$value": "{color.primitive.neutral.300}", "$type": "color" }
       },
       "skeleton": {

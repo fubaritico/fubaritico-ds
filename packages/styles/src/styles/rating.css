@@ -1,0 +1,143 @@
+/**
+ * Rating — native BEM skin.
+ *
+ * A display-only score readout in two looks selected by `--circle` / `--stars`:
+ *   - circle: an SVG progress ring (a `__track` arc + a `__indicator` arc) with a centred value.
+ *   - stars:  a row of empty stars (`__stars-track`) overlaid by a clipped row of filled stars
+ *             (`__stars-fill`), with a trailing value.
+ *
+ * GRAYSCALE by design: the fill is the DS emphasis (neutral.900 via `--color-rating-filled`), the
+ * empty/track is a light grey (neutral.300 via `--color-rating-empty`). There is NO traffic-light
+ * threshold — the score is conveyed by the fill proportion AND the numeric value, so no meaning is
+ * carried by colour alone (WCAG 1.4.1). A brand re-skin is opt-in: override `--ui-rating-indicator-color`.
+ *
+ * Geometry is NOT a skin concern: the SVG dimensions (width/height/r/stroke-width/dash arrays) and the
+ * stars `clip-path` are per-instance inline values set by the consumer (the skin only owns the look),
+ * mirroring the Skeleton precedent. The size modifiers here only drive the value font-size.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-rating-*` vars on `.ui-rating` (surgical re-skin).
+ *   2. Redefine a global token (e.g. `--color-rating-filled`) → re-skins every Rating.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens. The skin is self-sufficient (own box-sizing + font-family)
+ * since the DS ships no global reset.
+ */
+@layer ui.components {
+  .ui-rating {
+    /* ---- override API (component-scoped) ---- */
+    --ui-rating-track-color: var(--color-rating-empty);
+    --ui-rating-indicator-color: var(--color-rating-filled);
+    --ui-rating-value-color: var(--color-foreground);
+    --ui-rating-value-font-family: var(--font-roboto);
+    --ui-rating-value-font-weight: var(--font-weight-medium);
+    --ui-rating-value-line-height: var(--font-line-height-none);
+    --ui-rating-gap: var(--spacing-1);
+    --ui-rating-transition-duration: var(--duration-normal);
+    --ui-rating-transition-easing: var(--easing-standard);
+    /* value font-size recipe (md default) */
+    --ui-rating-value-font-size: var(--font-size-sm);
+
+    /* ---- base (circle look) ---- */
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--ui-rating-value-font-family);
+  }
+
+  /* The stars look is the only one with a trailing value sibling, so the gap lives on its modifier;
+     the circle's value is centred inside the ring (a single flex child → no gap needed). */
+  .ui-rating--stars {
+    gap: var(--ui-rating-gap);
+  }
+
+  /* ---- value (shared) ---- */
+  .ui-rating__value {
+    color: var(--ui-rating-value-color);
+    font-size: var(--ui-rating-value-font-size);
+    font-weight: var(--ui-rating-value-font-weight);
+    line-height: var(--ui-rating-value-line-height);
+  }
+
+  /* ---- stars look ---- */
+  .ui-rating__stars {
+    position: relative;
+    display: inline-flex;
+  }
+
+  /* Empty row: the baseline stars, light grey. */
+  .ui-rating__stars-track {
+    display: flex;
+    color: var(--ui-rating-track-color);
+  }
+
+  /* Filled row: overlaid and revealed to the score fraction. The consumer passes ONLY the fill
+     fraction as `--ui-rating-fill` (a 0–100% length, per-instance); the skin owns the clip DIRECTION
+     so it can be flipped for RTL — keeping the geometry direction out of the framework layer. */
+  .ui-rating__stars-fill {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    color: var(--ui-rating-indicator-color);
+    clip-path: inset(0 calc(100% - var(--ui-rating-fill, 100%)) 0 0);
+  }
+
+  /* RTL: the stars row reads from the inline-start (right) edge, so clip the opposite physical side. */
+  .ui-rating__stars-fill:dir(rtl) {
+    clip-path: inset(0 0 0 calc(100% - var(--ui-rating-fill, 100%)));
+  }
+
+  /* ---- circle look ---- */
+  .ui-rating__circle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Rotate so the progress arc starts at 12 o'clock (the dash offset runs clockwise from the top). */
+  .ui-rating__svg {
+    transform: rotate(-90deg);
+  }
+
+  .ui-rating__track {
+    fill: none;
+    stroke: var(--ui-rating-track-color);
+  }
+
+  .ui-rating__indicator {
+    fill: none;
+    stroke: var(--ui-rating-indicator-color);
+    stroke-linecap: round;
+    transition: stroke-dashoffset var(--ui-rating-transition-duration)
+      var(--ui-rating-transition-easing);
+  }
+
+  /* The circle's value sits dead-centre over the ring and reads a touch heavier. Redefine the
+     component var (not the property) so a consumer override of `--ui-rating-value-font-weight` still
+     wins on the centred value. */
+  .ui-rating__value--centered {
+    --ui-rating-value-font-weight: var(--font-weight-bold);
+    position: absolute;
+  }
+
+  /* ---- size modifiers (value font-size only; SVG/icon px are inline) ---- */
+  .ui-rating--sm {
+    --ui-rating-value-font-size: var(--font-size-xs);
+  }
+
+  /* `md` is the default size (base) — fully defined by `.ui-rating`; the resolver emits no modifier. */
+
+  .ui-rating--lg {
+    --ui-rating-value-font-size: var(--font-size-base);
+  }
+
+  /* ---- reduced motion ---- */
+  /* The arc's fill animation is non-essential (the value + final arc convey the score); drop it when
+     the user opts out (WCAG 2.3.3, mirrors the Button/Input precedent). */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-rating__indicator {
+      transition: none;
+    }
+  }
+}
