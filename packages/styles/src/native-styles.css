@@ -13,10 +13,15 @@
 @import './styles/badge.css';
 @import './styles/button.css';
 @import './styles/card.css';
+@import './styles/checkbox.css';
+@import './styles/dropdown.css';
 @import './styles/field.css';
 @import './styles/icon-button.css'; /* extension of button.css — MUST load after it */
 @import './styles/input.css';
+@import './styles/pagination.css';
 @import './styles/rating.css';
 @import './styles/skeleton.css';
+@import './styles/sort-arrows.css';
 @import './styles/spinner.css';
+@import './styles/tooltip.css';
 @import './styles/typography.css';

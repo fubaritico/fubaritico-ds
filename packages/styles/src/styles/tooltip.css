@@ -1,0 +1,85 @@
+/**
+ * Tooltip — native BEM skin.
+ *
+ * `.ui-tooltip` is the floating bubble; `.ui-tooltip__arrow` is the CSS-triangle pointer. The bubble
+ * is positioned by the consumer (fixed, viewport-relative px from a positioning hook), so the skin
+ * owns only the LOOK — colours, padding, radius, elevation, max-width — never the coordinates.
+ *
+ * The arrow colour tracks the bubble background via the shared `--ui-tooltip-bg` var, so a re-skin of
+ * one re-skins the other automatically. Arrow borders are PHYSICAL (top/right/bottom/left) to match
+ * the physical px the positioning hook computes.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-tooltip-*` vars (surgical re-skin).
+ *   2. Redefine a global token (e.g. `--color-primary`) → re-skins everything that uses it.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens. The skin is self-sufficient (own box-sizing + font-family).
+ */
+@layer ui.components {
+  .ui-tooltip {
+    /* ---- override API (component-scoped) ---- */
+    --ui-tooltip-bg: var(--color-primary);
+    --ui-tooltip-fg: var(--color-primary-foreground);
+    --ui-tooltip-radius: var(--radius-md);
+    --ui-tooltip-padding-block: var(--spacing-3);
+    --ui-tooltip-padding-inline: var(--spacing-4);
+    --ui-tooltip-font-size: var(--font-size-sm);
+    --ui-tooltip-font-family: var(--font-roboto);
+    --ui-tooltip-max-width: 280px; /* layout geometry — no max-width token; override to re-skin */
+    --ui-tooltip-z: 50;
+    --ui-tooltip-shadow: var(--shadow-lg);
+
+    box-sizing: border-box;
+    position: fixed;
+    z-index: var(--ui-tooltip-z);
+    max-inline-size: var(--ui-tooltip-max-width);
+    padding-block: var(--ui-tooltip-padding-block);
+    padding-inline: var(--ui-tooltip-padding-inline);
+    border-radius: var(--ui-tooltip-radius);
+    background-color: var(--ui-tooltip-bg);
+    color: var(--ui-tooltip-fg);
+    font-family: var(--ui-tooltip-font-family);
+    font-size: var(--ui-tooltip-font-size);
+    box-shadow: var(--ui-tooltip-shadow);
+    /* the bubble is decorative-positioned and must not eat pointer events from the target */
+    pointer-events: none;
+    /* arrow is positioned outside the padding box */
+    overflow: visible;
+  }
+
+  .ui-tooltip--light {
+    --ui-tooltip-bg: var(--color-background);
+    --ui-tooltip-fg: var(--color-foreground);
+
+    border: 1px solid var(--color-border);
+  }
+
+  /* ---- arrow (CSS triangle) ---- */
+  .ui-tooltip__arrow {
+    position: absolute;
+    inline-size: 0;
+    block-size: 0;
+    border: 6px solid transparent;
+  }
+
+  .ui-tooltip__arrow--top {
+    border-bottom-width: 0;
+    border-top-color: var(--ui-tooltip-bg);
+  }
+
+  .ui-tooltip__arrow--bottom {
+    border-top-width: 0;
+    border-bottom-color: var(--ui-tooltip-bg);
+  }
+
+  .ui-tooltip__arrow--left {
+    border-right-width: 0;
+    border-left-color: var(--ui-tooltip-bg);
+  }
+
+  .ui-tooltip__arrow--right {
+    border-left-width: 0;
+    border-right-color: var(--ui-tooltip-bg);
+  }
+}

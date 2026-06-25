@@ -1,0 +1,46 @@
+/**
+ * Sort arrows — native BEM skin.
+ *
+ * `.ui-sort-arrows` is the icon-only header button that toggles a column's sort; it stacks two
+ * chevrons (`.ui-sort-arrows__icon`), dimming the one for the opposite direction
+ * (`--dimmed`). The chevron glyphs themselves are rendered by the consumer via the Icon component.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-sort-arrows-*` vars (surgical re-skin).
+ *   2. Redefine a global token → re-skins everything that uses it.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens. The skin is self-sufficient (own box-sizing).
+ */
+@layer ui.components {
+  .ui-sort-arrows {
+    /* ---- override API (component-scoped) ---- */
+    --ui-sort-arrows-color: var(--color-foreground-muted);
+    --ui-sort-arrows-dimmed-opacity: 0.5;
+    --ui-sort-arrows-ring-color: var(--color-ring);
+
+    box-sizing: border-box;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ui-sort-arrows-color);
+    cursor: pointer;
+  }
+
+  .ui-sort-arrows:focus-visible {
+    outline: 2px solid var(--ui-sort-arrows-ring-color);
+    outline-offset: 2px;
+  }
+
+  .ui-sort-arrows__icon {
+    display: inline-flex;
+  }
+
+  .ui-sort-arrows__icon--dimmed {
+    opacity: var(--ui-sort-arrows-dimmed-opacity);
+  }
+}

@@ -1,0 +1,114 @@
+/**
+ * Dropdown — native BEM skin.
+ *
+ * `.ui-dropdown` is the inline row (optional label + the control). `.ui-dropdown__control` is the
+ * relative anchor for the floating menu; `.ui-dropdown__menu` is the absolutely-positioned wrapper
+ * around the composed `Menu` (with `--flipped` / `--right` placement modifiers). The trigger and the
+ * menu themselves are composed primitives (`Button`, `Menu`) — this skin only owns the Dropdown-
+ * specific glue: layout, caret rotation, the colour dot and item divider.
+ *
+ * In portalled mode the consumer applies computed fixed coordinates inline (overriding the absolute
+ * base); the placement modifiers are then not used.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-dropdown-*` vars (surgical re-skin).
+ *   2. Redefine a global token → re-skins everything that uses it.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-dropdown {
+    /* ---- override API (component-scoped) ---- */
+    --ui-dropdown-gap: var(--spacing-3);
+    --ui-dropdown-menu-gap: var(--spacing-2);
+    --ui-dropdown-item-gap: var(--spacing-2);
+    --ui-dropdown-dot-size: var(--spacing-3); /* 12px */
+    --ui-dropdown-z: 50;
+    --ui-dropdown-font-family: var(--font-roboto);
+    --ui-dropdown-transition-duration: var(--duration-fast);
+    --ui-dropdown-transition-easing: var(--easing-standard);
+
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-dropdown-gap);
+    font-family: var(--ui-dropdown-font-family);
+  }
+
+  .ui-dropdown__control {
+    position: relative;
+    inline-size: 100%;
+  }
+
+  .ui-dropdown__trigger-content {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-dropdown-item-gap);
+  }
+
+  .ui-dropdown__caret {
+    display: inline-flex;
+    transition: transform var(--ui-dropdown-transition-duration)
+      var(--ui-dropdown-transition-easing);
+  }
+
+  .ui-dropdown__caret--open {
+    transform: rotate(180deg);
+  }
+
+  /* ---- floating menu wrapper (non-portalled) ---- */
+  .ui-dropdown__menu {
+    position: absolute;
+    z-index: var(--ui-dropdown-z);
+    min-inline-size: 100%;
+    inset-block-start: 100%;
+    inset-inline-start: 0;
+    margin-block-start: var(--ui-dropdown-menu-gap);
+  }
+
+  .ui-dropdown__menu--flipped {
+    inset-block-start: auto;
+    inset-block-end: 100%;
+    margin-block-start: 0;
+    margin-block-end: var(--ui-dropdown-menu-gap);
+  }
+
+  .ui-dropdown__menu--right {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+  }
+
+  /* ---- menu item content (dot + icon + label) ---- */
+  .ui-dropdown__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-dropdown-item-gap);
+  }
+
+  .ui-dropdown__item--destructive {
+    color: var(--color-destructive);
+  }
+
+  .ui-dropdown__dot {
+    inline-size: var(--ui-dropdown-dot-size);
+    block-size: var(--ui-dropdown-dot-size);
+    border-radius: 9999px;
+    flex-shrink: 0;
+  }
+
+  .ui-dropdown__divider {
+    block-size: 1px;
+    margin-block: var(--spacing-1);
+    border: 0;
+    background-color: var(--color-border);
+    list-style: none;
+  }
+
+  /* Non-essential decorative motion: drop the caret transition when the user opts out (WCAG 2.3.3). */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-dropdown__caret {
+      transition: none;
+    }
+  }
+}

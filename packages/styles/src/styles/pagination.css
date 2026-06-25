@@ -1,0 +1,133 @@
+/**
+ * Pagination — native BEM skin.
+ *
+ * `.ui-pagination` is the flex row of controls: first / previous arrows, a `.ui-pagination__pages`
+ * group of page-number buttons, then next / last arrows. `.ui-pagination__nav` are the icon-only
+ * arrow buttons; `.ui-pagination__double` overlaps two chevrons for the first/last jumps.
+ *
+ * State (active page, disabled arrows) is read from the elements themselves (`--active` modifier,
+ * `:disabled`). The component owns behaviour; the skin owns the look.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-pagination-*` vars (surgical re-skin).
+ *   2. Redefine a global token (e.g. `--color-primary`) → re-skins everything that uses it.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens. The skin is self-sufficient (own box-sizing + font-family).
+ */
+@layer ui.components {
+  .ui-pagination {
+    /* ---- override API (component-scoped) ---- */
+    --ui-pagination-gap: var(--spacing-2);
+    --ui-pagination-page-size: var(
+      --spacing-9
+    ); /* 36px — square hit target (≥ WCAG 2.5.5 AA 24px) */
+    --ui-pagination-ring-color: var(--color-ring);
+    --ui-pagination-radius: var(--radius-md);
+    --ui-pagination-font-family: var(--font-roboto);
+    --ui-pagination-font-size: var(--font-size-sm);
+    --ui-pagination-fg: var(--color-foreground-muted);
+    --ui-pagination-fg-hover: var(--color-foreground);
+    --ui-pagination-fg-disabled: var(--color-input-border);
+    --ui-pagination-hover-bg: var(--color-muted);
+    --ui-pagination-active-color: var(--color-primary);
+    --ui-pagination-transition-duration: var(--duration-fast);
+    --ui-pagination-transition-easing: var(--easing-standard);
+
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-pagination-gap);
+    font-family: var(--ui-pagination-font-family);
+  }
+
+  .ui-pagination__pages {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-pagination-gap);
+  }
+
+  /* ---- arrow buttons (icon only) ---- */
+  .ui-pagination__nav {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--spacing-6);
+    block-size: var(--spacing-6);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ui-pagination-fg);
+    cursor: pointer;
+    transition: color var(--ui-pagination-transition-duration)
+      var(--ui-pagination-transition-easing);
+  }
+
+  .ui-pagination__nav:not(:disabled):hover {
+    color: var(--ui-pagination-fg-hover);
+  }
+
+  .ui-pagination__nav:disabled {
+    color: var(--ui-pagination-fg-disabled);
+    cursor: not-allowed;
+  }
+
+  /* overlap two single chevrons into a "double chevron" (no double glyph in the icon set) */
+  .ui-pagination__double {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .ui-pagination__double svg + svg {
+    margin-inline-start: -0.55em;
+  }
+
+  /* ---- page-number buttons ---- */
+  .ui-pagination__page {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--ui-pagination-page-size);
+    block-size: var(--ui-pagination-page-size);
+    border: 1px solid transparent;
+    border-radius: var(--ui-pagination-radius);
+    background: transparent;
+    color: var(--ui-pagination-fg);
+    font-family: inherit;
+    font-size: var(--ui-pagination-font-size);
+    cursor: pointer;
+    transition:
+      background-color var(--ui-pagination-transition-duration)
+        var(--ui-pagination-transition-easing),
+      color var(--ui-pagination-transition-duration)
+        var(--ui-pagination-transition-easing);
+  }
+
+  .ui-pagination__page:not(.ui-pagination__page--active):hover {
+    background-color: var(--ui-pagination-hover-bg);
+  }
+
+  .ui-pagination__page--active {
+    border-color: var(--ui-pagination-active-color);
+    color: var(--ui-pagination-active-color);
+    cursor: default;
+  }
+
+  /* Keyboard focus ring — these are plain buttons (not .ui-button), so the ring is defined here
+     (WCAG 2.4.7). The active page button stays focusable (it is not disabled). */
+  .ui-pagination__nav:focus-visible,
+  .ui-pagination__page:focus-visible {
+    outline: 2px solid var(--ui-pagination-ring-color);
+    outline-offset: 2px;
+  }
+
+  /* Non-essential decorative motion: drop transitions when the user opts out (WCAG 2.3.3). */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-pagination__nav,
+    .ui-pagination__page {
+      transition: none;
+    }
+  }
+}

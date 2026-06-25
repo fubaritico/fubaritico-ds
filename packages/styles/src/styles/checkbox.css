@@ -1,0 +1,161 @@
+/**
+ * Checkbox — native BEM skin.
+ *
+ * `.ui-checkbox` is the clickable row (`<label>`): a visually-hidden native `<input type="checkbox">`
+ * (`.ui-checkbox__input`, sr-only but focusable) + a painted `.ui-checkbox__box` + an optional
+ * `.ui-checkbox__label`. The wrapper `.ui-checkbox-field` stacks the row and a reused
+ * `.ui-field__message--error` (from field.css) in a column.
+ *
+ * STATE comes from the native input, NOT from React-applied classes: the box reflects
+ * checked / indeterminate / disabled / keyboard-focus via `:has(.ui-checkbox__input:…)`. This keeps
+ * the control correct whether it is controlled or uncontrolled — the DOM is the single source of truth.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-checkbox-*` vars (surgical re-skin).
+ *   2. Redefine a global token (e.g. `--color-primary`) → re-skins everything that uses it.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens. The skin is self-sufficient (own box-sizing + font-family)
+ * since the DS ships no global reset.
+ */
+@layer ui.components {
+  .ui-checkbox-field {
+    box-sizing: border-box;
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+
+  .ui-checkbox {
+    /* ---- override API (component-scoped) ---- */
+    --ui-checkbox-size: var(--spacing-5); /* md default: 20px */
+    --ui-checkbox-radius: var(--radius-sm);
+    --ui-checkbox-gap: var(--spacing-3);
+    --ui-checkbox-font-family: var(--font-roboto);
+    --ui-checkbox-label-size: var(--font-size-sm);
+    --ui-checkbox-label-color: var(--color-foreground);
+    --ui-checkbox-bg: var(--color-background);
+    /* neutral.450 (#949494) — the lightest grey clearing WCAG 1.4.11 (≥3:1) on white; the box border
+       is the only boundary of the empty control, so it must be identifiable. */
+    --ui-checkbox-border-color: var(--color-input-border);
+    --ui-checkbox-border-hover: var(--color-foreground-muted);
+    --ui-checkbox-checked-bg: var(--color-primary);
+    --ui-checkbox-checked-border: var(--color-primary);
+    --ui-checkbox-icon-color: var(--color-primary-foreground);
+    --ui-checkbox-ring-color: var(--color-ring);
+    --ui-checkbox-ring-offset: 2px;
+    --ui-checkbox-transition-duration: var(--duration-fast);
+    --ui-checkbox-transition-easing: var(--easing-standard);
+
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-checkbox-gap);
+    cursor: pointer;
+    user-select: none;
+    font-family: var(--ui-checkbox-font-family);
+  }
+
+  /* sr-only: hidden visually, still in the a11y tree and focusable. */
+  .ui-checkbox__input {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    white-space: nowrap;
+    border: 0;
+    clip-path: inset(50%);
+  }
+
+  .ui-checkbox__box {
+    box-sizing: border-box;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--ui-checkbox-size);
+    block-size: var(--ui-checkbox-size);
+    border: 2px solid var(--ui-checkbox-border-color);
+    border-radius: var(--ui-checkbox-radius);
+    background-color: var(--ui-checkbox-bg);
+    transition:
+      border-color var(--ui-checkbox-transition-duration)
+        var(--ui-checkbox-transition-easing),
+      background-color var(--ui-checkbox-transition-duration)
+        var(--ui-checkbox-transition-easing);
+  }
+
+  /* The glyph (rendered by the consumer via the Icon component): hidden until the input is
+     checked / indeterminate. Sized down from the Icon's intrinsic SVG to fit inside the box
+     (CSS dimensions beat the inline width/height attributes the Icon sets). */
+  .ui-checkbox__icon {
+    display: inline-flex;
+    color: var(--ui-checkbox-icon-color);
+    opacity: 0;
+    transition: opacity var(--ui-checkbox-transition-duration)
+      var(--ui-checkbox-transition-easing);
+  }
+
+  .ui-checkbox__icon svg {
+    inline-size: calc(var(--ui-checkbox-size) - 6px);
+    block-size: calc(var(--ui-checkbox-size) - 6px);
+  }
+
+  .ui-checkbox__label {
+    color: var(--ui-checkbox-label-color);
+    font-size: var(--ui-checkbox-label-size);
+  }
+
+  /* ---- size modifier (md is the base) ---- */
+  .ui-checkbox--sm {
+    --ui-checkbox-size: var(--spacing-4); /* 16px */
+    --ui-checkbox-label-size: var(--font-size-xs);
+  }
+
+  /* ---- state, read from the native input (controlled OR uncontrolled) ---- */
+  .ui-checkbox:has(.ui-checkbox__input:checked) .ui-checkbox__box,
+  .ui-checkbox:has(.ui-checkbox__input:indeterminate) .ui-checkbox__box {
+    background-color: var(--ui-checkbox-checked-bg);
+    border-color: var(--ui-checkbox-checked-border);
+  }
+
+  .ui-checkbox:has(.ui-checkbox__input:checked) .ui-checkbox__icon,
+  .ui-checkbox:has(.ui-checkbox__input:indeterminate) .ui-checkbox__icon {
+    opacity: 1;
+  }
+
+  /* hover the border only when interactive (not disabled, not already in error) */
+  .ui-checkbox:hover:not(:has(.ui-checkbox__input:disabled)):not(
+      .ui-checkbox--invalid
+    )
+    .ui-checkbox__box {
+    border-color: var(--ui-checkbox-border-hover);
+  }
+
+  /* keyboard focus → ring on the box (pointer focus stays ringless via :focus-visible) */
+  .ui-checkbox:has(.ui-checkbox__input:focus-visible) .ui-checkbox__box {
+    outline: 2px solid var(--ui-checkbox-ring-color);
+    outline-offset: var(--ui-checkbox-ring-offset);
+  }
+
+  .ui-checkbox:has(.ui-checkbox__input:disabled) {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* ---- error modifier ---- */
+  .ui-checkbox--invalid .ui-checkbox__box {
+    border-color: var(--color-destructive);
+  }
+
+  /* Non-essential decorative motion: drop the transitions when the user opts out
+     (WCAG 2.3.3; mirrors the Input/Button reduced-motion precedent). */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-checkbox__box,
+    .ui-checkbox__icon {
+      transition: none;
+    }
+  }
+}
