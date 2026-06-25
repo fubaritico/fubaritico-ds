@@ -1,0 +1,119 @@
+import { Dropdown } from '../../Dropdown'
+import { Pagination } from '../../Pagination'
+import { MIN_PAGE_SIZE } from '../DataTable.constants'
+
+import type { DropdownOption } from '../../Dropdown'
+import type { BaseDataTableProps } from '../DataTable.types'
+
+/** Props of {@link TableFooter}. */
+export type TableFooterProps<TData> = Pick<
+  BaseDataTableProps<TData>,
+  'tableStateManager'
+>
+
+/** Rows-per-page choices (10, 20, 30, 40, 50). */
+const PAGE_SIZE_OPTIONS: DropdownOption[] = [1, 2, 3, 4, 5].map((factor) => {
+  const size = String(MIN_PAGE_SIZE * factor)
+  return { value: size, label: size }
+})
+
+/**
+ * Footer below the table: a rows-per-page selector (DS {@link Dropdown}, replacing the original
+ * `DropdownMenu`), the {@link Pagination} navigator, and a "go to page" field. All driven by the
+ * injected table state manager.
+ *
+ * @param props - {@link TableFooterProps}.
+ * @returns The table footer.
+ */
+const TableFooter = <TData,>({
+  tableStateManager,
+}: TableFooterProps<TData>) => {
+  const handleChangePage = (newPageIndex: number) => {
+    tableStateManager.setPageIndex(newPageIndex)
+  }
+
+  return (
+    <div
+      className="tw-flex tw-flex-nowrap tw-items-center tw-justify-between tw-space-x-2 tw-h-20 tw-px-3 tw-border-t tw-border-t-gray-200"
+      data-test="table-footer"
+    >
+      {/* ROWS PER PAGE SELECTOR */}
+      <div className="tw-flex tw-items-center tw-gap-2">
+        <Dropdown
+          aria-label="Select rows per page"
+          buttonVariant="outline"
+          withPortal
+          options={PAGE_SIZE_OPTIONS}
+          selectedValue={tableStateManager
+            .getState()
+            .pagination.pageSize.toString()}
+          onSelect={(value) => {
+            tableStateManager.setPageSize(parseInt(value, 10))
+          }}
+        />
+        <span className="whitespace-nowrap tw-text-gray_oda-500">
+          Rows per page
+        </span>
+      </div>
+
+      {tableStateManager.getRowCount() >
+      tableStateManager.getState().pagination.pageSize ? (
+        <>
+          {/* PAGINATION NAVIGATOR */}
+          <Pagination
+            canNextPage={tableStateManager.getCanNextPage()}
+            canPreviousPage={tableStateManager.getCanPreviousPage()}
+            countPages={tableStateManager.getPageCount()}
+            currentPage={tableStateManager.getState().pagination.pageIndex}
+            gotoFirst={() => {
+              tableStateManager.firstPage()
+            }}
+            gotoLast={() => {
+              tableStateManager.lastPage()
+            }}
+            gotoNext={() => {
+              tableStateManager.nextPage()
+            }}
+            gotoPrevious={() => {
+              tableStateManager.previousPage()
+            }}
+            handleChangePage={handleChangePage}
+          />
+
+          {/* FIELD TO NAVIGATE TO A PAGE */}
+          <div
+            className="tw-flex tw-items-center tw-gap-2"
+            data-test="go-to-page"
+          >
+            <label
+              className="whitespace-nowrap tw-text-gray_oda-500"
+              htmlFor="goToPage"
+            >
+              Go to page
+            </label>
+            <input
+              id="goToPage"
+              type="number"
+              min={1}
+              max={tableStateManager.getPageCount()}
+              value={tableStateManager.getState().pagination.pageIndex + 1}
+              onChange={(e) => {
+                const page = e.target.value ? Number(e.target.value) - 1 : 0
+                tableStateManager.setPageIndex(page)
+              }}
+              className="tw-border tw-border-gray-200 tw-bg-gray-50 tw-p-2 tw-rounded-lg tw-w-16"
+            />
+            <span
+              className="whitespace-nowrap tw-text-gray_oda-500"
+              data-test="number-of-pages"
+            >
+              of {tableStateManager.getPageCount()}
+            </span>
+          </div>
+        </>
+      ) : null}
+    </div>
+  )
+}
+
+export default TableFooter

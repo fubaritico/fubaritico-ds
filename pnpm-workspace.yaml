@@ -28,6 +28,13 @@ catalog:
   # TanStack Query
   '@tanstack/react-query': 5.74.4
 
+  # TanStack Table + Virtual (DataTable)
+  '@tanstack/react-table': 8.21.3
+  '@tanstack/react-virtual': 3.14.3
+
+  # HTML entity decoding (DataTable HtmlCell)
+  html-entities: 2.6.0
+
   # Vite
   vite: 6.3.4
   '@vitejs/plugin-react': 4.7.0

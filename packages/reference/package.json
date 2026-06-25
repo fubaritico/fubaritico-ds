@@ -91,6 +91,9 @@
     "@heroicons/react": "^2.2.0",
     "@fubaritico-ds/shared": "workspace:*",
     "@fubaritico-ds/variants": "workspace:*",
-    "clsx": "catalog:"
+    "@tanstack/react-table": "catalog:",
+    "@tanstack/react-virtual": "catalog:",
+    "clsx": "catalog:",
+    "html-entities": "catalog:"
   }
 }

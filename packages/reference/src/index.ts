@@ -24,6 +24,15 @@ export type { ButtonProps } from './Button'
 export { Card } from './Card'
 export type { CardProps, CardVariant, CardSlotProps } from './Card'
 
+export { Checkbox } from './Checkbox'
+export type { CheckboxProps, CheckboxSize } from './Checkbox'
+
+export { default as DataTable, DataTableVirtualized } from './DataTable'
+export type { DataTableProps, DataTableVirtualizedProps } from './DataTable'
+
+export { Dropdown } from './Dropdown'
+export type { DropdownProps, DropdownOption } from './Dropdown'
+
 export { Drawer } from './Drawer'
 export type {
   DrawerProps,
@@ -53,6 +62,9 @@ export type { HeroImageProps } from './HeroImage'
 export { Modal } from './Modal'
 export type { ModalProps } from './Modal'
 
+export { Pagination } from './Pagination'
+export type { PaginationProps } from './Pagination'
+
 export { Rating } from './Rating'
 export type { RatingProps, RatingSize, RatingVariant } from './Rating'
 
@@ -81,6 +93,14 @@ export type {
 
 export { Tabs } from './Tabs'
 export type { TabsProps, TabsVariant } from './Tabs'
+
+export { Tooltip } from './Tooltip'
+export type {
+  TooltipProps,
+  TooltipPlacement,
+  TooltipManualPosition,
+  TooltipPosition,
+} from './Tooltip'
 
 export { Skeleton } from './Skeleton'
 export type { SkeletonProps, SkeletonShape } from './Skeleton'
