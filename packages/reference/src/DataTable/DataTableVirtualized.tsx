@@ -1,54 +1,18 @@
 import { flexRender } from '@tanstack/react-table'
-import { useVirtualizer } from '@tanstack/react-virtual'
 import clsx from 'clsx'
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment } from 'react'
 
 import { ActionBar, NoResults, TableFooter } from './components'
 import { MIN_PAGE_SIZE } from './DataTable.constants'
+import { useVirtualizedTable } from './hooks/useVirtualizedTable'
 import { TableBody, TableHeader, TableRow, TableVirtualized } from './ui/table'
 
 import type { BaseDataTableProps } from './DataTable.types'
 import type { Table as TableType } from '@tanstack/react-table'
-import type { RefObject } from 'react'
-
-/** Estimated row height (px) for the virtualizer. */
-const ROW_ESTIMATE_PX = 54
-
-/** Extra rows rendered above/below the viewport to smooth scrolling. */
-const VIRTUALIZER_OVERSCAN = 20
-
-/** Fraction of total height past which the scroll is considered "near the bottom". */
-const NEAR_BOTTOM_THRESHOLD = 0.95
 
 export type DataTableVirtualizedProps<TData> = BaseDataTableProps<TData> & {
-  /* Use along with sticky header to get a fixed height for the table (header and body) */
+  /** Viewport height (px) of the scrollable table region (header + virtualized body). */
   height: number
-}
-
-const adjustTableHeight = (
-  tableRef: RefObject<HTMLTableElement | null>,
-  virtualHeight: number
-) => {
-  if (!tableRef.current) return
-
-  // calculate the height for the pseudo-element after the table
-  const existingPseudoElement = window.getComputedStyle(
-    tableRef.current,
-    '::after'
-  )
-
-  const existingPseudoHeight = parseFloat(existingPseudoElement.height) || 0
-  const tableHeight = tableRef.current.clientHeight - existingPseudoHeight
-  const pseudoHeight = Math.max(virtualHeight - tableHeight, 0)
-
-  // Scope the var to the table element (its `::after` inherits it) instead of writing it on
-  // <html> — a global write would clobber other DataTableVirtualized instances and break SSR.
-  tableRef.current.style.setProperty(
-    '--pseudo-height',
-    `${String(pseudoHeight)}px`
-  )
-
-  return pseudoHeight
 }
 
 /**
@@ -65,7 +29,8 @@ const adjustTableHeight = (
  * IMPORTANT: The table state manager instance has been lifted up to the parent component to allow
  * a much better ability to configure, create filters, etc.
  *
- * @constructor
+ * @param props - {@link DataTableVirtualizedProps}.
+ * @returns The virtualized DataTable.
  */
 export default function DataTableVirtualized<TData>({
   actionBar,
@@ -84,59 +49,10 @@ export default function DataTableVirtualized<TData>({
   tableStateManager,
   tBodyClassName,
 }: Readonly<DataTableVirtualizedProps<TData>>) {
-  const parentRef = useRef<HTMLDivElement>(null)
-  const scrollableRef = useRef<HTMLDivElement>(null)
-  const tableRef = useRef<HTMLTableElement>(null)
-
-  const [isScrollNearBottom, setIsScrollNearBottom] = useState(false)
-
   const { rows } = tableStateManager.getRowModel()
 
-  // Instantiating rows virtualizer
-  const virtualizer = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => ROW_ESTIMATE_PX,
-    overscan: VIRTUALIZER_OVERSCAN,
-  })
-
-  const virtualItems = virtualizer.getVirtualItems()
-  const virtualSize = virtualizer.getTotalSize()
-
-  // Callback to adjust the height of the pseudo element
-  const handlePseudoResize = useCallback(() => {
-    adjustTableHeight(tableRef, virtualSize)
-  }, [virtualSize])
-
-  // Callback to handle scrolling, checking if we are near the bottom
-  const handleScroll = useCallback(() => {
-    if (parentRef.current) {
-      const scrollPosition = parentRef.current.scrollTop
-      const visibleHeight = parentRef.current.clientHeight
-      setIsScrollNearBottom(
-        scrollPosition > virtualSize * NEAR_BOTTOM_THRESHOLD - visibleHeight
-      )
-    }
-  }, [virtualSize])
-
-  // Add an event listener on the scrollable parent container and resize the
-  // pseudo-element whenever the table renders with new data
-  useEffect(() => {
-    const scrollable = parentRef.current
-    if (scrollable) scrollable.addEventListener('scroll', handleScroll)
-    handlePseudoResize()
-
-    return () => {
-      if (scrollable) scrollable.removeEventListener('scroll', handleScroll)
-    }
-  }, [handleScroll, handlePseudoResize])
-
-  // If we are near the bottom of the table, resize the pseudo element each time
-  // the length of virtual items changes (which is effectively the number of table
-  // rows rendered to the DOM). This ensures we don't scroll too far or too short.
-  useEffect(() => {
-    if (isScrollNearBottom) handlePseudoResize()
-  }, [isScrollNearBottom, virtualItems.length, handlePseudoResize])
+  const { parentRef, scrollableRef, tableRef, virtualItems, totalSize } =
+    useVirtualizedTable(rows.length)
 
   return (
     <div
@@ -160,10 +76,7 @@ export default function DataTableVirtualized<TData>({
       )}
       {actionBar}
       <div ref={parentRef} style={{ height: `${height}px`, overflow: 'auto' }}>
-        <div
-          ref={scrollableRef}
-          style={{ height: `${virtualizer.getTotalSize()}px` }}
-        >
+        <div ref={scrollableRef} style={{ height: `${totalSize}px` }}>
           <TableVirtualized
             ref={tableRef}
             className="after:tw-block after:tw-h-[--pseudo-height] after:content-['']"
@@ -193,11 +106,11 @@ export default function DataTableVirtualized<TData>({
             </TableHeader>
             <TableBody className={tBodyClassName}>
               <>
-                {loading &&
-                  RowSkeleton &&
-                  Array.from({ length: MIN_PAGE_SIZE }, (_, index) => (
-                    <RowSkeleton key={`row-skeleton-${index}`} />
-                  ))}
+                {loading && RowSkeleton
+                  ? Array.from({ length: MIN_PAGE_SIZE }, (_, index) => (
+                      <RowSkeleton key={`row-skeleton-${index}`} />
+                    ))
+                  : null}
                 {!loading &&
                   virtualItems.length > 0 &&
                   virtualItems.map((virtualRow, index) => {
@@ -227,16 +140,15 @@ export default function DataTableVirtualized<TData>({
                       </TableRow>
                     )
                   })}
-                {!loading &&
-                  tableStateManager.getRowModel().rows?.length === 0 && (
-                    <NoResults
-                      columnLength={
-                        tableStateManager
-                          .getAllColumns()
-                          .filter((column) => column.getIsVisible()).length
-                      }
-                    />
-                  )}
+                {!loading && rows.length === 0 && (
+                  <NoResults
+                    columnLength={
+                      tableStateManager
+                        .getAllColumns()
+                        .filter((column) => column.getIsVisible()).length
+                    }
+                  />
+                )}
               </>
             </TableBody>
           </TableVirtualized>
