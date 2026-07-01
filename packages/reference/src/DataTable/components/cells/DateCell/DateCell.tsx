@@ -1,6 +1,6 @@
 import { type Row } from '@tanstack/react-table'
 
-import { toEpochMs } from '../../../normalizeTimestamp'
+import { toEpochMs } from '../../../utils'
 import { TableCell } from '../../primitives/TableCell'
 
 import type { ReactNode } from 'react'

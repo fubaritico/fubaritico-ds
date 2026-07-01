@@ -1,3 +1,9 @@
+import type {
+  RowSelectionState,
+  SortingState,
+  TableOptions,
+  Updater,
+} from '@tanstack/react-table'
 import {
   getCoreRowModel,
   getPaginationRowModel,
@@ -5,6 +11,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import clsx from 'clsx'
+import type { FC } from 'react'
 import {
   useCallback,
   useEffect,
@@ -16,20 +23,13 @@ import {
 
 import DataTable from '../DataTable/DataTable'
 import DataTableVirtualized from '../DataTable/DataTableVirtualized'
-import { toEpochMs } from '../DataTable/normalizeTimestamp'
+import { toEpochMs } from '../DataTable/utils'
 
 import JobRowSkeleton from './JobRowSkeleton'
 import useColumnsDefinition from './useColumnsDefinition'
 
 import type { JobItem } from './jobFactory'
-import type { DataTableProps } from '../DataTable/DataTable'
-import type {
-  RowSelectionState,
-  SortingState,
-  TableOptions,
-  Updater,
-} from '@tanstack/react-table'
-import type { FC } from 'react'
+import type { DataTableProps } from '../DataTable'
 
 /** Default viewport height (px) for the virtualized table when none is provided. */
 const DEFAULT_VIRTUALIZED_HEIGHT = 600
