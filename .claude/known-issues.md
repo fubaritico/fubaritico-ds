@@ -2,6 +2,22 @@
 
 Put here the know issues to avoid cluttering the context window.
 
+- **Taxonomie interne DataTable (2026-07-02)** : `DataTable/components/{primitives,features,cells}` +
+  `hooks/` + `utils/` (+ `filters/`), barrel par groupe. **`primitives`** (9 wrappers d'éléments
+  sémantiques : Table/TableVirtualized/TableHeader/TableBody/TableFooter/TableRow/TableHead/TableCell/
+  TableCaption) **et `features`** (ActionBar/ArrowUpDown/DropdownFilter/NoResults/TableFooterContent/
+  TruncatedContent) sont de l'**échafaudage INTERNE** → **PAS** ré-exportés au barrel racine
+  `DataTable/index.ts`. **Seules les `cells`** y sont ré-exportées (`export * from './components/cells'`)
+  car ce sont les briques appelées dans les configs de colonnes (`useColumnsDefinition`). Ne pas remonter
+  primitives/features au barrel racine (couplerait les consommateurs à des internes libres de bouger).
+- **`DropdownFilter` est mort** (`components/features/DropdownFilter`, importé nulle part) → décider :
+  câbler dans `leftActions` (alors le ré-exporter LUI SEUL) ou supprimer. Dette non tranchée.
+- **`cn` vit dans `DataTable/utils/cn.ts`** (déplacé de l'ancien `ui/utils.ts`) + `normalizeTimestamp`
+  dans `utils/` ; le dossier **`ui/` n'existe plus**. Les primitives importent `cn` via `../../../utils`.
+- **Primitive `TableFooter` (`<tfoot>`) pas encore câblée** : `TableFooterContent` (pagination) est rendu
+  en `<div>` frère HORS du `<table>`, pas dans un `<tfoot>`. La primitive `TableFooter` extraite existe
+  mais n'a pas encore de consommateur — câblage prévu (étape ultérieure).
+
 - **Avatar candidates throw outside `Avatar.Fallback`**: it's a full compound (no standalone mode) — the resolver access hooks (`useAvatarResolverActions/State`) throw if a candidate (`Avatar.Image/Initials/Icon`) is used without a surrounding `Avatar.Fallback`. By design.
 - **`react/jsx-no-leaked-render` is enforced (eslint, error)**: `{value && <JSX/>}` is forbidden when `value` is non-boolean (empty-string / zero leak) → use a ternary (`cond ? <JSX/> : null`) or coerce (`!!value &&`). Gotcha: `Boolean(src)` does **not** narrow the type — for `src: string | null` keep the ternary `src ? … : null` (narrows `src` AND avoids the leak); `Boolean(src) &&` loses the narrowing → TS error on `src={src}`.
 - **`--ui-avatar-line-height`**: Avatar exposes an override var for the initials line-height (parity with the rest of the skin's typographic vars); defaults to `var(--font-line-height-none)` (= 1).
@@ -32,3 +48,6 @@ Put here the know issues to avoid cluttering the context window.
 - **Rating is display-only + grayscale by design**: `role="img"` + computed `aria-label` ("Rating: X out of Y", English default — pass `aria-label` to localise); the SVG/stars are `aria-hidden`. NO interaction/keyboard (a settable rating would be a separate interactive control; dev's Phase-2 shape = half-step clickable stars + callbacks, nothing more). NO traffic-light: fill = `--color-rating-filled` (neutral.900, repointed from amber.400) on `--color-rating-empty` (neutral.300); the score is read from the fill proportion + the number (never colour → 1.4.1).
 - **Rating `--color-rating-empty` (neutral.300, ~1.48:1 on white) is a DELIBERATE dev choice**: a review flagged it vs WCAG 1.4.11 (≥3:1 for graphical objects), but it's NOT treated as a blocker because (a) Rating is display-only, not a control boundary; (b) the score is redundantly conveyed by the high-contrast fill (neutral.900 ~17:1) AND the numeric value; (c) filled-vs-empty contrast is huge so the proportion is perceivable. If a stronger empty/track is wanted later, repoint `--color-rating-empty` to neutral.450 (the AA-min control shade) — scoped, no other consumer.
 - **Rating stars fill is RTL-safe via `--ui-rating-fill`**: the component passes ONLY the fill fraction as the `--ui-rating-fill` custom property (a 0–100% length); the skin owns the `clip-path` DIRECTION (LTR clips inline-end, a `:dir(rtl)` rule clips the other physical edge). Don't move the clip-path back inline (it was physical `inset(0 …% 0 0)` → broke RTL). The SVG ring geometry (svg px / stroke / dash arrays) stays inline (Skeleton precedent — skin owns look, not geometry).
+- **Storybook (storybook-react) consumes the BUILT `reference` dist, not src** (exports map → `dist/*`, no Vite alias to source). After changing a `reference` component you MUST rebuild it (the root `pnpm type-check`/`lint`/`test` gate does it via Nx `^build`) AND restart Storybook — Vite does NOT hot-reload a workspace dep's `dist`. Symptom: story shows stale behaviour despite saved edits.
+- **React `<Profiler>` does NOT fire in a production Storybook build** (needs the `react-dom/profiling` build). For prod perf measurement rely on the plain `debugTimings` (`performance.now` + `console.warn`, the `[DataTable] selection: …ms` line) + Chrome's `[Violation] 'click' handler took …ms` long-task warning. The `[DataTable] render: …ms` Profiler lines only appear in dev.
+- **DataTable select-all cost is TanStack O(N) (materializes a 150k-key `rowSelection`), so prod ≈ dev** — it's plain-JS data-structure work, not React render, so dev-mode inflation doesn't apply (don't expect a prod speedup). `startTransition` lowers the blocking time but RAISES the perceived total (two render passes) → don't default it for select-all-and-wait. O(1) needs the external "flag + exceptions" selection store (`files/analysis/storage-port-design.md`), reserved for the extreme (millions / Web Workers) — delegate only when necessary.

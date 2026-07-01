@@ -144,43 +144,7 @@ Read @completed.md
 
 ### Next
 
-Primary working branch is **`main`** (pushed to `origin` = fubaritico/fubaritico-ds; CI green).
-Active thread: **white-label native-CSS design system** (BEM + CVA + tokens + `@layer`).
-Plan: `files/plans/native-css-migration.md`. Memory: `native-css-migration-backlog`,
-`white-label-native-css`, `project-goal-stencil-discovery`, `monorepo-orchestration`.
-
-**DONE so far** (full per-component log in `completed.md`): Badge, Button (split
-Button/LinkButton/NextLinkButton), Typography (`body1`/`body2`), Spinner, Skeleton, Avatar (R19 compound),
-IconButton (Open/Closed ext of Button), Card (slotted compound) — all atoms; **Input** (first Molecule,
-generic reusable `.ui-field`/`field.css`) and **Rating** (`f3c572b`, grayscale display-only) — Molecules.
-**DS primary = neutral** (brand = opt-in emphasis; memory `neutral-default-emphasis-strategy`); radius
-capped at 6px; `react/jsx-no-leaked-render` enforced; tokens kebab-case. Every migrated component ships a
-co-located `README.md` + a `Reference/*` story (`pnpm storybook:ref`).
-
-**NEXT step (most actionable): migrate `Image`** (25 `ui:`, →Icon; last Molecule) onto the established
-pattern (BEM + CVA resolver + 5-level tests + story + README), then the Compounds tier (Listbox → Menu →
-Modal → …). Reminders: separate axes (variant = look); geometry/intrinsic sizing stays inline
-(Skeleton/Rating precedent); a "tuned X" extends/composes X (Open/Closed).
-
-**A11Y FOLLOW-UP (with Button)**: Button `outline` borrows `--color-input` (neutral.300, ~1.48:1) → same WCAG 1.4.11 gap as the Input border had; repoint when revisiting Button.
-
-**Migration queue** (full detail in `native-css-migration-backlog` memory + the plan; deps before
-composers; each = 1 commit: BEM + CVA resolver + 5-level tests + story + README):
-
-- Atoms: ✅ Skeleton → ✅ Avatar (compound) → ✅ IconButton (extension of Button) → ✅ Card (slotted compound).
-- Molecules: ✅ Input (61, →Icon) → ✅ Rating (32, →Icon, grayscale display-only) → **Image (25, →Icon)** ← next.
-- Compounds: Listbox (37) → Menu (5, →Listbox) → Modal (8, →Portal) → Drawer (38, →IconButton+Portal) → Tabs (49) → Carousel (138; →Icon+IconButton) → Typeahead (23, →Input+Listbox+Portal, capstone).
-- **Icon & Portal NOT migrated** (no skin: heroicons SVG wrapper / `createPortal`) — they block nothing.
-
-Phase 1 = migrate existing primitives onto the Badge pattern, web-only (TMDB composites EXCLUDED).
-Phase 2 = dev hands over 9 NEW components one-by-one (Alert·DataTable·BottomSheet·Checkbox·DatePicker·
-Dropdown·Pagination·ProgressBar·Tooltip) + a new `icons` package. Phase 3 = finish Stencil (green
-`stencil build`) → wire into `build:packages`, converge `globalStyle` onto `styles`.
-
-Decisions locked: **Lerna + Nx** (no Turbo); `reference` = guide/sandbox **NOT a deliverable**; skin =
-`@fubaritico-ds/styles`; **CVA resolvers in `@fubaritico-ds/variants`** (pure TS, React/DOM-free); web-only.
-For **stateful/compound** components use the **`/state-storage`** skill (lightest tier: local · createStore
-· Zustand · Machine); atoms stay Tier-1 local. Memory: `storage-levels-playbook`.
+Read @next.md
 
 ### Known Issues
 

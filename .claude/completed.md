@@ -2,6 +2,101 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-07-02 — DataTable : arbre interne restructuré (primitives/features/cells/hooks/utils) + barrels
+
+- **3 commits** (`4fbc266`, `fe192d4`, `571c860`). Refactor **purement structurel**, repo VERT
+  (type-check + lint + **532 tests**), web-only, **aucun** changement de skin/logique (`tw-` conservé).
+- **`4fbc266`** — `ui/table.tsx` (monolithe shadcn) éclaté en **9 primitives** sémantiques (1 dossier
+  chacune), modernisées **React 19** : ref-as-prop via `ComponentProps`, suppression des `forwardRef`/
+  `displayName`/`import * as React` + du helper maison `elementProps` (remplacé par destructuring),
+  JSDoc ajouté. Ancien `TableFooter` (pagination) → **`TableFooterContent`** (libère le nom `TableFooter`
+  pour la primitive `<tfoot>`). `/review` (5 agents) : **3 corrigés** (house-style `export function` +
+  barrel double-default + JSDoc header manquant sur `DataTable`), **1 faux positif rejeté** (barrel
+  exporte bien Table\*), **reste déféré** (verbatim reporté à l'identique, ou étapes planifiées : skin/
+  a11y/perf).
+- **`fe192d4`** — `components/` groupé en **`primitives/`** (9 wrappers, INTERNE) · **`features/`**
+  (ActionBar, ArrowUpDown, DropdownFilter, NoResults, TableFooterContent, TruncatedContent, INTERNE) ·
+  **`cells/`** (15 cell renderers, 1 dossier chacun + `views/`). Les 2 hooks (`useVirtualizedTable`,
+  `useIsTextTruncated`) déplacés sous **`hooks/`** + barrel. Barrels par groupe ; `components/index.ts`
+  = `export * from './features' + './primitives'`. **Cells ré-exportées au barrel racine**
+  `DataTable/index.ts` (ce sont les briques appelées dans les configs — `useColumnsDefinition` repointé
+  sur `../DataTable`) ; **primitives/features restent internes** (challenge tenu : échafaudage, aucune
+  appelée dans une config ; `DropdownFilter` est mort). **7 dossiers vides orphelins supprimés**
+  (vestiges du projet source, domaine facture : ActionCell/AmountCell/AvatarNameCell/BillTitleCell/
+  CategoryIconCell/StatusCell/SortableHeader).
+- **`571c860`** — **`DataTable/utils/`** créé : `cn` (`git mv` depuis `ui/utils.ts`, JSDoc corrigé) +
+  `normalizeTimestamp` (+ test) + barrel. **`ui/` supprimé** (placeholder `table.tsx` inclus). Repointe
+  les 9 primitives (`cn`) + DateCell/DataTableExample (`toEpochMs`). Clôt la dette review **ARCH-001**
+  (reach-up `cn`) et le placeholder `ui/table.tsx`.
+- **NON commité** : uniquement les docs `.claude/` (dont ce end-session).
+
+### 2026-06-19 — DataTable 150k benchmark + perf root-cause + multi-framework roadmap
+
+- **Benchmark story (DataTable migration step 1) delivered — COMMITTED** (`f0ca817` recâblage +
+  benchmark 150k, `21a0087` extraction du hook `useVirtualizedTable`). Transformed
+  `DataTableExample` with opt-in props `virtualized`/`height`/`enableRowSelection`/
+  `useTransitionForSelection`/`debugTimings` (paginated mode untouched; virtualized drops the pagination
+  row model → all rows virtualized; `getRowId`; external `rowSelection` state, optional `startTransition`;
+  `debugTimings` logs click→paint via double-rAF). `useColumnsDefinition(locale, { withSelection })`
+  prepends a checkbox column (reuses CheckboxHeaderCell/CheckboxCell). `makeJobs` + types exported from
+  `DataTableExample/index.ts`. Story `apps/storybook-react/stories/reference/DataTable.stories.tsx` =
+  `Benchmark150k` + `Benchmark150kTransition` + a threshold-filtered `<Profiler>` decorator.
+  `useColumnsDefinition.test.tsx` (5 tests). Repo GREEN (type-check + lint + **524 tests**).
+- **Benchmark measured (dev AND prod build).** Steady-state select-all 150k: **OFF ≈ 207 ms total ≈
+  block (prod)**; ON (transition) block < 50 ms but total ≈ 300–412 ms. Findings: doesn't crawl (archi
+  validated); cost is **TanStack O(N) selection bookkeeping** (building the 150k-key `rowSelection` +
+  `getIsAllPageRowsSelected` scanning 150k), **NOT paint** → **prod ≈ dev** (my "dev mode inflates ×2-4"
+  prediction was WRONG — the cost is plain-JS data-structure work, not React render). `startTransition`
+  = band-aid (lowers block, RAISES perceived total) → **don't default it** (user's "more lag with
+  transition" feeling confirmed; I retracted a wrong earlier read contaminated by mount noise).
+- **Parenthesis — Odaseva `ScopeObjectBuilder` latency root-cause.** The observable-localStorage hook
+  makes the provider write→`dispatchEvent`→`setStorageValue`→re-run the INIT effect (quadratic
+  `data.find` re-derive), plus synchronous `JSON.stringify` of full objects per toggle + a
+  non-virtualized right table. Answer to "I setState before localStorage so where's the latency?":
+  setState is async/batched; the sync localStorage write runs first in the same tick; the browser paints
+  only after the whole sync task → source order is irrelevant. Design fix written **commented
+  line-by-line** in `files/analysis/storage-port-design.md`: `StoragePort` (seam) + `LocalStorageSink`
+  (sink, debounced + idle, ids-only) + `ObservableLocalStorageStore` (in-memory listeners same-tab,
+  native `storage` cross-tab) + `InMemoryStoragePort` (mock) + writer/reader/shared hooks + refactored
+  Provider (O(1) `Map` index) + glossary seam/sink + §10 same-screen. Note:
+  `scope-object-builder-latency-analysis-odaseva`.
+- **Strategic decisions** (note `data-table-industrial-multi-framework-goal-external-selection-store-decision`):
+  white-label multi-framework **industrial** DS (AG-Grid parity); foundation `@tanstack/table-core` (no
+  headless rewrite); **delegate heavy ops ONLY when necessary** (150k/~2M fine; Web Workers for millions
+  à la Handsontable); master table-core first; everything agnostic/pluggable/pure-TS (TS is the real support).
+- **Roadmap created**: `files/plans/roadmap.md` — phases **A** DataTable skin → **B** finish reference DS
+  → **C** max DataTable features (≈AG Grid) → **D** Stencil generation (WC/Angular/Vue/React, no
+  DataTable) → **E** DataTable on table-core (agnostic) → **F** DataTable in Stencil (multi-framework).
+  Plans C/E/F = to write. CLAUDE.md `### Next` moved to a dedicated `@next.md` (200-line budget).
+
+### 2026-06-18 — DataTable (Phase-2) recâblé web-only + 4 primitives + 3 helpers
+
+- **AG Grid studied** (`opensrc/`): why select/deselect at 100k doesn't crawl = external selection
+  store (`Map` by id, flag on plain object) + **local event per node** (only mounted rows react) +
+  virtualisation + batched events. Lesson logged for our DataTable (don't put selection in a React
+  Context that re-renders the list). Memory pointers in `data-table-review-backlog-deferred-findings`.
+- **4 NEW primitives migrated** (BEM skin + CVA resolver in `variants` + 5-level tests + story + README,
+  all from a brought-in RN+Web project, now web-only): **Checkbox** (native input + `:has` state,
+  `onChange` event → wires to TanStack `getToggleSelectedHandler`), **Tooltip** (controlled portalled
+  bubble + `tooltipPosition` math), **Pagination** (matches the DataTable footer API exactly),
+  **Dropdown** (composes Button + Menu; mobile bottom-sheet branch dropped). `/review` ran (7 agents);
+  high/critical fixed, false-positives rejected.
+- **3 helpers adapted** (+ tests): `useIsTextTruncated` (ResizeObserver), `ConditionalWrapper`,
+  `ArrowUpDown` (our Icon + new `ui-sort-arrows` skin + `sortArrowVariants`).
+- **`moment` eliminated** → `toEpochMs` normaliser (10-digit s→×1000, 13-digit ms; tested) + `Intl`
+  dates. **`jobFactory`** (deterministic `makeJobs(n)`, 100k-ready) + **`JobRowSkeleton`** (DS Skeleton).
+- **DataTable fully recâbled**: every cell/view/component → DS primitives (Badge/Checkbox/Icon/Button/
+  Dropdown/Pagination); deps `@tanstack/react-table` + `@tanstack/react-virtual` + `html-entities` (via
+  catalog), `tailwind-merge` dropped (`cn`→clsx), `table-core`→`react-table`; foreign jest tests +
+  stories deleted; `DataTable` exported from the barrel. **Repo green** (type-check + lint + 519 tests).
+- **2nd `/review`** (DataTable, 7 agents, ~100 findings) → fixed the critical/perf cluster (filters
+  `any`→`unknown`; memoized columns; `useReactTable(config)`; hoisted Intl formatter; ResizeObserver;
+  reused `virtualItems`; refs out of deps; `--pseudo-height` scoped to the element, not `<html>`).
+  Rejected `SortableHeaderCell` `Column<any>` (TanStack invariance). **Everything else deferred &
+  tracked**: plan `files/plans/datatable-migration.md` + Basic Memory note
+  `data-table-review-backlog-deferred-findings` + the `### Next` block.
+- **COMMITTED** since (`f0ca817` + `21a0087`) — resume from the plan/note/Next.
+
 ### 2026-06-17 — Rating migrated (grayscale, display-only Molecule)
 
 - **Rating migrated** (`f3c572b`) onto the native skin. **Display-only** (no interaction/keyboard —
