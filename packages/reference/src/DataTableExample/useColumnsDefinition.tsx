@@ -8,7 +8,7 @@ import {
   SimpleCell,
   SortableHeaderCell,
   TruncableLinkCell,
-} from '../DataTable/cells'
+} from '../DataTable'
 
 import type { JobItem } from './jobFactory'
 import type { ColumnDef, SortingFn } from '@tanstack/react-table'

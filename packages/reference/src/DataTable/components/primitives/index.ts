@@ -1,0 +1,13 @@
+export { Table } from './Table'
+export { TableBody } from './TableBody'
+export { TableCaption } from './TableCaption'
+export { TableCell } from './TableCell'
+export { TableFooter } from './TableFooter'
+export { TableHead } from './TableHead'
+export { TableHeader } from './TableHeader'
+export { TableRow } from './TableRow'
+export { TableVirtualized } from './TableVirtualized'
+
+/* Types */
+export type { TableProps } from './Table'
+export type { TableRowProps } from './TableRow'

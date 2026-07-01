@@ -12,7 +12,7 @@ import {
   TableVirtualized,
 } from './components'
 import { MIN_PAGE_SIZE } from './DataTable.constants'
-import { useVirtualizedTable } from './hooks/useVirtualizedTable'
+import { useVirtualizedTable } from './hooks'
 
 import type { BaseDataTableProps } from './DataTable.types'
 import type { Table as TableType } from '@tanstack/react-table'
