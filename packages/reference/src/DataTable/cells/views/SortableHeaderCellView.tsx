@@ -1,6 +1,6 @@
 import { ArrowUpDown } from '../../components/ArrowUpDown'
 import { useIsTextTruncated } from '../../components/useIsTextTruncated'
-import { TableHead } from '../../ui/table'
+import { TableHead } from '../../components/TableHead'
 
 import type { Column } from '@tanstack/react-table'
 import type { FC } from 'react'

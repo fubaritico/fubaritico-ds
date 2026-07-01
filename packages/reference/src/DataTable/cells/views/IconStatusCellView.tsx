@@ -1,5 +1,5 @@
 import { Icon } from '../../../Icon'
-import { TableCell } from '../../ui/table'
+import { TableCell } from '../../components/TableCell'
 
 import type { IconName, IconProps } from '../../../Icon'
 import type { Row } from '@tanstack/react-table'

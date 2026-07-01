@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { TableHead } from '../ui/table'
+import { TableHead } from '../components/TableHead'
 
 import type { Column } from '@tanstack/react-table'
 import type { ReactElement } from 'react'

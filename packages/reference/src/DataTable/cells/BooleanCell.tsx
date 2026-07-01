@@ -1,7 +1,7 @@
 import { type Row } from '@tanstack/react-table'
 
 import { Checkbox } from '../../Checkbox'
-import { TableCell } from '../ui/table'
+import { TableCell } from '../components/TableCell'
 
 /**
  * Cell factory rendering a read-only boolean value as a disabled DS {@link Checkbox}.

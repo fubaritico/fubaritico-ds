@@ -1,12 +1,12 @@
-import { Dropdown } from '../../Dropdown'
-import { Pagination } from '../../Pagination'
-import { MIN_PAGE_SIZE } from '../DataTable.constants'
+import { Dropdown } from '../../../Dropdown'
+import { Pagination } from '../../../Pagination'
+import { MIN_PAGE_SIZE } from '../../DataTable.constants'
 
-import type { DropdownOption } from '../../Dropdown'
-import type { BaseDataTableProps } from '../DataTable.types'
+import type { DropdownOption } from '../../../Dropdown'
+import type { BaseDataTableProps } from '../../DataTable.types'
 
-/** Props of {@link TableFooter}. */
-export type TableFooterProps<TData> = Pick<
+/** Props of {@link TableFooterContent}. */
+export type TableFooterContentProps<TData> = Pick<
   BaseDataTableProps<TData>,
   'tableStateManager'
 >
@@ -18,16 +18,17 @@ const PAGE_SIZE_OPTIONS: DropdownOption[] = [1, 2, 3, 4, 5].map((factor) => {
 })
 
 /**
- * Footer below the table: a rows-per-page selector (DS {@link Dropdown}, replacing the original
- * `DropdownMenu`), the {@link Pagination} navigator, and a "go to page" field. All driven by the
- * injected table state manager.
+ * Pagination controls rendered below the table: a rows-per-page selector (DS {@link Dropdown},
+ * replacing the original `DropdownMenu`), the {@link Pagination} navigator, and a "go to page" field.
+ * All driven by the injected table state manager. Meant to be hosted inside the semantic `TableFooter`
+ * (`<tfoot>`) primitive.
  *
- * @param props - {@link TableFooterProps}.
- * @returns The table footer.
+ * @param props - {@link TableFooterContentProps}.
+ * @returns The table footer content.
  */
-const TableFooter = <TData,>({
+export function TableFooterContent<TData>({
   tableStateManager,
-}: TableFooterProps<TData>) => {
+}: TableFooterContentProps<TData>) {
   const handleChangePage = (newPageIndex: number) => {
     tableStateManager.setPageIndex(newPageIndex)
   }
@@ -116,4 +117,4 @@ const TableFooter = <TData,>({
   )
 }
 
-export default TableFooter
+export default TableFooterContent

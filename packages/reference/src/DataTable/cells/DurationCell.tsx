@@ -1,4 +1,4 @@
-import { TableCell } from '../ui/table'
+import { TableCell } from '../components/TableCell'
 
 import type { Row } from '@tanstack/react-table'
 import type { ReactNode } from 'react'

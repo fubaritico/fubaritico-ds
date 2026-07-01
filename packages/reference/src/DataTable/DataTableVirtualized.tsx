@@ -2,10 +2,17 @@ import { flexRender } from '@tanstack/react-table'
 import clsx from 'clsx'
 import { Fragment } from 'react'
 
-import { ActionBar, NoResults, TableFooter } from './components'
+import {
+  ActionBar,
+  NoResults,
+  TableBody,
+  TableFooterContent,
+  TableHeader,
+  TableRow,
+  TableVirtualized,
+} from './components'
 import { MIN_PAGE_SIZE } from './DataTable.constants'
 import { useVirtualizedTable } from './hooks/useVirtualizedTable'
-import { TableBody, TableHeader, TableRow, TableVirtualized } from './ui/table'
 
 import type { BaseDataTableProps } from './DataTable.types'
 import type { Table as TableType } from '@tanstack/react-table'
@@ -158,7 +165,9 @@ export default function DataTableVirtualized<TData>({
       {/* TABLE FOOTER BLOCK */}
       {!loading &&
         tableStateManager.getRowCount() > MIN_PAGE_SIZE &&
-        !noPagination && <TableFooter tableStateManager={tableStateManager} />}
+        !noPagination && (
+          <TableFooterContent tableStateManager={tableStateManager} />
+        )}
     </div>
   )
 }

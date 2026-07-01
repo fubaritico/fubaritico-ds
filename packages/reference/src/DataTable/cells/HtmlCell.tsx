@@ -2,7 +2,7 @@ import { type Row } from '@tanstack/react-table'
 import { decode } from 'html-entities'
 import { Fragment } from 'react'
 
-import { TableCell } from '../ui/table'
+import { TableCell } from '../components/TableCell'
 
 /**
  * Cell factory rendering an HTML-encoded string value: decodes entities and converts `<br>` tags into

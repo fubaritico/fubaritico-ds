@@ -2,7 +2,7 @@ import { type Row } from '@tanstack/react-table'
 import type { ReactNode } from 'react'
 
 import TruncatedContent from '../components/TruncatedContent'
-import { TableCell } from '../ui/table'
+import { TableCell } from '../components/TableCell'
 
 /**
  * Simple cell to display a value (string or number) or wrap another component

@@ -2,9 +2,16 @@ import { flexRender } from '@tanstack/react-table'
 import clsx from 'clsx'
 import { Fragment, useEffect } from 'react'
 
-import { ActionBar, NoResults, TableFooter } from './components'
+import {
+  ActionBar,
+  NoResults,
+  Table,
+  TableBody,
+  TableFooterContent,
+  TableHeader,
+  TableRow,
+} from './components'
 import { MIN_PAGE_SIZE } from './DataTable.constants'
-import { Table, TableBody, TableHeader, TableRow } from './ui/table'
 
 import type { BaseDataTableProps } from './DataTable.types'
 import type { Table as TableType } from '@tanstack/react-table'
@@ -16,6 +23,13 @@ export type DataTableProps<TData> = BaseDataTableProps<TData> & {
   stickyHeader?: boolean
 }
 
+/**
+ * Paginated DataTable driven by an injected TanStack table state manager: renders an optional action
+ * bar, the header/body, and pagination controls below the table.
+ *
+ * @param props - {@link DataTableProps}.
+ * @returns The paginated table element.
+ */
 export default function DataTable<TData>({
   actionBar,
   actionBarClassName,
@@ -97,11 +111,11 @@ export default function DataTable<TData>({
         </TableHeader>
         <TableBody className={tBodyClassName}>
           <>
-            {loading &&
-              RowSkeleton &&
-              Array.from({ length: MIN_PAGE_SIZE }, (_, index) => (
-                <RowSkeleton key={`row-skeleton-${index}`} />
-              ))}
+            {loading && RowSkeleton
+              ? Array.from({ length: MIN_PAGE_SIZE }, (_, index) => (
+                  <RowSkeleton key={`row-skeleton-${index}`} />
+                ))
+              : null}
             {!loading &&
               tableStateManager.getRowModel().rows?.length > 0 &&
               tableStateManager.getRowModel().rows.map((row) => {
@@ -113,7 +127,7 @@ export default function DataTable<TData>({
                       'tw-cursor-pointer': !!onRowClick,
                     })}
                     data-test={`row-${row.id}`}
-                    data-state={isSelected && 'selected'}
+                    data-state={isSelected ? 'selected' : null}
                     enableHover
                     key={`row-${row.id}`}
                     onClick={() => onRowClick?.(row)}
@@ -145,7 +159,9 @@ export default function DataTable<TData>({
       {/* PAGINATION BLOCK */}
       {!loading &&
         tableStateManager.getRowCount() > MIN_PAGE_SIZE &&
-        !noPagination && <TableFooter tableStateManager={tableStateManager} />}
+        !noPagination && (
+          <TableFooterContent tableStateManager={tableStateManager} />
+        )}
     </div>
   )
 }

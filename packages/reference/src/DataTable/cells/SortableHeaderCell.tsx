@@ -8,7 +8,7 @@ import type { Column } from '@tanstack/react-table'
  * @param colName - Column name used by TanStack Table (sorting/filtering).
  * @param headerLabel - Label displayed in the header cell.
  * @param withSeparator - Whether to render a trailing column separator.
- * @param dataType - Column data-type, drives the default column width (see `ui/table.tsx`).
+ * @param dataType - Column data-type, drives the default column width (see `components/TableHeader`).
  * @param className - Extra classes for the header cell.
  * @returns A TanStack header renderer for a sortable column.
  */

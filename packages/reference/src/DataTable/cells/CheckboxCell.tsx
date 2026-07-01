@@ -1,7 +1,7 @@
 import { type Row } from '@tanstack/react-table'
 
 import { Checkbox } from '../../Checkbox'
-import { TableCell } from '../ui/table'
+import { TableCell } from '../components/TableCell'
 
 /**
  * Row-selection cell factory — renders the DS {@link Checkbox} wired to TanStack's per-row selection

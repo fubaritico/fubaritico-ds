@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 
 import { useIsTextTruncated } from '../../components/useIsTextTruncated'
-import { TableCell } from '../../ui/table'
+import { TableCell } from '../../components/TableCell'
 
 import type { FC } from 'react'
 

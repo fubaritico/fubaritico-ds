@@ -1,7 +1,7 @@
 import { type Row } from '@tanstack/react-table'
 
 import { Badge } from '../../Badge'
-import { TableCell } from '../ui/table'
+import { TableCell } from '../components/TableCell'
 
 import type { IconName } from '../../Icon'
 import type { BadgeVariant } from '@fubaritico-ds/variants'

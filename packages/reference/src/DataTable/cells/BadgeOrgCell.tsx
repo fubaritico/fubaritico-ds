@@ -1,7 +1,7 @@
 import { type Row } from '@tanstack/react-table'
 
 import { Badge } from '../../Badge'
-import { TableCell } from '../ui/table'
+import { TableCell } from '../components/TableCell'
 
 /**
  * Cell factory rendering an org value inside an outline {@link Badge} (or `-` when empty).

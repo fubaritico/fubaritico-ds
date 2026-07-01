@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 
 import { Checkbox } from '../../Checkbox'
-import { TableHead } from '../ui/table'
+import { TableHead } from '../components/TableHead'
 
 import type { Table } from '@tanstack/react-table'
 
