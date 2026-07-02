@@ -1,5 +1,7 @@
 import clsx from 'clsx'
 
+import { UI_TABLE_HEAD_STRONG_MODIFIER } from '@fubaritico-ds/variants'
+
 import { TableHead } from '../../primitives/TableHead'
 
 import type { Column } from '@tanstack/react-table'
@@ -20,7 +22,7 @@ const ClickableHeaderCell =
       <TableHead
         id={column.id}
         tabIndex={0}
-        className={clsx('tw-font-bold !tw-text-gray-900', className)}
+        className={clsx(UI_TABLE_HEAD_STRONG_MODIFIER, className)}
         data-test="clickable-header-cell"
       >
         <button

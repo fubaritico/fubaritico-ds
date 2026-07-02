@@ -76,3 +76,57 @@ export const UI_TABLE_CELL_CLASS = 'ui-table__cell'
  * BEM element class for the `<caption>` element (`.ui-table__caption`).
  */
 export const UI_TABLE_CAPTION_CLASS = 'ui-table__caption'
+
+/* ---- cell content (cells layer) ---- */
+
+/**
+ * BEM modifier applied ALONGSIDE `.ui-table__head` for the "strong" header look (near-black + bold):
+ * used by the Checkbox / Clickable / Empty header cells, distinct from the default muted header.
+ */
+export const UI_TABLE_HEAD_STRONG_MODIFIER = 'ui-table__head--strong'
+
+/**
+ * BEM element class for a header cell's inner flex layout (label + control + optional separator).
+ */
+export const UI_TABLE_HEAD_INNER_CLASS = 'ui-table__head-inner'
+
+/**
+ * BEM element class for the sortable column label (small, uppercase, muted, truncating).
+ */
+export const UI_TABLE_HEAD_LABEL_CLASS = 'ui-table__head-label'
+
+/**
+ * BEM element class for the sort-toggle hit area wrapping the {@link ArrowUpDown} control.
+ */
+export const UI_TABLE_SORT_TOGGLE_CLASS = 'ui-table__sort-toggle'
+
+/**
+ * BEM element class for the opt-in column separator (a thin vertical rule at the header's trailing
+ * edge), rendered when a header cell is configured with `withSeparator`.
+ */
+export const UI_TABLE_SEPARATOR_CLASS = 'ui-table__separator'
+
+/**
+ * BEM element class for a data cell's generic inner flex layout (`display:flex; align-items:center`).
+ */
+export const UI_TABLE_CELL_INNER_CLASS = 'ui-table__cell-inner'
+
+/**
+ * BEM modifier applied ALONGSIDE `.ui-table__cell` to center the cell content (e.g. a status icon).
+ */
+export const UI_TABLE_CELL_CENTER_MODIFIER = 'ui-table__cell--center'
+
+/**
+ * BEM element class for the link cell wrapper (enables the anchor to truncate inside the cell).
+ */
+export const UI_TABLE_LINK_WRAP_CLASS = 'ui-table__link-wrap'
+
+/**
+ * BEM element class for the link cell anchor (neutral, underlined, truncating).
+ */
+export const UI_TABLE_LINK_CLASS = 'ui-table__link'
+
+/**
+ * BEM element class for the duration cell value (medium weight).
+ */
+export const UI_TABLE_DURATION_CLASS = 'ui-table__duration'

@@ -1,5 +1,12 @@
-import { ArrowUpDown } from '../../features/ArrowUpDown'
+import {
+  UI_TABLE_HEAD_INNER_CLASS,
+  UI_TABLE_HEAD_LABEL_CLASS,
+  UI_TABLE_SEPARATOR_CLASS,
+  UI_TABLE_SORT_TOGGLE_CLASS,
+} from '@fubaritico-ds/variants'
+
 import { useIsTextTruncated } from '../../../hooks'
+import { ArrowUpDown } from '../../features/ArrowUpDown'
 import { TableHead } from '../../primitives/TableHead'
 
 import type { Column } from '@tanstack/react-table'
@@ -41,24 +48,24 @@ const SortableHeaderCellView: FC<SortableHeaderCellViewProps> = ({
 
   return (
     <TableHead className={className} data-type={dataType} tabIndex={0}>
-      <div className="tw-flex tw-items-center tw-justify-start tw-gap-1">
+      <div className={UI_TABLE_HEAD_INNER_CLASS}>
         {/* TODO(tooltip): show a <Tooltip> when truncated once the wrapping-trigger Tooltip lands. */}
         <span
           ref={elementRef}
           title={isTruncated ? headerLabel : undefined}
-          className="tw-truncate tw-uppercase tw-text-gray_oda-600 tw-text-xs tw-font-semibold"
+          className={UI_TABLE_HEAD_LABEL_CLASS}
         >
           {headerLabel}
         </span>
         <ArrowUpDown
           colName={colName}
-          className="tw-h-6 tw-min-w-6 tw-cursor-pointer tw-mr-auto"
+          className={UI_TABLE_SORT_TOGGLE_CLASS}
           onClick={() => {
             column.toggleSorting(column.getIsSorted() === 'asc')
           }}
           sorting={column.getIsSorted()}
         />
-        {withSeparator ? <div className="tw-flex tw-gap-[2px]" /> : null}
+        {withSeparator ? <div className={UI_TABLE_SEPARATOR_CLASS} /> : null}
       </div>
     </TableHead>
   )

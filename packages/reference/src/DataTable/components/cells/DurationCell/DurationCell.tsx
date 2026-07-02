@@ -1,3 +1,5 @@
+import { UI_TABLE_DURATION_CLASS } from '@fubaritico-ds/variants'
+
 import { TableCell } from '../../primitives/TableCell'
 
 import type { Row } from '@tanstack/react-table'
@@ -22,22 +24,23 @@ const formatDuration = (durationString: string): string => {
 
   return parts.join(' ')
 }
+/**
+ * Duration cell factory — reads an `"HH:mm:ss"` string from `colName` on each row and renders a
+ * human-readable label (e.g. "1 hour 30 mins") via {@link formatDuration}.
+ *
+ * @param colName - Column key used to read the duration value from the row.
+ * @param className - Optional extra classes for the cell.
+ * @returns A TanStack cell renderer.
+ */
 const DurationCell =
   (colName: string, className?: string) =>
   <TData,>({ row }: { row: Row<TData> }): ReactNode => {
-    const date = row.getValue(colName) as string
+    const formatted = formatDuration(row.getValue<string>(colName))
     return (
-      <TableCell
-        aria-label={formatDuration(date)}
-        className={className}
-        tabIndex={0}
-      >
-        <div className="tw-flex tw-items-center">
-          <div className="tw-flex tw-flex-wrap tw-gap-x-2 tw-items-baseline">
-            <p className="tw-font-medium">{formatDuration(date)}</p>
-          </div>
-        </div>
+      <TableCell aria-label={formatted} className={className} tabIndex={0}>
+        <span className={UI_TABLE_DURATION_CLASS}>{formatted}</span>
       </TableCell>
     )
   }
+
 export default DurationCell

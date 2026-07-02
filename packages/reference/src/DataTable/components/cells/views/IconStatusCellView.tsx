@@ -1,3 +1,5 @@
+import { UI_TABLE_CELL_CENTER_MODIFIER } from '@fubaritico-ds/variants'
+
 import { Icon } from '../../../../Icon'
 import { TableCell } from '../../primitives/TableCell'
 
@@ -52,7 +54,7 @@ const IconStatusCellView: FC<IconStatusCellViewProps> = ({
       aria-label={status}
       title={tooltipText}
       tabIndex={0}
-      className="tw-text-center tw-align-middle"
+      className={UI_TABLE_CELL_CENTER_MODIFIER}
     >
       {/* TODO(tooltip): wrap in <Tooltip> once the wrapping-trigger Tooltip lands (Tooltip migrated last). */}
       <Icon name={iconName} size={STATUS_ICON_SIZE} {...extraProps} />

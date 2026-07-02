@@ -1,4 +1,4 @@
-import clsx from 'clsx'
+import { UI_TABLE_CELL_INNER_CLASS } from '@fubaritico-ds/variants'
 
 import { TableCell } from '../../primitives/TableCell'
 
@@ -23,20 +23,19 @@ const ClickableCell =
   ) =>
   ({ row }: { row: Row<TData> }) => {
     return (
-      <TableCell
-        tabIndex={0}
-        className={clsx('tw-flex tw-items-center', className)}
-      >
-        {/* TODO(tooltip): wrap in <Tooltip> once the wrapping-trigger Tooltip lands (Tooltip migrated last). */}
-        <button
-          type="button"
-          title={tooltipText}
-          onClick={() => {
-            callback(row.original)
-          }}
-        >
-          {content}
-        </button>
+      <TableCell tabIndex={0} className={className}>
+        <div className={UI_TABLE_CELL_INNER_CLASS}>
+          {/* TODO(tooltip): wrap in <Tooltip> once the wrapping-trigger Tooltip lands (Tooltip migrated last). */}
+          <button
+            type="button"
+            title={tooltipText}
+            onClick={() => {
+              callback(row.original)
+            }}
+          >
+            {content}
+          </button>
+        </div>
       </TableCell>
     )
   }

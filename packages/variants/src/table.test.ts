@@ -3,12 +3,22 @@ import { describe, expect, it } from 'vitest'
 import {
   UI_TABLE_BODY_CLASS,
   UI_TABLE_CAPTION_CLASS,
+  UI_TABLE_CELL_CENTER_MODIFIER,
   UI_TABLE_CELL_CLASS,
+  UI_TABLE_CELL_INNER_CLASS,
   UI_TABLE_CLASS,
+  UI_TABLE_DURATION_CLASS,
   UI_TABLE_FOOTER_CLASS,
   UI_TABLE_HEADER_CLASS,
   UI_TABLE_HEAD_CLASS,
+  UI_TABLE_HEAD_INNER_CLASS,
+  UI_TABLE_HEAD_LABEL_CLASS,
+  UI_TABLE_HEAD_STRONG_MODIFIER,
+  UI_TABLE_LINK_CLASS,
+  UI_TABLE_LINK_WRAP_CLASS,
   UI_TABLE_SCROLL_CLASS,
+  UI_TABLE_SEPARATOR_CLASS,
+  UI_TABLE_SORT_TOGGLE_CLASS,
   UI_TABLE_VIRTUALIZED_CLASS,
   tableRowVariants,
 } from './table.js'
@@ -60,6 +70,19 @@ describe('tableRowVariants', () => {
     it('never emits an empty-string token in the output', () => {
       const result = tableRowVariants({ hoverable: false })
       expect(result.split(' ')).not.toContain('')
+    })
+
+    it('exposes the cell-content (cells-layer) part classes', () => {
+      expect(UI_TABLE_HEAD_STRONG_MODIFIER).toBe('ui-table__head--strong')
+      expect(UI_TABLE_HEAD_INNER_CLASS).toBe('ui-table__head-inner')
+      expect(UI_TABLE_HEAD_LABEL_CLASS).toBe('ui-table__head-label')
+      expect(UI_TABLE_SORT_TOGGLE_CLASS).toBe('ui-table__sort-toggle')
+      expect(UI_TABLE_SEPARATOR_CLASS).toBe('ui-table__separator')
+      expect(UI_TABLE_CELL_INNER_CLASS).toBe('ui-table__cell-inner')
+      expect(UI_TABLE_CELL_CENTER_MODIFIER).toBe('ui-table__cell--center')
+      expect(UI_TABLE_LINK_WRAP_CLASS).toBe('ui-table__link-wrap')
+      expect(UI_TABLE_LINK_CLASS).toBe('ui-table__link')
+      expect(UI_TABLE_DURATION_CLASS).toBe('ui-table__duration')
     })
   })
 })
