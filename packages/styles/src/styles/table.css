@@ -1,0 +1,190 @@
+/**
+ * Table — native BEM skin (DataTable primitives layer).
+ *
+ * A single block `.ui-table` (the `<table>`) with element parts that map to the table structure:
+ * `__scroll` (the paginated scroll wrapper), `__header` (`<thead>`), `__body` (`<tbody>`),
+ * `__footer` (`<tfoot>`), `__row` (`<tr>`), `__head` (`<th>`), `__cell` (`<td>`), `__caption`.
+ * This is the *primitives* skin only — the chrome (container shadow/radius, sticky header, action
+ * bar, pagination) and the cell content are skinned in later passes.
+ *
+ * Engine-independent by design: the classes live on the semantic table primitives, NOT on any
+ * TanStack API, so the skin survives the future react-table → table-core swap (roadmap Phase E).
+ *
+ * Logical properties throughout (`inline-size` / `block-size` / `padding-inline` / `text-align: start`)
+ * so the table mirrors correctly in RTL — consistent with the rest of the skin.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-table-*` vars (surgical re-skin).
+ *   2. Redefine a global token (e.g. `--color-muted`) → re-skins everything that uses it.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-table {
+    /* ---- override API (component-scoped) ---- */
+    --ui-table-font-size: var(--font-size-sm);
+    /* Without this, loose cell text (e.g. an Intl-formatted date) falls back to the browser serif
+       default. Cells composing Typography/Badge carry their own font and are unaffected. */
+    --ui-table-font-family: var(--font-inter);
+    /* Row/footer separator. Light by DESIGN (like every DS table — MUI/AG-Grid): the grid is also
+       conveyed by the semantic `<table>` structure, layout and spacing, so the line is an aesthetic
+       aid, not the sole means of understanding the content (a heavy AA-border on every row reads
+       wrong). A consumer needing a stronger separator repoints this var (e.g. to
+       `--color-input-border`, neutral.450 ~3:1). */
+    --ui-table-border-color: var(--color-border);
+    --ui-table-border-width: 1px;
+    --ui-table-head-color: var(--color-muted-foreground);
+    --ui-table-head-height: var(--spacing-12);
+    --ui-table-head-weight: var(--font-weight-medium);
+    /* Header cells get START padding only (source `pl-4`); a `<th>` has no default inline padding and
+       the checkbox column zeroes the trailing edge below. */
+    --ui-table-head-padding-inline-start: var(--spacing-4);
+    /* Cell row height is an arbitrary 54px (no spacing token maps to it) — the skin owns the look,
+       not this fixed geometry; consumers can still override the var. */
+    --ui-table-cell-height: 54px;
+    --ui-table-cell-padding-inline: var(--spacing-4);
+    /* DataTable-domain column geometry: the skin owns default widths for the semantic `data-type`s
+       used by this DataTable (Skeleton precedent — skin owns look/geometry). Overridable per var;
+       a table with other column types can repoint or ignore them. */
+    --ui-table-col-link-name-width: 25%;
+    --ui-table-col-status-icon-width: 120px;
+    --ui-table-col-date-width: 200px;
+    --ui-table-row-bg: var(--color-white);
+    /* Selected uses muted at full strength; hover + footer use muted at 50% (matches the source
+       `bg-muted` vs `bg-muted/50`). color-mix reproduces the Tailwind `/50` alpha. Effective over a
+       white row: hover/footer ≈ #fafafa, selected = #f5f5f5 — cell foreground contrast ≫ 4.5:1. */
+    --ui-table-row-selected-bg: var(--color-muted);
+    --ui-table-row-hover-bg: color-mix(
+      in srgb,
+      var(--color-muted) 50%,
+      transparent
+    );
+    /* No transition-duration token exists yet; exposed as a var so it stays overridable. */
+    --ui-table-row-transition-duration: 150ms;
+    --ui-table-footer-bg: color-mix(
+      in srgb,
+      var(--color-muted) 50%,
+      transparent
+    );
+    --ui-table-footer-weight: var(--font-weight-medium);
+    --ui-table-caption-color: var(--color-muted-foreground);
+    --ui-table-caption-size: var(--font-size-sm);
+
+    /* ---- base ---- */
+    /* Self-sufficient box model: the skin survives in hosts with no reset (the DS ships none). */
+    box-sizing: border-box;
+    inline-size: 100%;
+    table-layout: fixed;
+    caption-side: bottom;
+    font-size: var(--ui-table-font-size);
+    font-family: var(--ui-table-font-family);
+  }
+
+  /* Virtualized variant: the `::after` reserves the height of the off-screen (non-rendered) rows so
+     the scrollbar behaves as if every row existed. Its height is fed live by `useVirtualizedTable`
+     through the `--pseudo-height` custom property set inline on the table element. */
+  .ui-table--virtualized::after {
+    content: '';
+    display: block;
+    block-size: var(--pseudo-height);
+  }
+
+  /* Relative wrapper around the paginated table (the virtualized one has none). Height is capped
+     inline via the `maxHeight` prop, paired with a sticky header. Faithful to the source: no
+     `overflow` is set here — the scroll behaviour is a chrome concern handled in a later pass. */
+  .ui-table__scroll {
+    position: relative;
+    inline-size: 100%;
+  }
+
+  /* `.ui-table__header` (`<thead>`) and `.ui-table__body` (`<tbody>`) are structural LANDMARKS with no
+     own paint: the header/body separation border comes from each row's `border-block-end`
+     (see `.ui-table__row`), and the last-body-row rule below scopes off `.ui-table__body`. They exist
+     as BEM hooks (and future override/sticky targets), so they intentionally carry no declarations. */
+
+  /* Column widths are keyed by the semantic `data-type` set on the header cell (flat: single class +
+     attribute), driven by the DataTable-domain geometry vars declared above. */
+  .ui-table__head[data-type='link-name'] {
+    inline-size: var(--ui-table-col-link-name-width);
+  }
+
+  .ui-table__head[data-type='status-icon'] {
+    inline-size: var(--ui-table-col-status-icon-width);
+  }
+
+  .ui-table__head[data-type='date'] {
+    inline-size: var(--ui-table-col-date-width);
+  }
+
+  /* Last body row drops its bottom border so the body doesn't double-border against the footer.
+     Descendant combinator (deliberate): "last row of the BODY specifically" cannot be expressed with
+     a single flat class — the header's last row must KEEP its border (it is the header/body divider). */
+  .ui-table__body .ui-table__row:last-child {
+    border-block-end-width: 0;
+  }
+
+  .ui-table__footer {
+    border-block-start: var(--ui-table-border-width) solid
+      var(--ui-table-border-color);
+    background-color: var(--ui-table-footer-bg);
+    font-weight: var(--ui-table-footer-weight);
+  }
+
+  /* Last footer row drops its bottom border (source: `[&>tr]:last:border-b-0`). Direct-child
+     combinator, deliberate — same "last row only" constraint as the body. */
+  .ui-table__footer > .ui-table__row:last-child {
+    border-block-end-width: 0;
+  }
+
+  .ui-table__row {
+    border-block-end: var(--ui-table-border-width) solid
+      var(--ui-table-border-color);
+    background-color: var(--ui-table-row-bg);
+    transition: background-color var(--ui-table-row-transition-duration);
+  }
+
+  /* TanStack sets `data-state="selected"` on the row element; we style off the attribute (flat:
+     single class + attribute). */
+  .ui-table__row[data-state='selected'] {
+    background-color: var(--ui-table-row-selected-bg);
+  }
+
+  /* Opt-in hover tint (the `enableHover` prop → `--hoverable` modifier). */
+  .ui-table__row--hoverable:hover {
+    background-color: var(--ui-table-row-hover-bg);
+  }
+
+  .ui-table__head {
+    block-size: var(--ui-table-head-height);
+    padding-inline-start: var(--ui-table-head-padding-inline-start);
+    text-align: start;
+    vertical-align: middle;
+    font-weight: var(--ui-table-head-weight);
+    color: var(--ui-table-head-color);
+  }
+
+  .ui-table__cell {
+    block-size: var(--ui-table-cell-height);
+    padding-inline: var(--ui-table-cell-padding-inline);
+  }
+
+  /* The checkbox column sits flush on its trailing edge (source: `[&:has([role=checkbox])]:pr-0`). */
+  .ui-table__head:has([role='checkbox']),
+  .ui-table__cell:has([role='checkbox']) {
+    padding-inline-end: 0;
+  }
+
+  .ui-table__caption {
+    margin-block-start: var(--spacing-4);
+    font-size: var(--ui-table-caption-size);
+    color: var(--ui-table-caption-color);
+  }
+
+  /* The colour transition is decorative — suppress it for users who prefer reduced motion (WCAG 2.3.3). */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-table__row {
+      transition: none;
+    }
+  }
+}

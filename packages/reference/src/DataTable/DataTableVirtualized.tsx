@@ -84,10 +84,7 @@ export default function DataTableVirtualized<TData>({
       {actionBar}
       <div ref={parentRef} style={{ height: `${height}px`, overflow: 'auto' }}>
         <div ref={scrollableRef} style={{ height: `${totalSize}px` }}>
-          <TableVirtualized
-            ref={tableRef}
-            className="after:tw-block after:tw-h-[--pseudo-height] after:content-['']"
-          >
+          <TableVirtualized ref={tableRef}>
             <TableHeader
               className={clsx('tw-sticky tw-top-0 tw-z-30', headerClassName)}
             >
@@ -126,7 +123,7 @@ export default function DataTableVirtualized<TData>({
                     return (
                       <TableRow
                         data-test={`row-${row.id}`}
-                        data-state={row.getIsSelected() && 'selected'}
+                        data-state={row.getIsSelected() ? 'selected' : null}
                         enableHover
                         key={`row-${row.id}`}
                         style={{

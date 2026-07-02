@@ -1,3 +1,5 @@
+import { tableRowVariants } from '@fubaritico-ds/variants'
+
 import { cn } from '../../../utils'
 
 import type { ComponentProps } from 'react'
@@ -9,20 +11,20 @@ export interface TableRowProps extends ComponentProps<'tr'> {
 }
 
 /**
- * `<tr>` primitive with a bottom border, a selected-state background (`data-state="selected"`) and an
- * opt-in hover background.
+ * `<tr>` primitive (`.ui-table__row`) with a bottom border and a selected-state background (the skin
+ * styles off `data-state="selected"`). `enableHover` opts into the hover-tint modifier.
  *
  * @param props - {@link TableRowProps} (incl. `ref`, a React 19 prop forwarded to the `<tr>`).
  * @returns The table row element.
  */
-export function TableRow({ className, enableHover, ...props }: TableRowProps) {
+export function TableRow({
+  className,
+  enableHover = false,
+  ...props
+}: TableRowProps) {
   return (
     <tr
-      className={cn(
-        'tw-border-b tw-bg-white tw-transition-colors data-[state=selected]:tw-bg-muted',
-        { 'hover:tw-bg-muted/50': enableHover },
-        className
-      )}
+      className={cn(tableRowVariants({ hoverable: enableHover }), className)}
       {...props}
     />
   )
