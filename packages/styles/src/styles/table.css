@@ -37,6 +37,10 @@
     --ui-table-head-color: var(--color-muted-foreground);
     --ui-table-head-height: var(--spacing-12);
     --ui-table-head-weight: var(--font-weight-medium);
+    /* Header cell background (muted surface). Replaces the old inline `[&_th]:bg-gray-100`. */
+    --ui-table-header-bg: var(--color-muted);
+    /* z-index of the sticky header (`--sticky` modifier) — arbitrary layer, exposed as a var. */
+    --ui-table-header-z: 30;
     /* Header cells get START padding only (source `pl-4`); a `<th>` has no default inline padding and
        the checkbox column zeroes the trailing edge below. */
     --ui-table-head-padding-inline-start: var(--spacing-4);
@@ -51,6 +55,9 @@
     --ui-table-col-status-icon-width: 120px;
     --ui-table-col-date-width: 200px;
     --ui-table-row-bg: var(--color-white);
+    /* Body-row height (arbitrary 54px — no spacing token maps to it). Replaces the old inline
+       `h-[54px]`; consumers can override the var. */
+    --ui-table-row-height: 54px;
     /* Selected uses muted at full strength; hover + footer use muted at 50% (matches the source
        `bg-muted` vs `bg-muted/50`). color-mix reproduces the Tailwind `/50` alpha. Effective over a
        white row: hover/footer ≈ #fafafa, selected = #f5f5f5 — cell foreground contrast ≫ 4.5:1. */
@@ -103,6 +110,15 @@
      (see `.ui-table__row`), and the last-body-row rule below scopes off `.ui-table__body`. They exist
      as BEM hooks (and future override/sticky targets), so they intentionally carry no declarations. */
 
+  /* Sticky-header modifier (opt-in via the `stickyHeader` prop; always on for the virtualized table):
+     pins the `<thead>` to the top of the scroll viewport. Replaces the old inline
+     `sticky top-0 z-30`. */
+  .ui-table__header--sticky {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--ui-table-header-z);
+  }
+
   /* Column widths are keyed by the semantic `data-type` set on the header cell (flat: single class +
      attribute), driven by the DataTable-domain geometry vars declared above. */
   .ui-table__head[data-type='link-name'] {
@@ -144,6 +160,17 @@
     transition: background-color var(--ui-table-row-transition-duration);
   }
 
+  /* Body rows get the fixed row height (header rows keep their own `--ui-table-head-height`). */
+  .ui-table__body .ui-table__row {
+    block-size: var(--ui-table-row-height);
+  }
+
+  /* A clickable row (the DataTable sets role="button" when `onRowClick` is provided) shows the
+     pointer cursor. Replaces the old inline `cursor-pointer`. */
+  .ui-table__row[role='button'] {
+    cursor: pointer;
+  }
+
   /* TanStack sets `data-state="selected"` on the row element; we style off the attribute (flat:
      single class + attribute). */
   .ui-table__row[data-state='selected'] {
@@ -160,6 +187,7 @@
     padding-inline-start: var(--ui-table-head-padding-inline-start);
     text-align: start;
     vertical-align: middle;
+    background-color: var(--ui-table-header-bg);
     font-weight: var(--ui-table-head-weight);
     color: var(--ui-table-head-color);
   }

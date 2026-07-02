@@ -1,6 +1,8 @@
 import { flexRender } from '@tanstack/react-table'
 import clsx from 'clsx'
-import { Fragment, useEffect } from 'react'
+import { Fragment, useCallback, useEffect, useMemo } from 'react'
+
+import { Card } from '../Card'
 
 import {
   ActionBar,
@@ -14,12 +16,12 @@ import {
 import { MIN_PAGE_SIZE } from './DataTable.constants'
 
 import type { BaseDataTableProps } from './DataTable.types'
-import type { Table as TableType } from '@tanstack/react-table'
+import type { Row, Table as TableType } from '@tanstack/react-table'
 
 export type DataTableProps<TData> = BaseDataTableProps<TData> & {
-  /* Use along with sticky header to get a fixed height for the table (header and body) */
+  /** Fixed height (px) for the table (header and body); use together with `stickyHeader`. */
   maxHeight?: number
-  /* When enabled, will keep the table cell header on top of the table when scrolling body */
+  /** When enabled, keeps the header row pinned on top while the body scrolls. */
   stickyHeader?: boolean
 }
 
@@ -41,7 +43,6 @@ export default function DataTable<TData>({
   loading,
   maxHeight,
   noActionBar,
-  noShadow,
   noPagination,
   onGlobalFilterChange,
   onRowClick,
@@ -55,26 +56,33 @@ export default function DataTable<TData>({
   }, [initTableAt, tableStateManager])
 
   if (stickyHeader && !maxHeight) {
-    throw Error(
+    throw new Error(
       '[DataTable] maxHeight is required when stickyHeader is enabled'
     )
   }
 
   if (!stickyHeader && maxHeight) {
-    throw Error(
+    throw new Error(
       '[DataTable] stickyHeader is required when maxHeight is defined'
     )
   }
 
+  const headerGroups = useMemo(
+    () => tableStateManager.getHeaderGroups(),
+    [tableStateManager]
+  )
+
+  const handleRowClick = useCallback(
+    (row: Row<TData>) => {
+      onRowClick?.(row)
+    },
+    [onRowClick]
+  )
+
   return (
-    <div
-      className={clsx(
-        'tw-bg-white tw-rounded-bl-lg tw-rounded-lg tw-overflow-clip',
-        { 'tw-shadow-elevation-1': !noShadow },
-        className
-      )}
-      data-test={dataTestId ?? 'root'}
-    >
+    <Card className={className} data-test={dataTestId ?? 'root'}>
+      {/* Bare Card surface (no Card.Body/Header/Footer slots): the DataTable is flush to the edges —
+          each region (action bar, table, pagination) owns its own spacing. */}
       {!noActionBar && !actionBar && (
         <ActionBar
           tableConfiguration={tableStateManager as TableType<unknown>}
@@ -85,15 +93,15 @@ export default function DataTable<TData>({
         />
       )}
       {actionBar}
-      <Table maxHeight={maxHeight}>
+      <Table maxHeight={maxHeight} aria-busy={loading}>
         <TableHeader
           className={clsx(
-            { 'tw-sticky tw-top-0 tw-z-30': stickyHeader },
+            { 'ui-table__header--sticky': stickyHeader },
             headerClassName
           )}
         >
-          {tableStateManager.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="[&_th]:tw-bg-gray-100">
+          {headerGroups.map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
                   <Fragment key={header.id}>
@@ -123,14 +131,30 @@ export default function DataTable<TData>({
 
                 return (
                   <TableRow
-                    className={clsx('tw-h-[54px]', {
-                      'tw-cursor-pointer': !!onRowClick,
-                    })}
                     data-test={`row-${row.id}`}
                     data-state={isSelected ? 'selected' : null}
+                    aria-selected={isSelected}
                     enableHover
                     key={`row-${row.id}`}
-                    onClick={() => onRowClick?.(row)}
+                    role={onRowClick ? 'button' : undefined}
+                    tabIndex={onRowClick ? 0 : undefined}
+                    onClick={
+                      onRowClick
+                        ? () => {
+                            handleRowClick(row)
+                          }
+                        : undefined
+                    }
+                    onKeyDown={
+                      onRowClick
+                        ? (event) => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault()
+                              handleRowClick(row)
+                            }
+                          }
+                        : undefined
+                    }
                   >
                     {row.getVisibleCells().map((cell) => (
                       <Fragment key={`cell-${row.id}-${cell.id}`}>
@@ -162,6 +186,6 @@ export default function DataTable<TData>({
         !noPagination && (
           <TableFooterContent tableStateManager={tableStateManager} />
         )}
-    </div>
+    </Card>
   )
 }

@@ -1,6 +1,8 @@
 import { flexRender } from '@tanstack/react-table'
 import clsx from 'clsx'
-import { Fragment } from 'react'
+import { Fragment, useMemo } from 'react'
+
+import { Card } from '../Card'
 
 import {
   ActionBar,
@@ -49,7 +51,6 @@ export default function DataTableVirtualized<TData>({
   loading,
   height,
   noActionBar,
-  noShadow,
   noPagination,
   onGlobalFilterChange,
   rowsSkeleton: RowSkeleton,
@@ -58,20 +59,18 @@ export default function DataTableVirtualized<TData>({
 }: Readonly<DataTableVirtualizedProps<TData>>) {
   const { rows } = tableStateManager.getRowModel()
 
+  const headerGroups = useMemo(
+    () => tableStateManager.getHeaderGroups(),
+    [tableStateManager]
+  )
+
   const { parentRef, scrollableRef, tableRef, virtualItems, totalSize } =
     useVirtualizedTable(rows.length)
 
   return (
-    <div
-      className={clsx(
-        'tw-bg-white tw-rounded-bl-lg tw-rounded-lg tw-overflow-clip',
-        {
-          'tw-shadow-elevation-1': !noShadow,
-        },
-        className
-      )}
-      data-test={dataTestId ?? 'root'}
-    >
+    <Card className={className} data-test={dataTestId ?? 'root'}>
+      {/* Bare Card surface (no Card.Body/Header/Footer slots): the DataTable is flush to the edges —
+          each region (action bar, table, pagination) owns its own spacing. */}
       {!noActionBar && !actionBar && (
         <ActionBar
           tableConfiguration={tableStateManager as TableType<unknown>}
@@ -82,17 +81,20 @@ export default function DataTableVirtualized<TData>({
         />
       )}
       {actionBar}
-      <div ref={parentRef} style={{ height: `${height}px`, overflow: 'auto' }}>
+      <div
+        ref={parentRef}
+        role="region"
+        aria-label="Scrollable table"
+        tabIndex={0}
+        style={{ height: `${height}px`, overflow: 'auto' }}
+      >
         <div ref={scrollableRef} style={{ height: `${totalSize}px` }}>
-          <TableVirtualized ref={tableRef}>
+          <TableVirtualized ref={tableRef} aria-busy={loading}>
             <TableHeader
-              className={clsx('tw-sticky tw-top-0 tw-z-30', headerClassName)}
+              className={clsx('ui-table__header--sticky', headerClassName)}
             >
-              {tableStateManager.getHeaderGroups().map((headerGroup) => (
-                <TableRow
-                  key={headerGroup.id}
-                  className="[&_th]:tw-bg-gray-100"
-                >
+              {headerGroups.map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
                       <Fragment key={header.id}>
@@ -124,6 +126,7 @@ export default function DataTableVirtualized<TData>({
                       <TableRow
                         data-test={`row-${row.id}`}
                         data-state={row.getIsSelected() ? 'selected' : null}
+                        aria-selected={row.getIsSelected()}
                         enableHover
                         key={`row-${row.id}`}
                         style={{
@@ -159,12 +162,12 @@ export default function DataTableVirtualized<TData>({
         </div>
       </div>
 
-      {/* TABLE FOOTER BLOCK */}
+      {/* PAGINATION BLOCK */}
       {!loading &&
         tableStateManager.getRowCount() > MIN_PAGE_SIZE &&
         !noPagination && (
           <TableFooterContent tableStateManager={tableStateManager} />
         )}
-    </div>
+    </Card>
   )
 }

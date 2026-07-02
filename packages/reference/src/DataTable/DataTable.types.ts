@@ -2,37 +2,35 @@ import type { Row, Table as TableType } from '@tanstack/react-table'
 import type { FC, ReactElement } from 'react'
 
 /* Types */
-export type BaseDataTableProps<TData> = {
-  /* rendered component that will replace the component located above the table header */
+export interface BaseDataTableProps<TData> {
+  /** Rendered component that replaces the default content located above the table header. */
   actionBar?: ReactElement
-  /* Extra CSS classes for the action bar (overriding tailwind) */
+  /** Extra CSS classes for the action bar (overriding the defaults). */
   actionBarClassName?: string
-  /* Extra CSS classes for the root element (overriding tailwind) */
+  /** Extra CSS classes for the root element (overriding the defaults). */
   className?: string
-  /* The tan stack table state manager exposed from the useReactTable hook */
+  /** The TanStack table state manager exposed from the `useReactTable` hook. */
   tableStateManager: TableType<TData>
-  /* ID applied to the component root element for test purposes */
+  /** ID applied to the component root element for test purposes. */
   dataTestId?: string
-  /* Extra CSS classes for the table header(overriding tailwind)  */
+  /** Extra CSS classes for the table header (overriding the defaults). */
   headerClassName?: string
-  /*  For test purposes only, will init the table at a page */
+  /** For test purposes only — inits the table at the given page index. */
   initTableAt?: number
-  /* Array of React elements to be rendered (filter actions) */
+  /** Array of React elements rendered as filter actions in the action bar. */
   leftActions?: ReactElement[]
-  /* loading state of data (the table is responsible for its loading state) */
+  /** Loading state of the data (the table is responsible for its loading state). */
   loading: boolean
-  /* If true, the top action won't show above the table */
+  /** If true, the top action bar won't show above the table. */
   noActionBar?: boolean
-  /* If true, the pagination won't show below the table */
+  /** If true, the pagination won't show below the table. */
   noPagination?: boolean
-  /* If true, no shadow will be added to the container box */
-  noShadow?: boolean
-  /* If defined the entire row will be clickable, use with care to avoid conflicts with link cells */
+  /** If defined the entire row is clickable — use with care to avoid conflicts with link cells. */
   onRowClick?: (row: Row<TData>) => void
-  /* Global Filtering callback executed when changing/typing the value of the global filter (string) */
+  /** Global-filtering callback fired when the value of the global filter changes. */
   onGlobalFilterChange?: (value: string) => void
-  /* Component to display the loading state of rows */
+  /** Component displaying the per-row loading (skeleton) state. */
   rowsSkeleton?: FC
-  /* Extra CSS classes for the table body (overriding tailwind) */
+  /** Extra CSS classes for the table body (overriding the defaults). */
   tBodyClassName?: string
 }
