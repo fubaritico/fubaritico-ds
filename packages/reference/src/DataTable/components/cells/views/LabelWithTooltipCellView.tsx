@@ -1,7 +1,5 @@
 import { TableCell } from '../../primitives/TableCell'
 
-import type { FC } from 'react'
-
 /** Props of {@link LabelWithTooltipCellView}. */
 export interface LabelWithTooltipCellViewProps {
   /** Hint shown on hover (a different text than the visible value). */
@@ -20,10 +18,10 @@ export interface LabelWithTooltipCellViewProps {
  * @param props - {@link LabelWithTooltipCellViewProps}.
  * @returns The label cell with a hover hint.
  */
-const LabelWithTooltipCellView: FC<LabelWithTooltipCellViewProps> = ({
+export function LabelWithTooltipCellView({
   value,
   tooltipText,
-}) => {
+}: LabelWithTooltipCellViewProps) {
   return (
     <TableCell>
       {/* TODO(tooltip): replace title with <Tooltip> once the wrapping-trigger Tooltip lands. */}

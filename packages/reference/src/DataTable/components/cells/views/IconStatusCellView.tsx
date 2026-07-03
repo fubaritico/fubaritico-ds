@@ -8,7 +8,6 @@ import { TableCell } from '../../primitives/TableCell'
 
 import type { IconName, IconProps } from '../../../../Icon'
 import type { Row } from '@tanstack/react-table'
-import type { FC } from 'react'
 
 /** Maps a (lowercased) status to a DS icon. Custom hexagon glyphs are mapped to heroicons for now. */
 const STATUS_ICON: Record<string, IconName> = {
@@ -43,12 +42,12 @@ export interface IconStatusCellViewProps {
  * @param props - {@link IconStatusCellViewProps}.
  * @returns The status-icon cell.
  */
-const IconStatusCellView: FC<IconStatusCellViewProps> = ({
+export function IconStatusCellView({
   row,
   extraProps,
   keyName,
   tooltipText,
-}) => {
+}: IconStatusCellViewProps) {
   const status = row.getValue<string>(keyName)
   const iconName = STATUS_ICON[status.toLowerCase()] ?? DEFAULT_STATUS_ICON
 

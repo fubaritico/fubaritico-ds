@@ -1,25 +1,26 @@
-import { Row } from '@tanstack/react-table'
-import { ReactNode } from 'react'
-
 import TruncableLinkCellView from '../views/TruncableLinkCellView'
 
-type CellProps<TData> = {
+import type { Row } from '@tanstack/react-table'
+import type { ReactNode } from 'react'
+
+interface CellProps<TData> {
   row: Row<TData>
 }
 
 /**
- * Custom cell containing a link (mostly used for names) that accepts extra style and checks
- * if the value is truncated, if so a tooltip will be displayed on hover
+ * Link cell factory (mostly used for names) — renders a {@link TruncableLinkCellView}; when the value
+ * is truncated a tooltip is shown on hover.
  *
- * @param {String} keyName - Key to access the value in the row object
- * @param {String} linkPath - Path to navigate when clicking on the link
- * @param {String} className - Extra CSS styles (tailwind)
- *
+ * @param keyName - Key to read the link text from the row.
+ * @param linkPath - Destination href for the link.
+ * @param className - Optional extra classes for the link wrapper.
+ * @returns A TanStack cell renderer for a link column.
  */
 const TruncableLinkCell =
   (keyName: string, linkPath: string, className?: string) =>
   <TData,>({ row }: CellProps<TData>): ReactNode => {
-    const label = row.getValue(keyName) as string
+    const raw = row.getValue<unknown>(keyName)
+    const label = typeof raw === 'string' ? raw : String(raw ?? '')
     return (
       <TruncableLinkCellView
         className={className}

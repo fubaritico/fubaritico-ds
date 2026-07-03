@@ -10,7 +10,6 @@ import { ArrowUpDown } from '../../features/ArrowUpDown'
 import { TableHead } from '../../primitives/TableHead'
 
 import type { Column } from '@tanstack/react-table'
-import type { FC } from 'react'
 
 /** Props of {@link SortableHeaderCellView}. */
 export interface SortableHeaderCellViewProps {
@@ -35,14 +34,14 @@ export interface SortableHeaderCellViewProps {
  * @param props - {@link SortableHeaderCellViewProps}.
  * @returns The header cell.
  */
-const SortableHeaderCellView: FC<SortableHeaderCellViewProps> = ({
+export function SortableHeaderCellView({
   className,
   dataType,
   headerLabel,
   colName,
   column,
   withSeparator,
-}) => {
+}: SortableHeaderCellViewProps) {
   const { elementRef, isTruncated } =
     useIsTextTruncated<HTMLSpanElement>(headerLabel)
 
