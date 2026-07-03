@@ -56,12 +56,24 @@
         }
       },
       "header": {
+        "$description": "Application shell header bar (neutral-on-dark surface) — not the data-table column header (see table-header).",
         "background": {
           "$value": "{color.primitive.neutral.950}",
           "$type": "color"
         },
         "foreground": {
           "$value": "{color.primitive.neutral.0}",
+          "$type": "color"
+        }
+      },
+      "table-header": {
+        "$description": "Data-table column-header surface. Foreground is neutral.600 (not the lighter neutral.500) so the header text clears WCAG AA (~7.2:1) on the neutral.100 header background.",
+        "background": {
+          "$value": "{color.primitive.neutral.100}",
+          "$type": "color"
+        },
+        "foreground": {
+          "$value": "{color.primitive.neutral.600}",
           "$type": "color"
         }
       },

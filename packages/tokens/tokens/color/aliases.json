@@ -64,6 +64,14 @@
       "$value": "{color.semantic.header.foreground}",
       "$type": "color"
     },
+    "table-header": {
+      "$value": "{color.semantic.table-header.background}",
+      "$type": "color"
+    },
+    "table-header-foreground": {
+      "$value": "{color.semantic.table-header.foreground}",
+      "$type": "color"
+    },
     "footer": {
       "$value": "{color.semantic.footer.background}",
       "$type": "color"
