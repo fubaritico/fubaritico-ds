@@ -36,10 +36,18 @@ export function ArrowUpDown({
   onClick,
   sorting,
 }: Readonly<ArrowUpDownProps>) {
+  const direction =
+    sorting === 'asc'
+      ? ' (ascending)'
+      : sorting === 'desc'
+        ? ' (descending)'
+        : ''
+  const label = `${colName ? `Sort ${colName}` : 'Sort'}${direction}`
+
   return (
     <button
       type="button"
-      aria-label={colName ? `${colName} sorting` : 'sorting'}
+      aria-label={label}
       className={clsx(SORT_ARROWS_CLASS, className)}
       onClick={onClick}
     >

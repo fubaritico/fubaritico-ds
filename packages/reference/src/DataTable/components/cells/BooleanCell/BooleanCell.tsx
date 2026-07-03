@@ -15,7 +15,7 @@ const BooleanCell =
   <TData,>({ row }: { row: Row<TData> }) => {
     const value = row.getValue<boolean>(keyName)
     return (
-      <TableCell tabIndex={0} className={className}>
+      <TableCell className={className}>
         <Checkbox
           id={`boolean-${row.id}-checkbox`}
           aria-label={keyName}

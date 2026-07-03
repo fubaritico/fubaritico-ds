@@ -40,7 +40,7 @@ const BadgeStatusCell =
       STATUS_BADGE[status.toLowerCase()] ?? DEFAULT_BADGE
 
     return (
-      <TableCell aria-label={status} tabIndex={0}>
+      <TableCell>
         <Badge variant={variant} icon={icon}>
           {status}
         </Badge>

@@ -20,6 +20,7 @@ import {
   UI_TABLE_SEPARATOR_CLASS,
   UI_TABLE_SORT_TOGGLE_CLASS,
   UI_TABLE_VIRTUALIZED_CLASS,
+  UI_TABLE_VISUALLY_HIDDEN_CLASS,
   tableRowVariants,
 } from './table.js'
 
@@ -83,6 +84,7 @@ describe('tableRowVariants', () => {
       expect(UI_TABLE_LINK_WRAP_CLASS).toBe('ui-table__link-wrap')
       expect(UI_TABLE_LINK_CLASS).toBe('ui-table__link')
       expect(UI_TABLE_DURATION_CLASS).toBe('ui-table__duration')
+      expect(UI_TABLE_VISUALLY_HIDDEN_CLASS).toBe('ui-table__visually-hidden')
     })
   })
 })

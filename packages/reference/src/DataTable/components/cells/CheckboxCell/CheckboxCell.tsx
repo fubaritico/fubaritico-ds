@@ -15,7 +15,7 @@ const CheckboxCell =
   (className?: string) =>
   <TData,>({ row }: { row: Row<TData> }) => {
     return (
-      <TableCell tabIndex={0} className={className}>
+      <TableCell className={className}>
         <Checkbox
           id={`choose-${row.id}-checkbox`}
           aria-label={`Select row ${row.id}`}

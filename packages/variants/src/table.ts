@@ -130,3 +130,10 @@ export const UI_TABLE_LINK_CLASS = 'ui-table__link'
  * BEM element class for the duration cell value (medium weight).
  */
 export const UI_TABLE_DURATION_CLASS = 'ui-table__duration'
+
+/**
+ * BEM element class for visually-hidden text kept in the accessibility tree — used to give an
+ * icon-only cell (e.g. a status icon, which is always decorative) an accessible name for screen
+ * readers without showing it visually.
+ */
+export const UI_TABLE_VISUALLY_HIDDEN_CLASS = 'ui-table__visually-hidden'

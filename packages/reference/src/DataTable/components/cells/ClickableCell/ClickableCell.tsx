@@ -11,6 +11,8 @@ import type { ReactElement } from 'react'
  * @param callback - Invoked with `row.original` when the button is clicked.
  * @param content - Content rendered inside the button.
  * @param tooltipText - Optional hint; currently surfaced via the native `title` attribute.
+ * @param ariaLabel - Accessible name for the button (required when `content` is icon-only — WCAG
+ *   4.1.2); falls back to `tooltipText`.
  * @param className - Optional extra classes for the cell.
  * @returns A TanStack cell renderer with a clickable button.
  */
@@ -19,16 +21,18 @@ const ClickableCell =
     callback: (rowData: TData) => void,
     content: ReactElement,
     tooltipText?: string,
+    ariaLabel?: string,
     className?: string
   ) =>
   ({ row }: { row: Row<TData> }) => {
     return (
-      <TableCell tabIndex={0} className={className}>
+      <TableCell className={className}>
         <div className={UI_TABLE_CELL_INNER_CLASS}>
           {/* TODO(tooltip): wrap in <Tooltip> once the wrapping-trigger Tooltip lands (Tooltip migrated last). */}
           <button
             type="button"
             title={tooltipText}
+            aria-label={ariaLabel ?? tooltipText}
             onClick={() => {
               callback(row.original)
             }}

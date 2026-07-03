@@ -19,7 +19,7 @@ const BadgeOrgCell =
     const value = row.getValue<string>(keyName)
 
     return (
-      <TableCell tabIndex={0} className={className}>
+      <TableCell className={className}>
         {value ? (
           <Badge variant="outline" size="sm">
             {value}

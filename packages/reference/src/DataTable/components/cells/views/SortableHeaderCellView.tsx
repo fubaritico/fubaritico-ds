@@ -46,8 +46,12 @@ const SortableHeaderCellView: FC<SortableHeaderCellViewProps> = ({
   const { elementRef, isTruncated } =
     useIsTextTruncated<HTMLSpanElement>(headerLabel)
 
+  const sorted = column.getIsSorted()
+  const ariaSort =
+    sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : 'none'
+
   return (
-    <TableHead className={className} data-type={dataType} tabIndex={0}>
+    <TableHead className={className} data-type={dataType} aria-sort={ariaSort}>
       <div className={UI_TABLE_HEAD_INNER_CLASS}>
         {/* TODO(tooltip): show a <Tooltip> when truncated once the wrapping-trigger Tooltip lands. */}
         <span
@@ -61,9 +65,9 @@ const SortableHeaderCellView: FC<SortableHeaderCellViewProps> = ({
           colName={colName}
           className={UI_TABLE_SORT_TOGGLE_CLASS}
           onClick={() => {
-            column.toggleSorting(column.getIsSorted() === 'asc')
+            column.toggleSorting(sorted === 'asc')
           }}
-          sorting={column.getIsSorted()}
+          sorting={sorted}
         />
         {withSeparator ? <div className={UI_TABLE_SEPARATOR_CLASS} /> : null}
       </div>

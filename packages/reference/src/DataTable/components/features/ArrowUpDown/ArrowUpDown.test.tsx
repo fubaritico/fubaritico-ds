@@ -17,7 +17,7 @@ describe('ArrowUpDown', () => {
         <ArrowUpDown colName="Status" sorting={false} onClick={vi.fn()} />
       )
       expect(
-        screen.getByRole('button', { name: 'Status sorting' })
+        screen.getByRole('button', { name: 'Sort Status' })
       ).toBeInTheDocument()
       expect(container.querySelectorAll('.ui-sort-arrows__icon')).toHaveLength(
         2
@@ -34,18 +34,24 @@ describe('ArrowUpDown', () => {
   })
 
   describe('variants', () => {
-    it('dims one chevron when sorted ascending', () => {
+    it('dims one chevron when sorted ascending and announces the direction', () => {
       const { container } = render(
         <ArrowUpDown colName="Status" sorting="asc" onClick={vi.fn()} />
       )
       expect(dimmedCount(container)).toBe(1)
+      expect(
+        screen.getByRole('button', { name: 'Sort Status (ascending)' })
+      ).toBeInTheDocument()
     })
 
-    it('dims one chevron when sorted descending', () => {
+    it('dims one chevron when sorted descending and announces the direction', () => {
       const { container } = render(
         <ArrowUpDown colName="Status" sorting="desc" onClick={vi.fn()} />
       )
       expect(dimmedCount(container)).toBe(1)
+      expect(
+        screen.getByRole('button', { name: 'Sort Status (descending)' })
+      ).toBeInTheDocument()
     })
 
     it('dims neither chevron when unsorted', () => {
@@ -62,9 +68,7 @@ describe('ArrowUpDown', () => {
   describe('edge cases', () => {
     it('falls back to a generic label when no colName is given', () => {
       render(<ArrowUpDown sorting={false} onClick={vi.fn()} />)
-      expect(
-        screen.getByRole('button', { name: 'sorting' })
-      ).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Sort' })).toBeInTheDocument()
     })
   })
 })

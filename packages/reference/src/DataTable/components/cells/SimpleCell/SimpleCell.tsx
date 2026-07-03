@@ -1,8 +1,9 @@
 import { type Row } from '@tanstack/react-table'
-import type { ReactNode } from 'react'
 
 import TruncatedContent from '../../features/TruncatedContent'
 import { TableCell } from '../../primitives/TableCell'
+
+import type { ReactNode } from 'react'
 
 /**
  * Simple cell to display a value (string or number) or wrap another component
@@ -16,7 +17,7 @@ const SimpleCell =
   (keyName: string, className?: string, children?: ReactNode) =>
   <TData,>({ row }: { row: Row<TData> }) => {
     return (
-      <TableCell tabIndex={0} className={className}>
+      <TableCell className={className}>
         {children ? (
           children
         ) : (

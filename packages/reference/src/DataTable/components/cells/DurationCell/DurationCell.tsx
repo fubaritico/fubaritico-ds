@@ -37,7 +37,7 @@ const DurationCell =
   <TData,>({ row }: { row: Row<TData> }): ReactNode => {
     const formatted = formatDuration(row.getValue<string>(colName))
     return (
-      <TableCell aria-label={formatted} className={className} tabIndex={0}>
+      <TableCell className={className}>
         <span className={UI_TABLE_DURATION_CLASS}>{formatted}</span>
       </TableCell>
     )

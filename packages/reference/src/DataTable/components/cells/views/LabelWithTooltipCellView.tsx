@@ -25,7 +25,7 @@ const LabelWithTooltipCellView: FC<LabelWithTooltipCellViewProps> = ({
   tooltipText,
 }) => {
   return (
-    <TableCell aria-label={value} tabIndex={0}>
+    <TableCell>
       {/* TODO(tooltip): replace title with <Tooltip> once the wrapping-trigger Tooltip lands. */}
       <span title={tooltipText}>{value}</span>
     </TableCell>

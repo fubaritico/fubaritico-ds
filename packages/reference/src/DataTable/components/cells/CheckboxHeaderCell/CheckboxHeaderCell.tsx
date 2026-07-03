@@ -34,7 +34,6 @@ const CheckboxHeaderCell =
       <TableHead
         className={clsx(UI_TABLE_HEAD_STRONG_MODIFIER, className)}
         data-type={dataType}
-        tabIndex={0}
       >
         <div className={UI_TABLE_HEAD_INNER_CLASS}>
           <Checkbox
