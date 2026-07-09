@@ -1,9 +1,16 @@
 import clsx from 'clsx'
 
+import {
+  UI_TABLE_TOOLBAR_ACTIONS_CLASS,
+  UI_TABLE_TOOLBAR_CLASS,
+  UI_TABLE_TOOLBAR_SEARCH_CLASS,
+  UI_TABLE_TOOLBAR_STICKY_MODIFIER,
+} from '@fubaritico-ds/variants'
+
 import { Input } from '../../../../Input'
 
 import type { Table } from '@tanstack/react-table'
-import type { FC, ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
 /** Shape of the global filter state — a bare string, or an object carrying a `value`. */
 type GlobalFilterState = string | { value?: string } | undefined
@@ -22,9 +29,6 @@ export interface ActionBarProps {
   tableConfiguration: Table<unknown>
 }
 
-/** Fixed width (px) of the search field, matching the original. */
-const SEARCH_WIDTH = 325
-
 /**
  * Toolbar above the table: optional left actions + a global-filter search field (the DS {@link Input}
  * replacing the original `InputText`).
@@ -32,13 +36,13 @@ const SEARCH_WIDTH = 325
  * @param props - {@link ActionBarProps}.
  * @returns The action bar.
  */
-const ActionBar: FC<ActionBarProps> = ({
+export function ActionBar({
   className,
   leftActions,
   onGlobalFilterChange,
   stickyHeader,
   tableConfiguration,
-}) => {
+}: ActionBarProps) {
   const globalFilter = tableConfiguration.getState()
     .globalFilter as GlobalFilterState
   const searchValue =
@@ -49,14 +53,14 @@ const ActionBar: FC<ActionBarProps> = ({
   return (
     <div
       className={clsx(
-        'tw-flex tw-items-center tw-p-4 tw-gap-4',
-        { 'tw-sticky': stickyHeader },
+        UI_TABLE_TOOLBAR_CLASS,
+        { [UI_TABLE_TOOLBAR_STICKY_MODIFIER]: stickyHeader },
         className
       )}
       data-test="action-bar"
     >
-      <div className="tw-flex tw-grow tw-gap-4">{leftActions}</div>
-      <div style={{ width: SEARCH_WIDTH }}>
+      <div className={UI_TABLE_TOOLBAR_ACTIONS_CLASS}>{leftActions}</div>
+      <div className={UI_TABLE_TOOLBAR_SEARCH_CLASS}>
         <Input
           icon="MagnifyingGlass"
           placeholder="Search..."

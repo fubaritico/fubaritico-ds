@@ -2,7 +2,7 @@ import clsx from 'clsx'
 
 import {
   UI_TABLE_LINK_CLASS,
-  UI_TABLE_LINK_WRAP_CLASS,
+  UI_TABLE_TRUNCATE_WRAP_CLASS,
 } from '@fubaritico-ds/variants'
 
 import { useIsTextTruncated } from '../../../hooks'
@@ -42,7 +42,7 @@ export function TruncableLinkCellView({
 
   return (
     <TableCell>
-      <div className={clsx(UI_TABLE_LINK_WRAP_CLASS, className)}>
+      <div className={clsx(UI_TABLE_TRUNCATE_WRAP_CLASS, className)}>
         {/* TODO(tooltip): show a <Tooltip> when truncated once the wrapping-trigger Tooltip lands. */}
         <a
           ref={elementRef}

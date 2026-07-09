@@ -56,6 +56,7 @@ export function SortableHeaderCellView({
         <span
           ref={elementRef}
           title={isTruncated ? headerLabel : undefined}
+          aria-label={isTruncated ? headerLabel : undefined}
           className={UI_TABLE_HEAD_LABEL_CLASS}
         >
           {headerLabel}

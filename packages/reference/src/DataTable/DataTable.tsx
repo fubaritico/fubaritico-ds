@@ -2,6 +2,8 @@ import { flexRender } from '@tanstack/react-table'
 import clsx from 'clsx'
 import { Fragment, useCallback, useEffect, useMemo } from 'react'
 
+import { UI_TABLE_HEADER_STICKY_MODIFIER } from '@fubaritico-ds/variants'
+
 import { Card } from '../Card'
 
 import {
@@ -96,7 +98,7 @@ export default function DataTable<TData>({
       <Table maxHeight={maxHeight} aria-busy={loading}>
         <TableHeader
           className={clsx(
-            { 'ui-table__header--sticky': stickyHeader },
+            { [UI_TABLE_HEADER_STICKY_MODIFIER]: stickyHeader },
             headerClassName
           )}
         >

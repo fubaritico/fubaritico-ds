@@ -108,6 +108,15 @@
     /* Duration cell value weight (source `font-medium`). */
     --ui-table-duration-weight: var(--font-weight-medium);
 
+    /* ---- chrome (features layer) ---- */
+    /* Global-filter search field width — arbitrary 325px (no sizing token maps to it); overridable. */
+    --ui-table-search-width: 325px;
+    /* z-index of the sticky toolbar — must exceed --ui-table-header-z (30) so it stacks above a
+       simultaneously-sticky header. */
+    --ui-table-toolbar-z: 31;
+    /* Empty-state box height — arbitrary 300px (no spacing token maps to it); overridable. */
+    --ui-table-empty-height: 300px;
+
     /* ---- base ---- */
     /* Self-sufficient box model: the skin survives in hosts with no reset (the DS ships none). */
     box-sizing: border-box;
@@ -165,8 +174,10 @@
 
   /* Last body row drops its bottom border so the body doesn't double-border against the footer.
      Descendant combinator (deliberate): "last row of the BODY specifically" cannot be expressed with
-     a single flat class — the header's last row must KEEP its border (it is the header/body divider). */
-  .ui-table__body .ui-table__row:last-child {
+     a single flat class — the header's last row must KEEP its border (it is the header/body divider).
+     `:where()` zeroes the `.ui-table__body` specificity so the whole selector stays at a single-class
+     weight (override-first). */
+  :where(.ui-table__body) .ui-table__row:last-child {
     border-block-end-width: 0;
   }
 
@@ -178,8 +189,9 @@
   }
 
   /* Last footer row drops its bottom border (source: `[&>tr]:last:border-b-0`). Direct-child
-     combinator, deliberate — same "last row only" constraint as the body. */
-  .ui-table__footer > .ui-table__row:last-child {
+     combinator, deliberate — same "last row only" constraint as the body; `:where()` keeps it at a
+     single-class specificity. */
+  :where(.ui-table__footer) > .ui-table__row:last-child {
     border-block-end-width: 0;
   }
 
@@ -190,8 +202,9 @@
     transition: background-color var(--ui-table-row-transition-duration);
   }
 
-  /* Body rows get the fixed row height (header rows keep their own `--ui-table-head-height`). */
-  .ui-table__body .ui-table__row {
+  /* Body rows get the fixed row height (header rows keep their own `--ui-table-head-height`).
+     `:where()` keeps the body scoping at zero specificity (override-first). */
+  :where(.ui-table__body) .ui-table__row {
     block-size: var(--ui-table-row-height);
   }
 
@@ -260,7 +273,7 @@
   .ui-table__head-inner {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: start;
     gap: var(--ui-table-inner-gap);
   }
 
@@ -306,13 +319,21 @@
     vertical-align: middle;
   }
 
-  /* Link cell wrapper: allows the anchor to truncate inside the table cell (`min-inline-size: 0` is
-     required for `text-overflow` to kick in within a flex/table context). Source `flex min-w-0
-     max-w-full truncate`. */
-  .ui-table__link-wrap {
+  /* Truncating wrapper: lets an inline child truncate inside a flex/table context (`min-inline-size: 0`
+     is required for `text-overflow` to kick in there). Shared by the link cell and TruncatedContent.
+     Source `flex min-w-0 max-w-full`. */
+  .ui-table__truncate-wrap {
     display: flex;
     min-inline-size: 0;
     max-inline-size: 100%;
+  }
+
+  /* Generic single-line ellipsis for a text child inside `.ui-table__truncate-wrap`. */
+  .ui-table__truncate {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   /* Link cell anchor: neutral + underlined, truncates with an ellipsis. */
@@ -343,6 +364,85 @@
     clip-path: inset(50%);
     white-space: nowrap;
     border: 0;
+  }
+
+  /* ---- chrome (features layer) ---- */
+
+  /* Toolbar above the table (ActionBar): left actions + a global-filter field. Source `flex
+     items-center p-4 gap-4`. */
+  .ui-table__toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    padding: var(--spacing-4);
+  }
+
+  /* Sticky toolbar (opt-in via `stickyHeader`). Replaces the old inline `sticky`. z-index keeps it
+     above a simultaneously-sticky header. */
+  .ui-table__toolbar--sticky {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--ui-table-toolbar-z);
+  }
+
+  /* Left-actions group that grows to push the filter field to the trailing edge. Source `flex grow
+     gap-4`. */
+  .ui-table__toolbar-actions {
+    display: flex;
+    flex-grow: 1;
+    gap: var(--spacing-4);
+  }
+
+  /* Global-filter search field wrapper (replaces the old inline `style={{ width: 325 }}`). */
+  .ui-table__toolbar-search {
+    inline-size: var(--ui-table-search-width);
+  }
+
+  /* Empty-state box (NoResults): a centered column filling a fixed-height row. Source `flex w-full
+     flex-col items-center justify-center gap-2 h-[300px]`. */
+  .ui-table__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    inline-size: 100%;
+    block-size: var(--ui-table-empty-height);
+  }
+
+  /* Footer bar (TableFooterContent): rows-per-page + pagination + go-to-page, spread across the width.
+     Source `flex flex-nowrap items-center justify-between space-x-2 h-20 px-3 border-t border-gray-200`. */
+  .ui-table__footer-bar {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-2);
+    block-size: var(--spacing-20);
+    padding-inline: var(--spacing-3);
+    border-block-start: var(--ui-table-border-width) solid
+      var(--ui-table-border-color);
+  }
+
+  /* An inline group in the footer bar (a label next to a control). Source `flex items-center gap-2`. */
+  .ui-table__footer-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+  }
+
+  /* Secondary footer label ("Rows per page", "Go to page", "of N"). `--color-foreground-muted`
+     (neutral.500) clears AA on the white footer surface (~5.3:1). Replaces the dead `text-gray_oda-500`
+     and the unprefixed `whitespace-nowrap`. */
+  .ui-table__footer-label {
+    white-space: nowrap;
+    color: var(--color-foreground-muted);
+  }
+
+  /* Go-to-page field: only constrains the width — the control chrome (border/background/radius/focus
+     ring) comes from the composed DS Input (`.ui-input`). Source width `w-16`. */
+  .ui-table__page-input {
+    inline-size: var(--spacing-16);
   }
 
   /* The colour transition is decorative — suppress it for users who prefer reduced motion (WCAG 2.3.3). */

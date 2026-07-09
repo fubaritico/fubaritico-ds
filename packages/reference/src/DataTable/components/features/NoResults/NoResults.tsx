@@ -1,6 +1,6 @@
-import { Icon } from '../../../../Icon'
+import { UI_TABLE_EMPTY_CLASS } from '@fubaritico-ds/variants'
 
-import type { FC } from 'react'
+import { Icon } from '../../../../Icon'
 
 /** Props of {@link NoResults}. */
 export interface NoResultsProps {
@@ -18,11 +18,11 @@ const EMPTY_ICON_SIZE = 32
  * @param props - {@link NoResultsProps}.
  * @returns A full-width empty-state table row.
  */
-const NoResults: FC<NoResultsProps> = ({ columnLength }) => {
+export function NoResults({ columnLength }: NoResultsProps) {
   return (
     <tr>
       <td colSpan={columnLength} data-test="no-data-cell">
-        <div className="tw-flex tw-w-full tw-flex-col tw-items-center tw-justify-center tw-gap-2 tw-h-[300px]">
+        <div className={UI_TABLE_EMPTY_CLASS} role="status">
           <Icon
             name="MagnifyingGlass"
             size={EMPTY_ICON_SIZE}

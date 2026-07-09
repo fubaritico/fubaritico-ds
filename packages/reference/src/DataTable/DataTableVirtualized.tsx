@@ -2,6 +2,8 @@ import { flexRender } from '@tanstack/react-table'
 import clsx from 'clsx'
 import { Fragment, useMemo } from 'react'
 
+import { UI_TABLE_HEADER_STICKY_MODIFIER } from '@fubaritico-ds/variants'
+
 import { Card } from '../Card'
 
 import {
@@ -91,7 +93,7 @@ export default function DataTableVirtualized<TData>({
         <div ref={scrollableRef} style={{ height: `${totalSize}px` }}>
           <TableVirtualized ref={tableRef} aria-busy={loading}>
             <TableHeader
-              className={clsx('ui-table__header--sticky', headerClassName)}
+              className={clsx(UI_TABLE_HEADER_STICKY_MODIFIER, headerClassName)}
             >
               {headerGroups.map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

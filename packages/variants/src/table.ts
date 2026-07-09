@@ -63,6 +63,12 @@ export const UI_TABLE_BODY_CLASS = 'ui-table__body'
 export const UI_TABLE_FOOTER_CLASS = 'ui-table__footer'
 
 /**
+ * BEM modifier applied ALONGSIDE `.ui-table__header` to pin the `<thead>` to the scroll viewport top
+ * (opt-in via `stickyHeader`; always on for the virtualized table).
+ */
+export const UI_TABLE_HEADER_STICKY_MODIFIER = 'ui-table__header--sticky'
+
+/**
  * BEM element class for the `<th>` header cell (`.ui-table__head`).
  */
 export const UI_TABLE_HEAD_CLASS = 'ui-table__head'
@@ -117,9 +123,15 @@ export const UI_TABLE_CELL_INNER_CLASS = 'ui-table__cell-inner'
 export const UI_TABLE_CELL_CENTER_MODIFIER = 'ui-table__cell--center'
 
 /**
- * BEM element class for the link cell wrapper (enables the anchor to truncate inside the cell).
+ * BEM element class for a truncating wrapper (lets an inline child ellipsis-truncate inside a
+ * flex/table context). Shared by the link cell and TruncatedContent.
  */
-export const UI_TABLE_LINK_WRAP_CLASS = 'ui-table__link-wrap'
+export const UI_TABLE_TRUNCATE_WRAP_CLASS = 'ui-table__truncate-wrap'
+
+/**
+ * BEM element class for a generic single-line ellipsis text child inside a truncating wrapper.
+ */
+export const UI_TABLE_TRUNCATE_CLASS = 'ui-table__truncate'
 
 /**
  * BEM element class for the link cell anchor (neutral, underlined, truncating).
@@ -137,3 +149,50 @@ export const UI_TABLE_DURATION_CLASS = 'ui-table__duration'
  * readers without showing it visually.
  */
 export const UI_TABLE_VISUALLY_HIDDEN_CLASS = 'ui-table__visually-hidden'
+
+/* ---- chrome (features layer) ---- */
+
+/**
+ * BEM element class for the toolbar above the table (ActionBar): left actions + a global-filter field.
+ */
+export const UI_TABLE_TOOLBAR_CLASS = 'ui-table__toolbar'
+
+/**
+ * BEM modifier applied ALONGSIDE `.ui-table__toolbar` to pin it to the top while scrolling.
+ */
+export const UI_TABLE_TOOLBAR_STICKY_MODIFIER = 'ui-table__toolbar--sticky'
+
+/**
+ * BEM element class for the toolbar's growing left-actions group (pushes the filter to the far edge).
+ */
+export const UI_TABLE_TOOLBAR_ACTIONS_CLASS = 'ui-table__toolbar-actions'
+
+/**
+ * BEM element class for the toolbar's global-filter search field wrapper (fixed width).
+ */
+export const UI_TABLE_TOOLBAR_SEARCH_CLASS = 'ui-table__toolbar-search'
+
+/**
+ * BEM element class for the empty-state box (NoResults) — a centered column filling a fixed-height row.
+ */
+export const UI_TABLE_EMPTY_CLASS = 'ui-table__empty'
+
+/**
+ * BEM element class for the footer bar (TableFooterContent): rows-per-page + pagination + go-to-page.
+ */
+export const UI_TABLE_FOOTER_BAR_CLASS = 'ui-table__footer-bar'
+
+/**
+ * BEM element class for an inline group inside the footer bar (a label next to a control).
+ */
+export const UI_TABLE_FOOTER_GROUP_CLASS = 'ui-table__footer-group'
+
+/**
+ * BEM element class for a secondary footer label ("Rows per page", "Go to page", "of N").
+ */
+export const UI_TABLE_FOOTER_LABEL_CLASS = 'ui-table__footer-label'
+
+/**
+ * BEM element class for the go-to-page number field (a lightly-skinned native input).
+ */
+export const UI_TABLE_PAGE_INPUT_CLASS = 'ui-table__page-input'

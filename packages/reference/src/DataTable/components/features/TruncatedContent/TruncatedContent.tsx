@@ -1,8 +1,11 @@
 import clsx from 'clsx'
 
-import { useIsTextTruncated } from '../../../hooks'
+import {
+  UI_TABLE_TRUNCATE_CLASS,
+  UI_TABLE_TRUNCATE_WRAP_CLASS,
+} from '@fubaritico-ds/variants'
 
-import type { FC } from 'react'
+import { useIsTextTruncated } from '../../../hooks'
 
 /** Props of {@link TruncatedContent}. */
 export interface TruncatedContentProps {
@@ -19,7 +22,7 @@ export interface TruncatedContentProps {
  * @param props - {@link TruncatedContentProps}.
  * @returns The truncated text cell content.
  */
-const TruncatedContent: FC<TruncatedContentProps> = ({ className, value }) => {
+export function TruncatedContent({ className, value }: TruncatedContentProps) {
   const text =
     value !== undefined && value !== null && value !== '0' && value !== ''
       ? String(value)
@@ -28,17 +31,13 @@ const TruncatedContent: FC<TruncatedContentProps> = ({ className, value }) => {
     useIsTextTruncated<HTMLParagraphElement>(text)
 
   return (
-    <div
-      className={clsx(
-        'tw-flex tw-min-w-0 tw-max-w-full tw-truncate',
-        className
-      )}
-    >
+    <div className={clsx(UI_TABLE_TRUNCATE_WRAP_CLASS, className)}>
       {/* TODO(tooltip): show a <Tooltip> when truncated once the wrapping-trigger Tooltip lands. */}
       <p
         ref={elementRef}
         title={isTruncated ? text : undefined}
-        className="tw-truncate"
+        aria-label={isTruncated ? text : undefined}
+        className={UI_TABLE_TRUNCATE_CLASS}
       >
         {text}
       </p>
