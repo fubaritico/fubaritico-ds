@@ -42,7 +42,7 @@ export function ActionBar({
   onGlobalFilterChange,
   stickyHeader,
   tableConfiguration,
-}: ActionBarProps) {
+}: Readonly<ActionBarProps>) {
   const globalFilter = tableConfiguration.getState()
     .globalFilter as GlobalFilterState
   const searchValue =

@@ -29,7 +29,7 @@ const CheckboxHeaderCell =
     dataType?: string,
     className?: string
   ) =>
-  <TData,>({ table }: { table: Table<TData> }) => {
+  <TData,>({ table }: Readonly<{ table: Table<TData> }>) => {
     return (
       <TableHead
         className={clsx(UI_TABLE_HEAD_STRONG_MODIFIER, className)}

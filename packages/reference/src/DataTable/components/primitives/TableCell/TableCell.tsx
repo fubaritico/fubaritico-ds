@@ -11,7 +11,7 @@ import type { ComponentProps } from 'react'
  * @param props - Standard `<td>` attributes ({@link ComponentProps}) incl. `ref` (React 19 ref-as-prop).
  * @returns The table cell element.
  */
-export function TableCell({ className, ...props }: ComponentProps<'td'>) {
+export function TableCell({ className, ...props }: Readonly<ComponentProps<'td'>>) {
   return <td className={cn(UI_TABLE_CELL_CLASS, className)} {...props} />
 }
 

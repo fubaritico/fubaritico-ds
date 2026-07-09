@@ -15,7 +15,7 @@ import type { ReactNode } from 'react'
  */
 const SimpleCell =
   (keyName: string, className?: string, children?: ReactNode) =>
-  <TData,>({ row }: { row: Row<TData> }) => {
+  <TData,>({ row }: Readonly<{ row: Row<TData> }>) => {
     return (
       <TableCell className={className}>
         {children ? (

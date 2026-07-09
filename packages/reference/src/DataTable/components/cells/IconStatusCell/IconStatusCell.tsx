@@ -13,7 +13,7 @@ import type { IconProps } from '../../../../Icon'
  */
 const IconStatusCell =
   (extraProps: Partial<Omit<IconProps, 'name'>> = {}, keyName = 'status') =>
-  ({ row }: { row: Row<unknown> }) => (
+  ({ row }: Readonly<{ row: Row<unknown> }>) => (
     <IconStatusCellView row={row} extraProps={extraProps} keyName={keyName} />
   )
 

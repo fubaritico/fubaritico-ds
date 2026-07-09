@@ -17,7 +17,7 @@ export interface TableProps extends ComponentProps<'table'> {
  * @param props - {@link TableProps} (incl. `ref`, a React 19 prop forwarded to the `<table>`).
  * @returns The wrapped table element.
  */
-export function Table({ className, maxHeight, ...props }: TableProps) {
+export function Table({ className, maxHeight, ...props }: Readonly<TableProps>) {
   return (
     <div
       className={UI_TABLE_SCROLL_CLASS}

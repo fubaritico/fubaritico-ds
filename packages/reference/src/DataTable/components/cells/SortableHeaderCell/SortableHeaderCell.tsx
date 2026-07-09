@@ -23,7 +23,7 @@ const SortableHeaderCell =
   // TanStack `Column` is invariant in TData; a reusable header factory must accept `any` here so the
   // renderer stays assignable to `ColumnDef<TData>['header']` for any concrete row type (library idiom).
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ({ column }: { column: Column<any> }) => {
+  ({ column }: Readonly<{ column: Column<any> }>) => {
     return (
       <SortableHeaderCellView
         className={className}

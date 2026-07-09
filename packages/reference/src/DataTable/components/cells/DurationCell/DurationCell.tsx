@@ -16,7 +16,7 @@ import type { ReactNode } from 'react'
  */
 const DurationCell =
   (colName: string, className?: string) =>
-  <TData,>({ row }: { row: Row<TData> }): ReactNode => {
+  <TData,>({ row }: Readonly<{ row: Row<TData> }>): ReactNode => {
     const formatted = formatDuration(row.getValue<string>(colName))
     return (
       <TableCell className={className}>

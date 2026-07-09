@@ -23,7 +23,7 @@ const ClickableHeaderCell =
     ariaLabel?: string,
     className?: string
   ) =>
-  <TData,>({ column }: { column: Column<TData> }) => {
+  <TData,>({ column }: Readonly<{ column: Column<TData> }>) => {
     return (
       <TableHead
         id={column.id}

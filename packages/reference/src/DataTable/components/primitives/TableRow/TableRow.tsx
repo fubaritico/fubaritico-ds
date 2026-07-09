@@ -21,7 +21,7 @@ export function TableRow({
   className,
   enableHover = false,
   ...props
-}: TableRowProps) {
+}: Readonly<TableRowProps>) {
   return (
     <tr
       className={cn(tableRowVariants({ hoverable: enableHover }), className)}

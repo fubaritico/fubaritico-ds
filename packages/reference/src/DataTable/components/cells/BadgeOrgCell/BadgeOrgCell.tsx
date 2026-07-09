@@ -15,7 +15,7 @@ import { TableCell } from '../../primitives/TableCell'
  */
 const BadgeOrgCell =
   (keyName: string, className?: string) =>
-  <TData,>({ row }: { row: Row<TData> }) => {
+  <TData,>({ row }: Readonly<{ row: Row<TData> }>) => {
     const value = row.getValue<string>(keyName)
 
     return (

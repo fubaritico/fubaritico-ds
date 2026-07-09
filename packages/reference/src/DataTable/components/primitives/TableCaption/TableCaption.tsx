@@ -14,7 +14,7 @@ import type { ComponentProps } from 'react'
 export function TableCaption({
   className,
   ...props
-}: ComponentProps<'caption'>) {
+}: Readonly<ComponentProps<'caption'>>) {
   return (
     <caption className={cn(UI_TABLE_CAPTION_CLASS, className)} {...props} />
   )

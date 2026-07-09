@@ -12,7 +12,7 @@ import { TableCell } from '../../primitives/TableCell'
  */
 const BooleanCell =
   (keyName: string, className?: string) =>
-  <TData,>({ row }: { row: Row<TData> }) => {
+  <TData,>({ row }: Readonly<{ row: Row<TData> }>) => {
     const value = row.getValue<boolean>(keyName)
     return (
       <TableCell className={className}>

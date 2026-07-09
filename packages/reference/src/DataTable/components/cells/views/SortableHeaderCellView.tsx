@@ -41,7 +41,7 @@ export function SortableHeaderCellView({
   colName,
   column,
   withSeparator,
-}: SortableHeaderCellViewProps) {
+}: Readonly<SortableHeaderCellViewProps>) {
   const { elementRef, isTruncated } =
     useIsTextTruncated<HTMLSpanElement>(headerLabel)
 

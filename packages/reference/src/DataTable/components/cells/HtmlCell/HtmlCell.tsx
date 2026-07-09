@@ -14,7 +14,7 @@ import { TableCell } from '../../primitives/TableCell'
  */
 const HtmlCell =
   (keyName: string, className?: string) =>
-  <TData,>({ row }: { row: Row<TData> }) => {
+  <TData,>({ row }: Readonly<{ row: Row<TData> }>) => {
     const value = row.getValue<string>(keyName).replace(/&amp;/g, '&')
     const parts = decode(value).split(/<br\s*\/?>/g)
 

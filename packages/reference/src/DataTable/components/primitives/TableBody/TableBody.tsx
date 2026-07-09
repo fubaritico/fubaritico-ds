@@ -11,7 +11,7 @@ import type { ComponentProps } from 'react'
  * @param props - Standard `<tbody>` attributes ({@link ComponentProps}) incl. `ref` (React 19 ref-as-prop).
  * @returns The table body section.
  */
-export function TableBody({ className, ...props }: ComponentProps<'tbody'>) {
+export function TableBody({ className, ...props }: Readonly<ComponentProps<'tbody'>>) {
   return <tbody className={cn(UI_TABLE_BODY_CLASS, className)} {...props} />
 }
 

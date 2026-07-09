@@ -33,7 +33,7 @@ const DateCell = (
     timeZone: timezone,
   })
 
-  return <TData,>({ row }: { row: Row<TData> }): ReactNode => {
+  return <TData,>({ row }: Readonly<{ row: Row<TData> }>): ReactNode => {
     const value = row.getValue(colName)
 
     // The visible text is the accessible content (no aria-label on the cell role; no extra tab stop).

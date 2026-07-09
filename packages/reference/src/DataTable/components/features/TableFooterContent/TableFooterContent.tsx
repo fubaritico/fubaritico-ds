@@ -36,7 +36,7 @@ const PAGE_SIZE_OPTIONS: DropdownOption[] = [1, 2, 3, 4, 5].map((factor) => {
  */
 export function TableFooterContent<TData>({
   tableStateManager,
-}: TableFooterContentProps<TData>) {
+}: Readonly<TableFooterContentProps<TData>>) {
   const handleChangePage = (newPageIndex: number) => {
     tableStateManager.setPageIndex(newPageIndex)
   }

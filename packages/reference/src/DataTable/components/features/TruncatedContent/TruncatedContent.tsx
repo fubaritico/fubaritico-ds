@@ -22,7 +22,7 @@ export interface TruncatedContentProps {
  * @param props - {@link TruncatedContentProps}.
  * @returns The truncated text cell content.
  */
-export function TruncatedContent({ className, value }: TruncatedContentProps) {
+export function TruncatedContent({ className, value }: Readonly<TruncatedContentProps>) {
   const text =
     value !== undefined && value !== null && value !== '0' && value !== ''
       ? String(value)

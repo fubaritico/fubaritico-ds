@@ -34,7 +34,7 @@ export function TruncableLinkCellView({
   className,
   label,
   linkPath,
-}: TruncableLinkCellViewProps) {
+}: Readonly<TruncableLinkCellViewProps>) {
   const { elementRef, isTruncated } =
     useIsTextTruncated<HTMLAnchorElement>(label)
 

@@ -18,7 +18,7 @@ interface CellProps<TData> {
  */
 const TruncableLinkCell =
   (keyName: string, linkPath: string, className?: string) =>
-  <TData,>({ row }: CellProps<TData>): ReactNode => {
+  <TData,>({ row }: Readonly<CellProps<TData>>): ReactNode => {
     const raw = row.getValue<unknown>(keyName)
     const label = typeof raw === 'string' ? raw : String(raw ?? '')
     return (

@@ -47,7 +47,7 @@ export function IconStatusCellView({
   extraProps,
   keyName,
   tooltipText,
-}: IconStatusCellViewProps) {
+}: Readonly<IconStatusCellViewProps>) {
   const status = row.getValue<string>(keyName)
   const iconName = STATUS_ICON[status.toLowerCase()] ?? DEFAULT_STATUS_ICON
 

@@ -11,7 +11,7 @@ import type { ComponentProps } from 'react'
  * @param props - Standard `<tfoot>` attributes ({@link ComponentProps}) incl. `ref` (React 19 ref-as-prop).
  * @returns The table footer section.
  */
-export function TableFooter({ className, ...props }: ComponentProps<'tfoot'>) {
+export function TableFooter({ className, ...props }: Readonly<ComponentProps<'tfoot'>>) {
   return <tfoot className={cn(UI_TABLE_FOOTER_CLASS, className)} {...props} />
 }
 

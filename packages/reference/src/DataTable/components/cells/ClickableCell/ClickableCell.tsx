@@ -24,7 +24,7 @@ const ClickableCell =
     ariaLabel?: string,
     className?: string
   ) =>
-  ({ row }: { row: Row<TData> }) => {
+  ({ row }: Readonly<{ row: Row<TData> }>) => {
     return (
       <TableCell className={className}>
         <div className={UI_TABLE_CELL_INNER_CLASS}>

@@ -34,7 +34,7 @@ const DEFAULT_BADGE: StatusBadge = { variant: 'secondary' }
  */
 const BadgeStatusCell =
   () =>
-  <TData,>({ row }: { row: Row<TData> }) => {
+  <TData,>({ row }: Readonly<{ row: Row<TData> }>) => {
     const status = row.getValue<string>('status')
     const { variant, icon } =
       STATUS_BADGE[status.toLowerCase()] ?? DEFAULT_BADGE

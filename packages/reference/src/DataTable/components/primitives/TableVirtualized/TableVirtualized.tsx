@@ -16,7 +16,7 @@ import type { ComponentProps } from 'react'
 export function TableVirtualized({
   className,
   ...props
-}: ComponentProps<'table'>) {
+}: Readonly<ComponentProps<'table'>>) {
   return (
     <table className={cn(UI_TABLE_VIRTUALIZED_CLASS, className)} {...props} />
   )

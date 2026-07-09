@@ -18,7 +18,7 @@ const EMPTY_ICON_SIZE = 32
  * @param props - {@link NoResultsProps}.
  * @returns A full-width empty-state table row.
  */
-export function NoResults({ columnLength }: NoResultsProps) {
+export function NoResults({ columnLength }: Readonly<NoResultsProps>) {
   return (
     <tr>
       <td colSpan={columnLength} data-test="no-data-cell">

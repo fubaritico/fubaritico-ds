@@ -12,7 +12,7 @@ import type { ComponentProps } from 'react'
  * @param props - Standard `<th>` attributes ({@link ComponentProps}) incl. `ref` (React 19 ref-as-prop).
  * @returns The table header cell.
  */
-export function TableHead({ className, ...props }: ComponentProps<'th'>) {
+export function TableHead({ className, ...props }: Readonly<ComponentProps<'th'>>) {
   return (
     <th scope="col" className={cn(UI_TABLE_HEAD_CLASS, className)} {...props} />
   )

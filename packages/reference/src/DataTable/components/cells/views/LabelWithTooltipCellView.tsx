@@ -21,7 +21,7 @@ export interface LabelWithTooltipCellViewProps {
 export function LabelWithTooltipCellView({
   value,
   tooltipText,
-}: LabelWithTooltipCellViewProps) {
+}: Readonly<LabelWithTooltipCellViewProps>) {
   return (
     <TableCell>
       {/* TODO(tooltip): replace title with <Tooltip> once the wrapping-trigger Tooltip lands. */}
