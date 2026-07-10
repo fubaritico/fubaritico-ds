@@ -66,7 +66,7 @@ export default function useColumnsDefinition(
           true,
           'date'
         ),
-        cell: DateCell('systemModStamp', locale, TIMEZONE),
+        cell: DateCell('systemModStamp', locale, TIMEZONE, true),
       },
       {
         accessorKey: 'lastModifiedDate',
@@ -77,13 +77,13 @@ export default function useColumnsDefinition(
           true,
           'date'
         ),
-        cell: DateCell('lastModifiedDate', locale, TIMEZONE),
+        cell: DateCell('lastModifiedDate', locale, TIMEZONE, true),
       },
       {
         accessorKey: 'createdDate',
         sortingFn: 'sortByDate',
         header: SortableHeaderCell('createdDate', 'created date', true, 'date'),
-        cell: DateCell('createdDate', locale, TIMEZONE),
+        cell: DateCell('createdDate', locale, TIMEZONE, true),
       },
       {
         accessorKey: 'status',

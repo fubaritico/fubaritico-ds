@@ -96,7 +96,7 @@ export default function DataTableVirtualized<TData>({
               className={clsx(UI_TABLE_HEADER_STICKY_MODIFIER, headerClassName)}
             >
               {headerGroups.map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
+                <TableRow header key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
                       <Fragment key={header.id}>

@@ -14,6 +14,7 @@ import {
   UI_TABLE_FOOTER_GROUP_CLASS,
   UI_TABLE_FOOTER_LABEL_CLASS,
   UI_TABLE_HEADER_CLASS,
+  UI_TABLE_HEADER_ROW_CLASS,
   UI_TABLE_HEADER_STICKY_MODIFIER,
   UI_TABLE_HEAD_CLASS,
   UI_TABLE_HEAD_INNER_CLASS,
@@ -78,6 +79,7 @@ describe('tableRowVariants', () => {
       expect(UI_TABLE_CELL_CLASS).toBe('ui-table__cell')
       expect(UI_TABLE_CAPTION_CLASS).toBe('ui-table__caption')
       expect(UI_TABLE_HEADER_STICKY_MODIFIER).toBe('ui-table__header--sticky')
+      expect(UI_TABLE_HEADER_ROW_CLASS).toBe('ui-table__header-row')
     })
 
     it('never emits an empty-string token in the output', () => {

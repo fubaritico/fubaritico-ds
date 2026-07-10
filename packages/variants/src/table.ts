@@ -69,6 +69,13 @@ export const UI_TABLE_FOOTER_CLASS = 'ui-table__footer'
 export const UI_TABLE_HEADER_STICKY_MODIFIER = 'ui-table__header--sticky'
 
 /**
+ * BEM element class for the header `<tr>` (`.ui-table__header-row`) — a dedicated header-row style
+ * (just the header/body divider), distinct from the body `.ui-table__row` which also carries the row
+ * background, hover and selected-state styling.
+ */
+export const UI_TABLE_HEADER_ROW_CLASS = 'ui-table__header-row'
+
+/**
  * BEM element class for the `<th>` header cell (`.ui-table__head`).
  */
 export const UI_TABLE_HEAD_CLASS = 'ui-table__head'
