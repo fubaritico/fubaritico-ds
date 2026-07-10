@@ -2,7 +2,10 @@ import { flexRender } from '@tanstack/react-table'
 import clsx from 'clsx'
 import { Fragment, useCallback, useEffect, useMemo } from 'react'
 
-import { UI_TABLE_HEADER_STICKY_MODIFIER } from '@fubaritico-ds/variants'
+import {
+  UI_DATA_TABLE_CLASS,
+  UI_DATA_TABLE_HEADER_STICKY_MODIFIER,
+} from '@fubaritico-ds/variants'
 
 import { Card } from '../Card'
 
@@ -82,7 +85,10 @@ export default function DataTable<TData>({
   )
 
   return (
-    <Card className={className} data-test={dataTestId ?? 'root'}>
+    <Card
+      className={clsx(UI_DATA_TABLE_CLASS, className)}
+      data-test={dataTestId ?? 'root'}
+    >
       {/* Bare Card surface (no Card.Body/Header/Footer slots): the DataTable is flush to the edges —
           each region (action bar, table, pagination) owns its own spacing. */}
       {!noActionBar && !actionBar && (
@@ -98,7 +104,7 @@ export default function DataTable<TData>({
       <Table maxHeight={maxHeight} aria-busy={loading}>
         <TableHeader
           className={clsx(
-            { [UI_TABLE_HEADER_STICKY_MODIFIER]: stickyHeader },
+            { [UI_DATA_TABLE_HEADER_STICKY_MODIFIER]: stickyHeader },
             headerClassName
           )}
         >

@@ -1,6 +1,6 @@
 import {
-  UI_TABLE_CELL_CENTER_MODIFIER,
-  UI_TABLE_VISUALLY_HIDDEN_CLASS,
+  UI_DATA_TABLE_CELL_CENTER_MODIFIER,
+  UI_DATA_TABLE_VISUALLY_HIDDEN_CLASS,
 } from '@fubaritico-ds/variants'
 
 import { Icon } from '../../../../Icon'
@@ -52,11 +52,11 @@ export function IconStatusCellView({
   const iconName = STATUS_ICON[status.toLowerCase()] ?? DEFAULT_STATUS_ICON
 
   return (
-    <TableCell title={tooltipText} className={UI_TABLE_CELL_CENTER_MODIFIER}>
+    <TableCell title={tooltipText} className={UI_DATA_TABLE_CELL_CENTER_MODIFIER}>
       {/* TODO(tooltip): wrap in <Tooltip> once the wrapping-trigger Tooltip lands (Tooltip migrated last). */}
       {/* The Icon is always decorative (aria-hidden); the status is conveyed to AT by the hidden text. */}
       <Icon name={iconName} size={STATUS_ICON_SIZE} {...extraProps} />
-      <span className={UI_TABLE_VISUALLY_HIDDEN_CLASS}>{status}</span>
+      <span className={UI_DATA_TABLE_VISUALLY_HIDDEN_CLASS}>{status}</span>
     </TableCell>
   )
 }

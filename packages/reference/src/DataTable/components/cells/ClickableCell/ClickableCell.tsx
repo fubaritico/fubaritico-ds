@@ -1,4 +1,4 @@
-import { UI_TABLE_CELL_INNER_CLASS } from '@fubaritico-ds/variants'
+import { UI_DATA_TABLE_CELL_INNER_CLASS } from '@fubaritico-ds/variants'
 
 import { TableCell } from '../../primitives/TableCell'
 
@@ -27,7 +27,7 @@ const ClickableCell =
   ({ row }: Readonly<{ row: Row<TData> }>) => {
     return (
       <TableCell className={className}>
-        <div className={UI_TABLE_CELL_INNER_CLASS}>
+        <div className={UI_DATA_TABLE_CELL_INNER_CLASS}>
           {/* TODO(tooltip): wrap in <Tooltip> once the wrapping-trigger Tooltip lands (Tooltip migrated last). */}
           <button
             type="button"

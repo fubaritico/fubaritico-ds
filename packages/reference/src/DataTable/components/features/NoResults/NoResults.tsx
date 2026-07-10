@@ -1,4 +1,4 @@
-import { UI_TABLE_EMPTY_CLASS } from '@fubaritico-ds/variants'
+import { UI_DATA_TABLE_EMPTY_CLASS } from '@fubaritico-ds/variants'
 
 import { Icon } from '../../../../Icon'
 
@@ -22,7 +22,7 @@ export function NoResults({ columnLength }: Readonly<NoResultsProps>) {
   return (
     <tr>
       <td colSpan={columnLength} data-test="no-data-cell">
-        <div className={UI_TABLE_EMPTY_CLASS} role="status">
+        <div className={UI_DATA_TABLE_EMPTY_CLASS} role="status">
           <Icon
             name="MagnifyingGlass"
             size={EMPTY_ICON_SIZE}

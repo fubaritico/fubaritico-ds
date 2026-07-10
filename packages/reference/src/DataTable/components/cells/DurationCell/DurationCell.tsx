@@ -1,4 +1,4 @@
-import { UI_TABLE_DURATION_CLASS } from '@fubaritico-ds/variants'
+import { UI_DATA_TABLE_DURATION_CLASS } from '@fubaritico-ds/variants'
 
 import { formatDuration } from '../../../utils'
 import { TableCell } from '../../primitives/TableCell'
@@ -20,7 +20,7 @@ const DurationCell =
     const formatted = formatDuration(row.getValue<string>(colName))
     return (
       <TableCell className={className}>
-        <span className={UI_TABLE_DURATION_CLASS}>{formatted}</span>
+        <span className={UI_DATA_TABLE_DURATION_CLASS}>{formatted}</span>
       </TableCell>
     )
   }

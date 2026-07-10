@@ -49,7 +49,16 @@ const meta = {
     // 150k-key selection object is built + useReactTable re-processes), not just the table subtree.
     (Story) => (
       <Profiler id="DataTable" onRender={onProfilerRender}>
-        <Story />
+        <div
+          style={{
+            minHeight: '100vh',
+            boxSizing: 'border-box',
+            padding: 24,
+            background: 'var(--color-background-muted)',
+          }}
+        >
+          <Story />
+        </div>
       </Profiler>
     ),
   ],

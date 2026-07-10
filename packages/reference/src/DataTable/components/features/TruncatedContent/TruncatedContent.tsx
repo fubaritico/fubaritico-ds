@@ -1,8 +1,8 @@
 import clsx from 'clsx'
 
 import {
-  UI_TABLE_TRUNCATE_CLASS,
-  UI_TABLE_TRUNCATE_WRAP_CLASS,
+  UI_DATA_TABLE_TRUNCATE_CLASS,
+  UI_DATA_TABLE_TRUNCATE_WRAP_CLASS,
 } from '@fubaritico-ds/variants'
 
 import { useIsTextTruncated } from '../../../hooks'
@@ -31,13 +31,13 @@ export function TruncatedContent({ className, value }: Readonly<TruncatedContent
     useIsTextTruncated<HTMLParagraphElement>(text)
 
   return (
-    <div className={clsx(UI_TABLE_TRUNCATE_WRAP_CLASS, className)}>
+    <div className={clsx(UI_DATA_TABLE_TRUNCATE_WRAP_CLASS, className)}>
       {/* TODO(tooltip): show a <Tooltip> when truncated once the wrapping-trigger Tooltip lands. */}
       <p
         ref={elementRef}
         title={isTruncated ? text : undefined}
         aria-label={isTruncated ? text : undefined}
-        className={UI_TABLE_TRUNCATE_CLASS}
+        className={UI_DATA_TABLE_TRUNCATE_CLASS}
       >
         {text}
       </p>

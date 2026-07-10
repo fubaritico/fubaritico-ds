@@ -1,12 +1,14 @@
 /**
- * Table — native BEM skin (DataTable primitives layer).
+ * DataTable — native BEM skin.
  *
- * A single block `.ui-table` (the `<table>`) with element parts that map to the table structure:
- * `__scroll` (the paginated scroll wrapper), `__header` (`<thead>`), `__body` (`<tbody>`),
- * `__footer` (`<tfoot>`), `__row` (`<tr>`), `__head` (`<th>`), `__cell` (`<td>`), `__caption`.
- * Also carries the *cell-content* layer (header/cell inner layout, strong/label header looks, sort
- * toggle, column separator, link, duration). The remaining *chrome* (container shadow/radius, sticky
- * header, action bar, pagination) is skinned in a later pass.
+ * The BLOCK `.ui-data-table` sits on the CONTAINER (the Card) that wraps the toolbar, the `<table>`
+ * and the footer — it carries the component-scoped `--ui-data-table-*` vars so every descendant
+ * (including the out-of-`<table>` toolbar/footer) inherits them. The `<table>` itself is the element
+ * `.ui-data-table__table` (box model / border-collapse / layout). Other elements map to the structure:
+ * `__scroll`, `__header` (`<thead>`), `__body` (`<tbody>`), `__footer` (`<tfoot>`), `__row` (`<tr>`),
+ * `__header-row`, `__head` (`<th>`), `__cell` (`<td>`), `__caption`; plus the *cell-content* layer
+ * (inner layouts, header looks, sort toggle, separator, link, duration) and the *chrome* (toolbar,
+ * empty state, footer bar).
  *
  * Engine-independent by design: the classes live on the semantic table primitives, NOT on any
  * TanStack API, so the skin survives the future react-table → table-core swap (roadmap Phase E).
@@ -15,111 +17,122 @@
  * so the table mirrors correctly in RTL — consistent with the rest of the skin.
  *
  * Override surface (white-label), by precedence:
- *   1. Redefine the component-scoped `--ui-table-*` vars (surgical re-skin).
+ *   1. Redefine the component-scoped `--ui-data-table-*` vars (surgical re-skin).
  *   2. Redefine a global token (e.g. `--color-muted`) → re-skins everything that uses it.
  *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
  *
  * Values come from @fubaritico-ds/tokens.
  */
 @layer ui.components {
-  .ui-table {
+  .ui-data-table {
     /* ---- override API (component-scoped) ---- */
-    --ui-table-font-size: var(--font-size-sm);
+    --ui-data-table-font-size: var(--font-size-sm);
     /* Without this, loose cell text (e.g. an Intl-formatted date) falls back to the browser serif
        default. Cells composing Typography/Badge carry their own font and are unaffected. */
-    --ui-table-font-family: var(--font-inter);
+    --ui-data-table-font-family: var(--font-inter);
     /* Row/footer separator. Light by DESIGN (like every DS table — MUI/AG-Grid): the grid is also
        conveyed by the semantic `<table>` structure, layout and spacing, so the line is an aesthetic
        aid, not the sole means of understanding the content (a heavy AA-border on every row reads
        wrong). A consumer needing a stronger separator repoints this var (e.g. to
        `--color-input-border`, neutral.450 ~3:1). */
-    --ui-table-border-color: var(--color-border);
-    --ui-table-border-width: 1px;
+    --ui-data-table-border-color: var(--color-border);
+    --ui-data-table-border-width: 1px;
     /* Column-header text: neutral.600 (via the table token) so it clears WCAG AA on the header bg —
        the shared `--color-muted-foreground` (neutral.500) was only ~4.5:1 there. */
-    --ui-table-head-color: var(--color-table-header-foreground);
+    --ui-data-table-head-color: var(--color-table-header-foreground);
     /* Header row height — the body row height plus a small breathing lift (54 + 6 = 60px). */
-    --ui-table-header-row-height: calc(var(--ui-table-row-height) + 6px);
-    --ui-table-head-weight: var(--font-weight-medium);
+    --ui-data-table-header-row-height: calc(
+      var(--ui-data-table-row-height) + 6px
+    );
+    --ui-data-table-head-weight: var(--font-weight-medium);
     /* Header cell background: white (matches the row surface). Replaces the old inline `[&_th]:bg-gray-100`. */
-    --ui-table-header-bg: var(--color-white);
+    --ui-data-table-header-bg: var(--color-white);
     /* z-index of the sticky header (`--sticky` modifier) — arbitrary layer, exposed as a var. */
-    --ui-table-header-z: 30;
+    --ui-data-table-header-z: 30;
     /* Header cells get START padding only (source `pl-4`); a `<th>` has no default inline padding and
        the checkbox column zeroes the trailing edge below. */
-    --ui-table-head-padding-inline-start: var(--spacing-4);
+    --ui-data-table-head-padding-inline-start: var(--spacing-4);
     /* Cell row height is an arbitrary 54px (no spacing token maps to it) — the skin owns the look,
        not this fixed geometry; consumers can still override the var. */
-    --ui-table-cell-height: 54px;
-    --ui-table-cell-padding-inline: var(--spacing-4);
+    --ui-data-table-cell-height: 54px;
+    --ui-data-table-cell-padding-inline: var(--spacing-4);
     /* DataTable-domain column geometry: the skin owns default widths for the semantic `data-type`s
        used by this DataTable (Skeleton precedent — skin owns look/geometry). Overridable per var;
        a table with other column types can repoint or ignore them. */
-    --ui-table-col-link-name-width: 25%;
-    --ui-table-col-status-icon-width: 120px;
-    --ui-table-col-date-width: 150px;
-    --ui-table-row-bg: var(--color-white);
+    --ui-data-table-col-link-name-width: 25%;
+    --ui-data-table-col-status-icon-width: 120px;
+    --ui-data-table-col-date-width: 150px;
+    --ui-data-table-row-bg: var(--color-white);
     /* Body-row height (arbitrary 54px — no spacing token maps to it). Replaces the old inline
        `h-[54px]`; consumers can override the var. */
-    --ui-table-row-height: 54px;
+    --ui-data-table-row-height: 54px;
     /* Selected uses muted at full strength; hover + footer use muted at 50% (matches the source
        `bg-muted` vs `bg-muted/50`). color-mix reproduces the Tailwind `/50` alpha. Effective over a
        white row: hover/footer ≈ #fafafa, selected = #f5f5f5 — cell foreground contrast ≫ 4.5:1. */
-    --ui-table-row-selected-bg: var(--color-muted);
-    --ui-table-row-hover-bg: color-mix(
+    --ui-data-table-row-selected-bg: var(--color-muted);
+    --ui-data-table-row-hover-bg: color-mix(
       in srgb,
       var(--color-muted) 50%,
       transparent
     );
     /* No transition-duration token exists yet; exposed as a var so it stays overridable. */
-    --ui-table-row-transition-duration: 150ms;
-    --ui-table-footer-bg: color-mix(
+    --ui-data-table-row-transition-duration: 150ms;
+    --ui-data-table-footer-bg: color-mix(
       in srgb,
       var(--color-muted) 50%,
       transparent
     );
-    --ui-table-footer-weight: var(--font-weight-medium);
-    --ui-table-caption-color: var(--color-muted-foreground);
-    --ui-table-caption-size: var(--font-size-sm);
+    --ui-data-table-footer-weight: var(--font-weight-medium);
+    --ui-data-table-caption-color: var(--color-muted-foreground);
+    --ui-data-table-caption-size: var(--font-size-sm);
 
     /* ---- cell content (cells layer) ---- */
     /* "Strong" header look (Checkbox/Clickable/Empty headers): near-black + bold, distinct from the
-       default muted `.ui-table__head`. Replaces the old inline `font-bold text-gray-900`. */
-    --ui-table-head-strong-color: var(--color-foreground);
-    --ui-table-head-strong-weight: var(--font-weight-bold);
+       default muted `.ui-data-table__head`. Replaces the old inline `font-bold text-gray-900`. */
+    --ui-data-table-head-strong-color: var(--color-foreground);
+    --ui-data-table-head-strong-weight: var(--font-weight-bold);
     /* "Label" header look (sortable column label): small, uppercase, semibold. Replaces the dead
-       `text-gray_oda-600 text-xs font-semibold uppercase`. Its colour follows `--ui-table-head-color`
+       `text-gray_oda-600 text-xs font-semibold uppercase`. Its colour follows `--ui-data-table-head-color`
        (single override point) — the size/weight below are what set it apart from a plain header. */
-    --ui-table-head-label-size: var(--font-size-xs);
-    --ui-table-head-label-weight: var(--font-weight-semibold);
+    --ui-data-table-head-label-size: var(--font-size-xs);
+    --ui-data-table-head-label-weight: var(--font-weight-semibold);
     /* Inner header/cell flex layout gap (source `gap-1`). */
-    --ui-table-inner-gap: var(--spacing-1);
+    --ui-data-table-inner-gap: var(--spacing-1);
     /* Select (checkbox) column: square by design — the column width follows the cell height so the
        body checkbox cell is width = height. Replaces the old inline `w-[36px]`. */
-    --ui-table-checkbox-cell-size: var(--ui-table-cell-height);
+    --ui-data-table-checkbox-cell-size: var(--ui-data-table-cell-height);
     /* Sort-toggle hit area (source `h-6 min-w-6`). */
-    --ui-table-sort-toggle-size: var(--spacing-6);
+    --ui-data-table-sort-toggle-size: var(--spacing-6);
     /* Column separator (opt-in via `withSeparator`): a thin vertical rule pinned to the header's
        trailing edge. Reuses the table border colour by default. */
-    --ui-table-separator-width: 1px;
-    --ui-table-separator-color: var(--ui-table-border-color);
+    --ui-data-table-separator-width: 1px;
+    --ui-data-table-separator-color: var(--ui-data-table-border-color);
     /* Link cell: neutral (follows the DS primary), underlined for affordance (colour is not the sole
        cue → WCAG 1.4.1). Replaces the old `text-blue-700`. */
-    --ui-table-link-color: var(--color-primary);
-    --ui-table-link-weight: var(--font-weight-semibold);
+    --ui-data-table-link-color: var(--color-primary);
+    --ui-data-table-link-weight: var(--font-weight-semibold);
     /* Duration cell value weight (source `font-medium`). */
-    --ui-table-duration-weight: var(--font-weight-medium);
+    --ui-data-table-duration-weight: var(--font-weight-medium);
 
     /* ---- chrome (features layer) ---- */
     /* Global-filter search field width — arbitrary 325px (no sizing token maps to it); overridable. */
-    --ui-table-search-width: 325px;
-    /* z-index of the sticky toolbar — must exceed --ui-table-header-z (30) so it stacks above a
+    --ui-data-table-search-width: 325px;
+    /* z-index of the sticky toolbar — must exceed --ui-data-table-header-z (30) so it stacks above a
        simultaneously-sticky header. */
-    --ui-table-toolbar-z: 31;
+    --ui-data-table-toolbar-z: 31;
     /* Empty-state box height — arbitrary 300px (no spacing token maps to it); overridable. */
-    --ui-table-empty-height: 300px;
+    --ui-data-table-empty-height: 300px;
+    /* Inner padding of the container (Card): the breathing room around toolbar/table/footer. */
+    --ui-data-table-padding: var(--spacing-4);
 
-    /* ---- base ---- */
+    /* The BLOCK (on the container Card) carries the override vars above — inherited by every descendant,
+       including the out-of-`<table>` toolbar and footer — plus its own inner padding. The box model
+       lives on the `<table>` element (`.ui-data-table__table`) below. */
+    padding: var(--ui-data-table-padding);
+  }
+
+  /* ---- the `<table>` element (box model / border-collapse / layout) ---- */
+  .ui-data-table__table {
     /* Self-sufficient box model: the skin survives in hosts with no reset (the DS ships none). */
     box-sizing: border-box;
     inline-size: 100%;
@@ -131,14 +144,14 @@
     border-collapse: collapse;
     border-spacing: 0;
     caption-side: bottom;
-    font-size: var(--ui-table-font-size);
-    font-family: var(--ui-table-font-family);
+    font-size: var(--ui-data-table-font-size);
+    font-family: var(--ui-data-table-font-family);
   }
 
   /* Virtualized variant: the `::after` reserves the height of the off-screen (non-rendered) rows so
      the scrollbar behaves as if every row existed. Its height is fed live by `useVirtualizedTable`
      through the `--pseudo-height` custom property set inline on the table element. */
-  .ui-table--virtualized::after {
+  .ui-data-table__table--virtualized::after {
     content: '';
     display: block;
     block-size: var(--pseudo-height);
@@ -147,117 +160,117 @@
   /* Relative wrapper around the paginated table (the virtualized one has none). Height is capped
      inline via the `maxHeight` prop, paired with a sticky header. Faithful to the source: no
      `overflow` is set here — the scroll behaviour is a chrome concern handled in a later pass. */
-  .ui-table__scroll {
+  .ui-data-table__scroll {
     position: relative;
     inline-size: 100%;
   }
 
-  /* `.ui-table__header` (`<thead>`) and `.ui-table__body` (`<tbody>`) are structural LANDMARKS with no
+  /* `.ui-data-table__header` (`<thead>`) and `.ui-data-table__body` (`<tbody>`) are structural LANDMARKS with no
      own paint: the header/body separation border comes from each row's `border-block-end`
-     (see `.ui-table__row`), and the last-body-row rule below scopes off `.ui-table__body`. They exist
+     (see `.ui-data-table__row`), and the last-body-row rule below scopes off `.ui-data-table__body`. They exist
      as BEM hooks (and future override/sticky targets), so they intentionally carry no declarations. */
 
   /* Sticky-header modifier (opt-in via the `stickyHeader` prop; always on for the virtualized table):
      pins the `<thead>` to the top of the scroll viewport. Replaces the old inline
      `sticky top-0 z-30`. */
-  .ui-table__header--sticky {
+  .ui-data-table__header--sticky {
     position: sticky;
     inset-block-start: 0;
-    z-index: var(--ui-table-header-z);
+    z-index: var(--ui-data-table-header-z);
   }
 
   /* Column widths are keyed by the semantic `data-type` set on the header cell (flat: single class +
      attribute), driven by the DataTable-domain geometry vars declared above. */
-  .ui-table__head[data-type='link-name'] {
-    inline-size: var(--ui-table-col-link-name-width);
+  .ui-data-table__head[data-type='link-name'] {
+    inline-size: var(--ui-data-table-col-link-name-width);
   }
 
-  .ui-table__head[data-type='status-icon'] {
-    inline-size: var(--ui-table-col-status-icon-width);
+  .ui-data-table__head[data-type='status-icon'] {
+    inline-size: var(--ui-data-table-col-status-icon-width);
   }
 
-  .ui-table__head[data-type='date'] {
-    inline-size: var(--ui-table-col-date-width);
+  .ui-data-table__head[data-type='date'] {
+    inline-size: var(--ui-data-table-col-date-width);
   }
 
   /* Last body row drops its bottom border so the body doesn't double-border against the footer.
      Descendant combinator (deliberate): "last row of the BODY specifically" cannot be expressed with
      a single flat class — the header's last row must KEEP its border (it is the header/body divider).
-     `:where()` zeroes the `.ui-table__body` specificity so the whole selector stays at a single-class
+     `:where()` zeroes the `.ui-data-table__body` specificity so the whole selector stays at a single-class
      weight (override-first). */
-  :where(.ui-table__body) .ui-table__row:last-child {
+  :where(.ui-data-table__body) .ui-data-table__row:last-child {
     border-block-end-width: 0;
   }
 
-  .ui-table__footer {
-    border-block-start: var(--ui-table-border-width) solid
-      var(--ui-table-border-color);
-    background-color: var(--ui-table-footer-bg);
-    font-weight: var(--ui-table-footer-weight);
+  .ui-data-table__footer {
+    border-block-start: var(--ui-data-table-border-width) solid
+      var(--ui-data-table-border-color);
+    background-color: var(--ui-data-table-footer-bg);
+    font-weight: var(--ui-data-table-footer-weight);
   }
 
   /* Last footer row drops its bottom border (source: `[&>tr]:last:border-b-0`). Direct-child
      combinator, deliberate — same "last row only" constraint as the body; `:where()` keeps it at a
      single-class specificity. */
-  :where(.ui-table__footer) > .ui-table__row:last-child {
+  :where(.ui-data-table__footer) > .ui-data-table__row:last-child {
     border-block-end-width: 0;
   }
 
-  .ui-table__row {
-    border-block-end: var(--ui-table-border-width) solid
-      var(--ui-table-border-color);
-    background-color: var(--ui-table-row-bg);
-    transition: background-color var(--ui-table-row-transition-duration);
+  .ui-data-table__row {
+    border-block-end: var(--ui-data-table-border-width) solid
+      var(--ui-data-table-border-color);
+    background-color: var(--ui-data-table-row-bg);
+    transition: background-color var(--ui-data-table-row-transition-duration);
   }
 
-  /* Header row (`.ui-table__header-row`) carries NO paint by design: it exists so the header `<tr>`
-     does NOT inherit the body `.ui-table__row` (no row background / hover / selection). The header/body
+  /* Header row (`.ui-data-table__header-row`) carries NO paint by design: it exists so the header `<tr>`
+     does NOT inherit the body `.ui-data-table__row` (no row background / hover / selection). The header/body
      divider is NOT drawn here — a `<tr>` border would be painted UNDER the opaque header cells (cells
-     paint above rows), so it lives on `.ui-table__head` (see its `border-block-end` below). */
+     paint above rows), so it lives on `.ui-data-table__head` (see its `border-block-end` below). */
 
-  /* Body rows get the fixed row height (header rows keep their own `--ui-table-header-row-height`).
+  /* Body rows get the fixed row height (header rows keep their own `--ui-data-table-header-row-height`).
      `:where()` keeps the body scoping at zero specificity (override-first). */
-  :where(.ui-table__body) .ui-table__row {
-    block-size: var(--ui-table-row-height);
+  :where(.ui-data-table__body) .ui-data-table__row {
+    block-size: var(--ui-data-table-row-height);
   }
 
   /* A clickable row (the DataTable sets role="button" when `onRowClick` is provided) shows the
      pointer cursor. Replaces the old inline `cursor-pointer`. */
-  .ui-table__row[role='button'] {
+  .ui-data-table__row[role='button'] {
     cursor: pointer;
   }
 
   /* TanStack sets `data-state="selected"` on the row element; we style off the attribute (flat:
      single class + attribute). */
-  .ui-table__row[data-state='selected'] {
-    background-color: var(--ui-table-row-selected-bg);
+  .ui-data-table__row[data-state='selected'] {
+    background-color: var(--ui-data-table-row-selected-bg);
   }
 
   /* Opt-in hover tint (the `enableHover` prop → `--hoverable` modifier). */
-  .ui-table__row--hoverable:hover {
-    background-color: var(--ui-table-row-hover-bg);
+  .ui-data-table__row--hoverable:hover {
+    background-color: var(--ui-data-table-row-hover-bg);
   }
 
-  .ui-table__head {
-    block-size: var(--ui-table-header-row-height);
-    padding-inline-start: var(--ui-table-head-padding-inline-start);
+  .ui-data-table__head {
+    block-size: var(--ui-data-table-header-row-height);
+    padding-inline-start: var(--ui-data-table-head-padding-inline-start);
     text-align: start;
     vertical-align: middle;
-    background-color: var(--ui-table-header-bg);
-    font-weight: var(--ui-table-head-weight);
-    color: var(--ui-table-head-color);
+    background-color: var(--ui-data-table-header-bg);
+    font-weight: var(--ui-data-table-head-weight);
+    color: var(--ui-data-table-head-color);
     /* Header/body divider: an inset box-shadow bottom line, NOT a border. The header is `position:
        sticky` on the virtualized table, and browsers do NOT paint borders on cells of a sticky
        `<thead>` under `border-collapse: collapse` (a well-known bug) — a border here is invisible.
        A box-shadow paints on the sticky element, so the divider survives. Physical offset (no logical
        box-shadow exists); tables are horizontal so bottom = block-end. */
-    box-shadow: inset 0 calc(-1 * var(--ui-table-border-width)) 0 0
-      var(--ui-table-border-color);
+    box-shadow: inset 0 calc(-1 * var(--ui-data-table-border-width)) 0 0
+      var(--ui-data-table-border-color);
   }
 
-  .ui-table__cell {
-    block-size: var(--ui-table-cell-height);
-    padding-inline: var(--ui-table-cell-padding-inline);
+  .ui-data-table__cell {
+    block-size: var(--ui-data-table-cell-height);
+    padding-inline: var(--ui-data-table-cell-padding-inline);
   }
 
   /* The checkbox (select) column drops ALL inline padding on both head + cell, and gets a fixed square
@@ -265,88 +278,92 @@
      `<input type="checkbox">` the DS Checkbox renders
      — NOT `[role=checkbox]` (a native checkbox's role is implicit, it carries no `role` attribute, so
      an attribute selector would never match). */
-  .ui-table__head:has(input[type='checkbox']),
-  .ui-table__cell:has(input[type='checkbox']) {
+  .ui-data-table__head:has(input[type='checkbox']),
+  .ui-data-table__cell:has(input[type='checkbox']) {
     padding-inline: 0;
     /* Centre the checkbox in the square column. The body cell's checkbox is inline-level
        (`.ui-checkbox-field` is inline-flex), so `text-align: center` centres it; the header's checkbox
-       sits in the `.ui-table__head-inner` flex row, centred via `justify-content` below. */
+       sits in the `.ui-data-table__head-inner` flex row, centred via `justify-content` below. */
     text-align: center;
   }
 
-  .ui-table__head:has(input[type='checkbox']) {
-    inline-size: var(--ui-table-checkbox-cell-size);
+  .ui-data-table__head:has(input[type='checkbox']) {
+    inline-size: var(--ui-data-table-checkbox-cell-size);
   }
 
-  .ui-table__head:has(input[type='checkbox']) .ui-table__head-inner {
+  .ui-data-table__head:has(input[type='checkbox']) .ui-data-table__head-inner {
     justify-content: center;
   }
 
-  .ui-table__caption {
+  .ui-data-table__caption {
     margin-block-start: var(--spacing-4);
-    font-size: var(--ui-table-caption-size);
-    color: var(--ui-table-caption-color);
+    font-size: var(--ui-data-table-caption-size);
+    color: var(--ui-data-table-caption-color);
   }
 
   /* ---- cell content (cells layer) ---- */
 
   /* "Strong" header modifier (Checkbox/Clickable/Empty headers): near-black + bold. Element modifier
      (not a block modifier) by intent — the strong look is per-column-header, not table-wide; a block
-     modifier would re-skin every header. Same specificity as the `.ui-table__head` base (single class)
+     modifier would re-skin every header. Same specificity as the `.ui-data-table__head` base (single class)
      — declared AFTER it so it wins on source order. */
-  .ui-table__head--strong {
-    color: var(--ui-table-head-strong-color);
-    font-weight: var(--ui-table-head-strong-weight);
+  .ui-data-table__head--strong {
+    color: var(--ui-data-table-head-strong-color);
+    font-weight: var(--ui-data-table-head-strong-weight);
   }
 
   /* Inner flex layout for a header (label + control + optional separator). Source `flex items-center
      justify-start gap-1`. */
-  .ui-table__head-inner {
+  .ui-data-table__head-inner {
     display: flex;
     align-items: center;
     justify-content: start;
-    gap: var(--ui-table-inner-gap);
-    block-size: calc(var(--ui-table-row-height) - 6px);
+    gap: var(--ui-data-table-inner-gap);
+    block-size: calc(var(--ui-data-table-row-height) - 6px);
   }
 
   /* Sortable column label: small, uppercase, muted, semibold; truncates with an ellipsis (the full
      text is exposed via the native `title` when clipped). Source `truncate uppercase text-xs
      font-semibold text-gray_oda-600`. */
-  .ui-table__head-label {
+  .ui-data-table__head-label {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     text-transform: uppercase;
-    font-size: var(--ui-table-head-label-size);
-    font-weight: var(--ui-table-head-label-weight);
-    color: var(--ui-table-head-color);
+    font-size: var(--ui-data-table-head-label-size);
+    font-weight: var(--ui-data-table-head-label-weight);
+    color: var(--ui-data-table-head-color);
   }
 
   /* Sort-toggle hit area (source `h-6 min-w-6`). The pointer cursor is already owned by `.ui-sort-arrows`
      (the button always carries both classes), so it is NOT redeclared here. */
-  .ui-table__sort-toggle {
-    block-size: var(--ui-table-sort-toggle-size);
-    min-inline-size: var(--ui-table-sort-toggle-size);
+  .ui-data-table__sort-toggle {
+    block-size: var(--ui-data-table-sort-toggle-size);
+    min-inline-size: var(--ui-data-table-sort-toggle-size);
+    /* Auto-margin pushes the toggle (and the trailing separator) to the header's trailing edge, the
+       label staying at the start. */
+    margin-inline-start: auto;
   }
 
-  /* Opt-in column separator: a thin vertical rule pinned to the header's trailing edge (the leading
-     auto-margin pushes it past the label/toggle). Stretches to the inner row height. */
-  .ui-table__separator {
+  /* Opt-in column separator: a thin vertical rule sitting just after the sort toggle (the toggle's
+     auto-margin pushes the toggle+separator group to the trailing edge; this small gap separates them).
+     Stretches to the inner row height. */
+  .ui-data-table__separator {
     align-self: stretch;
-    margin-inline-start: auto;
-    inline-size: var(--ui-table-separator-width);
-    background-color: var(--ui-table-separator-color);
+    margin-inline-start: var(--spacing-2);
+    inline-size: var(--ui-data-table-separator-width);
+    background-color: var(--ui-data-table-separator-color);
   }
 
   /* Generic inner flex layout for a data cell (source `flex items-center`). */
-  .ui-table__cell-inner {
+  .ui-data-table__cell-inner {
     display: flex;
     align-items: center;
   }
 
   /* Centered cell content (e.g. the status icon). Element modifier (not a block modifier) by intent —
      centering is per-column, not table-wide. Source `text-center align-middle`. */
-  .ui-table__cell--center {
+  .ui-data-table__cell--center {
     text-align: center;
     vertical-align: middle;
   }
@@ -354,14 +371,14 @@
   /* Truncating wrapper: lets an inline child truncate inside a flex/table context (`min-inline-size: 0`
      is required for `text-overflow` to kick in there). Shared by the link cell and TruncatedContent.
      Source `flex min-w-0 max-w-full`. */
-  .ui-table__truncate-wrap {
+  .ui-data-table__truncate-wrap {
     display: flex;
     min-inline-size: 0;
     max-inline-size: 100%;
   }
 
-  /* Generic single-line ellipsis for a text child inside `.ui-table__truncate-wrap`. */
-  .ui-table__truncate {
+  /* Generic single-line ellipsis for a text child inside `.ui-data-table__truncate-wrap`. */
+  .ui-data-table__truncate {
     min-inline-size: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -369,24 +386,24 @@
   }
 
   /* Link cell anchor: neutral + underlined, truncates with an ellipsis. */
-  .ui-table__link {
+  .ui-data-table__link {
     min-inline-size: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-weight: var(--ui-table-link-weight);
-    color: var(--ui-table-link-color);
+    font-weight: var(--ui-data-table-link-weight);
+    color: var(--ui-data-table-link-color);
     text-decoration: underline;
   }
 
   /* Duration cell value (source `font-medium`). */
-  .ui-table__duration {
-    font-weight: var(--ui-table-duration-weight);
+  .ui-data-table__duration {
+    font-weight: var(--ui-data-table-duration-weight);
   }
 
   /* Visually-hidden text kept in the a11y tree (gives an icon-only cell an accessible name for screen
      readers). Standard clip-based sr-only pattern; logical props so it stays direction-agnostic. */
-  .ui-table__visually-hidden {
+  .ui-data-table__visually-hidden {
     position: absolute;
     inline-size: 1px;
     block-size: 1px;
@@ -402,53 +419,57 @@
 
   /* Toolbar above the table (ActionBar): left actions + a global-filter field. Source `flex
      items-center p-4 gap-4`. */
-  .ui-table__toolbar {
+  .ui-data-table__toolbar {
     display: flex;
     align-items: center;
     gap: var(--spacing-4);
-    padding: var(--spacing-4);
-    /* Divider under the toolbar. Uses the GLOBAL `--color-border` token (not a `--ui-table-*` var):
-       the toolbar is a sibling of the `<table>`, not a descendant, so the table-scoped vars don't
-       reach it. Same colour as the table borders (which resolve to `--color-border`). */
-    border-block-end: 1px solid var(--color-border);
+    /* Vertical padding only — the horizontal breathing room comes from the container (Card) padding,
+       so the toolbar content aligns flush with the padded content edge (no double inset). */
+    padding-block: var(--spacing-4);
+    padding-inline: 0;
+    /* Divider under the toolbar, same as the table borders. The toolbar is a sibling of the `<table>`
+       but a descendant of the `.ui-data-table` BLOCK (on the Card), so it inherits the `--ui-data-table-*`
+       vars. */
+    border-block-end: var(--ui-data-table-border-width) solid
+      var(--ui-data-table-border-color);
   }
 
   /* Sticky toolbar (opt-in via `stickyHeader`). Replaces the old inline `sticky`. z-index keeps it
      above a simultaneously-sticky header. */
-  .ui-table__toolbar--sticky {
+  .ui-data-table__toolbar--sticky {
     position: sticky;
     inset-block-start: 0;
-    z-index: var(--ui-table-toolbar-z);
+    z-index: var(--ui-data-table-toolbar-z);
   }
 
   /* Left-actions group that grows to push the filter field to the trailing edge. Source `flex grow
      gap-4`. */
-  .ui-table__toolbar-actions {
+  .ui-data-table__toolbar-actions {
     display: flex;
     flex-grow: 1;
     gap: var(--spacing-4);
   }
 
   /* Global-filter search field wrapper (replaces the old inline `style={{ width: 325 }}`). */
-  .ui-table__toolbar-search {
-    inline-size: var(--ui-table-search-width);
+  .ui-data-table__toolbar-search {
+    inline-size: var(--ui-data-table-search-width);
   }
 
   /* Empty-state box (NoResults): a centered column filling a fixed-height row. Source `flex w-full
      flex-col items-center justify-center gap-2 h-[300px]`. */
-  .ui-table__empty {
+  .ui-data-table__empty {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: var(--spacing-2);
     inline-size: 100%;
-    block-size: var(--ui-table-empty-height);
+    block-size: var(--ui-data-table-empty-height);
   }
 
   /* Footer bar (TableFooterContent): rows-per-page + pagination + go-to-page, spread across the width.
      Source `flex flex-nowrap items-center justify-between space-x-2 h-20 px-3 border-t border-gray-200`. */
-  .ui-table__footer-bar {
+  .ui-data-table__footer-bar {
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
@@ -456,13 +477,13 @@
     gap: var(--spacing-2);
     block-size: var(--spacing-20);
     padding-inline: var(--spacing-3);
-    /* Global `--color-border` token (not a `--ui-table-*` var): the footer bar is a sibling of the
-       `<table>`, not a descendant, so the table-scoped vars don't reach it. */
-    border-block-start: 1px solid var(--color-border);
+    /* Divider above the footer — inherits the `--ui-data-table-*` vars from the block (Card). */
+    border-block-start: var(--ui-data-table-border-width) solid
+      var(--ui-data-table-border-color);
   }
 
   /* An inline group in the footer bar (a label next to a control). Source `flex items-center gap-2`. */
-  .ui-table__footer-group {
+  .ui-data-table__footer-group {
     display: flex;
     align-items: center;
     gap: var(--spacing-2);
@@ -471,20 +492,20 @@
   /* Secondary footer label ("Rows per page", "Go to page", "of N"). `--color-foreground-muted`
      (neutral.500) clears AA on the white footer surface (~5.3:1). Replaces the dead `text-gray_oda-500`
      and the unprefixed `whitespace-nowrap`. */
-  .ui-table__footer-label {
+  .ui-data-table__footer-label {
     white-space: nowrap;
     color: var(--color-foreground-muted);
   }
 
   /* Go-to-page field: only constrains the width — the control chrome (border/background/radius/focus
      ring) comes from the composed DS Input (`.ui-input`). Source width `w-16`. */
-  .ui-table__page-input {
+  .ui-data-table__page-input {
     inline-size: var(--spacing-16);
   }
 
   /* The colour transition is decorative — suppress it for users who prefer reduced motion (WCAG 2.3.3). */
   @media (prefers-reduced-motion: reduce) {
-    .ui-table__row {
+    .ui-data-table__row {
       transition: none;
     }
   }

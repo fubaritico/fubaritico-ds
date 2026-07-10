@@ -1,4 +1,7 @@
-import { UI_TABLE_CLASS, UI_TABLE_SCROLL_CLASS } from '@fubaritico-ds/variants'
+import {
+  UI_DATA_TABLE_SCROLL_CLASS,
+  UI_DATA_TABLE_TABLE_CLASS,
+} from '@fubaritico-ds/variants'
 
 import { cn } from '../../../utils'
 
@@ -11,19 +14,24 @@ export interface TableProps extends ComponentProps<'table'> {
 }
 
 /**
- * `<table>` primitive (`.ui-table`) wrapped in a relative, full-width container (`.ui-table__scroll`).
- * Default column widths per data type are set by the skin's header-cell rules.
+ * `<table>` primitive (`.ui-data-table__table`) wrapped in a relative, full-width container
+ * (`.ui-data-table__scroll`). Default column widths per data type are set by the skin's header-cell
+ * rules. The block (`.ui-data-table`, which carries the vars) sits on the container Card, not here.
  *
  * @param props - {@link TableProps} (incl. `ref`, a React 19 prop forwarded to the `<table>`).
  * @returns The wrapped table element.
  */
-export function Table({ className, maxHeight, ...props }: Readonly<TableProps>) {
+export function Table({
+  className,
+  maxHeight,
+  ...props
+}: Readonly<TableProps>) {
   return (
     <div
-      className={UI_TABLE_SCROLL_CLASS}
+      className={UI_DATA_TABLE_SCROLL_CLASS}
       style={maxHeight ? { maxHeight } : undefined}
     >
-      <table className={cn(UI_TABLE_CLASS, className)} {...props} />
+      <table className={cn(UI_DATA_TABLE_TABLE_CLASS, className)} {...props} />
     </div>
   )
 }

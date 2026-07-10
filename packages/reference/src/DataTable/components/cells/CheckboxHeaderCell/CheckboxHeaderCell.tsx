@@ -1,9 +1,9 @@
 import clsx from 'clsx'
 
 import {
-  UI_TABLE_HEAD_INNER_CLASS,
-  UI_TABLE_HEAD_STRONG_MODIFIER,
-  UI_TABLE_SEPARATOR_CLASS,
+  UI_DATA_TABLE_HEAD_INNER_CLASS,
+  UI_DATA_TABLE_HEAD_STRONG_MODIFIER,
+  UI_DATA_TABLE_SEPARATOR_CLASS,
 } from '@fubaritico-ds/variants'
 
 import { Checkbox } from '../../../../Checkbox'
@@ -32,10 +32,10 @@ const CheckboxHeaderCell =
   <TData,>({ table }: Readonly<{ table: Table<TData> }>) => {
     return (
       <TableHead
-        className={clsx(UI_TABLE_HEAD_STRONG_MODIFIER, className)}
+        className={clsx(UI_DATA_TABLE_HEAD_STRONG_MODIFIER, className)}
         data-type={dataType}
       >
-        <div className={UI_TABLE_HEAD_INNER_CLASS}>
+        <div className={UI_DATA_TABLE_HEAD_INNER_CLASS}>
           <Checkbox
             id={id}
             aria-label="Select all rows on this page"
@@ -43,7 +43,7 @@ const CheckboxHeaderCell =
             indeterminate={table.getIsSomePageRowsSelected()}
             onChange={table.getToggleAllPageRowsSelectedHandler()}
           />
-          {withSeparator ? <div className={UI_TABLE_SEPARATOR_CLASS} /> : null}
+          {withSeparator ? <div className={UI_DATA_TABLE_SEPARATOR_CLASS} /> : null}
         </div>
       </TableHead>
     )

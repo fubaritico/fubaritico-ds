@@ -1,10 +1,10 @@
 import clsx from 'clsx'
 
 import {
-  UI_TABLE_TOOLBAR_ACTIONS_CLASS,
-  UI_TABLE_TOOLBAR_CLASS,
-  UI_TABLE_TOOLBAR_SEARCH_CLASS,
-  UI_TABLE_TOOLBAR_STICKY_MODIFIER,
+  UI_DATA_TABLE_TOOLBAR_ACTIONS_CLASS,
+  UI_DATA_TABLE_TOOLBAR_CLASS,
+  UI_DATA_TABLE_TOOLBAR_SEARCH_CLASS,
+  UI_DATA_TABLE_TOOLBAR_STICKY_MODIFIER,
 } from '@fubaritico-ds/variants'
 
 import { Input } from '../../../../Input'
@@ -53,14 +53,14 @@ export function ActionBar({
   return (
     <div
       className={clsx(
-        UI_TABLE_TOOLBAR_CLASS,
-        { [UI_TABLE_TOOLBAR_STICKY_MODIFIER]: stickyHeader },
+        UI_DATA_TABLE_TOOLBAR_CLASS,
+        { [UI_DATA_TABLE_TOOLBAR_STICKY_MODIFIER]: stickyHeader },
         className
       )}
       data-test="action-bar"
     >
-      <div className={UI_TABLE_TOOLBAR_ACTIONS_CLASS}>{leftActions}</div>
-      <div className={UI_TABLE_TOOLBAR_SEARCH_CLASS}>
+      <div className={UI_DATA_TABLE_TOOLBAR_ACTIONS_CLASS}>{leftActions}</div>
+      <div className={UI_DATA_TABLE_TOOLBAR_SEARCH_CLASS}>
         <Input
           icon="MagnifyingGlass"
           placeholder="Search..."

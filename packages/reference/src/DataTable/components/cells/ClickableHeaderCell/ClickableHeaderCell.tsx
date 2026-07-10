@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { UI_TABLE_HEAD_STRONG_MODIFIER } from '@fubaritico-ds/variants'
+import { UI_DATA_TABLE_HEAD_STRONG_MODIFIER } from '@fubaritico-ds/variants'
 
 import { TableHead } from '../../primitives/TableHead'
 
@@ -27,7 +27,7 @@ const ClickableHeaderCell =
     return (
       <TableHead
         id={column.id}
-        className={clsx(UI_TABLE_HEAD_STRONG_MODIFIER, className)}
+        className={clsx(UI_DATA_TABLE_HEAD_STRONG_MODIFIER, className)}
         data-test="clickable-header-cell"
       >
         <button type="button" aria-label={ariaLabel} onClick={callback}>

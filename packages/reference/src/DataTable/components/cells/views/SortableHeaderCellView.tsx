@@ -1,8 +1,8 @@
 import {
-  UI_TABLE_HEAD_INNER_CLASS,
-  UI_TABLE_HEAD_LABEL_CLASS,
-  UI_TABLE_SEPARATOR_CLASS,
-  UI_TABLE_SORT_TOGGLE_CLASS,
+  UI_DATA_TABLE_HEAD_INNER_CLASS,
+  UI_DATA_TABLE_HEAD_LABEL_CLASS,
+  UI_DATA_TABLE_SEPARATOR_CLASS,
+  UI_DATA_TABLE_SORT_TOGGLE_CLASS,
 } from '@fubaritico-ds/variants'
 
 import { useIsTextTruncated } from '../../../hooks'
@@ -51,25 +51,25 @@ export function SortableHeaderCellView({
 
   return (
     <TableHead className={className} data-type={dataType} aria-sort={ariaSort}>
-      <div className={UI_TABLE_HEAD_INNER_CLASS}>
+      <div className={UI_DATA_TABLE_HEAD_INNER_CLASS}>
         {/* TODO(tooltip): show a <Tooltip> when truncated once the wrapping-trigger Tooltip lands. */}
         <span
           ref={elementRef}
           title={isTruncated ? headerLabel : undefined}
           aria-label={isTruncated ? headerLabel : undefined}
-          className={UI_TABLE_HEAD_LABEL_CLASS}
+          className={UI_DATA_TABLE_HEAD_LABEL_CLASS}
         >
           {headerLabel}
         </span>
         <ArrowUpDown
           colName={colName}
-          className={UI_TABLE_SORT_TOGGLE_CLASS}
+          className={UI_DATA_TABLE_SORT_TOGGLE_CLASS}
           onClick={() => {
             column.toggleSorting(sorted === 'asc')
           }}
           sorting={sorted}
         />
-        {withSeparator ? <div className={UI_TABLE_SEPARATOR_CLASS} /> : null}
+        {withSeparator ? <div className={UI_DATA_TABLE_SEPARATOR_CLASS} /> : null}
       </div>
     </TableHead>
   )

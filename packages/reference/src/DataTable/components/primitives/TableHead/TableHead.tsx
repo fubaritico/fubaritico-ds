@@ -1,11 +1,11 @@
-import { UI_TABLE_HEAD_CLASS } from '@fubaritico-ds/variants'
+import { UI_DATA_TABLE_HEAD_CLASS } from '@fubaritico-ds/variants'
 
 import { cn } from '../../../utils'
 
 import type { ComponentProps } from 'react'
 
 /**
- * `<th>` header-cell primitive (`.ui-table__head`) with the DataTable's default header height,
+ * `<th>` header-cell primitive (`.ui-data-table__head`) with the DataTable's default header height,
  * padding, start-aligned muted text and a flush trailing edge for the checkbox column. Defaults to
  * `scope="col"` (WCAG 1.3.1 — associates the header with its column); override via the `scope` prop.
  *
@@ -14,7 +14,7 @@ import type { ComponentProps } from 'react'
  */
 export function TableHead({ className, ...props }: Readonly<ComponentProps<'th'>>) {
   return (
-    <th scope="col" className={cn(UI_TABLE_HEAD_CLASS, className)} {...props} />
+    <th scope="col" className={cn(UI_DATA_TABLE_HEAD_CLASS, className)} {...props} />
   )
 }
 

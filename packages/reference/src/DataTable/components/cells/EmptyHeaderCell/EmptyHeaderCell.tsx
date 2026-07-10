@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { UI_TABLE_HEAD_STRONG_MODIFIER } from '@fubaritico-ds/variants'
+import { UI_DATA_TABLE_HEAD_STRONG_MODIFIER } from '@fubaritico-ds/variants'
 
 import { TableHead } from '../../primitives/TableHead'
 
@@ -22,7 +22,7 @@ const EmptyHeaderCell =
       <TableHead
         id={column.id}
         aria-label={ariaLabel}
-        className={clsx(UI_TABLE_HEAD_STRONG_MODIFIER, className)}
+        className={clsx(UI_DATA_TABLE_HEAD_STRONG_MODIFIER, className)}
       >
         &nbsp;
       </TableHead>
