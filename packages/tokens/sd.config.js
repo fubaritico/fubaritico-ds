@@ -49,8 +49,26 @@ StyleDictionary.registerFormat({
     const selector = options.selector || ':root'
     const lines = [`${selector} {`]
 
+    // Dash-ify dotted numeric segments (`spacing.0.5` → `--spacing-0-5`): a dot is NOT a valid
+    // custom-property identifier char, so `var(--spacing-0.5)` fails to resolve. The Tailwind theme
+    // format keeps the dots (Tailwind's `p-0.5` utility convention); the native skin consumes THIS
+    // file, so here the names must be referenceable.
+    const toCssVarName = (path) => toKebabName(path).replace(/\./g, '-')
+
+    // Fail the build on a name collision (e.g. if `spacing.0.5` and a future `spacing.05` both mapped
+    // to `--spacing-0-5`) — a silent duplicate would be near-impossible to debug downstream.
+    const names = dictionary.allTokens.map((token) => toCssVarName(token.path))
+    const duplicates = names.filter(
+      (name, index) => names.indexOf(name) !== index
+    )
+    if (duplicates.length > 0) {
+      throw new Error(
+        `Token name collision after dash-ify: ${[...new Set(duplicates)].join(', ')}`
+      )
+    }
+
     dictionary.allTokens.forEach((token) => {
-      const name = toKebabName(token.path)
+      const name = toCssVarName(token.path)
       const value = token.$value ?? token.value
 
       lines.push(`  --${name}: ${value};`)
