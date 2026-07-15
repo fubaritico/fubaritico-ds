@@ -1,17 +1,11 @@
-import type {
-  RowSelectionState,
-  SortingState,
-  TableOptions,
-  Updater,
-} from '@tanstack/react-table'
 import {
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
 import clsx from 'clsx'
-import type { FC } from 'react'
 import {
   useCallback,
   useEffect,
@@ -30,6 +24,13 @@ import useColumnsDefinition from './useColumnsDefinition'
 
 import type { JobItem } from './jobFactory'
 import type { DataTableProps } from '../DataTable'
+import type {
+  RowSelectionState,
+  SortingState,
+  TableOptions,
+  Updater,
+} from '@tanstack/react-table'
+import type { FC } from 'react'
 
 /** Default viewport height (px) for the virtualized table when none is provided. */
 const DEFAULT_VIRTUALIZED_HEIGHT = 600
@@ -143,6 +144,9 @@ const DataTableExample: FC<DataTableExampleProps> = ({
       columns,
       data,
       getCoreRowModel: getCoreRowModel(),
+      // Required for client-side filtering (the ActionBar quick filter drives `globalFilter`) — without
+      // it TanStack updates the filter state but never filters the rows.
+      getFilteredRowModel: getFilteredRowModel(),
       // Virtualized mode feeds ALL rows to the virtualizer → no pagination row model.
       ...(virtualized
         ? {}
