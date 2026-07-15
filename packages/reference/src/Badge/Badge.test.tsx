@@ -57,6 +57,33 @@ describe('Badge', () => {
       expect(svg).toBeInTheDocument()
       expect(svg).toHaveClass('ui-badge__icon')
     })
+
+    it('wraps the label and applies the truncate modifier when canTruncate is set', () => {
+      const { container } = render(<Badge canTruncate>Running</Badge>)
+      expect(container.firstChild).toHaveClass('ui-badge--truncate')
+      const label = container.querySelector('.ui-badge__label')
+      expect(label).toBeInTheDocument()
+      expect(label).toHaveTextContent('Running')
+    })
+
+    it('keeps the icon visible and wraps only the label when canTruncate is set', () => {
+      const { container } = render(
+        <Badge icon="Check" canTruncate>
+          Completed
+        </Badge>
+      )
+      expect(container.querySelector('.ui-badge__icon')).toBeInTheDocument()
+      expect(container.querySelector('.ui-badge__label')).toHaveTextContent(
+        'Completed'
+      )
+    })
+
+    it('renders the label bare (no wrapper, no modifier) by default', () => {
+      const { container } = render(<Badge>Plain</Badge>)
+      expect(container.firstChild).not.toHaveClass('ui-badge--truncate')
+      expect(container.querySelector('.ui-badge__label')).toBeNull()
+      expect(screen.getByText('Plain')).toBeInTheDocument()
+    })
   })
 
   // L3 (managed errors): N/A — presentational atom with no validation/disabled/error states.

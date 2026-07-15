@@ -1,6 +1,10 @@
 import clsx from 'clsx'
 
-import { BADGE_ICON_CLASS, badgeVariants } from '@fubaritico-ds/variants'
+import {
+  BADGE_ICON_CLASS,
+  BADGE_LABEL_CLASS,
+  badgeVariants,
+} from '@fubaritico-ds/variants'
 
 import { Icon } from '../Icon'
 
@@ -20,6 +24,12 @@ export interface BadgeProps extends ComponentProps<'span'> {
   size?: BadgeSize
   /** Optional leading icon. Decorative (aria-hidden); `children` must convey the meaning in text. */
   icon?: IconName
+  /**
+   * When `true`, caps the badge to its container width and ellipsis-truncates the label (the leading
+   * icon stays visible). Use in tight layouts (e.g. a fixed-width table column). The full text stays
+   * in the DOM (announced by screen readers). Defaults to `false` (the badge sizes to its content).
+   */
+  canTruncate?: boolean
 }
 
 /**
@@ -35,18 +45,23 @@ export function Badge({
   variant = 'default',
   size = 'md',
   icon,
+  canTruncate = false,
   className,
   ...rest
 }: Readonly<BadgeProps>) {
   return (
     <span
-      className={clsx(badgeVariants({ variant, size }), className)}
+      className={clsx(badgeVariants({ variant, size, canTruncate }), className)}
       {...rest}
     >
-      {icon && (
+      {icon ? (
         <Icon name={icon} size={BADGE_ICON_SIZE} className={BADGE_ICON_CLASS} />
+      ) : null}
+      {canTruncate ? (
+        <span className={BADGE_LABEL_CLASS}>{children}</span>
+      ) : (
+        children
       )}
-      {children}
     </span>
   )
 }

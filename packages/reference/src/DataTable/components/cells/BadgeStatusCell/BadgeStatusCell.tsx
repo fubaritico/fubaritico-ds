@@ -1,10 +1,9 @@
-import { type Row } from '@tanstack/react-table'
-
 import { Badge } from '../../../../Badge'
 import { TableCell } from '../../primitives/TableCell'
 
 import type { IconName } from '../../../../Icon'
 import type { BadgeVariant } from '@fubaritico-ds/variants'
+import type { Row } from '@tanstack/react-table'
 
 /** Visual recipe (variant + optional leading icon) for a job status. */
 interface StatusBadge {
@@ -41,7 +40,7 @@ const BadgeStatusCell =
 
     return (
       <TableCell>
-        <Badge variant={variant} icon={icon}>
+        <Badge variant={variant} icon={icon} canTruncate>
           {status}
         </Badge>
       </TableCell>

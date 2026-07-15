@@ -18,6 +18,8 @@ export type BadgeSize = 'sm' | 'md' | 'lg'
  * @param props - Badge options (all optional — CVA defaults apply).
  * @param props.variant - Visual variant; defaults to `'default'`.
  * @param props.size - Badge size; defaults to `'md'`.
+ * @param props.canTruncate - When `true`, caps the badge width to its container and lets the label
+ *   ellipsis-truncate (paired with the `.ui-badge__label` wrapper); defaults to `false`.
  * @returns The space-separated BEM class string for the resolved variant and size.
  */
 export const badgeVariants = cva('ui-badge', {
@@ -33,10 +35,15 @@ export const badgeVariants = cva('ui-badge', {
       md: '', // default size — fully defined by the `.ui-badge` base; no modifier emitted
       lg: 'ui-badge--lg',
     },
+    canTruncate: {
+      true: 'ui-badge--truncate',
+      false: '', // default — the badge sizes to its content, no width cap
+    },
   },
   defaultVariants: {
     variant: 'default',
     size: 'md',
+    canTruncate: false,
   },
 })
 
@@ -48,3 +55,10 @@ export type BadgeVariantProps = VariantProps<typeof badgeVariants>
  * Centralised here so every framework renderer references the same class name as the skin.
  */
 export const BADGE_ICON_CLASS = 'ui-badge__icon'
+
+/**
+ * BEM element class for the Badge's label slot (`.ui-badge__label` in the skin). Used ONLY when the
+ * badge truncates (`canTruncate`): the label is wrapped so it can ellipsis-clip while the leading icon
+ * stays visible. Centralised so every framework renderer references the same class as the skin.
+ */
+export const BADGE_LABEL_CLASS = 'ui-badge__label'

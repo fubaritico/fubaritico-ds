@@ -9,6 +9,8 @@ skin. Presentational only: it conveys meaning through its text, never through co
 - **Sizes** — `sm`, `md`, `lg`.
 - **Optional leading icon** — `icon` (an `IconName`), rendered decorative (`aria-hidden`); the meaning
   must still be carried by the `children` text.
+- **Truncation** — `canTruncate` caps the badge to its container width and ellipsis-clips the label on
+  one line (the icon stays visible). For tight layouts such as a fixed-width table column.
 - **Inline element** — renders a `<span>`, so it flows inside text and forwards every `<span>`
   attribute (`id`, `aria-*`, `onClick`, `ref`, `className`, …).
 - **Headless skin** — variant/size resolve to BEM classes via `@fubaritico-ds/variants`; colours and
@@ -49,15 +51,23 @@ import { Badge } from '@fubaritico-ds/reference/Badge'
 
 // Merge a consumer className (appended after the skin classes):
 <Badge className="my-utility">Themed</Badge>
+
+// Truncation in a tight container — the label ellipsis-clips, the icon stays visible:
+<div style={{ inlineSize: 90 }}>
+  <Badge icon="ExclamationCircle" variant="destructive" canTruncate>
+    Failed with a very long reason
+  </Badge>
+</div>
 ```
 
 ## Props
 
-| Prop      | Type                                                     | Default     | Description                                       |
-| --------- | -------------------------------------------------------- | ----------- | ------------------------------------------------- |
-| `variant` | `'default' \| 'secondary' \| 'outline' \| 'destructive'` | `'default'` | Visual variant.                                   |
-| `size`    | `'sm' \| 'md' \| 'lg'`                                   | `'md'`      | Badge size.                                       |
-| `icon`    | `IconName`                                               | —           | Optional decorative leading icon (`aria-hidden`). |
+| Prop          | Type                                                     | Default     | Description                                       |
+| ------------- | -------------------------------------------------------- | ----------- | ------------------------------------------------- |
+| `variant`     | `'default' \| 'secondary' \| 'outline' \| 'destructive'` | `'default'` | Visual variant.                                   |
+| `size`        | `'sm' \| 'md' \| 'lg'`                                   | `'md'`      | Badge size.                                       |
+| `icon`        | `IconName`                                               | —           | Optional decorative leading icon (`aria-hidden`). |
+| `canTruncate` | `boolean`                                                | `false`     | Cap the width and ellipsis-truncate the label.    |
 
 Plus all native `<span>` attributes (`ComponentProps<'span'>`, including `ref` and `className`).
 
@@ -72,3 +82,8 @@ Plus all native `<span>` attributes (`ComponentProps<'span'>`, including `ref` a
 
 > **Note** — the `icon` is **decorative** (`aria-hidden`): it adds no accessible name. Keep meaningful
 > `children` text — a badge with only an icon reads as empty to assistive tech.
+
+> **Note** — `canTruncate` clips **visually** only: the full label stays in the DOM, so screen readers
+> still announce it. It needs a width-constrained container to have any effect (e.g. a table column
+> under `table-layout: fixed`); on its own the badge just sizes to its content. A hover affordance for
+> the clipped text will arrive with the Tooltip.

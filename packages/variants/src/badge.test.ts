@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { BADGE_ICON_CLASS, badgeVariants } from './badge.js'
+import { BADGE_ICON_CLASS, BADGE_LABEL_CLASS, badgeVariants } from './badge.js'
 
 describe('badgeVariants', () => {
   describe('happy path', () => {
@@ -42,21 +42,49 @@ describe('badgeVariants', () => {
         'ui-badge ui-badge--outline ui-badge--sm'
       )
     })
+
+    it('emits the truncate modifier when canTruncate is true', () => {
+      expect(badgeVariants({ canTruncate: true })).toBe(
+        'ui-badge ui-badge--truncate'
+      )
+    })
+
+    it('emits no truncate modifier when canTruncate is false', () => {
+      expect(badgeVariants({ canTruncate: false })).toBe('ui-badge')
+    })
   })
 
   // L3 managed errors: N/A — a pure CVA resolver has no user-facing error path.
 
   describe('unmanaged errors', () => {
-    it('falls back to defaults when variant/size are explicitly undefined', () => {
-      expect(badgeVariants({ variant: undefined, size: undefined })).toBe(
-        'ui-badge'
-      )
+    it('falls back to defaults when variant/size/canTruncate are explicitly undefined', () => {
+      expect(
+        badgeVariants({
+          variant: undefined,
+          size: undefined,
+          canTruncate: undefined,
+        })
+      ).toBe('ui-badge')
     })
   })
 
   describe('edge cases', () => {
     it('exposes the leading-icon element class', () => {
       expect(BADGE_ICON_CLASS).toBe('ui-badge__icon')
+    })
+
+    it('exposes the label element class', () => {
+      expect(BADGE_LABEL_CLASS).toBe('ui-badge__label')
+    })
+
+    it('combines every axis (variant, size, truncate)', () => {
+      expect(
+        badgeVariants({
+          variant: 'destructive',
+          size: 'lg',
+          canTruncate: true,
+        })
+      ).toBe('ui-badge ui-badge--destructive ui-badge--lg ui-badge--truncate')
     })
 
     it('never emits an empty-string token in the output', () => {
