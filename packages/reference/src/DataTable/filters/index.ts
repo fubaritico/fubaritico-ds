@@ -17,11 +17,11 @@ export const assertNumberFilter: FilterFn<unknown> = (
   columnId,
   filterValue: { type: 'over' | 'under'; value: string }
 ) => {
-  const threshold = parseInt(filterValue.value, 10)
+  const threshold = Number.parseInt(filterValue.value, 10)
   if (Number.isNaN(threshold)) {
     return false
   }
-  const cellValue = parseInt(String(readCell(row, columnId) ?? 0), 10)
+  const cellValue = Number.parseInt(String(readCell(row, columnId) ?? 0), 10)
 
   return filterValue.type === 'over'
     ? cellValue >= threshold
