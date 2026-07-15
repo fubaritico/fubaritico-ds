@@ -1,0 +1,151 @@
+/**
+ * Listbox — native BEM skin.
+ *
+ * The portable surface for listbox-style popups: `.ui-listbox` is the scrollable `<ul>` card (border,
+ * radius, shadow, max-height), `.ui-listbox__item` is a `<li role="option">` with idle / hover /
+ * active / selected / disabled states. Shared by the composed `Menu` and `Typeahead` (positioning,
+ * ARIA and keyboard are the consumer's job — this skin owns only the look).
+ *
+ * States are NEUTRAL by design (matching the DS neutral-emphasis strategy): dark text on progressively
+ * stronger greys (hover < active), never colour-only. The old Tailwind version tinted `primary` and
+ * put WHITE text on it, which broke once `--color-primary` became near-black — so this migration
+ * re-maps the states to readable neutrals.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-listbox-*` vars (surgical re-skin).
+ *   2. Redefine a global token → re-skins everything that uses it.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-listbox {
+    /* ---- override API (component-scoped ROLE vars) ---- */
+    /* Role vars wire straight to the neutral VALUE scale (not the shadcn `popover`/`secondary`/… role
+       aliases). The consumer overrides these `--ui-listbox-*` vars; whether they resolve to
+       neutral-100 or neutral-900 underneath is an opaque implementation detail. */
+    --ui-listbox-bg: var(--color-primitive-neutral-0);
+    --ui-listbox-border-color: var(--color-primitive-neutral-200);
+    --ui-listbox-border-width: var(--spacing-px);
+    --ui-listbox-radius: var(--radius-md);
+    --ui-listbox-shadow: var(--shadow-md);
+    --ui-listbox-padding: var(--spacing-1);
+    --ui-listbox-item-gap: var(
+      --spacing-0-5
+    ); /* 2px — space BETWEEN items so highlights never touch */
+    --ui-listbox-max-block-size: var(--spacing-60); /* 15rem / 240px */
+
+    /* Self-sufficient: the skin sets its own box model so it survives in hosts with no reset
+       (the DS never ships a global reset — see CLAUDE.md decision). Flex column with a `gap` separates
+       the item highlights WITHOUT touching each item's own padding (so the value text keeps its
+       spacing). */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-listbox-item-gap);
+    margin: 0;
+    list-style: none;
+    padding: var(--ui-listbox-padding);
+    border: var(--ui-listbox-border-width) solid var(--ui-listbox-border-color);
+    border-radius: var(--ui-listbox-radius);
+    background-color: var(--ui-listbox-bg);
+    box-shadow: var(--ui-listbox-shadow);
+    max-block-size: var(--ui-listbox-max-block-size);
+    overflow-y: auto;
+  }
+
+  /* Dark surface variant — re-points the same role vars to the darker end of the neutral value scale. */
+  .ui-listbox--dark {
+    --ui-listbox-bg: var(--color-primitive-neutral-900);
+    --ui-listbox-border-color: var(--color-primitive-neutral-700);
+  }
+
+  /* ---- item ---- */
+  .ui-listbox__item {
+    /* ---- override API (component-scoped) ---- */
+    --ui-listbox-item-radius: var(--radius-sm);
+    --ui-listbox-item-padding-block: var(--spacing-2);
+    --ui-listbox-item-padding-inline: var(--spacing-3);
+    --ui-listbox-item-font-family: var(--font-roboto);
+    --ui-listbox-item-font-size: var(--font-size-sm);
+    --ui-listbox-item-line-height: var(--font-line-height-normal);
+    --ui-listbox-item-selected-weight: var(--font-weight-medium);
+    --ui-listbox-item-color: var(--color-primitive-neutral-900);
+    /* Emphasis ladder (light→dark): selected (persistent) < hover < active (keyboard cursor). */
+    --ui-listbox-item-hover-bg: var(--color-primitive-neutral-150);
+    --ui-listbox-item-hover-color: var(--color-primitive-neutral-900);
+    --ui-listbox-item-active-bg: var(--color-primitive-neutral-200);
+    --ui-listbox-item-active-color: var(--color-primitive-neutral-900);
+    --ui-listbox-item-selected-bg: var(--color-primitive-neutral-100);
+    --ui-listbox-item-selected-color: var(--color-primitive-neutral-900);
+    --ui-listbox-item-transition-duration: var(--duration-normal);
+    --ui-listbox-item-transition-easing: var(--easing-standard);
+
+    box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
+    border-radius: var(--ui-listbox-item-radius);
+    padding-block: var(--ui-listbox-item-padding-block);
+    padding-inline: var(--ui-listbox-item-padding-inline);
+    font-family: var(--ui-listbox-item-font-family);
+    font-size: var(--ui-listbox-item-font-size);
+    line-height: var(--ui-listbox-item-line-height);
+    color: var(--ui-listbox-item-color);
+    transition:
+      background-color var(--ui-listbox-item-transition-duration)
+        var(--ui-listbox-item-transition-easing),
+      color var(--ui-listbox-item-transition-duration)
+        var(--ui-listbox-item-transition-easing);
+  }
+
+  /* Hover applies ONLY to an idle item — `:where(:not(...))` scopes it off active/selected/disabled
+     while staying at low (class + pseudo) specificity so consumer overrides still win. */
+  .ui-listbox__item:hover:where(
+      :not(.ui-listbox__item--active):not(.ui-listbox__item--selected):not(
+          .ui-listbox__item--disabled
+        )
+    ) {
+    background-color: var(--ui-listbox-item-hover-bg);
+    color: var(--ui-listbox-item-hover-color);
+  }
+
+  /* Active = keyboard/hover cursor. The React component emits active XOR selected, but the `:where(
+     :not(--disabled))` guard also makes the raw skin robust for other framework adapters that might
+     emit `--active` + `--disabled` together (a disabled item must never show the active highlight). */
+  .ui-listbox__item--active:where(:not(.ui-listbox__item--disabled)) {
+    background-color: var(--ui-listbox-item-active-bg);
+    color: var(--ui-listbox-item-active-color);
+  }
+
+  /* Selected = the persistent current choice (e.g. the active page size). Same disabled guard. */
+  .ui-listbox__item--selected:where(:not(.ui-listbox__item--disabled)) {
+    background-color: var(--ui-listbox-item-selected-bg);
+    color: var(--ui-listbox-item-selected-color);
+    font-weight: var(--ui-listbox-item-selected-weight);
+  }
+
+  .ui-listbox__item--disabled {
+    cursor: default;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  /* Dark item variant — reaches into the primitive neutral scale (see `.ui-listbox--dark` note). */
+  .ui-listbox__item--dark {
+    --ui-listbox-item-color: var(--color-primitive-neutral-200);
+    /* Same emphasis ladder on dark (distance from the neutral-900 surface): selected < hover < active. */
+    --ui-listbox-item-hover-bg: var(--color-primitive-neutral-800);
+    --ui-listbox-item-hover-color: var(--color-primitive-neutral-0);
+    --ui-listbox-item-active-bg: var(--color-primitive-neutral-700);
+    --ui-listbox-item-active-color: var(--color-primitive-neutral-0);
+    --ui-listbox-item-selected-bg: var(--color-primitive-neutral-850);
+    --ui-listbox-item-selected-color: var(--color-primitive-neutral-0);
+  }
+
+  /* Respect reduced-motion: drop the colour transition (WCAG 2.3.3), as button.css does. */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-listbox__item {
+      transition: none;
+    }
+  }
+}

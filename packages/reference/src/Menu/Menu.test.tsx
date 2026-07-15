@@ -234,7 +234,7 @@ describe('Menu', () => {
 
   it('should apply dark styles to listbox', () => {
     renderMenu({ variant: 'dark' })
-    expect(screen.getByRole('listbox')).toHaveClass('ui:bg-neutral-900')
+    expect(screen.getByRole('listbox')).toHaveClass('ui-listbox--dark')
   })
 
   it('should apply dark text to items', () => {
@@ -245,12 +245,14 @@ describe('Menu', () => {
         </Menu.Item>
       </Menu>
     )
-    expect(screen.getByRole('option')).toHaveClass('ui:text-neutral-200')
+    expect(screen.getByRole('option')).toHaveClass('ui-listbox__item--dark')
   })
 
   it('should apply light styles by default', () => {
     renderMenu()
-    expect(screen.getByRole('listbox')).toHaveClass('ui:bg-popover')
+    const listbox = screen.getByRole('listbox')
+    expect(listbox).toHaveClass('ui-listbox')
+    expect(listbox).not.toHaveClass('ui-listbox--dark')
   })
 
   // --- Context error ---

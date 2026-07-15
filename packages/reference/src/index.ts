@@ -53,6 +53,14 @@ export type { AspectRatio, ImageProps, ImageState } from './Image'
 export { Input } from './Input'
 export type { InputProps, InputSize, InputMessageType } from './Input'
 
+export { ListboxItem, ListboxList } from './Listbox'
+export type {
+  ListboxItemProps,
+  ListboxItemState,
+  ListboxListProps,
+  ListboxVariant,
+} from './Listbox'
+
 export { Menu } from './Menu'
 export type { MenuProps, MenuItemProps, MenuVariant } from './Menu'
 

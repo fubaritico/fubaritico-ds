@@ -18,6 +18,7 @@
 @import './styles/field.css';
 @import './styles/icon-button.css'; /* extension of button.css — MUST load after it */
 @import './styles/input.css';
+@import './styles/listbox.css';
 @import './styles/pagination.css';
 @import './styles/rating.css';
 @import './styles/skeleton.css';

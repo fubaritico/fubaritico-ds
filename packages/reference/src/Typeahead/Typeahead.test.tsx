@@ -347,19 +347,23 @@ describe('Typeahead', () => {
   it('should apply dark styles to menu', async () => {
     renderTypeahead({ variant: 'dark' })
     await userEvent.type(screen.getByRole('combobox'), 'a')
-    expect(screen.getByRole('listbox')).toHaveClass('ui:bg-neutral-900')
+    expect(screen.getByRole('listbox')).toHaveClass('ui-listbox--dark')
   })
 
   it('should apply dark text to items', async () => {
     renderTypeahead({ variant: 'dark' })
     await userEvent.type(screen.getByRole('combobox'), 'a')
-    expect(screen.getAllByRole('option')[0]).toHaveClass('ui:text-neutral-200')
+    expect(screen.getAllByRole('option')[0]).toHaveClass(
+      'ui-listbox__item--dark'
+    )
   })
 
   it('should apply light styles by default', async () => {
     renderTypeahead()
     await userEvent.type(screen.getByRole('combobox'), 'a')
-    expect(screen.getByRole('listbox')).toHaveClass('ui:bg-popover')
+    const listbox = screen.getByRole('listbox')
+    expect(listbox).toHaveClass('ui-listbox')
+    expect(listbox).not.toHaveClass('ui-listbox--dark')
   })
 
   // --- ARIA ---

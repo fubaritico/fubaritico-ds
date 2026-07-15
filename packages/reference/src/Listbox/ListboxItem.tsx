@@ -1,69 +1,59 @@
 import clsx from 'clsx'
 
-import type { LiHTMLAttributes, ReactNode, Ref } from 'react'
+import { listboxItemVariants } from '@fubaritico-ds/variants'
 
-/** Props for the visual listbox item */
+import type { ListboxItemState, ListboxVariant } from '@fubaritico-ds/variants'
+import type { ComponentProps, ReactNode } from 'react'
+
+/** Props for the visual listbox item. */
 export interface ListboxItemProps
-  extends Omit<LiHTMLAttributes<HTMLLIElement>, 'children'> {
-  /** Color scheme */
-  variant?: 'light' | 'dark'
-  /** Whether this item has keyboard/hover focus */
+  extends Omit<ComponentProps<'li'>, 'children'> {
+  /** Colour scheme; defaults to `'light'`. */
+  variant?: ListboxVariant
+  /** Whether this item has keyboard/hover focus (the cursor). */
   isActive?: boolean
-  /** Whether this item is the persistently selected value (Menu only) */
+  /** Whether this item is the persistently selected value (Menu only). */
   isSelected?: boolean
-  /** Whether the item is non-interactive */
+  /** Whether the item is non-interactive. */
   disabled?: boolean
-  /** Item content */
+  /** Item content. */
   children: ReactNode
-  /** Forwarded ref for scrollIntoView */
-  ref?: Ref<HTMLLIElement>
 }
 
 /**
- * Visual `<li>` for listbox-style items.
+ * Visual `<li>` for listbox-style items — wears the native skin (`.ui-listbox__item`).
  *
- * Provides shared styling (padding, font, variant colors, active/selected/
- * disabled/hover states) used by both Menu.Item and Typeahead.Item.
- * Consumers add their own ARIA attributes, event handlers, and ids via props.
+ * Provides the shared look (padding, font, active/selected/hover/disabled states) composed by both
+ * `Menu.Item` and `Typeahead.Item`. Consumers add their own ARIA attributes, event handlers and ids
+ * via props. `isActive` wins over `isSelected`; a `disabled` item shows neither (only the dimming).
+ *
+ * @param props - {@link ListboxItemProps} (incl. `ref`, forwarded to the `<li>` for `scrollIntoView`).
+ * @returns The listbox item element.
  */
-const ListboxItem = ({
+export function ListboxItem({
   variant = 'light',
   isActive = false,
   isSelected = false,
   disabled = false,
   className,
   children,
-  ref,
   ...rest
-}: ListboxItemProps) => {
-  const isDark = variant === 'dark'
+}: Readonly<ListboxItemProps>) {
+  const state: ListboxItemState = disabled
+    ? 'default'
+    : isActive
+      ? 'active'
+      : isSelected
+        ? 'selected'
+        : 'default'
 
   return (
     <li
-      ref={ref}
       role="option"
+      aria-selected={isSelected}
       aria-disabled={disabled || undefined}
       className={clsx(
-        'ui:cursor-pointer ui:select-none ui:rounded ui:px-3 ui:py-2 ui:text-sm ui:font-roboto ui:transition-colors',
-        isDark ? 'ui:text-neutral-200' : 'ui:text-foreground',
-        disabled && 'ui:pointer-events-none ui:opacity-50',
-        !disabled &&
-          isActive &&
-          (isDark
-            ? 'ui:bg-primary/25 ui:text-white'
-            : 'ui:bg-primary/20 ui:text-primary-foreground'),
-        !disabled &&
-          isSelected &&
-          !isActive &&
-          (isDark
-            ? 'ui:bg-primary/15 ui:font-medium ui:text-primary'
-            : 'ui:bg-primary/10 ui:font-medium ui:text-primary-hover'),
-        !disabled &&
-          !isActive &&
-          !isSelected &&
-          (isDark
-            ? 'ui:hover:bg-neutral-800 ui:hover:text-white'
-            : 'ui:hover:bg-secondary ui:hover:text-secondary-foreground'),
+        listboxItemVariants({ variant, state, disabled }),
         className
       )}
       {...rest}
