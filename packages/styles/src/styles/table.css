@@ -158,11 +158,15 @@
   }
 
   /* Relative wrapper around the paginated table (the virtualized one has none). Height is capped
-     inline via the `maxHeight` prop, paired with a sticky header. Faithful to the source: no
-     `overflow` is set here — the scroll behaviour is a chrome concern handled in a later pass. */
+     inline via the `maxHeight` prop, paired with a sticky header. `overflow: auto` makes the capped
+     body scroll on BOTH axes: vertically the sticky `<thead>` (`--sticky`, `inset-block-start: 0`)
+     pins to the top; horizontally the header has NO inline inset, so it scrolls WITH the columns and
+     stays aligned (single `<table>` in one scroll container → no header/body drift). Without a cap
+     (`maxHeight` unset) the wrapper has no height limit, so `auto` shows no scrollbar — inert. */
   .ui-data-table__scroll {
     position: relative;
     inline-size: 100%;
+    overflow: auto;
   }
 
   /* `.ui-data-table__header` (`<thead>`) and `.ui-data-table__body` (`<tbody>`) are structural LANDMARKS with no

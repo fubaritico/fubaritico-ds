@@ -21,6 +21,18 @@ const VIEWPORT_HEIGHT = 600
  */
 const data = makeJobs(ROW_COUNT)
 
+/** Dataset for the paginated story — 754 rows (76 pages at the default page size), cheap to build. */
+const paginatedData = makeJobs(754)
+
+/** Six rows — fewer than the page size (10), so the pagination bar stays hidden. */
+const sixRowsData = makeJobs(6)
+
+/**
+ * Capped height (px) of the paginated scroll area — set BELOW one page's height (10 rows) so the body
+ * overflows and scrolls under the pinned header, demonstrating the sticky-header + `overflow: auto` fix.
+ */
+const PAGINATED_MAX_HEIGHT = 320
+
 /**
  * Commits faster than this (ms) are skipped — keeps the scroll's tiny virtualizer commits out of
  * the console so only the heavy selection/sort commits are logged.
@@ -68,13 +80,10 @@ const meta = {
     docs: {
       description: {
         component: [
-          '**Benchmark harness — 150 000 rows.** Renders the virtualized `DataTableVirtualized`',
-          'through the `DataTableExample` container (the DI seam: the TanStack table instance is',
-          'built in the container and injected into the presentational table).',
-          '',
-          '> ⚠️ The DataTable is **not yet migrated to the BEM skin** (still Tailwind `tw-*`). This',
-          '> story imports the CSS-free subpath, so it renders **unstyled but functional** — the',
-          '> benchmark measures behaviour (scroll, select-all), not visuals. The skin lands next.',
+          '**DataTable** — the virtualized `DataTableVirtualized` and paginated `DataTable`, both',
+          'rendered through the `DataTableExample` container (the DI seam: the TanStack table instance',
+          'is built in the container and injected into the presentational table). Wears the native BEM',
+          'skin (`@fubaritico-ds/styles`, the `ui-data-table` namespace).',
           '',
           '**How to benchmark:** scroll the body (only visible rows mount), toggle one row, then',
           'use the header checkbox to **select-all / deselect-all** all 150 000 rows. Compare',
@@ -95,6 +104,7 @@ const meta = {
   },
   argTypes: {
     data: { table: { disable: true } },
+    virtualized: { table: { disable: true } },
     maxHeight: { table: { disable: true } },
     stickyHeader: { table: { disable: true } },
     initTableAt: { table: { disable: true } },
@@ -117,4 +127,45 @@ export const Benchmark150k: Story = {
  */
 export const Benchmark150kTransition: Story = {
   args: { useTransitionForSelection: true },
+}
+
+/**
+ * Paginated table with a sticky header. `maxHeight` caps the scroll area below one page's height, so
+ * the body scrolls (`overflow: auto`) while the `<thead>` stays pinned to the top on vertical scroll
+ * and follows the columns on horizontal scroll (single `<table>` → header/body never drift). The
+ * pagination bar sits OUTSIDE the scroll region, always visible below.
+ */
+export const PaginatedSticky: Story = {
+  args: {
+    data: paginatedData,
+    virtualized: false,
+    stickyHeader: true,
+    maxHeight: PAGINATED_MAX_HEIGHT,
+    enableRowSelection: false,
+    debugTimings: false,
+  },
+}
+
+/**
+ * Six rows — fewer than the page size (10), so the pagination bar is hidden and every row shows at once.
+ */
+export const FewRows: Story = {
+  args: {
+    data: sixRowsData,
+    virtualized: false,
+    enableRowSelection: false,
+    debugTimings: false,
+  },
+}
+
+/**
+ * Empty dataset — the table renders its `NoResults` empty state; no pagination bar.
+ */
+export const Empty: Story = {
+  args: {
+    data: [],
+    virtualized: false,
+    enableRowSelection: false,
+    debugTimings: false,
+  },
 }

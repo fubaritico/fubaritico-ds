@@ -13,7 +13,11 @@ import { MIN_PAGE_SIZE } from '../../../DataTable.constants'
 import type { DropdownOption } from '../../../../Dropdown'
 import type { BaseDataTableProps } from '../../../DataTable.types'
 
-/** Props of {@link TableFooterContent}. */
+/**
+ * Props of {@link TableFooterContent}.
+ *
+ * @template TData - Row data shape handled by the injected table state manager.
+ */
 export type TableFooterContentProps<TData> = Pick<
   BaseDataTableProps<TData>,
   'tableStateManager'
@@ -28,8 +32,10 @@ const PAGE_SIZE_OPTIONS: DropdownOption[] = [1, 2, 3, 4, 5].map((factor) => {
 /**
  * Pagination controls rendered below the table: a rows-per-page selector (DS {@link Dropdown},
  * replacing the original `DropdownMenu`), the {@link Pagination} navigator, and a "go to page" field.
- * All driven by the injected table state manager. Meant to be hosted inside the semantic `TableFooter`
- * (`<tfoot>`) primitive.
+ * All driven by the injected table state manager. Rendered as a chrome bar (a sibling of the `<table>`,
+ * OUTSIDE the scroll region) — NOT inside `<tfoot>`: pagination is chrome, not tabular data, and staying
+ * a sibling keeps it pinned below the scroll region for free. The `<tfoot>` primitive is reserved for
+ * column-summary rows (see {@link TableFooter}).
  *
  * @param props - {@link TableFooterContentProps}.
  * @returns The table footer content.
@@ -54,7 +60,7 @@ export function TableFooterContent<TData>({
             .getState()
             .pagination.pageSize.toString()}
           onSelect={(value) => {
-            tableStateManager.setPageSize(parseInt(value, 10))
+            tableStateManager.setPageSize(Number.parseInt(value, 10))
           }}
         />
         <span className={UI_DATA_TABLE_FOOTER_LABEL_CLASS}>Rows per page</span>
@@ -86,7 +92,10 @@ export function TableFooterContent<TData>({
 
           {/* FIELD TO NAVIGATE TO A PAGE — a single wrapping label groups "Page … of N" so the input's
               accessible name is the whole phrase; the label wraps the input (implicit association, no id). */}
-          <label className={UI_DATA_TABLE_FOOTER_GROUP_CLASS} data-test="go-to-page">
+          <label
+            className={UI_DATA_TABLE_FOOTER_GROUP_CLASS}
+            data-test="go-to-page"
+          >
             <span className={UI_DATA_TABLE_FOOTER_LABEL_CLASS}>Page</span>
             <Input
               type="number"
