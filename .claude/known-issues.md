@@ -2,26 +2,58 @@
 
 Put here the know issues to avoid cluttering the context window.
 
-- **Taxonomie interne DataTable (2026-07-02)** : `DataTable/components/{primitives,features,cells}` +
-  `hooks/` + `utils/` (+ `filters/`), barrel par groupe. **`primitives`** (9 wrappers d'éléments
-  sémantiques : Table/TableVirtualized/TableHeader/TableBody/TableFooter/TableRow/TableHead/TableCell/
-  TableCaption) **et `features`** (ActionBar/ArrowUpDown/DropdownFilter/NoResults/TableFooterContent/
-  TruncatedContent) sont de l'**échafaudage INTERNE** → **PAS** ré-exportés au barrel racine
-  `DataTable/index.ts`. **Seules les `cells`** y sont ré-exportées (`export * from './components/cells'`)
-  car ce sont les briques appelées dans les configs de colonnes (`useColumnsDefinition`). Ne pas remonter
-  primitives/features au barrel racine (couplerait les consommateurs à des internes libres de bouger).
-- **`DropdownFilter` est mort** (`components/features/DropdownFilter`, importé nulle part) → décider :
-  câbler dans `leftActions` (alors le ré-exporter LUI SEUL) ou supprimer. Dette non tranchée.
-- **`cn` vit dans `DataTable/utils/cn.ts`** (déplacé de l'ancien `ui/utils.ts`) + `normalizeTimestamp`
-  dans `utils/` ; le dossier **`ui/` n'existe plus**. Les primitives importent `cn` via `../../../utils`.
-- **Primitive `TableFooter` (`<tfoot>`) pas encore câblée** : `TableFooterContent` (pagination) est rendu
-  en `<div>` frère HORS du `<table>`, pas dans un `<tfoot>`. La primitive `TableFooter` extraite existe
-  mais n'a pas encore de consommateur — câblage prévu (étape ultérieure).
+- **Listbox = primitives VISUELLES (`ListboxList`/`ListboxItem`), pas un widget (2026-07-16)** : elles
+  portent le look uniquement ; **l'ARIA/keyboard/`aria-activedescendant` appartient au composeur**
+  (`Menu`/`Typeahead`). `ListboxItem` rend `role="option"` + `aria-selected={isSelected}` **par défaut**,
+  **overridable via rest** (Typeahead passe `aria-selected={isActive}`). **Passer `variant` aux DEUX**
+  (liste ET items) — le `--dark` est un modifier d'ÉLÉMENT (choix flat-selector assumé, pas cascade block).
+  États = échelle neutral (zéro alias shadcn) ; échelle d'emphase **selected < hover < active** ; gap 2px
+  entre items (flex `gap`, ne touche pas le padding/texte). Variante dark = primitives neutral (pas de
+  tokens on-dark encore). Resolver : `state` mono-axe (active > selected > default) ; `:where(:not(--disabled))`
+  garde active/selected. Voir [[token-neutral-scale-role-vars]].
+- **Badge `canTruncate` (2026-07-16)** : opt-in (défaut `false`) ; wrappe le label dans `.ui-badge__label`
+  (ellipsis) SEULEMENT si `true`, icône reste visible ; troncature **visuelle** (texte complet reste dans
+  le DOM, lu par les lecteurs d'écran). Affordance survol = viendra avec la Tooltip.
+
+- **Namespace skin DataTable = `ui-data-table` (2026-07-10)** : le BEM **block `.ui-data-table` est sur la
+  CONTAINER (la Card)**, pas sur le `<table>` — il porte tous les `--ui-data-table-*` vars pour que TOUT
+  descendant (y compris la toolbar/footer HORS `<table>`) en hérite. Le `<table>` lui-même = l'élément
+  **`.ui-data-table__table`** (box-model/border-collapse/layout). Émis par : `Table` primitive
+  (`UI_DATA_TABLE_TABLE_CLASS` sur le `<table>`) + `DataTable`/`DataTableVirtualized` (`UI_DATA_TABLE_CLASS`
+  sur `<Card className>`). Constantes dans `variants/src/table.ts`, parité testée. **Ne PAS remettre les
+  vars sur le `<table>`** (les siblings toolbar/footer ne les verraient plus → vars grisées).
+- **Custom props n'héritent qu'aux descendants** : un `--ui-*` component-var doit vivre sur un ANCÊTRE de
+  tous ses consommateurs. Si des éléments hors `<table>` (toolbar/footer) l'utilisent, la var va sur le
+  block-conteneur, jamais sur le `<table>` (leçon du refactor `ui-data-table`).
+- **Ordre de peinture des tables : cellules AU-DESSUS des lignes** → une bordure sur `<tr>` est **repeinte
+  et masquée** par un fond de cellule opaque. Corollaire : les filets d'en-tête (cellules `<th>` à fond
+  blanc opaque) vont sur **`.ui-data-table__head`** (les cellules), pas sur le `<tr>`.
+- **`border-collapse: collapse` + `<thead>` sticky : bordures des cellules NON peintes** (bug navigateur
+  connu) → le filet header/corps est un **`box-shadow` inset** sur `.ui-data-table__head`, pas une
+  `border`. Aussi : en `border-collapse: separate` les bordures `<tr>` sont **ignorées** (spec) ; c'est
+  `collapse` qui les honore (d'où `border-collapse: collapse` sur `.ui-data-table__table`).
+- **`:has([role=checkbox])` NE matche PAS un `<input type=checkbox>` natif** (rôle checkbox implicite, pas
+  d'attribut `role`) → utiliser **`:has(input[type=checkbox])`** (colonne select carrée/flush).
+- **`DropdownFilter` : gardé, PAS mort** — c'est une **brique composable** (comme toutes les cells), juste
+  non câblée dans la config d'exemple. NE PAS la supprimer sous prétexte qu'aucune config ne l'appelle.
+  Décision de câblage (`leftActions`) à venir.
+- **`cn` vit dans `DataTable/utils/cn.ts`** + `normalizeTimestamp` + `formatDuration` dans `utils/` ;
+  `ui/` n'existe plus. Les primitives importent `cn` via `../../../utils`.
+- **Pagination = chrome, PAS dans `<tfoot>` (décidé 2026-07-15)** : `TableFooterContent` (pagination) reste
+  un `<div>` frère HORS du `<table>` (donc hors de la zone de scroll → épinglé en bas gratuitement). La
+  primitive `TableFooter` (`<tfoot>`) est **réservée aux lignes de synthèse/totaux de colonnes** (parité
+  AG-Grid, « pinned bottom rows », phase ultérieure), PAS à la pagination. Mettre la pagination dans
+  `<tfoot>` imposerait un wrapper `<tr><td colSpan>` + un collage `sticky bottom` (gotcha border-collapse)
+  pour zéro gain visible. **Ne PAS « câbler » `TableFooter` sur la pagination.**
 
 - **Avatar candidates throw outside `Avatar.Fallback`**: it's a full compound (no standalone mode) — the resolver access hooks (`useAvatarResolverActions/State`) throw if a candidate (`Avatar.Image/Initials/Icon`) is used without a surrounding `Avatar.Fallback`. By design.
 - **`react/jsx-no-leaked-render` is enforced (eslint, error)**: `{value && <JSX/>}` is forbidden when `value` is non-boolean (empty-string / zero leak) → use a ternary (`cond ? <JSX/> : null`) or coerce (`!!value &&`). Gotcha: `Boolean(src)` does **not** narrow the type — for `src: string | null` keep the ternary `src ? … : null` (narrows `src` AND avoids the leak); `Boolean(src) &&` loses the narrowing → TS error on `src={src}`.
 - **`--ui-avatar-line-height`**: Avatar exposes an override var for the initials line-height (parity with the rest of the skin's typographic vars); defaults to `var(--font-line-height-none)` (= 1).
-- **Dotted token names not referenceable in native CSS**: `--spacing-0.5`, `--spacing-2.5` (dot in the name) can't be used via `var()` in the skin → use a literal rem value + explaining comment. Non-dotted tokens (`--spacing-1/2/3`, etc.) are fine.
+- **Dotted spacing tokens are dash-ified in the native CSS output (2026-07-16)**: the `css/variables-flat`
+  format in `sd.config.js` replaces `.` with `-`, so `spacing.0.5` emits **`--spacing-0-5`** (referenceable
+  via `var()`), `2.5`→`--spacing-2-5`, etc. The **Tailwind** `@theme` output KEEPS the dots
+  (`--spacing-0.5`) to match Tailwind's `p-0.5` utility convention → the two outputs diverge by design.
+  Use `var(--spacing-0-5)` in the skin (badge/listbox do). Was previously worked around with rem literals.
 - **`packages/styles` has no lint/type-check/test scripts** (CSS-only) → `lerna run` and CI silently skip it. Acceptable for now; add `stylelint` later if we want CSS coverage in the quality gate.
 - **eslint typed-lint poison from empty-src `stencil/tsconfig.json`**: the base `project: ['./packages/*/tsconfig.json']` glob loads stencil's build tsconfig, which has no inputs (TS18003). Any package **alphabetically after `stencil`** that relies on the base glob (e.g. `variants`) crashes with "Unable to parse the specified tsconfig". Fix per package = a scoped eslint override pointing at its own tsconfig (see the `variants` override in `eslint.config.js`, mirroring the `stencil` one). Real fix later: migrate the root config to `projectService: true`, or give stencil a non-empty tsconfig.
 - **`color.semantic.badge.primary` token still references amber** (not blue) — unused by the migrated Badge default (which uses `--color-primary`), but inconsistent; arbitrate later (follow primary, or rename to a distinct accent).

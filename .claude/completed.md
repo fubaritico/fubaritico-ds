@@ -2,6 +2,64 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-07-16 — DataTable polish + Badge canTruncate + Listbox migration + tokens gris + étude Astryx
+
+- **7 commits poussés** (`e533e11`..`7426df1`, `origin/main`), repo VERT à chaque étape.
+- **`e533e11`** `fix(reference)` — scroll paginé : `overflow: auto` sur `.ui-data-table__scroll` (le corps
+  scrolle, en-tête sticky top-only qui suit les colonnes) ; décision **footer = chrome sibling, PAS
+  `<tfoot>`** (réservé aux lignes de synthèse) ; stories `PaginatedSticky`/`FewRows`/`Empty`, control
+  `virtualized` retiré.
+- **`d80302c`** `feat(reference)` — **Badge `canTruncate`** (opt-in, wrappe le label `.ui-badge__label`,
+  icône visible) consommé par `BadgeStatusCell` ; bordure `outline` `--color-input`→`--color-input-border`
+  (WCAG 1.4.11).
+- **`0f4006d`** `fix(reference)` — **quickfilter réparé** : `getFilteredRowModel()` manquait dans
+  `useReactTable` (requis pour tout filtrage client) ; + test de régression `DataTableExample.test.tsx`.
+- **`fecac53`** `feat(tokens)` — **échelle grise 20 crans** (ajout 150/250/350/550/650/750/850) +
+  **dash-ify** des noms CSS à points (`--spacing-0-5` en natif, points gardés pour Tailwind) + garde
+  anti-collision au build ; littéraux badge.css remplacés par les vars.
+- **`4302490`** `feat(reference)` — **migration Listbox** sur le skin BEM (skin + resolver + 2 composants +
+  tests 5-niveaux + story + README + barrels + tests Menu/Typeahead recâblés). Vars de **rôle** câblées
+  **directement sur l'échelle neutral** (zéro alias shadcn), échelle d'emphase selected<hover<active, gap
+  2px, transition 250ms + reduced-motion, `aria-selected` sur `role=option`. **Répare le popup Dropdown**
+  de la capture (Menu compose Listbox). `/review` 7 agents : critical/high corrigés (aria-selected,
+  barrel root, guards disabled, tokens), reste rejeté/déféré (flat-selectors, API existante).
+- **`439e2c6`** `style(reference)` — `Number.parseInt` (filtre nombre).
+- **`7426df1`** `docs(reference)` — **README DataTable (draft)** poussé.
+- **NON commité** (bookkeeping/gitignored) : défrag mémoire (3 notes : `datatable-behavior-decisions`,
+  `token-neutral-scale-role-vars`, `storybook-url-args-override` + updates) ; **étude Astryx**
+  (`facebook/astryx` via opensrc) → note `astryx-agent-ready-study` + **plans `files/plans/agent-ready/`**
+  (00-master + 5 plans : doc-as-data P1 → vibe-tests P5). Storybook URL-args gotcha diagnostiqué.
+
+### 2026-07-10 — DataTable : skin BEM complet (cells+features), a11y, Readonly, refactor `ui-data-table`
+
+- **8 commits poussés** (`bd33847`..`5ad66f5`, `origin/main`), repo VERT à chaque étape
+  (type-check + lint, **542** reference / **177** variants tests).
+- **Cells de-Tailwind** (`bd33847`) : 8 cells/views → `.ui-data-table__*` (skin + resolver). 2 looks
+  d'en-tête (strong/label), lien neutre souligné, séparateur réel, `DurationCell` aplati.
+- **Token contraste en-tête** (`2df4c3b`) : `color.semantic.table-header.{background,foreground}`
+  (fg neutral.600, ~7.2:1 AA) + alias ; en-tête assombri. Décodage archi tokens (primitive → semantic
+  par-rôle → alias shadcn `muted`/`accent`/`popover` = doublons des rôles).
+- **A11y cells** (`0038c77`) : retrait `tabIndex`/`aria-label` redondants sur `<td>/<th>`, statut icône
+  via `<span>` masqué, `aria-sort` + `aria-label` ArrowUpDown dynamique, noms accessibles.
+- **Quality/sécu** (`1ef69a7`) : `formatDuration`→`utils/`+test 5-niveaux, 4 views en `export function`,
+  garde `javascript:` sur `TruncableLinkCell` + suppression cast aveugle.
+- **Features de-Tailwind** (`60efb6c`) : ActionBar/NoResults/TruncatedContent/TableFooterContent →
+  classes chrome. DS `Input` pour go-to-page (label groupé « Page N of N », assoc implicite, plus d'`id`
+  → règle A11Y id-dupliqué + describedby). `role="status"`, `:where()` last-row, constante header-sticky.
+- **Readonly** (`6f62015`) : `Readonly<Props>` sur les 32 signatures de composants DataTable.
+- **Polish skin + `DateCell` truncate** (`ae91759`) : `border-collapse:collapse` (défaut UA `separate` =
+  écarts) ; colonne checkbox carrée (largeur = `--ui-data-table-cell-height`), centrée, sans padding +
+  sélecteur `:has(input[type=checkbox])` (le checkbox natif n'a pas d'attribut `role`) ; en-têtes blancs
+  - row 60px ; **filet header/corps en `box-shadow` sur les cellules** (thead sticky + collapse = bordures
+    `<tr>`/cellules non peintes) ; `.ui-data-table__header-row` dédiée (prop `header` sur `TableRow`) ;
+    filets toolbar/footer ; prop `truncate` sur `DateCell` (via `TruncatedContent`).
+- **Refactor `ui-table` → `ui-data-table`** (`5ad66f5`) : namespace complet renommé (`ui-data-table*` /
+  `--ui-data-table-*` / `UI_DATA_TABLE_*`) ; **block `.ui-data-table` déplacé sur la Card conteneur**
+  (porte les vars → toolbar/footer HORS `<table>` héritent enfin → filets/search-width/z-index sticky
+  fonctionnent, plus grisés) ; le `<table>` = élément **`.ui-data-table__table`**. Padding intérieur Card
+  (`--ui-data-table-padding`), ActionBar sans padding latéral, sort-toggle prend l'auto-margin, story
+  fond `--color-background-muted` + 24px.
+
 ### 2026-07-02 — DataTable : arbre interne restructuré (primitives/features/cells/hooks/utils) + barrels
 
 - **3 commits** (`4fbc266`, `fe192d4`, `571c860`). Refactor **purement structurel**, repo VERT
