@@ -1,6 +1,6 @@
 import './styles.css'
 
-export { Avatar } from './Avatar'
+export { Avatar } from './components/Avatar'
 export type {
   AvatarProps,
   AvatarSize,
@@ -9,75 +9,89 @@ export type {
   AvatarIconProps,
   AvatarInitialsProps,
   AvatarImageStatus,
-} from './Avatar'
+} from './components/Avatar'
 
-export { Badge } from './Badge'
-export type { BadgeProps, BadgeSize, BadgeVariant } from './Badge'
+export { Badge } from './components/Badge'
+export type { BadgeProps, BadgeSize, BadgeVariant } from './components/Badge'
 
-export { Button } from './Button'
-export type { ButtonProps } from './Button'
+export { Button } from './components/Button'
+export type { ButtonProps } from './components/Button'
 // Router-coupled Button adapters are intentionally NOT re-exported here — import them from their
 // dedicated subpaths so the plain `Button` stays framework-free (presentational-first):
 //   import { LinkButton } from '@fubaritico-ds/reference/LinkButton'         (react-router)
 //   import { NextLinkButton } from '@fubaritico-ds/reference/NextLinkButton' (next)
 
-export { Card } from './Card'
-export type { CardProps, CardVariant, CardSlotProps } from './Card'
+export { Card } from './components/Card'
+export type { CardProps, CardVariant, CardSlotProps } from './components/Card'
 
-export { Checkbox } from './Checkbox'
-export type { CheckboxProps, CheckboxSize } from './Checkbox'
+export { Checkbox } from './components/Checkbox'
+export type { CheckboxProps, CheckboxSize } from './components/Checkbox'
 
-export { default as DataTable, DataTableVirtualized } from './DataTable'
-export type { DataTableProps, DataTableVirtualizedProps } from './DataTable'
+export {
+  default as DataTable,
+  DataTableVirtualized,
+} from './components/DataTable'
+export type {
+  DataTableProps,
+  DataTableVirtualizedProps,
+} from './components/DataTable'
 
-export { Dropdown } from './Dropdown'
-export type { DropdownProps, DropdownOption } from './Dropdown'
+export { Dropdown } from './components/Dropdown'
+export type { DropdownProps, DropdownOption } from './components/Dropdown'
 
-export { Drawer } from './Drawer'
+export { Drawer } from './components/Drawer'
 export type {
   DrawerProps,
   DrawerHeaderProps,
   DrawerBodyProps,
   DrawerVariant,
-} from './Drawer'
+} from './components/Drawer'
 
-export { Icon } from './Icon'
-export type { IconProps, IconName, IconSize } from './Icon'
+export { Icon } from './components/Icon'
+export type { IconProps, IconName, IconSize } from './components/Icon'
 
-export { IconButton } from './IconButton'
-export type { IconButtonProps } from './IconButton'
+export { IconButton } from './components/IconButton'
+export type { IconButtonProps } from './components/IconButton'
 
-export { Image } from './Image'
-export type { AspectRatio, ImageProps, ImageState } from './Image'
+export { Image } from './components/Image'
+export type { AspectRatio, ImageProps, ImageState } from './components/Image'
 
-export { Input } from './Input'
-export type { InputProps, InputSize, InputMessageType } from './Input'
+export { Input } from './components/Input'
+export type {
+  InputProps,
+  InputSize,
+  InputMessageType,
+} from './components/Input'
 
-export { ListboxItem, ListboxList } from './Listbox'
+export { ListboxItem, ListboxList } from './components/Listbox'
 export type {
   ListboxItemProps,
   ListboxItemState,
   ListboxListProps,
   ListboxVariant,
-} from './Listbox'
+} from './components/Listbox'
 
-export { Menu } from './Menu'
-export type { MenuProps, MenuItemProps, MenuVariant } from './Menu'
+export { Menu } from './components/Menu'
+export type { MenuProps, MenuItemProps, MenuVariant } from './components/Menu'
 
-export { HeroImage } from './HeroImage'
-export type { HeroImageProps } from './HeroImage'
+export { HeroImage } from './components/HeroImage'
+export type { HeroImageProps } from './components/HeroImage'
 
-export { Modal } from './Modal'
-export type { ModalProps } from './Modal'
+export { Modal } from './components/Modal'
+export type { ModalProps } from './components/Modal'
 
-export { Pagination } from './Pagination'
-export type { PaginationProps } from './Pagination'
+export { Pagination } from './components/Pagination'
+export type { PaginationProps } from './components/Pagination'
 
-export { Rating } from './Rating'
-export type { RatingProps, RatingSize, RatingVariant } from './Rating'
+export { Rating } from './components/Rating'
+export type {
+  RatingProps,
+  RatingSize,
+  RatingVariant,
+} from './components/Rating'
 
-export { TrailerCard } from './TrailerCard'
-export type { TrailerCardProps } from './TrailerCard'
+export { TrailerCard } from './components/TrailerCard'
+export type { TrailerCardProps } from './components/TrailerCard'
 
 export {
   Carousel,
@@ -86,7 +100,7 @@ export {
   CarouselLoading,
   CarouselNavigation,
   CarouselPagination,
-} from './Carousel'
+} from './components/Carousel'
 export type {
   CarouselArrowPosition,
   CarouselCounterProps,
@@ -97,36 +111,39 @@ export type {
   CarouselPaginationProps,
   CarouselProps,
   CarouselVariant,
-} from './Carousel'
+} from './components/Carousel'
 
-export { Tabs } from './Tabs'
-export type { TabsProps, TabsVariant } from './Tabs'
+export { Tabs } from './components/Tabs'
+export type { TabsProps, TabsVariant } from './components/Tabs'
 
-export { Tooltip } from './Tooltip'
+export { Tooltip } from './components/Tooltip'
 export type {
   TooltipProps,
   TooltipPlacement,
   TooltipManualPosition,
   TooltipPosition,
-} from './Tooltip'
+} from './components/Tooltip'
 
-export { Skeleton } from './Skeleton'
-export type { SkeletonProps, SkeletonShape } from './Skeleton'
+export { Skeleton } from './components/Skeleton'
+export type { SkeletonProps, SkeletonShape } from './components/Skeleton'
 
-export { Typography } from './Typography'
-export type { TypographyProps, TypographyVariant } from './Typography'
+export { Typography } from './components/Typography'
+export type {
+  TypographyProps,
+  TypographyVariant,
+} from './components/Typography'
 
-export { Portal } from './Portal'
-export type { PortalProps } from './Portal'
+export { Portal } from './components/Portal'
+export type { PortalProps } from './components/Portal'
 
-export { Spinner } from './Spinner'
-export type { SpinnerProps, SpinnerSize } from './Spinner'
+export { Spinner } from './components/Spinner'
+export type { SpinnerProps, SpinnerSize } from './components/Spinner'
 
-export { Typeahead } from './Typeahead'
+export { Typeahead } from './components/Typeahead'
 export type {
   TypeaheadProps,
   TypeaheadItemProps,
   TypeaheadEmptyProps,
   TypeaheadInputProps,
   TypeaheadMenuProps,
-} from './Typeahead'
+} from './components/Typeahead'

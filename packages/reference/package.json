@@ -18,14 +18,14 @@
     },
     "./next": {
       "import": {
-        "types": "./dist/next/index.d.ts",
-        "default": "./dist/next/index.js"
+        "types": "./dist/components/next/index.d.ts",
+        "default": "./dist/components/next/index.js"
       }
     },
     "./*": {
       "import": {
-        "types": "./dist/*/index.d.ts",
-        "default": "./dist/*/index.js"
+        "types": "./dist/components/*/index.d.ts",
+        "default": "./dist/components/*/index.js"
       }
     },
     "./styles.css": "./dist/styles.css"
