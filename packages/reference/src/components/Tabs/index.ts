@@ -1,4 +1,10 @@
-export { default as Tabs } from './Tabs'
+export { Tabs, default } from './Tabs'
+export { TabsList } from './TabsList'
+export { TabsTrigger } from './TabsTrigger'
+export { TabsPanel } from './TabsPanel'
+export { useTabsContext } from './TabsContext'
+export { useTabsListContext } from './TabsListContext'
+
 export type { TabsProps, TabsVariant } from './Tabs'
 export type { TabsListProps } from './TabsList'
 export type { TabsTriggerProps } from './TabsTrigger'

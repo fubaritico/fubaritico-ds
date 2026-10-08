@@ -1,0 +1,145 @@
+/**
+ * Tabs — native BEM skin.
+ *
+ * Two looks, selected on the list AND on each trigger: `--underline` (a rule under the row, the
+ * active tab marked by a thicker segment) and `--pills` (a tinted track, the active tab a raised
+ * capsule).
+ *
+ * CONTRAST FIX carried by this migration: the Tailwind version painted the active pill with
+ * `bg-primary` and left the label at the default foreground. That read fine while `--color-primary`
+ * was blue, and became dark-on-dark once primary turned neutral.900 — the same trap the Listbox
+ * migration fixed in reverse. The active pill now flips to `--color-primary-foreground`, so the
+ * pair always moves together.
+ *
+ * Geometry is logical (`border-block-end`, `margin-block-*`, `padding-inline`) so the row behaves
+ * in any writing mode.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-tabs-*` vars on `.ui-tabs`.
+ *   2. Redefine a global token → re-skins every Tabs.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-tabs {
+    /* ---- override API (component-scoped) ---- */
+    --ui-tabs-gap: var(--spacing-1);
+    --ui-tabs-rule-color: var(--color-border);
+    --ui-tabs-rule-width: var(--spacing-px);
+    --ui-tabs-track-bg: var(--color-background-muted);
+    --ui-tabs-track-padding: var(--spacing-1);
+    --ui-tabs-track-radius: var(--radius-lg);
+    --ui-tabs-trigger-padding-inline: var(--spacing-4);
+    --ui-tabs-trigger-padding-block: var(--spacing-2);
+    --ui-tabs-trigger-radius: var(--radius-md);
+    --ui-tabs-trigger-color: var(--color-foreground);
+    --ui-tabs-trigger-active-color: var(--color-primary);
+    --ui-tabs-trigger-active-bg: var(--color-primary);
+    --ui-tabs-trigger-active-fg: var(--color-primary-foreground);
+    --ui-tabs-trigger-font-family: var(--font-roboto);
+    --ui-tabs-trigger-font-size: var(--font-size-sm);
+    --ui-tabs-trigger-font-weight: var(--font-weight-medium);
+    --ui-tabs-trigger-gap: var(--spacing-2);
+    --ui-tabs-indicator-width: var(--spacing-0-5);
+    --ui-tabs-ring-color: var(--color-ring);
+    --ui-tabs-ring-offset: var(--spacing-0-5);
+    --ui-tabs-panel-offset: var(--spacing-4);
+    --ui-tabs-transition-duration: var(--duration-fast);
+    --ui-tabs-transition-easing: var(--easing-standard);
+
+    /* ---- base ---- */
+    box-sizing: border-box;
+    inline-size: 100%;
+  }
+
+  /* ---- list ---- */
+  .ui-tabs__list {
+    display: flex;
+    gap: var(--ui-tabs-gap);
+  }
+
+  .ui-tabs__list--underline {
+    border-block-end: var(--ui-tabs-rule-width) solid var(--ui-tabs-rule-color);
+  }
+
+  /* A track that hugs its tabs rather than stretching across the container. */
+  .ui-tabs__list--pills {
+    inline-size: fit-content;
+    padding: var(--ui-tabs-track-padding);
+    border-radius: var(--ui-tabs-track-radius);
+    background-color: var(--ui-tabs-track-bg);
+  }
+
+  /* ---- trigger ---- */
+  .ui-tabs__trigger {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: var(--ui-tabs-trigger-gap);
+    padding-inline: var(--ui-tabs-trigger-padding-inline);
+    padding-block: var(--ui-tabs-trigger-padding-block);
+    border: 0;
+    background-color: transparent;
+    color: var(--ui-tabs-trigger-color);
+    font-family: var(--ui-tabs-trigger-font-family);
+    font-size: var(--ui-tabs-trigger-font-size);
+    font-weight: var(--ui-tabs-trigger-font-weight);
+    cursor: pointer;
+    transition:
+      color var(--ui-tabs-transition-duration) var(--ui-tabs-transition-easing),
+      background-color var(--ui-tabs-transition-duration)
+        var(--ui-tabs-transition-easing);
+  }
+
+  .ui-tabs__trigger:focus-visible {
+    outline: 2px solid var(--ui-tabs-ring-color);
+    outline-offset: var(--ui-tabs-ring-offset);
+  }
+
+  /* Native `:disabled` — the trigger is a real <button>, so no modifier class is needed. */
+  .ui-tabs__trigger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* -- underline look -- */
+  /* The transparent segment reserves the indicator's space, so activating a tab shifts nothing.
+     The negative block margin pulls it onto the list's rule, which it then overlaps. */
+  .ui-tabs__trigger--underline {
+    position: relative;
+    border-block-end: var(--ui-tabs-indicator-width) solid transparent;
+    margin-block-end: calc(-1 * var(--ui-tabs-rule-width));
+  }
+
+  .ui-tabs__trigger--underline.ui-tabs__trigger--active {
+    border-block-end-color: var(--ui-tabs-trigger-active-color);
+    color: var(--ui-tabs-trigger-active-color);
+  }
+
+  /* -- pills look -- */
+  .ui-tabs__trigger--pills {
+    border-radius: var(--ui-tabs-trigger-radius);
+  }
+
+  /* Background AND foreground flip together — see the contrast note in the header. */
+  .ui-tabs__trigger--pills.ui-tabs__trigger--active {
+    background-color: var(--ui-tabs-trigger-active-bg);
+    color: var(--ui-tabs-trigger-active-fg);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ---- panel ---- */
+  .ui-tabs__panel {
+    margin-block-start: var(--ui-tabs-panel-offset);
+  }
+
+  /* ---- reduced motion ---- */
+  /* The colour cross-fade is decorative — the selected tab is conveyed by `aria-selected` and by
+     the indicator itself. Drop it when the user opts out (WCAG 2.3.3). */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-tabs__trigger {
+      transition: none;
+    }
+  }
+}

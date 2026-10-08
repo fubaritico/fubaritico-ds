@@ -1,20 +1,35 @@
 import clsx from 'clsx'
 import { useEffect } from 'react'
 
+import { tabsTriggerVariants } from '@fubaritico-ds/variants'
+
 import { useTabsContext } from './TabsContext'
 import { useTabsListContext } from './TabsListContext'
 
-import type { ButtonHTMLAttributes, KeyboardEvent, ReactNode } from 'react'
+import type { ComponentProps, KeyboardEvent, ReactNode } from 'react'
 
-export interface TabsTriggerProps
-  extends ButtonHTMLAttributes<HTMLButtonElement> {
+/** Props of {@link TabsTrigger}. */
+export interface TabsTriggerProps extends ComponentProps<'button'> {
   /** Value that identifies this tab */
   value: string
   /** Optional icon component */
   icon?: ReactNode
 }
 
-function TabsTrigger({
+/**
+ * A single tab button.
+ *
+ * Registers itself with the surrounding `Tabs.List` so arrow keys can reach it, and carries the
+ * roving `tabIndex` that keeps exactly one tab in the tab order.
+ *
+ * Must be rendered inside a `<Tabs.List>`.
+ *
+ * @param props - {@link TabsTriggerProps}.
+ * @param props.value - Value identifying the tab and its panel.
+ * @param props.icon - Optional leading glyph.
+ * @returns The rendered `role="tab"` button.
+ */
+export function TabsTrigger({
   value,
   icon,
   disabled,
@@ -118,34 +133,14 @@ function TabsTrigger({
       tabIndex={isActive ? 0 : -1}
       disabled={disabled}
       className={clsx(
-        'ui:px-4 ui:py-2 ui:font-roboto ui:text-sm ui:font-medium',
-        'ui:flex ui:items-center ui:gap-2',
-        'ui:transition-colors ui:duration-200',
-        'focus-visible:ui:outline-none focus-visible:ui:ring-2 focus-visible:ui:ring-ring focus-visible:ui:ring-offset-2',
-        !disabled && 'ui:cursor-pointer',
-        variant === 'underline' && [
-          'ui:relative ui:border-b-2 ui:border-transparent ui:-mb-px',
-          isActive
-            ? 'ui:text-primary ui:border-primary'
-            : 'ui:text-foreground hover:ui:text-foreground',
-          disabled &&
-            'ui:text-muted-foreground/50 ui:cursor-not-allowed hover:ui:text-muted-foreground/50',
-        ],
-        variant === 'pills' && [
-          'ui:rounded-md',
-          isActive
-            ? 'ui:bg-primary ui:shadow-sm'
-            : 'ui:text-foreground hover:ui:text-foreground',
-          disabled &&
-            'ui:text-muted-foreground/50 ui:cursor-not-allowed hover:ui:text-muted-foreground/50',
-        ],
+        tabsTriggerVariants({ variant, active: isActive }),
         className
       )}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       {...rest}
     >
-      {icon && icon}
+      {icon}
       {children}
     </button>
   )

@@ -1,5 +1,7 @@
 import clsx from 'clsx'
 
+import { TABS_PANEL_CLASS } from '@fubaritico-ds/variants'
+
 import { useTabsContext } from './TabsContext'
 
 import type { HTMLAttributes, ReactNode } from 'react'
@@ -16,7 +18,7 @@ export interface TabsPanelProps extends HTMLAttributes<HTMLDivElement> {
  * Automatically hidden/shown based on active tab value.
  * Provides proper ARIA attributes for accessibility.
  */
-function TabsPanel({ value, children, ...rest }: Readonly<TabsPanelProps>) {
+export function TabsPanel({ value, children, ...rest }: Readonly<TabsPanelProps>) {
   const { value: activeValue, prefix } = useTabsContext()
   const isActive = value === activeValue
 
@@ -32,7 +34,7 @@ function TabsPanel({ value, children, ...rest }: Readonly<TabsPanelProps>) {
       aria-labelledby={getTabId(value)}
       hidden={!isActive}
       {...rest}
-      className={clsx('ui:mt-4', rest.className)}
+      className={clsx(TABS_PANEL_CLASS, rest.className)}
     >
       {children}
     </div>

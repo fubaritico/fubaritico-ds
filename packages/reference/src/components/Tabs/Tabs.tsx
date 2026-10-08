@@ -1,17 +1,20 @@
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+
+import { TABS_CLASS } from '@fubaritico-ds/variants'
 
 import { TabsContext } from './TabsContext'
-import TabsList from './TabsList'
-import TabsPanel from './TabsPanel'
-import TabsTrigger from './TabsTrigger'
+import { TabsList } from './TabsList'
+import { TabsPanel } from './TabsPanel'
+import { TabsTrigger } from './TabsTrigger'
 
-import type { HTMLAttributes } from 'react'
+import type { TabsVariant } from '@fubaritico-ds/variants'
+import type { ComponentProps } from 'react'
 
-/** Tabs visual variant */
-export type TabsVariant = 'underline' | 'pills'
+export type { TabsVariant } from '@fubaritico-ds/variants'
 
-export interface TabsProps extends HTMLAttributes<HTMLDivElement> {
+/** Props of the {@link Tabs} root. */
+export interface TabsProps extends ComponentProps<'div'> {
   /** Default active tab value (uncontrolled) */
   defaultValue?: string
   /** Controlled active tab value */
@@ -25,12 +28,20 @@ export interface TabsProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * Tabs component for navigation between content sections.
- * Implements ARIA tabs pattern for accessibility.
- * Supports underline and pills variants.
- * Uses Compound Component pattern.
+ * Tabs — switches between sibling panels, following the ARIA tabs pattern.
+ *
+ * Works controlled (`value` + `onValueChange`) or uncontrolled (`defaultValue`). Composes
+ * `Tabs.List`, `Tabs.Trigger` and `Tabs.Panel`; the list owns roving focus and the arrow keys.
+ *
+ * @param props - {@link TabsProps}.
+ * @param props.defaultValue - Initially selected tab when uncontrolled.
+ * @param props.value - Selected tab when controlled.
+ * @param props.onValueChange - Called with the newly selected tab's value.
+ * @param props.variant - Visual look; defaults to `'underline'`.
+ * @param props.prefix - Namespaces the generated tab/panel ids, for several Tabs on one page.
+ * @returns The rendered tabs root.
  */
-function Tabs({
+export function Tabs({
   defaultValue = '',
   value,
   onValueChange,
@@ -45,26 +56,32 @@ function Tabs({
   const activeValue = value ?? internalValue
   const isControlled = value !== undefined
 
-  const handleValueChange = (newValue: string) => {
-    if (!isControlled) {
-      setInternalValue(newValue)
-    }
-    onValueChange?.(newValue)
-  }
+  // Stable so the memoised context value does not change on every parent render.
+  const handleValueChange = useCallback(
+    (newValue: string) => {
+      if (!isControlled) setInternalValue(newValue)
+      onValueChange?.(newValue)
+    },
+    [isControlled, onValueChange]
+  )
+
+  // Memoised so switching a tab does not re-render every trigger through an identity change.
+  const contextValue = useMemo(
+    () => ({
+      value: activeValue,
+      onValueChange: handleValueChange,
+      variant,
+      prefix,
+    }),
+    [activeValue, handleValueChange, variant, prefix]
+  )
 
   return (
-    <TabsContext.Provider
-      value={{
-        value: activeValue,
-        onValueChange: handleValueChange,
-        variant,
-        prefix,
-      }}
-    >
-      <div className={clsx('ui:w-full', className)} {...rest}>
+    <TabsContext value={contextValue}>
+      <div className={clsx(TABS_CLASS, className)} {...rest}>
         {children}
       </div>
-    </TabsContext.Provider>
+    </TabsContext>
   )
 }
 

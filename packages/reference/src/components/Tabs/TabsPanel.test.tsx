@@ -110,7 +110,7 @@ describe('TabsPanel', () => {
     expect(panel).toHaveClass('custom-class')
   })
 
-  it('renders with default mt-4 class', () => {
+  it('wears the panel element class', () => {
     const { container } = render(
       <Tabs defaultValue="tab1">
         <TabsPanel value="tab1">Content</TabsPanel>
@@ -118,7 +118,7 @@ describe('TabsPanel', () => {
     )
 
     const panel = container.querySelector('[role="tabpanel"]')
-    expect(panel).toHaveClass('ui:mt-4')
+    expect(panel).toHaveClass('ui-tabs__panel')
   })
 
   it('shows content for multiple panels and hides inactive ones', () => {

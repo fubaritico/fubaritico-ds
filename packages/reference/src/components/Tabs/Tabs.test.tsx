@@ -31,7 +31,7 @@ describe('Tabs', () => {
     )
 
     const firstTab = screen.getByRole('tab', { name: 'Tab 1' })
-    expect(firstTab).toHaveClass('ui:border-b-2')
+    expect(firstTab).toHaveClass('ui-tabs__trigger--underline')
   })
 
   it('renders with pills variant', () => {
@@ -44,7 +44,7 @@ describe('Tabs', () => {
     )
 
     const firstTab = screen.getByRole('tab', { name: 'Tab 1' })
-    expect(firstTab).toHaveClass('ui:rounded-md')
+    expect(firstTab).toHaveClass('ui-tabs__trigger--pills')
   })
 
   it('sets first tab as active by default', () => {
