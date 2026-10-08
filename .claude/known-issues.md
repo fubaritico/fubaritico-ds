@@ -34,6 +34,14 @@ Put here the know issues to avoid cluttering the context window.
   `collapse` qui les honore (d'où `border-collapse: collapse` sur `.ui-data-table__table`).
 - **`:has([role=checkbox])` NE matche PAS un `<input type=checkbox>` natif** (rôle checkbox implicite, pas
   d'attribut `role`) → utiliser **`:has(input[type=checkbox])`** (colonne select carrée/flush).
+- **Chevron atténué d'`ArrowUpDown` : exception WCAG 1.4.11 ASSUMÉE (2026-10-08)** :
+  `--ui-sort-arrows-dimmed-opacity: 0.5` ramène `--color-foreground-muted` (neutral.500) à ~2,05:1 sur
+  blanc, sous le plancher de 3:1 des objets graphiques. **Accepté, ce n'est pas un trou** : la direction
+  active est portée **redondamment** par l'autre chevron à pleine opacité (~5,3:1) ET par l'`aria-label`
+  du bouton (`Sort <col> (ascending|descending)`) — le chevron atténué ne porte aucune information
+  nécessaire à la compréhension. Même raisonnement que la piste vide du `Rating`. Si un contraste plus
+  franc est voulu un jour, remonter `--ui-sort-arrows-dimmed-opacity` à ~0,65–0,7 (var d'override,
+  scopée). **Ne PAS le « corriger » d'office** — c'est un choix visuel délibéré.
 - **`DropdownFilter` : gardé, PAS mort** — c'est une **brique composable** (comme toutes les cells), juste
   non câblée dans la config d'exemple. NE PAS la supprimer sous prétexte qu'aucune config ne l'appelle.
   Décision de câblage (`leftActions`) à venir.

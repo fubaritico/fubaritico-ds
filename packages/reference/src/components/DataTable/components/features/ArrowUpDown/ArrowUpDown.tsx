@@ -4,13 +4,14 @@ import { SORT_ARROWS_CLASS, sortArrowVariants } from '@fubaritico-ds/variants'
 
 import { Icon } from '../../../../Icon'
 
+import type { ComponentProps } from 'react'
+
 /** Current sort direction of the column, as returned by the table state manager. */
 export type SortDirection = 'asc' | 'desc' | false
 
 /** Props of the {@link ArrowUpDown} sort toggle. */
-export interface ArrowUpDownProps {
-  /** Extra classes for the button. */
-  className?: string
+export interface ArrowUpDownProps
+  extends Omit<ComponentProps<'button'>, 'onClick'> {
   /** Column name, used to build the accessible label. */
   colName?: string
   /** Click handler — toggles the column sort. */
@@ -21,6 +22,12 @@ export interface ArrowUpDownProps {
 
 /** Pixel size of the chevron glyphs (matches the original 16px arrows). */
 const CHEVRON_SIZE = 16
+
+/** Accessible-label suffix announcing the active sort direction. */
+const SORT_DIRECTION_SUFFIX: Record<Exclude<SortDirection, false>, string> = {
+  asc: ' (ascending)',
+  desc: ' (descending)',
+}
 
 /**
  * Stacked up/down chevron button that toggles a column's sort direction. The chevron for the
@@ -35,14 +42,11 @@ export function ArrowUpDown({
   colName,
   onClick,
   sorting,
+  ...rest
 }: Readonly<ArrowUpDownProps>) {
-  const direction =
-    sorting === 'asc'
-      ? ' (ascending)'
-      : sorting === 'desc'
-        ? ' (descending)'
-        : ''
-  const label = `${colName ? `Sort ${colName}` : 'Sort'}${direction}`
+  const direction = sorting ? SORT_DIRECTION_SUFFIX[sorting] : ''
+  const sortingLabel = colName ? `Sort ${colName}` : 'Sort'
+  const label = `${sortingLabel}${direction}`
 
   return (
     <button
@@ -50,6 +54,7 @@ export function ArrowUpDown({
       aria-label={label}
       className={clsx(SORT_ARROWS_CLASS, className)}
       onClick={onClick}
+      {...rest}
     >
       <Icon
         name="ChevronUp"
