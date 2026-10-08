@@ -3,10 +3,21 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { getBlurDataUrl } from '@fubaritico-ds/shared'
 
+import {
+  IMAGE_BLUR_CLASS,
+  IMAGE_CLASS,
+  IMAGE_FALLBACK_CLASS,
+  imageVariants,
+} from '@fubaritico-ds/variants'
+
 import { Icon } from '../Icon'
 
-import type { ImgHTMLAttributes, ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 
+/** Pixel size of the placeholder glyph shown when the source fails. */
+const FALLBACK_ICON_SIZE = 48
+
+/** Loading lifecycle of the {@link Image}. */
 export type ImageState = 'loading' | 'loaded' | 'error'
 
 export type AspectRatio = '2/3' | '16/9' | '1/1' | '4/3' | '3/2'
@@ -14,7 +25,7 @@ export type AspectRatio = '2/3' | '16/9' | '1/1' | '4/3' | '3/2'
 export type ImageLoading = 'lazy' | 'eager'
 
 export interface ImageProps
-  extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'placeholder'> {
+  extends Omit<ComponentProps<'img'>, 'placeholder' | 'onLoad' | 'onError'> {
   /** Image source URL */
   src: string
   /** Alt text for accessibility */
@@ -39,7 +50,7 @@ export interface ImageProps
   loading?: ImageLoading
 }
 
-function Image({
+export function Image({
   src,
   alt,
   blurDataUrl,
@@ -127,20 +138,15 @@ function Image({
   }, [onError])
 
   const defaultFallback = (
-    <div className="ui:flex ui:h-full ui:w-full ui:items-center ui:justify-center ui:bg-muted">
-      <Icon
-        name="Photo"
-        size={48}
-        className="ui:text-muted-foreground"
-        aria-hidden="true"
-      />
+    <div className={IMAGE_FALLBACK_CLASS}>
+      <Icon name="Photo" size={FALLBACK_ICON_SIZE} aria-hidden="true" />
     </div>
   )
 
   return (
     <div
       ref={containerRef}
-      className={clsx('ui:relative ui:overflow-hidden ui:bg-muted', className)}
+      className={clsx(IMAGE_CLASS, className)}
       style={aspectRatio ? { aspectRatio } : undefined}
       data-state={state}
     >
@@ -148,29 +154,26 @@ function Image({
         (fallback ?? defaultFallback)
       ) : (
         <>
-          {effectiveBlur && state === 'loading' && (
+          {effectiveBlur && state === 'loading' ? (
             <img
               src={effectiveBlur}
               alt=""
               aria-hidden="true"
-              className="ui:absolute ui:inset-0 ui:h-full ui:w-full ui:scale-105 ui:object-cover"
+              className={IMAGE_BLUR_CLASS}
             />
-          )}
+          ) : null}
 
-          {blurReady && isVisible && (
+          {blurReady && isVisible ? (
             <img
               ref={imgRef}
               src={src}
               alt={alt}
               onLoad={handleLoad}
               onError={handleError}
-              className={clsx(
-                'ui:absolute ui:inset-0 ui:h-full ui:w-full ui:object-cover ui:transition-opacity ui:duration-300',
-                state === 'loaded' ? 'ui:opacity-100' : 'ui:opacity-0'
-              )}
+              className={imageVariants({ loaded: state === 'loaded' })}
               {...rest}
             />
-          )}
+          ) : null}
         </>
       )}
     </div>

@@ -17,6 +17,7 @@
 @import './styles/dropdown.css';
 @import './styles/field.css';
 @import './styles/icon-button.css'; /* extension of button.css — MUST load after it */
+@import './styles/image.css';
 @import './styles/input.css';
 @import './styles/listbox.css';
 @import './styles/modal.css';

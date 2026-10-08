@@ -1,0 +1,86 @@
+/**
+ * Image — native BEM skin.
+ *
+ * A ratio-locked media box with a progressive reveal: `.ui-image` is the clipping frame,
+ * `.ui-image__blur` is the low-resolution placeholder shown while loading, `.ui-image__img` is the
+ * real picture that fades in once decoded, and `.ui-image__fallback` is what replaces it all when
+ * the source fails.
+ *
+ * The aspect ratio itself is NOT a skin concern: it is a per-instance value set inline by the
+ * component (Skeleton precedent — the skin owns the look, not the geometry).
+ *
+ * Both layers are absolutely positioned over the frame so the swap from placeholder to picture
+ * causes no reflow: the frame's height comes from the ratio, never from the image's own box.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-image-*` vars on `.ui-image`.
+ *   2. Redefine a global token → re-skins every Image.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-image {
+    /* ---- override API (component-scoped) ---- */
+    --ui-image-bg: var(--color-primitive-neutral-100);
+    --ui-image-fallback-color: var(--color-foreground-muted);
+    --ui-image-fit: cover;
+    --ui-image-blur-scale: 1.05;
+    --ui-image-transition-duration: var(--duration-normal);
+    --ui-image-transition-easing: var(--easing-standard);
+
+    /* ---- base ---- */
+    /* Positioning context + clipping frame. The box is sized by the inline `aspect-ratio`. */
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--ui-image-bg);
+  }
+
+  /* ---- layers ---- */
+  /* Shared geometry for the placeholder and the picture: both fill the frame exactly, so swapping
+     one for the other shifts nothing. */
+  .ui-image__blur,
+  .ui-image__img {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: var(--ui-image-fit);
+  }
+
+  /* Scaled up a touch so the blur's soft edges never reveal the frame behind them. */
+  .ui-image__blur {
+    scale: var(--ui-image-blur-scale);
+  }
+
+  /* The picture fades in on decode; it starts transparent so the placeholder shows through. */
+  .ui-image__img {
+    opacity: 0;
+    transition: opacity var(--ui-image-transition-duration)
+      var(--ui-image-transition-easing);
+  }
+
+  .ui-image__img--loaded {
+    opacity: 1;
+  }
+
+  /* ---- fallback ---- */
+  .ui-image__fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 100%;
+    block-size: 100%;
+    color: var(--ui-image-fallback-color);
+  }
+
+  /* ---- reduced motion ---- */
+  /* The fade is decorative — the picture arriving is the information. Drop it when the user opts
+     out (WCAG 2.3.3), matching the Rating/Button precedent. */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-image__img {
+      transition: none;
+    }
+  }
+}
