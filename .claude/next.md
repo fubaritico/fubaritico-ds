@@ -3,47 +3,48 @@
 > Loaded at session start (CLAUDE.md `### Next` → `@next.md`). Single source for "what's next".
 > North-star program: **`files/plans/roadmap.md`** (phases A→F).
 
-> ## ✅ CONSIGNE DE BRIEFING — HONORÉE LE 2026-10-08
+> ## ▶ PROCHAINE SESSION — LE COLOR PICKER, PAR LE SOCLE
 >
-> Le briefing de reprise demandé le 2026-09-16 a été délivré (écart réel : ~12 semaines depuis le
-> dernier commit de code `672acdc`, 2026-07-16). Garder le réflexe pour toute reprise espacée : se
-> situer dans le temps d'abord (hook `SessionStart` + `~/.claude/hooks/session-log.sh report`), puis
-> briefer avant de coder. Voir [[document-why-of-uncommitted-work]].
+> Cadrage fait le 2026-10-09, **`Slider` livré** (`dfe58e5`). Le reste est à construire.
 >
-> **Soldé dans la foulée** : la dette doc (commit `199e99d`) et `ArrowUpDown` (commit `742887e`).
-> **Reste ouvert** : le stub `WithTooltip` (voir EN SUSPENS) et `/sonar`, **bloqué faute de
-> `SONAR_TOKEN`** — aucun fichier `.env` n'existe à la racine ; le dev doit en générer un sur
-> SonarCloud (Account → Security) et l'y ajouter. Donc l'hypothèse **S3358** sur l'origine du ternaire
-> imbriqué reste **non confirmée** (sans conséquence : le ternaire a disparu).
-
-> **▶ PROCHAINE SESSION — PORTER LE COMPOSANT `ProgressBar`** (cadrage validé le 2026-09-16, rien de
-> codé encore). Priorisée par le dev : composant **riche en options**, bon candidat **marque blanche**,
-> destiné à être **réutilisé dans un autre projet** — c'est la raison de le faire maintenant.
+> **Cible validée** : l'écran **Google** — aire 2D saturation/valeur + curseur de teinte + champ
+> hex + lectures RGB/HSL. Les curseurs par canal d'Illustrator viendront comme **mode d'entrée**
+> ultérieur, pas comme second composant : ils se réduisent au même `Slider` avec un `track-image`
+> différent et la même machine. La bande « Recent Colors » est une option à part.
 >
-> **Source à porter** (validée) : repo sibling
-> `react-and-react-native-financial-app/packages/ui/src/components/atoms/ProgressBar/` (RN+Web → on garde
-> **web-only**). Même origine que Checkbox/Tooltip/Pagination/Dropdown (cf. `completed.md` 2026-06-18).
-> Cible : `packages/reference/src/components/ProgressBar/` (**dossier vide** aujourd'hui).
+> **Décisions verrouillées :**
 >
-> **Décisions de cadrage (verrouillées) :**
+> - **La source de vérité est HSVA**, jamais le hex. Dériver le HSV d'un hex **perd de
+>   l'information** : `#000000` n'a ni teinte ni saturation, donc saturation à 0 puis retour ⇒ la
+>   teinte saute au rouge. C'est le bug de tous les pickers naïfs. Hex et RGB sont des **sorties**.
+> - **Le champ hex a son propre brouillon**, validé au blur/Enter — sinon il se reformate pendant
+>   qu'on tape.
+> - **Machine (Tier 4)**, justifiée par 2 critères du skill `/state-storage` : mises à jour
+>   partielles fréquentes (pointermove) + enfants lisant des tranches différentes (l'aire lit s/v,
+>   la teinte lit h, le champ lit une chaîne). Cycle `idle → dragging(area|hue|alpha) → idle`, avec
+>   `onChange` continu et `onChangeComplete` au relâché.
+> - **Châssis neutre, dégradé = donnée.** Un picker est chromatique par nature ; ce qui reste
+>   neutre et géométrique, c'est la piste, le pouce, l'anneau de focus, le panneau.
+> - **Zéro dépendance de couleur.** ~100 lignes de conversions hex↔rgb↔hsv↔hsl à la main
+>   (`react-colorful` fait 2,8 Ko sans dépendance — c'est la preuve). Ne PAS imposer colord/culori.
+> - **a11y de l'aire 2D** : WAI-ARIA n'a **pas** de motif slider 2D (issue APG ouverte). Approche
+>   retenue : deux `<input type="range">` visuellement masqués (rôle, aria-value*, clavier gratuits)
+>   + `aria-roledescription="2D slider"`. Et `aria-valuetext` doit dire « rouge foncé, saturation
+>   45 % », pas « x: 120 ». Référence : react-aria.adobe.com/blog/accessible-color-descriptions.
+> - **EyeDropper API** : Chromium uniquement (ni Firefox ni Safari) ⇒ amélioration progressive.
+> - **`<input type="color">`** a gagné `alpha`/`colorspace` (Safari 18.4 en tête). Si le besoin est
+>   « un champ couleur dans un formulaire » sans exigence visuelle, c'est la bonne réponse — ne pas
+>   reconstruire ce que la plateforme donne.
 >
-> - **Périmètre v1 = déterminé seul** (`value`/`max`). `buffer` (2e segment, à la MUI) et **mode
->   indéterminé** = extensions v2 possibles, PAS dans ce lot. L'indéterminé recoupe le `Spinner` → devra
->   être justifié + trancher reduced-motion (précédents opposés : Skeleton retire / Spinner ralentit).
-> - **REJET de `color: string`** (la source interpole `var(--color-base-${color}-DEFAULT)` → zéro
->   type-safety, token non garanti, contredit « neutral par défaut, brand en opt-in »). Remplacé par un
->   **axe `variant` fermé** (précédent Badge/Button) + override `--ui-progress-bar-indicator-color`.
-> - **REJET de `size: thick | thin`** → **`sm | md | lg`**, l'axe de tous les composants migrés.
-> - **`metaLeft`/`metaRight` GARDÉS** (ligne de légende sous la barre, choix explicite du dev contre ma
->   recommandation de les sortir en composition). ⚠️ **Question ouverte** : les renommer `metaStart`/
->   `metaEnd` (noms logiques, cohérent avec la culture logical-properties du repo / RTL de Rating) ?
-> - **a11y — 2 trous de la source à corriger** : `role="progressbar"` **sans nom accessible**
->   (`aria-label`/`aria-labelledby` obligatoire) ; pas d'`aria-valuetext` pour un affichage non-%.
-> - **RTL** : fill en **`inline-size`**, le **skin possède la direction** (la source utilise `width: %`
->   dans un flex row physique — même piège que le `clip-path` inline qui avait cassé le RTL de Rating).
+> **Ordre :**
 >
-> Livrables : skin BEM `progress-bar.css` + resolver `progressBarVariants` (`@fubaritico-ds/variants`) +
-> composant + tests 5 niveaux + story + README. `/new-react-component` → `/story` → `/test` → `/review`.
+> 1. **`packages/behaviors`** (TS pur, zéro React) — le paquet manque de toute façon pour le Toast.
+>    Y poser les conversions de couleur + la `ColorPickerMachine`, testables sans rendu.
+> 2. **`ColorArea`** — l'aire 2D, même mécanique de pouce que le Slider, deux axes.
+> 3. **`Popover`** — surface ancrée libre, **absente** du DS (`Dropdown` est un menu, pas ça).
+> 4. **`ColorPicker`** — l'assemblage.
+>
+> C'est **plusieurs sessions**, pas une.
 
 ## EN SUSPENS — à finir proprement, PAS abandonné
 
@@ -129,12 +130,33 @@ l'API TanStack. Plan/checklist : `files/plans/datatable-migration.md`.
 ## THREAD — white-label native-CSS DS (Phase B)
 
 Plan : `files/plans/native-css-migration.md`. Memory : `native-css-migration-backlog`, `white-label-native-css`.
-**DONE** (log dans `completed.md`) : Badge, Button(+Link/NextLink), Typography(body1/body2), Spinner,
-Skeleton, Avatar(R19 compound), IconButton, Card — atoms ; Input, Rating — molecules. DS primary = neutral ;
-radius ≤ 6px ; `react/jsx-no-leaked-render` enforced ; tokens kebab-case. Chaque composant migré = README + story.
-**NEXT** : **Image** (25 `ui:`, →Icon, dernière Molecule) → Compounds : Listbox(37) → Menu(5) → Modal(8) →
-Drawer(38) → Tabs(49) → Carousel(138) → Typeahead(23, capstone). Icon & Portal NON migrés (rien ne les bloque).
-**A11Y follow-up** : Button `outline` emprunte `--color-input` (~1.48:1) → même gap WCAG 1.4.11 que l'input.
+
+**MIGRATION QUASI TERMINÉE.** 28 composants portent un README et un skin BEM. Ajouts du 2026-10-08/09
+au-delà du backlog initial : **Menu, Modal, Typeahead, Image, Drawer, Tabs** migrés ; **Alert**,
+**ProgressBar**, **Slider** écrits ; **BottomSheet** (ex-Drawer, renommé) ; **Drawer** réécrit sur
+`<dialog>` natif.
+
+**RESTE SUR TAILWIND — exclu du paquet publié, pas supprimé** : `Carousel` (138 classes) et
+`next/*` (50). Ils vivent au dépôt, hors build. `HeroImage` est **parqué en `.bak`** (voir son
+`PARKED.md`), `TrailerCard` supprimé — tous deux couplés au domaine TMDB.
+
+**Icon, Portal, ConditionalWrapper** : zéro Tailwind, donc déjà compatibles ; il leur manque
+seulement un README.
+
+## LIVRÉ — paquets consommables par le monorepo voisin
+
+`01be734`. Quatre paquets publics en **0.1.0**, tarballs dans `dist-tarballs/` (gitignoré) avec un
+`INSTALL.md`. Doc d'intégration à la racine : **`INTEGRATION.md`**.
+
+Cinq blocages levés : `styles` n'était pas publiable ; le barrel injectait Tailwind + preflight ;
+l'export `./styles.css` pointait le mauvais fichier ; `msw` était livré en dépendance (désormais
+peer optionnelle) ; **les 27 README de composants ne partaient pas** (`files: ['dist']`) — un script
+les copie maintenant dans `dist`, ce qui compte surtout pour une IA intégratrice.
+
+`getBlurDataUrl` est internalisé ⇒ `reference` ne dépend plus de `shared` à l'exécution.
+
+⚠️ `reference` reste officiellement un **bac à sable, pas un livrable** (cf. `CLAUDE.md`). On le
+consomme comme **v1 temporaire**, décision assumée du dev ; les chemins pourront bouger.
 
 ## Décisions verrouillées
 

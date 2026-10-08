@@ -2,6 +2,58 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-10-08/09 — Nuit longue : 8 composants, le trio dialog réparé, le DS livrable, le Slider
+
+Session étalée sur deux jours calendaires, **13 commits poussés**, repo vert à chaque étape
+(690 tests reference / 227 variants / 19 shared à la fin).
+
+- **Dette doc soldée** (`199e99d`) — le chemin `src/<Component>/` corrigé partout, mais surtout deux
+  périmés plus graves : `patterns-ui.md` et `new-react-component` prescrivaient encore **Tailwind
+  `ui:`** et le pattern **`const X: FC`**. Template réécrit sur le resolver, ordre **skin → resolver
+  → composant**, `ui:` requalifié en legacy.
+- **`ArrowUpDown`** (`742887e`) — le working tree était **cassé** (lint rouge) : Record map ajoutée
+  mais jamais branchée + IIFE encore active. Soldé. Puis `7616184` : map partagée avec
+  `SortableHeaderCellView`, `toSortableNumber` extrait (bloc dupliqué, `NaN` → 0, comparateur qui ne
+  renvoyait **jamais** 0 ⇒ tri instable), et `9fecadd` sur `ListboxItem`. **S3358 : 7 → 2.**
+- **SonarCloud : 4 mois de données fantômes.** Deux de mes conclusions intermédiaires étaient
+  **fausses** (« la CI ne publie jamais », « le quality gate est décoratif ») — la CI publiait. Cause
+  réelle : **branche principale `master`** (inexistante au dépôt) pendant que la CI analysait `main`,
+  enregistrée en branche **SHORT** que le **plan gratuit interdit de lire**. Corrigé : projet en
+  **public**, `master` renommée `main`. Secret CI mort (403) remplacé par le dev.
+- **8 composants** — Menu, Modal, Typeahead (**Critical Sonar soldé**, complexité 19/15 → table de
+  handlers), Image, Drawer, **Alert** (neuf), Tabs, puis **BottomSheet** + **Drawer** réécrit.
+  Trouvailles au passage : focus-visible absent du Listbox, scroll lock qui **écrasait** l'overflow
+  hôte, `left-0` physique cassant le RTL du Typeahead, leak `jsx-no-leaked-render` sur Image,
+  **sélecteur `[.media-section:nth-of-type(even)]` couplé à l'app TMDB** dans Tabs, et le **contraste
+  dark-on-dark** de la pilule active (`bg-primary` devenu quasi noir sans changer le texte).
+- **Drawer ≠ BottomSheet.** L'ancien « Drawer » était un bottom sheet (son propre JSDoc le disait).
+  Renommé (`3589b24`), puis **vrai Drawer** écrit sur `<dialog>` natif (`eb36157`) : piège de focus,
+  inertie, Escape et top layer gratuits, trois bords **logiques**, `bottom` délibérément absent.
+- **Bug prouvé par test avant correction** (`30d557d`) — `ComponentProps<'dialog'>` porte `ref` en
+  React 19, donc un ref consommateur atterrissait dans le rest spread et **remplaçait** le ref
+  interne : `showModal()` jamais appelé, **silencieusement**, sur Modal **et** Drawer. Corrigé par
+  `useNativeDialog`, propriétaire unique du cycle de vie (la duplication que la review avait pointée).
+- **Le piège `display` sur `<dialog>`, rencontré DEUX fois** (`77122a4`, `7d74755`) — `.ui-drawer`
+  posait `display: flex`, écrasant la règle UA `dialog:not([open]) { display: none }` : tous les
+  drawers visibles en permanence, d'où « tous ouverts au démarrage », l'empilement et le bouton close
+  « inactif ». Même piège ensuite via la **story** du Modal (`style={{display:'grid'}}`). Layout
+  déplacé sur `[open]`, le skin centre lui-même. Plus : le backdrop d'un `<dialog>` **se déclare
+  lui-même comme cible du clic** ⇒ `backdropArea: 'self' | 'outside'`.
+- **Passe de nettoyage des stories** (`30e7d59`) — trois défauts de **skin**, pas de stories :
+  drawer/bottom-sheet/modal sans `font-family` (d'où le Times New Roman), bodies sans `gap`, et
+  `.ui-card__footer` **sans `justify-content`** (ferrage à gauche accidentel) → axe `align`,
+  **`center` par défaut** (choix dev ; la convention majoritaire serait `end`). Canvas Storybook doté
+  d'une police de base, rôle d'une app hôte.
+- **DS livrable** (`01be734`) — quatre paquets publics 0.1.0, **zéro Tailwind**, tarballs prêts.
+  Cinq blocages levés, dont **les 27 README qui ne partaient pas**. Voir `next.md`.
+- **`Slider`** (`dfe58e5`) — primitive absente du DS, prérequis du color picker. `<input
+  type="range">` transparent par-dessus des divs peints (clavier et sémantique de la plateforme),
+  **20 custom properties**, et `--ui-slider-track-image` comme couture : un curseur de teinte **est**
+  ce composant.
+- **Cadrage color picker** fait et consigné dans `next.md` (source de vérité HSVA, machine Tier 4,
+  pas de dépendance couleur, a11y de l'aire 2D). **Correction** : les tokens ne sont **pas** en
+  OKLCH contrairement à `CLAUDE.md` — ils sont en hexadécimal.
+
 ### 2026-10-08 — Reprise : briefing, dette doc soldée, ArrowUpDown, SonarCloud réparé
 
 - **Reprise après ~12 semaines** (dernier commit de code `672acdc`, 2026-07-16). Briefing de reprise

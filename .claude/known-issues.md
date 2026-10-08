@@ -67,6 +67,20 @@ Put here the know issues to avoid cluttering the context window.
   porte désormais un axe `align` (`start` / `center` / `end` / `between`), **`center` par défaut**
   (choix dev). Corollaire : `Card.Footer` **EST** la rangée d'actions — ne pas emballer les boutons
   dans un `div`, ça les réduit à un seul enfant flex et neutralise gap ET alignement.
+- **Les tokens ne sont PAS en OKLCH, contrairement à `CLAUDE.md` (relevé 2026-10-09)** — les sources
+  DTCG **et** la sortie CSS sont en **hexadécimal** (`#ffffff`, `#6b6b6b`). La ligne « Style
+  Dictionary (OKLCH, DTCG) » de `rules/architecture.md` et de `CLAUDE.md` est fausse. À corriger —
+  et à trancher séparément : passer réellement en OKLCH aurait du sens (dégradés perceptuellement
+  uniformes, meilleur comportement d'une aire 2D de color picker).
+- **Le clavier d'un `<input type="range">` n'existe pas sous jsdom (2026-10-09)** — flèches, Home,
+  End, PageUp/Down sont des comportements **navigateur**. `userEvent` ne peut donc pas piloter un
+  `Slider` en test unitaire. Les tests du Slider couvrent le **câblage** (mapping valeur→pourcentage,
+  quel callback part sur quel événement DOM) via `fireEvent`, **exception assumée** à la règle
+  « toujours userEvent » ; le clavier lui-même se vérifie dans Storybook. **Ne pas lire l'absence de
+  test clavier comme une absence de support clavier.**
+- **`--ui-slider-track-image` est la couture du futur color picker (2026-10-09)** — un curseur de
+  teinte, d'alpha ou de canal **n'est pas un composant de plus** : c'est le `Slider` avec un fond de
+  piste et `imaged: true` (qui escamote la portion remplie). Ne pas créer de `ColorSlider` séparé.
 - **JAMAIS de `display` sur un `<dialog>` hors de `[open]` (piège rencontré DEUX fois, 2026-10-08)** —
   le navigateur masque un dialog fermé via la règle UA `dialog:not([open]) { display: none }`. Toute
   déclaration `display` d'auteur (skin **ou** style inline) l'écrase, et le dialog reste affiché en
