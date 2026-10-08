@@ -85,6 +85,9 @@ export function Drawer({
     onClose,
     onOverlayClick,
     forwardedRef,
+    // The <dialog> IS the panel here, so the backdrop is everything OUTSIDE its box — unlike the
+    // Modal, whose dialog spans the viewport.
+    backdropArea: 'outside',
   })
 
   // Memoised so the regions do not re-render on every parent render.

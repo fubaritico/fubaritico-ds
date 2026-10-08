@@ -41,10 +41,11 @@
     --ui-drawer-size: var(--spacing-80);
 
     /* ---- base ---- */
-    /* Strip the UA dialog chrome; the modifiers then pin the panel to one edge. */
+    /* Strip the UA dialog chrome; the modifiers then pin the panel to one edge.
+       `display` is deliberately NOT set here: the UA hides a closed dialog with
+       `dialog:not([open]) { display: none }`, and any author `display` would override it, leaving
+       every drawer permanently on screen. The layout therefore lives on `[open]` below. */
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
     margin: 0;
     padding: 0;
     border: 0;
@@ -57,6 +58,13 @@
        in from its own direction. The resolver always emits one, so no base animation is needed. */
     animation-duration: var(--ui-drawer-transition-duration);
     animation-timing-function: var(--ui-drawer-transition-easing);
+  }
+
+  /* Layout applies only while the dialog is actually open, so the UA's `display: none` keeps
+     working for a closed one. */
+  .ui-drawer[open] {
+    display: flex;
+    flex-direction: column;
   }
 
   .ui-drawer::backdrop {

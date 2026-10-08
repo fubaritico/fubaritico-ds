@@ -18,6 +18,19 @@ const closeMock = vi.fn(() => {
 HTMLDialogElement.prototype.showModal = showModalMock
 HTMLDialogElement.prototype.close = closeMock
 
+/** A realistic inline-start panel box, since jsdom measures everything as zero. */
+const PANEL_RECT = {
+  top: 0,
+  bottom: 768,
+  left: 0,
+  right: 320,
+  x: 0,
+  y: 0,
+  width: 320,
+  height: 768,
+  toJSON: () => ({}),
+} as DOMRect
+
 /** Renders an open drawer with both regions, so each test states only what it varies. */
 const renderDrawer = (props: Partial<Parameters<typeof Drawer>[0]> = {}) =>
   render(
@@ -137,14 +150,41 @@ describe('Drawer', () => {
       expect(onClose).toHaveBeenCalledOnce()
     })
 
-    it('closes on a backdrop click', async () => {
+    it('closes on a click outside the panel', async () => {
       const onClose = vi.fn()
       const user = userEvent.setup()
       renderDrawer({ onClose })
 
-      await user.click(screen.getByRole('dialog'))
+      const dialog = screen.getByRole('dialog')
+      // jsdom reports a zero-sized box; stand in a realistic start-anchored panel.
+      dialog.getBoundingClientRect = () => PANEL_RECT
+
+      await user.pointer({
+        target: dialog,
+        coords: { clientX: 600, clientY: 400 },
+        keys: '[MouseLeft]',
+      })
 
       expect(onClose).toHaveBeenCalledOnce()
+    })
+
+    it('ignores a click on the panel’s own background', async () => {
+      const onClose = vi.fn()
+      const user = userEvent.setup()
+      renderDrawer({ onClose })
+
+      const dialog = screen.getByRole('dialog')
+      dialog.getBoundingClientRect = () => PANEL_RECT
+
+      // Inside the panel box: a <dialog> reports ITSELF as the target here too, which is why the
+      // check has to be geometric and not a target comparison.
+      await user.pointer({
+        target: dialog,
+        coords: { clientX: 100, clientY: 400 },
+        keys: '[MouseLeft]',
+      })
+
+      expect(onClose).not.toHaveBeenCalled()
     })
 
     it('ignores a click landing on the content', async () => {
@@ -169,7 +209,14 @@ describe('Drawer', () => {
       const user = userEvent.setup()
       renderDrawer({ onClose, onOverlayClick })
 
-      await user.click(screen.getByRole('dialog'))
+      const dialog = screen.getByRole('dialog')
+      dialog.getBoundingClientRect = () => PANEL_RECT
+
+      await user.pointer({
+        target: dialog,
+        coords: { clientX: 600, clientY: 400 },
+        keys: '[MouseLeft]',
+      })
 
       expect(onOverlayClick).toHaveBeenCalledOnce()
       expect(onClose).not.toHaveBeenCalled()

@@ -17,13 +17,25 @@ interface DemoProps {
   header?: boolean
   /** Label of the trigger button. */
   label?: string
+  /** Whether this sheet is the one currently shown. */
+  isOpen: boolean
+  /** Asks the group to show this sheet, closing whichever other one was open. */
+  onOpen: () => void
+  /** Asks the group to close whatever is open. */
+  onClose: () => void
 }
 
 /**
- * A self-contained trigger + sheet, so every story is interactive.
+ * A trigger + sheet pair whose open state is owned by the story, not by itself.
+ *
+ * Deliberately NOT self-contained: two sheets stacked at the bottom edge is a state the component
+ * should never be put in. The group below keeps a single "which one is open" value.
  *
  * Both regions are optional: `header` composes the shape. The body is always rendered — a sheet
  * with no content would show nothing.
+ *
+ * @param props - The demo's options plus its controlled open state.
+ * @returns The trigger button and its sheet.
  */
 function BottomSheetDemo({
   variant = 'light',
@@ -31,26 +43,21 @@ function BottomSheetDemo({
   long = false,
   header = true,
   label,
+  isOpen,
+  onOpen,
+  onClose,
 }: Readonly<DemoProps>) {
-  const [isOpen, setIsOpen] = useState(false)
   const rows = long ? 24 : 4
-  const close = () => {
-    setIsOpen(false)
-  }
 
   return (
     <>
-      <Button
-        onClick={() => {
-          setIsOpen(true)
-        }}
-      >
+      <Button onClick={onOpen}>
         {label ?? `Open ${variant} sheet${overlay ? ' (with overlay)' : ''}`}
       </Button>
 
       <BottomSheet
         open={isOpen}
-        onClose={close}
+        onClose={onClose}
         variant={variant}
         overlay={overlay}
         aria-label="Filters"
@@ -64,7 +71,8 @@ function BottomSheetDemo({
         <BottomSheet.Body>
           {header ? null : (
             <Typography variant="body2">
-              No header, so no built-in close button — provide your own.
+              No header, so no built-in close button — Escape, a click outside
+              the sheet and the button below are the ways out.
             </Typography>
           )}
 
@@ -75,13 +83,48 @@ function BottomSheetDemo({
           ))}
 
           {header ? null : (
-            <Button variant="outline" onClick={close}>
+            <Button variant="outline" onClick={onClose}>
               Close
             </Button>
           )}
         </BottomSheet.Body>
       </BottomSheet>
     </>
+  )
+}
+
+/** One demo of a group, identified so the group can track which is open. */
+type DemoSpec = Omit<DemoProps, 'isOpen' | 'onOpen' | 'onClose'> & {
+  /** Unique within its group. */
+  id: string
+}
+
+/**
+ * Renders a row of triggers sharing ONE open slot, so the sheets alternate instead of stacking.
+ *
+ * @param props - The group's contents.
+ * @param props.demos - The sheets to offer, each with a unique `id`.
+ * @returns The row of triggers.
+ */
+function BottomSheetGroup({ demos }: Readonly<{ demos: DemoSpec[] }>) {
+  const [openId, setOpenId] = useState<string | null>(null)
+
+  return (
+    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      {demos.map(({ id, ...demo }) => (
+        <BottomSheetDemo
+          key={id}
+          {...demo}
+          isOpen={openId === id}
+          onOpen={() => {
+            setOpenId(id)
+          }}
+          onClose={() => {
+            setOpenId(null)
+          }}
+        />
+      ))}
+    </div>
   )
 }
 
@@ -108,14 +151,18 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** Open it, then try Escape and the close button. */
+/** Open it, then try Escape, the close button and a click outside the sheet. */
 export const Playground: Story = {
   render: (args) => (
-    <BottomSheetDemo variant={args.variant} overlay={args.overlay} />
+    <BottomSheetGroup
+      demos={[
+        { id: 'playground', variant: args.variant, overlay: args.overlay },
+      ]}
+    />
   ),
 }
 
-/** Both schemes, with and without the scrim, plus a scrolling body. */
+/** Both surfaces, with and without the scrim, and the two composition shapes. */
 export const Showcase: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
@@ -124,12 +171,27 @@ export const Showcase: Story = {
         style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
       >
         <strong>Surfaces and the scrim</strong>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <BottomSheetDemo label="Light, no overlay" />
-          <BottomSheetDemo overlay label="Light, with overlay" />
-          <BottomSheetDemo variant="dark" overlay label="Dark, with overlay" />
-          <BottomSheetDemo long label="Scrolling body" />
-        </div>
+        <p style={{ fontSize: '0.8125rem', margin: 0 }}>
+          Without an overlay the page stays interactive, and a click outside the
+          sheet dismisses it.
+        </p>
+        <BottomSheetGroup
+          demos={[
+            { id: 'light', label: 'Light, no overlay' },
+            {
+              id: 'light-overlay',
+              overlay: true,
+              label: 'Light, with overlay',
+            },
+            {
+              id: 'dark-overlay',
+              variant: 'dark',
+              overlay: true,
+              label: 'Dark, with overlay',
+            },
+            { id: 'long', long: true, label: 'Scrolling body' },
+          ]}
+        />
       </section>
 
       <section
@@ -140,10 +202,12 @@ export const Showcase: Story = {
           Only the body is mandatory. Dropping the header also drops the
           built-in close button, so provide your own affordance.
         </p>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <BottomSheetDemo header={false} label="Body only" />
-          <BottomSheetDemo header label="Header + body" />
-        </div>
+        <BottomSheetGroup
+          demos={[
+            { id: 'body-only', header: false, label: 'Body only' },
+            { id: 'header-body', header: true, label: 'Header + body' },
+          ]}
+        />
       </section>
     </div>
   ),

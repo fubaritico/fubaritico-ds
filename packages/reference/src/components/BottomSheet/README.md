@@ -7,7 +7,9 @@ content changes.
 
 - **Portalled** — rendered outside the subtree, so no ancestor's `overflow` or `transform` can clip
   or mis-stack it.
-- **Three ways to close** — the built-in close button, Escape, and the overlay (when enabled).
+- **Three ways to close** — the built-in close button, Escape, and a click outside the sheet
+  (the scrim when `overlay` is on; a plain click-outside when it is not, so an overlay-less sheet
+  is never dismissable by keyboard alone).
 - **Entrance only** — the slide plays on the first open; updating the content of an open sheet does
   not replay it.
 - **Optional scrim** — `overlay` dims the page and makes the sheet modal (`aria-modal`).

@@ -55,6 +55,9 @@ export function BottomSheet({
 }: Readonly<BottomSheetProps>) {
   const wasOpenRef = useRef(false)
 
+  // The panel node, so a click can be tested as inside or outside it.
+  const panelRef = useRef<HTMLDivElement>(null)
+
   const handleEscape = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -73,6 +76,25 @@ export function BottomSheet({
       document.removeEventListener('keydown', handleEscape)
     }
   }, [open, handleEscape])
+
+  // Dismiss on a click outside the panel. With an overlay the scrim catches it; WITHOUT one there
+  // is nothing to click, so the sheet would otherwise be closable by Escape alone — a dead end for
+  // a touch-only user. `mousedown` rather than `click`, so a press that began inside the panel and
+  // released outside does not dismiss it.
+  useEffect(() => {
+    if (!open || overlay) return
+
+    const handlePointerDown = (e: globalThis.MouseEvent) => {
+      const panel = panelRef.current
+      if (panel && !panel.contains(e.target as Node)) onClose()
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown)
+    }
+  }, [open, overlay, onClose])
 
   // Remember that the sheet has been shown, so the entrance slide plays on the FIRST open only and
   // a content update inside an open sheet does not replay it.
@@ -98,6 +120,7 @@ export function BottomSheet({
           />
         ) : null}
         <div
+          ref={panelRef}
           role="dialog"
           aria-modal={overlay}
           className={clsx(

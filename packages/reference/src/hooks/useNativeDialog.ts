@@ -14,6 +14,18 @@ export interface UseNativeDialogOptions {
   onOverlayClick?: () => void
   /** A `ref` the consumer passed through to the underlying element, if any. */
   forwardedRef?: Ref<HTMLDialogElement>
+  /**
+   * Where the backdrop is, relative to the dialog's own box.
+   *
+   * - `'self'` — the dialog SPANS the viewport and the panel is a child (Modal). A click whose
+   *   target is the dialog itself therefore missed the panel, and is a backdrop click.
+   * - `'outside'` — the dialog IS the panel (Drawer). The target is the dialog both when the click
+   *   missed it AND when it landed on the panel's own background, so the two can only be told
+   *   apart geometrically, against the panel's box.
+   *
+   * Defaults to `'self'`.
+   */
+  backdropArea?: 'self' | 'outside'
 }
 
 /** What {@link useNativeDialog} hands back to the component. */
@@ -39,8 +51,9 @@ export interface UseNativeDialogResult {
  *   them, which is why the element is never driven declaratively.
  * - **Scroll lock.** `<dialog>` does not lock the page itself. The previous inline value is
  *   RESTORED rather than blanked, so a host that set its own `overflow` keeps it.
- * - **Backdrop click.** `e.target` is the dialog only when the click missed the content: clicks
- *   inside bubble from a child, so they never match.
+ * - **Backdrop click.** Resolved per `backdropArea`, because a `<dialog>` reports itself as the
+ *   target for backdrop clicks: that is enough when the dialog spans the viewport, and needs a
+ *   geometric test when the dialog IS the panel.
  * - **Ref merging.** `ComponentProps<'dialog'>` includes `ref` in React 19, so a consumer-supplied
  *   ref would otherwise land in the rest spread and replace the internal one — leaving the
  *   component unable to call `showModal()` at all, silently and with no warning.
@@ -50,6 +63,7 @@ export interface UseNativeDialogResult {
  * @param options.onClose - Called on Escape or a backdrop click.
  * @param options.onOverlayClick - Overrides the backdrop-click behaviour.
  * @param options.forwardedRef - A consumer-supplied ref to keep working.
+ * @param options.backdropArea - Where the backdrop sits relative to the dialog's box.
  * @returns {@link UseNativeDialogResult} — the ref callback and the two handlers.
  */
 export function useNativeDialog({
@@ -57,6 +71,7 @@ export function useNativeDialog({
   onClose,
   onOverlayClick,
   forwardedRef,
+  backdropArea = 'self',
 }: UseNativeDialogOptions): UseNativeDialogResult {
   // Imperative handle on the <dialog> node: drives showModal()/close() and identifies backdrop
   // clicks by comparing against the event target.
@@ -86,12 +101,31 @@ export function useNativeDialog({
   }, [open])
 
   /**
-   * Closes on a click landing on the dialog box itself, i.e. the backdrop area.
+   * Closes when the click landed on the backdrop rather than on the panel.
+   *
+   * A `<dialog>` reports ITSELF as the target for clicks on its backdrop, so `e.target` alone
+   * cannot tell a backdrop click from one on the panel's own background — it only works when the
+   * dialog spans the viewport and the panel is a child of it. When the dialog IS the panel, the
+   * click is tested against its box instead.
    *
    * @param e - The click event on the dialog.
    */
   const handleClick = (e: MouseEvent<HTMLDialogElement>) => {
-    if (e.target === internalRef.current) (onOverlayClick ?? onClose)()
+    const dialog = internalRef.current
+    if (!dialog || e.target !== dialog) return
+
+    if (backdropArea === 'outside') {
+      const { top, bottom, left, right } = dialog.getBoundingClientRect()
+      const insidePanel =
+        e.clientX >= left &&
+        e.clientX <= right &&
+        e.clientY >= top &&
+        e.clientY <= bottom
+
+      if (insidePanel) return
+    }
+
+    ;(onOverlayClick ?? onClose)()
   }
 
   /** Mirrors the browser's own close event (Escape) back into the consumer's state. */

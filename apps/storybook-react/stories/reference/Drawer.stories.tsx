@@ -22,13 +22,26 @@ interface DemoProps {
   header?: boolean
   /** Render the pinned action bar. */
   footer?: boolean
+  /** Whether this drawer is the one currently shown. */
+  isOpen: boolean
+  /** Asks the group to show this drawer, closing whichever other one was open. */
+  onOpen: () => void
+  /** Asks the group to close whatever is open. */
+  onClose: () => void
 }
 
 /**
- * A self-contained trigger + drawer, so every story is interactive.
+ * A trigger + drawer pair whose open state is owned by the story, not by itself.
+ *
+ * Deliberately NOT self-contained: a drawer is modal, so two showing at once is a state the
+ * component should never be put in. The group below keeps a single "which one is open" value and
+ * every trigger goes through it.
  *
  * The three regions are independent: `header` and `footer` compose the shape. The body is always
  * rendered — a drawer with no content would show nothing.
+ *
+ * @param props - The demo's options plus its controlled open state.
+ * @returns The trigger button and its drawer.
  */
 function DrawerDemo({
   side = 'start',
@@ -38,26 +51,19 @@ function DrawerDemo({
   label,
   header = true,
   footer = true,
+  isOpen,
+  onOpen,
+  onClose,
 }: Readonly<DemoProps>) {
-  const [isOpen, setIsOpen] = useState(false)
   const rows = long ? 30 : 5
-  const close = () => {
-    setIsOpen(false)
-  }
 
   return (
     <>
-      <Button
-        onClick={() => {
-          setIsOpen(true)
-        }}
-      >
-        {label ?? `Open ${side} drawer`}
-      </Button>
+      <Button onClick={onOpen}>{label ?? `Open ${side} drawer`}</Button>
 
       <Drawer
         open={isOpen}
-        onClose={close}
+        onClose={onClose}
         side={side}
         size={size}
         variant={variant}
@@ -72,8 +78,8 @@ function DrawerDemo({
         <Drawer.Body>
           {header ? null : (
             <Typography variant="body2">
-              No header, so no built-in close button — Escape and the backdrop
-              are the remaining ways out.
+              No header, so no built-in close button — Escape, a click outside
+              the panel and the button below are the ways out.
             </Typography>
           )}
 
@@ -84,7 +90,7 @@ function DrawerDemo({
           ))}
 
           {header || footer ? null : (
-            <Button variant="outline" onClick={close}>
+            <Button variant="outline" onClick={onClose}>
               Close
             </Button>
           )}
@@ -92,14 +98,49 @@ function DrawerDemo({
 
         {footer ? (
           <Drawer.Footer>
-            <Button variant="outline" onClick={close}>
+            <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={close}>Apply</Button>
+            <Button onClick={onClose}>Apply</Button>
           </Drawer.Footer>
         ) : null}
       </Drawer>
     </>
+  )
+}
+
+/** One demo of a group, identified so the group can track which is open. */
+type DemoSpec = Omit<DemoProps, 'isOpen' | 'onOpen' | 'onClose'> & {
+  /** Unique within its group. */
+  id: string
+}
+
+/**
+ * Renders a row of triggers sharing ONE open slot, so the drawers alternate instead of stacking.
+ *
+ * @param props - The group's contents.
+ * @param props.demos - The drawers to offer, each with a unique `id`.
+ * @returns The row of triggers.
+ */
+function DrawerGroup({ demos }: Readonly<{ demos: DemoSpec[] }>) {
+  const [openId, setOpenId] = useState<string | null>(null)
+
+  return (
+    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      {demos.map(({ id, ...demo }) => (
+        <DrawerDemo
+          key={id}
+          {...demo}
+          isOpen={openId === id}
+          onOpen={() => {
+            setOpenId(id)
+          }}
+          onClose={() => {
+            setOpenId(null)
+          }}
+        />
+      ))}
+    </div>
   )
 }
 
@@ -136,11 +177,20 @@ type Story = StoryObj<typeof meta>
  */
 export const Playground: Story = {
   render: (args) => (
-    <DrawerDemo side={args.side} size={args.size} variant={args.variant} />
+    <DrawerGroup
+      demos={[
+        {
+          id: 'playground',
+          side: args.side,
+          size: args.size,
+          variant: args.variant,
+        },
+      ]}
+    />
   ),
 }
 
-/** Every edge and size, the dark surface, and a scrolling body between pinned regions. */
+/** Every edge and size, the composition cases, the dark surface and a right-to-left panel. */
 export const Showcase: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
@@ -149,32 +199,38 @@ export const Showcase: Story = {
         style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
       >
         <strong>Edges — logical, so these flip in a RTL document</strong>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <DrawerDemo side="start" />
-          <DrawerDemo side="end" />
-          <DrawerDemo side="top" />
-        </div>
+        <DrawerGroup
+          demos={[
+            { id: 'start', side: 'start' },
+            { id: 'end', side: 'end' },
+            { id: 'top', side: 'top' },
+          ]}
+        />
       </section>
 
       <section
         style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
       >
         <strong>Sizes</strong>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <DrawerDemo size="sm" label="Small" />
-          <DrawerDemo size="md" label="Medium" />
-          <DrawerDemo size="lg" label="Large" />
-        </div>
+        <DrawerGroup
+          demos={[
+            { id: 'sm', size: 'sm', label: 'Small' },
+            { id: 'md', size: 'md', label: 'Medium' },
+            { id: 'lg', size: 'lg', label: 'Large' },
+          ]}
+        />
       </section>
 
       <section
         style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
       >
         <strong>Dark surface, and a body that scrolls</strong>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <DrawerDemo variant="dark" label="Dark" />
-          <DrawerDemo long label="Long content" />
-        </div>
+        <DrawerGroup
+          demos={[
+            { id: 'dark', variant: 'dark', label: 'Dark' },
+            { id: 'long', long: true, label: 'Long content' },
+          ]}
+        />
       </section>
 
       <section
@@ -185,12 +241,29 @@ export const Showcase: Story = {
           Only the body is mandatory. Dropping the header also drops the
           built-in close button, so provide your own affordance.
         </p>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <DrawerDemo header={false} footer={false} label="Body only" />
-          <DrawerDemo header footer={false} label="Header + body" />
-          <DrawerDemo header={false} footer label="Body + footer" />
-          <DrawerDemo header footer label="All three" />
-        </div>
+        <DrawerGroup
+          demos={[
+            {
+              id: 'body-only',
+              header: false,
+              footer: false,
+              label: 'Body only',
+            },
+            {
+              id: 'header-body',
+              header: true,
+              footer: false,
+              label: 'Header + body',
+            },
+            {
+              id: 'body-footer',
+              header: false,
+              footer: true,
+              label: 'Body + footer',
+            },
+            { id: 'all', header: true, footer: true, label: 'All three' },
+          ]}
+        />
       </section>
 
       <section
@@ -198,9 +271,7 @@ export const Showcase: Story = {
         style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
       >
         <strong>Right-to-left — “start” now means the right edge</strong>
-        <div>
-          <DrawerDemo side="start" label="افتح" />
-        </div>
+        <DrawerGroup demos={[{ id: 'rtl', side: 'start', label: 'افتح' }]} />
       </section>
     </div>
   ),

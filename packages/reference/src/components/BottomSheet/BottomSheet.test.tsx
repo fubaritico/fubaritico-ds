@@ -136,4 +136,54 @@ describe('BottomSheet', () => {
       render(<BottomSheet.Header>Orphan</BottomSheet.Header>)
     }).toThrow('BottomSheet.* must be used within <BottomSheet>')
   })
+
+  describe('dismissal without an overlay', () => {
+    it('closes on a click outside the panel', async () => {
+      const onClose = vi.fn()
+      const user = userEvent.setup()
+      render(
+        <BottomSheet open onClose={onClose} aria-label="Filters">
+          <BottomSheet.Body>Content</BottomSheet.Body>
+        </BottomSheet>
+      )
+
+      await user.click(document.body)
+
+      expect(onClose).toHaveBeenCalledOnce()
+    })
+
+    it('ignores a click inside the panel', async () => {
+      const onClose = vi.fn()
+      const user = userEvent.setup()
+      render(
+        <BottomSheet open onClose={onClose} aria-label="Filters">
+          <BottomSheet.Body>
+            <button type="button">Inside</button>
+          </BottomSheet.Body>
+        </BottomSheet>
+      )
+
+      await user.click(screen.getByRole('button', { name: 'Inside' }))
+
+      expect(onClose).not.toHaveBeenCalled()
+    })
+
+    it('leaves the outside click to the scrim when an overlay is shown', async () => {
+      const onClose = vi.fn()
+      const user = userEvent.setup()
+      const { container } = render(
+        <BottomSheet open overlay onClose={onClose} aria-label="Filters">
+          <BottomSheet.Body>Content</BottomSheet.Body>
+        </BottomSheet>
+      )
+
+      expect(
+        container.ownerDocument.querySelector('.ui-bottom-sheet__overlay')
+      ).not.toBeNull()
+
+      await user.click(document.body)
+
+      expect(onClose).not.toHaveBeenCalled()
+    })
+  })
 })

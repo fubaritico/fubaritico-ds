@@ -14,7 +14,9 @@ genuinely modal.
 - **Two colour schemes** — `light` (default) or `dark`; the close button follows.
 - **Three regions** — `Drawer.Header` (with a built-in close button), `Drawer.Body` (scrolls) and
   `Drawer.Footer` (pinned action bar).
-- **Backdrop click** — closes by default; `onOverlayClick` overrides it.
+- **Backdrop click** — closes by default; `onOverlayClick` overrides it. A click on the panel's
+  own background never closes it: a `<dialog>` reports itself as the target for backdrop clicks
+  too, so the two are told apart against the panel's box.
 - **Scroll lock** — the page is locked while open and its previous value **restored**, not blanked.
 - **Required accessible name** — `aria-label` is mandatory at compile time.
 - **Motion-aware** — the slide is dropped under `prefers-reduced-motion`.
