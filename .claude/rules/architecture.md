@@ -2,7 +2,7 @@
 
 > Multi-framework **design-system generator** built on **Stencil**. From one Web Component project
 > (`packages/stencil`) we produce native Web Components + generated **React** and **Angular** wrappers,
-> showcased in per-framework Storybook apps. `packages/reference` (React/Tailwind) is the hand-written
+> showcased in per-framework Storybook apps. `packages/reference` (React) is the hand-written
 > reference we port from.
 
 ## Tech Stack
@@ -32,10 +32,12 @@ apps/
 └── storybook-vuejs/         # empty scaffold — no package.json yet
 
 packages/
-├── reference/    @fubaritico-ds/reference — React/Tailwind DS components (the port source)
-│   ├── src/<Component>/  → Component.tsx, .types.ts, .test.tsx, index.ts
+├── reference/    @fubaritico-ds/reference — React DS components (the port source)
+│   ├── src/components/<Component>/ → Component.tsx, .types.ts, .test.tsx, README.md, index.ts
+│   ├── src/index.ts (root barrel), src/styles.css (Tailwind entry, legacy components only)
 │   ├── vitest.config.ts, vitest.setup.ts, tsconfig.json, tsconfig.build.json
-│   └── prefix: `ui:` on all Tailwind classes
+│   └── styling: BEM skin (`@fubaritico-ds/styles`) + resolvers (`@fubaritico-ds/variants`).
+│       The `ui:` Tailwind prefix is LEGACY — only the not-yet-migrated components still use it.
 ├── shared/       @fubaritico-ds/shared — utils, test-utils, browser mocks, theme, fonts, vite plugins
 │   └── src/{utils,hooks,tailwind,fonts,test-utils,mocks/browser,vite}/
 ├── stencil/      @fubaritico-ds/stencil — the Stencil sandbox (SUBJECT of the project)
@@ -100,7 +102,9 @@ pnpm dev          # lerna run --parallel --stream dev
 ## CSS / Styling
 
 - Tailwind v4, CSS-first (no `tailwind.config.js`).
-- `packages/reference`: `ui:` class prefix.
+- `packages/reference`: migrated components use the native BEM skin (`@fubaritico-ds/styles`) with
+  classes from `@fubaritico-ds/variants`. The `ui:` Tailwind prefix is legacy, kept only by the
+  components still queued for migration (Tabs, Drawer, Carousel, Typeahead, `next/Image`).
 - `packages/stencil`: BEM + overridable CSS variables (light DOM), global sheet `src/global/ui-stencil.css`,
   fed by `@fubaritico-ds/tokens`; component tags prefixed `ui-`.
 - New package/app: define a new prefix, never reuse an existing one.
@@ -119,7 +123,8 @@ Scopes: `reference` (or `ui`), `shared`, `stencil`, `styles`, `tokens`, `variant
 ```
 ❌ console.log              → use console.warn / console.error
 ❌ explicit any             → strict TypeScript
-❌ CSS Modules / CSS-in-JS  → Tailwind (reference) / BEM+CSS vars (stencil)
+❌ CSS Modules / CSS-in-JS  → BEM skin + CVA resolvers (reference) / BEM+CSS vars (stencil)
+❌ new `ui:` Tailwind class → the skin is the styling mechanism; `ui:` is legacy-only
 ❌ edit generated artefacts → packages/stencil/dist/{react,angular}, components.d.ts (regen via build)
 ❌ unsorted / unused imports → ESLint enforced
 ❌ vitest version drift     → keep on the pnpm catalog (avoids SnapshotClient errors)

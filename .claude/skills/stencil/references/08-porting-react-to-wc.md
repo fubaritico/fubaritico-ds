@@ -117,7 +117,8 @@ of leaving Tailwind behind.
 
 ## What to compare after `npm run build`
 
-Open the generated React wrapper (`outDir`) next to the hand-written `packages/reference/src/<C>/<C>.tsx`:
+Open the generated React wrapper (`outDir`) next to the hand-written
+`packages/reference/src/components/<C>/<C>.tsx`:
 
 - **Prop surface** — does the discriminated union survive, or flatten to loose props?
 - **Events** — `onUiClick` + `e.detail` vs the React `onClick` callback.

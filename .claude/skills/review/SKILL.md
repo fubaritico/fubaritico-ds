@@ -43,14 +43,15 @@ Read all files in scope. For each file, determine which reference guides apply:
 - `packages/variants/**` (CVA resolvers — the shipped home, pure TS) → styles (CVA↔skin class-name
   parity), platform-safety (MUST stay React/DOM-free), quality.md, architecture.md
 - `*.variants.ts` (legacy/local CVA resolvers, if any) → styles (class-name parity vs the skin), quality.md
-- `packages/reference/src/**/README.md` → component-docs.md (co-located usage doc plan)
+- `packages/reference/src/components/**/README.md` → component-docs.md (co-located usage doc plan)
 - All `*.tsx` → accessibility.md
 - All files → quality.md, security.md
 
 #### Step 2b — Component doc-page presence (orchestrator check, not a subagent)
 
-For every **component** touched in scope (a `packages/reference/src/<Component>/` directory), verify a
-usage doc exists at `packages/reference/src/<Component>/README.md` and follows
+For every **component** touched in scope (a `packages/reference/src/components/<Component>/`
+directory), verify a usage doc exists at
+`packages/reference/src/components/<Component>/README.md` and follows
 `component-docs.md`. Emit a finding directly (category `quality`, the orchestrator owns it):
 
 - **missing README** → `high` ("Component <X> ships no usage doc README").

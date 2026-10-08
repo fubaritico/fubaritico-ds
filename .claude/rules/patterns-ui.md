@@ -5,15 +5,30 @@
 ```typescript
 import clsx from 'clsx'
 
-import type { ComponentProps, FC } from 'react'
+import { componentNameVariants } from '@fubaritico-ds/variants'
+
+import type { ComponentNameSize, ComponentNameVariant } from '@fubaritico-ds/variants'
+import type { ComponentProps } from 'react'
+
+export type { ComponentNameSize, ComponentNameVariant } from '@fubaritico-ds/variants'
 
 export interface ComponentNameProps extends ComponentProps<'div'> {
-  /** Prop description */
+  /** What this prop controls. */
   propName?: string
-  size?: 'sm' | 'md' | 'lg'
-  variant?: 'primary' | 'secondary'
+  /** Size of the component. */
+  size?: ComponentNameSize
+  /** Visual look. */
+  variant?: ComponentNameVariant
 }
 
+/**
+ * ComponentName — one sentence on what it is and its presentational identity.
+ *
+ * @param props - ComponentName options.
+ * @param props.size - Size; defaults to `'md'`.
+ * @param props.variant - Visual look; defaults to `'primary'`.
+ * @returns The rendered component.
+ */
 export function ComponentName ({
   className,
   propName,
@@ -23,7 +38,7 @@ export function ComponentName ({
 }: ComponentNameProps) {
   return (
     <div
-      className={clsx('ui:...', className)}
+      className={clsx(componentNameVariants({ size, variant }), className)}
       {...rest}
     >
       {/* content */}
@@ -50,22 +65,26 @@ export function ComponentName ({props}: ComponentNameProps) { ... }
 ## File Structure
 
 ```
-packages/reference/src/ComponentName/
-├── ComponentName.tsx       # FC<ComponentNameProps> implementation
+packages/reference/src/components/ComponentName/
+├── ComponentName.tsx       # `export function ComponentName` + `export default ComponentName`
 ├── ComponentName.types.ts  # Only if props are complex (discriminated unions)
-├── ComponentName.test.tsx  # Unit tests
-└── index.ts               # export { default as ComponentName } from './ComponentName'
+├── ComponentName.test.tsx  # Unit tests (5-level policy — see tests.md)
+├── README.md               # Co-located usage doc (mandatory — see component-docs.md)
+└── index.ts                # export { default as ComponentName } from './ComponentName'
 ```
 
-> This file covers **React** components in `packages/reference` (`ui:` prefix). For **Stencil**
+> This file covers **React** components in `packages/reference/src/components/`. For **Stencil**
 > Web Components in `packages/stencil` (BEM + CSS variables, `ui-` tags), use the `stencil` skill.
 
 Rules:
 
-- `ui:` prefix on ALL Tailwind classes
+- **Styling = the native BEM skin, NOT Tailwind.** A new component consumes a CVA resolver from
+  `@fubaritico-ds/variants` (emitting `.ui-<block>` classes) backed by a `<component>.css` in
+  `@fubaritico-ds/styles`. The `ui:` Tailwind prefix only survives in the components still queued for
+  migration (Tabs, Drawer, Carousel, Typeahead, `next/Image`) — **never write new `ui:` classes**.
 - No domain logic
 - Extend with `ComponentProps` (see below), never `HTMLAttributes`
-- Export interface as named, component as default
+- Export the props interface as a named export, the component as default; re-export both from `index.ts`
 - `clsx` for conditional classes
 
 ## ComponentProps Rule

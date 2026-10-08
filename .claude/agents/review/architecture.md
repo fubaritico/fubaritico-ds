@@ -62,7 +62,7 @@ If a finding depends on library/API behavior you are not 100% sure about, set `"
 
 ### ARCH-004: Component file structure
 
-- **React (`packages/reference/src/<Name>/`)**: `Name.tsx`, `Name.types.ts` (only for discriminated unions), `Name.test.tsx`, `index.ts`
+- **React (`packages/reference/src/components/<Name>/`)**: `Name.tsx`, `Name.types.ts` (only for discriminated unions), `Name.test.tsx`, `README.md`, `index.ts`
 - **Stencil (`packages/stencil/src/components/ui-x/`)**: `ui-x.tsx`, `ui-x.css`, `ui-x.spec.tsx`
 - See `.claude/rules/patterns-ui.md`
 

@@ -7,7 +7,7 @@
 ## Format & location
 
 - A **co-located `README.md`** in the component's own directory:
-  `packages/reference/src/<Component>/README.md` — a standalone README next to the code, NOT a
+  `packages/reference/src/components/<Component>/README.md` — a standalone README next to the code, NOT a
   Storybook page (Storybook's `autodocs` "Doc" tab already covers the live/interactive view; this is
   the authored reference that travels with the component).
 - Written as **plain Markdown** — fenced ` ```tsx ` code blocks (it does not import the stories).
@@ -43,6 +43,6 @@ one-line `> N/A — <reason>` note (mirrors the 5-level test policy), never sile
 
 ## Enforcement
 
-- `new-react-component` creates the `.mdx` from this plan as part of scaffolding a component.
-- `/review` fails a component that has no doc page, or whose page omits a mandatory section (or a
+- `new-react-component` creates the `README.md` from this plan as part of scaffolding a component.
+- `/review` fails a component that has no README, or whose README omits a mandatory section (or a
   required `> N/A` note), or whose code samples don't compile against the public API.
