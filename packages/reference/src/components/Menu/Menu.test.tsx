@@ -264,6 +264,6 @@ describe('Menu', () => {
           Test
         </Menu.Item>
       )
-    ).toThrow('Menu.Item must be used within Menu')
+    ).toThrow('Menu.Item must be used within <Menu>')
   })
 })

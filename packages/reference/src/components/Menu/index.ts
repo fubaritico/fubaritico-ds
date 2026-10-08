@@ -1,4 +1,7 @@
-export { default as Menu } from './Menu'
+export { Menu, default } from './Menu'
+export { MenuItem } from './MenuItem'
+export { useMenuContext } from './MenuContext'
+
 export type { MenuProps } from './Menu'
 export type { MenuItemProps } from './MenuItem'
-export type { MenuVariant } from './MenuContext'
+export type { MenuContextValue, MenuVariant } from './MenuContext'

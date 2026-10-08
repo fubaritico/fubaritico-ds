@@ -34,6 +34,8 @@
       --spacing-0-5
     ); /* 2px — space BETWEEN items so highlights never touch */
     --ui-listbox-max-block-size: var(--spacing-60); /* 15rem / 240px */
+    --ui-listbox-ring-color: var(--color-ring);
+    --ui-listbox-ring-offset: var(--spacing-0-5);
 
     /* Self-sufficient: the skin sets its own box model so it survives in hosts with no reset
        (the DS never ships a global reset — see CLAUDE.md decision). Flex column with a `gap` separates
@@ -52,6 +54,15 @@
     box-shadow: var(--ui-listbox-shadow);
     max-block-size: var(--ui-listbox-max-block-size);
     overflow-y: auto;
+  }
+
+  /* The composed widgets (Menu, Typeahead) make the list itself focusable (`tabIndex={0}`) and drive
+     the cursor with `aria-activedescendant`, so the LIST is what receives focus. It therefore needs a
+     visible focus indicator of its own (WCAG 2.4.7) — the Tailwind version suppressed the UA outline
+     and put nothing back. `:focus-visible` keeps it keyboard-only, as elsewhere in the skin. */
+  .ui-listbox:focus-visible {
+    outline: 2px solid var(--ui-listbox-ring-color);
+    outline-offset: var(--ui-listbox-ring-offset);
   }
 
   /* Dark surface variant — re-points the same role vars to the darker end of the neutral value scale. */

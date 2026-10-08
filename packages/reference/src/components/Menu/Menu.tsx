@@ -1,10 +1,9 @@
-import clsx from 'clsx'
 import { useCallback, useId, useMemo, useRef, useState } from 'react'
 
 import { ListboxList } from '../Listbox'
 
 import { MenuContext } from './MenuContext'
-import MenuItem from './MenuItem'
+import { MenuItem } from './MenuItem'
 
 import type { MenuVariant } from './MenuContext'
 import type { ComponentProps, KeyboardEvent } from 'react'
@@ -21,12 +20,33 @@ export interface MenuProps
   onClose?: () => void
 }
 
+/** One entry of the keyboard-navigation registry. */
 interface ItemEntry {
+  /** Value reported to `onSelect` when the entry is chosen. */
   value: string
+  /** Whether the entry is skipped by arrow-key traversal. */
   disabled: boolean
 }
 
-function Menu({
+/**
+ * Menu — a keyboard-navigable popup list, composing the {@link ListboxList} surface.
+ *
+ * Owns the ARIA and keyboard model the visual Listbox primitives deliberately leave out: the list
+ * itself is focusable and drives a virtual cursor through `aria-activedescendant`, so focus never
+ * leaves it while arrowing. Items register themselves through the context, so disabled entries are
+ * skipped and traversal follows the declared `index` order.
+ *
+ * Keyboard: Arrow Up/Down (wrapping), Home, End, Enter/Space to select, Escape to close.
+ *
+ * @param props - {@link MenuProps}.
+ * @param props.selectedValue - Value of the persistently selected item.
+ * @param props.variant - Colour scheme; forwarded to the list AND to every item.
+ * @param props.onSelect - Called with the item value on click or Enter/Space.
+ * @param props.onClose - Called when Escape is pressed.
+ * @returns The rendered menu.
+ */
+
+export function Menu({
   selectedValue,
   variant = 'light',
   onSelect,
@@ -149,19 +169,19 @@ function Menu({
   )
 
   return (
-    <MenuContext.Provider value={contextValue}>
+    <MenuContext value={contextValue}>
       <ListboxList
         variant={variant}
         role="listbox"
         tabIndex={0}
         aria-activedescendant={activeDescendant}
         onKeyDown={handleKeyDown}
-        className={clsx('ui:m-0 ui:focus:outline-none', className)}
+        className={className}
         {...rest}
       >
         {children}
       </ListboxList>
-    </MenuContext.Provider>
+    </MenuContext>
   )
 }
 
