@@ -6,6 +6,7 @@ import {
 } from '@fubaritico-ds/variants'
 
 import { useIsTextTruncated } from '../../../hooks'
+import { SORT_DIRECTION_TO_ARIA } from '../../../utils'
 import { ArrowUpDown } from '../../features/ArrowUpDown'
 import { TableHead } from '../../primitives/TableHead'
 
@@ -46,8 +47,7 @@ export function SortableHeaderCellView({
     useIsTextTruncated<HTMLSpanElement>(headerLabel)
 
   const sorted = column.getIsSorted()
-  const ariaSort =
-    sorted === 'asc' ? 'ascending' : sorted === 'desc' ? 'descending' : 'none'
+  const ariaSort = sorted ? SORT_DIRECTION_TO_ARIA[sorted] : 'none'
 
   return (
     <TableHead className={className} data-type={dataType} aria-sort={ariaSort}>

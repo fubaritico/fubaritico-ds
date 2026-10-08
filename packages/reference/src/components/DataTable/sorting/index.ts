@@ -1,32 +1,28 @@
+import { toSortableNumber } from '../utils'
+
 import type { Row, RowData, SortingFn } from '@tanstack/react-table'
 
 /**
- * Will sort values as number, if the values are strings it will try to parse them as number.
- * Otherwise, it will return 0 for the value to be sorted at the end.
+ * Sorts two rows on a column read as a number.
  *
- * @template T - Type of the value to sort
+ * Both values go through {@link toSortableNumber}, so formatted strings (`"1,234"`) compare as
+ * numbers and unparseable values fall back to `0` instead of `NaN`. Equal values return `0` so the
+ * comparator stays consistent and the sort remains stable.
  *
- * @param rowA - First row whose value will be compared
- * @param rowB - Second row whose value will be compared
- * @param columnId - Column id (property name) to sort
+ * @template T - Row data shape.
+ *
+ * @param rowA - First row whose value will be compared.
+ * @param rowB - Second row whose value will be compared.
+ * @param columnId - Column id (property name) to sort on.
+ * @returns A negative number, `0`, or a positive number, per the comparator contract.
  */
 export const sortNumbers =
   <T extends RowData>(): SortingFn<T> =>
   (rowA: Row<T>, rowB: Row<T>, columnId: string): number => {
-    const valueA = rowA.getValue<T>(columnId)
-    const valueB = rowB.getValue<T>(columnId)
+    const recordsA = toSortableNumber(rowA.getValue<T>(columnId))
+    const recordsB = toSortableNumber(rowB.getValue<T>(columnId))
 
-    const recordsA = valueA
-      ? isNaN(Number(valueA))
-        ? parseInt((valueA as string).replace(/,|\s|\./g, ''), 10)
-        : Number(valueA)
-      : 0
-
-    const recordsB = valueB
-      ? isNaN(Number(valueB))
-        ? parseInt((valueB as string).replace(/,|\s|\./g, ''), 10)
-        : Number(valueB)
-      : 0
+    if (recordsA === recordsB) return 0
 
     return recordsA < recordsB ? 1 : -1
   }

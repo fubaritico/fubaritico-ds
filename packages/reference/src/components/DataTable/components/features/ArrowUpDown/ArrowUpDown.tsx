@@ -3,11 +3,10 @@ import clsx from 'clsx'
 import { SORT_ARROWS_CLASS, sortArrowVariants } from '@fubaritico-ds/variants'
 
 import { Icon } from '../../../../Icon'
+import { SORT_DIRECTION_TO_ARIA } from '../../../utils'
 
+import type { SortDirection } from '../../../utils'
 import type { ComponentProps } from 'react'
-
-/** Current sort direction of the column, as returned by the table state manager. */
-export type SortDirection = 'asc' | 'desc' | false
 
 /** Props of the {@link ArrowUpDown} sort toggle. */
 export interface ArrowUpDownProps
@@ -22,12 +21,6 @@ export interface ArrowUpDownProps
 
 /** Pixel size of the chevron glyphs (matches the original 16px arrows). */
 const CHEVRON_SIZE = 16
-
-/** Accessible-label suffix announcing the active sort direction. */
-const SORT_DIRECTION_SUFFIX: Record<Exclude<SortDirection, false>, string> = {
-  asc: ' (ascending)',
-  desc: ' (descending)',
-}
 
 /**
  * Stacked up/down chevron button that toggles a column's sort direction. The chevron for the
@@ -44,7 +37,7 @@ export function ArrowUpDown({
   sorting,
   ...rest
 }: Readonly<ArrowUpDownProps>) {
-  const direction = sorting ? SORT_DIRECTION_SUFFIX[sorting] : ''
+  const direction = sorting ? ` (${SORT_DIRECTION_TO_ARIA[sorting]})` : ''
   const sortingLabel = colName ? `Sort ${colName}` : 'Sort'
   const label = `${sortingLabel}${direction}`
 

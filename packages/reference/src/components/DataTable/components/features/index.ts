@@ -7,7 +7,8 @@ export { default as TruncatedContent } from './TruncatedContent'
 
 /* Types */
 export type { ActionBarProps } from './ActionBar'
-export type { ArrowUpDownProps, SortDirection } from './ArrowUpDown'
+export type { ArrowUpDownProps } from './ArrowUpDown'
+export type { SortDirection } from '../../utils'
 export type { DropdownFilterProps } from './DropdownFilter'
 export type { NoResultsProps } from './NoResults'
 export type { TableFooterContentProps } from './TableFooterContent'
