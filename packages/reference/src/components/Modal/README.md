@@ -5,6 +5,8 @@ the visible panel is yours to compose inside.
 
 ## Capabilities
 
+- **Centres its panel** — the shell is a grid placing its content in the middle; move it with
+  `--ui-modal-place-items`.
 - **Top layer** — opened with `showModal()`, so it paints above every stacking context. No
   `z-index`, and immune to a host's `overflow: hidden` or `transform` traps.
 - **Focus trap, free** — the browser confines Tab to the dialog and makes the rest of the page inert.
@@ -59,24 +61,17 @@ Opt out of click-outside closing — useful for a destructive or unsaved-work di
 </Modal>
 ```
 
-Centring the panel — the shell fills the viewport, so position with your own layout:
+Repositioning the panel — the shell centres it by default:
 
 ```tsx
 <Modal
   isOpen={isOpen}
   onClose={close}
   aria-label="Settings"
-  className="my-centered-shell"
+  style={{ '--ui-modal-place-items': 'start center' } as CSSProperties}
 >
   <Card>…</Card>
 </Modal>
-```
-
-```css
-.my-centered-shell {
-  display: grid;
-  place-items: center;
-}
 ```
 
 Re-skinning the backdrop on one instance:
@@ -139,6 +134,11 @@ Re-skinning the backdrop on one instance:
 
 > **Note** — the dialog is a transparent full-viewport shell on purpose. If your panel looks
 > unstyled, you forgot to compose something inside it — the Modal itself draws only the backdrop.
+
+> **Warning** — never set `display` on the Modal through `style` or `className`. The browser hides
+> a closed dialog with `dialog:not([open]) { display: none }`, and any author `display` overrides
+> it, leaving the shell in the page and the dialog unable to behave. Position the panel with
+> `--ui-modal-place-items`, or with your own rule on a child.
 
 > **Note** — `isOpen` drives `showModal()` / `close()` imperatively; do not also set the native
 > `open` attribute (it is omitted from the props for that reason). The `open` attribute alone gives

@@ -7,13 +7,133 @@ import { Typography } from '@fubaritico-ds/reference/Typography'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
-/** The shell fills the viewport, so the panel is centred by the story itself. */
-const CENTERED_SHELL: React.CSSProperties = {
-  display: 'grid',
-  placeItems: 'center',
+/** The shell centres its panel on its own; the panel only needs a width. */
+const PANEL_WIDTH = '22rem'
+
+interface DemoProps {
+  /** Intercept the backdrop click instead of closing, as for unsaved work. */
+  guardOverlay?: boolean
+  /** Label of the trigger button. */
+  label?: string
+  /** Whether this modal is the one currently shown. */
+  isOpen: boolean
+  /** Asks the group to show this modal, closing whichever other one was open. */
+  onOpen: () => void
+  /** Asks the group to close whatever is open. */
+  onClose: () => void
+  /** Reports what ended the dialog, so the behaviour is observable in the story. */
+  onOutcome: (outcome: string) => void
 }
 
-const PANEL_WIDTH = '22rem'
+/**
+ * A trigger + modal pair whose open state is owned by the story, not by itself.
+ *
+ * Deliberately NOT self-contained: a modal is modal, so two showing at once is a state the
+ * component should never be put in. The group below keeps a single "which one is open" value.
+ *
+ * @param props - The demo's options plus its controlled open state.
+ * @returns The trigger button and its dialog.
+ */
+function ModalDemo({
+  guardOverlay = false,
+  label,
+  isOpen,
+  onOpen,
+  onClose,
+  onOutcome,
+}: Readonly<DemoProps>) {
+  const dismiss = (outcome: string) => () => {
+    onOutcome(outcome)
+    onClose()
+  }
+
+  return (
+    <>
+      <Button onClick={onOpen}>
+        {label ?? (guardOverlay ? 'Open (backdrop guarded)' : 'Open dialog')}
+      </Button>
+
+      <Modal
+        isOpen={isOpen}
+        onClose={dismiss('dismissed')}
+        onOverlayClick={
+          guardOverlay
+            ? () => {
+                onOutcome('backdrop click ignored — unsaved work')
+              }
+            : undefined
+        }
+        aria-label="Delete this item?"
+      >
+        <div style={{ inlineSize: PANEL_WIDTH }}>
+          <Card>
+            <Card.Header>
+              <Typography variant="h6">Delete this item?</Typography>
+            </Card.Header>
+            <Card.Body>
+              <Typography variant="body2">
+                This action cannot be undone.
+              </Typography>
+            </Card.Body>
+            <Card.Footer>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <Button variant="outline" onClick={dismiss('cancelled')}>
+                  Cancel
+                </Button>
+                <Button variant="destructive" onClick={dismiss('deleted')}>
+                  Delete
+                </Button>
+              </div>
+            </Card.Footer>
+          </Card>
+        </div>
+      </Modal>
+    </>
+  )
+}
+
+/** One demo of a group, identified so the group can track which is open. */
+type DemoSpec = Omit<
+  DemoProps,
+  'isOpen' | 'onOpen' | 'onClose' | 'onOutcome'
+> & {
+  /** Unique within its group. */
+  id: string
+}
+
+/**
+ * Renders a row of triggers sharing ONE open slot, so the dialogs alternate instead of stacking.
+ *
+ * @param props - The group's contents.
+ * @param props.demos - The modals to offer, each with a unique `id`.
+ * @returns The trigger row and the last recorded outcome.
+ */
+function ModalGroup({ demos }: Readonly<{ demos: DemoSpec[] }>) {
+  const [openId, setOpenId] = useState<string | null>(null)
+  const [outcome, setOutcome] = useState('—')
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        {demos.map(({ id, ...demo }) => (
+          <ModalDemo
+            key={id}
+            {...demo}
+            isOpen={openId === id}
+            onOpen={() => {
+              setOpenId(id)
+            }}
+            onClose={() => {
+              setOpenId(null)
+            }}
+            onOutcome={setOutcome}
+          />
+        ))}
+      </div>
+      <Typography variant="body2">Last outcome: {outcome}</Typography>
+    </div>
+  )
+}
 
 const meta = {
   title: 'Reference/Modal',
@@ -36,82 +156,9 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** A confirmation dialog — the usual shape: a Card composed inside the shell. */
-function ConfirmExample({
-  guardOverlay = false,
-}: Readonly<{ guardOverlay?: boolean }>) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [outcome, setOutcome] = useState<string>('—')
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-      <Button
-        onClick={() => {
-          setIsOpen(true)
-        }}
-      >
-        {guardOverlay ? 'Open (backdrop guarded)' : 'Open dialog'}
-      </Button>
-      <Typography variant="body2">Last outcome: {outcome}</Typography>
-
-      <Modal
-        isOpen={isOpen}
-        onClose={() => {
-          setIsOpen(false)
-          setOutcome('dismissed')
-        }}
-        onOverlayClick={
-          guardOverlay
-            ? () => {
-                setOutcome('backdrop click ignored — unsaved work')
-              }
-            : undefined
-        }
-        aria-label="Delete this item?"
-        style={CENTERED_SHELL}
-      >
-        <div style={{ inlineSize: PANEL_WIDTH }}>
-          <Card>
-            <Card.Header>
-              <Typography variant="h6">Delete this item?</Typography>
-            </Card.Header>
-            <Card.Body>
-              <Typography variant="body2">
-                This action cannot be undone.
-              </Typography>
-            </Card.Body>
-            <Card.Footer>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsOpen(false)
-                    setOutcome('cancelled')
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    setIsOpen(false)
-                    setOutcome('deleted')
-                  }}
-                >
-                  Delete
-                </Button>
-              </div>
-            </Card.Footer>
-          </Card>
-        </div>
-      </Modal>
-    </div>
-  )
-}
-
-/** Interactive playground — open it, then try Escape, Tab and a backdrop click. */
+/** Open it, then try Escape, Tab, and a click on the dimmed area around the card. */
 export const Playground: Story = {
-  render: () => <ConfirmExample />,
+  render: () => <ModalGroup demos={[{ id: 'playground' }]} />,
 }
 
 /** The default dialog next to one that guards against losing unsaved work. */
@@ -122,15 +169,21 @@ export const Showcase: Story = {
       <section
         style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
       >
-        <strong>Default — a backdrop click dismisses</strong>
-        <ConfirmExample />
-      </section>
-
-      <section
-        style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
-      >
-        <strong>Guarded — the backdrop click is intercepted</strong>
-        <ConfirmExample guardOverlay />
+        <strong>Dismissal</strong>
+        <p style={{ fontSize: '0.8125rem', margin: 0 }}>
+          The first closes on a backdrop click; the second intercepts it, as a
+          dialog holding unsaved work should.
+        </p>
+        <ModalGroup
+          demos={[
+            { id: 'default', label: 'Backdrop dismisses' },
+            {
+              id: 'guarded',
+              guardOverlay: true,
+              label: 'Backdrop guarded',
+            },
+          ]}
+        />
       </section>
     </div>
   ),

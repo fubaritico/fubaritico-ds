@@ -30,11 +30,15 @@
     --ui-modal-backdrop-color: var(--color-primitive-neutral-950);
     --ui-modal-backdrop-opacity: 0.8;
     --ui-modal-padding: var(--spacing-0);
+    --ui-modal-place-items: center;
 
     /* ---- base ---- */
     /* The dialog is the top-layer SHELL, not the panel: transparent, edge to edge, chrome stripped.
        `max-inline-size`/`max-block-size` must be unset explicitly — the UA caps them at roughly
-       `calc(100% - 6px - 2em)`, which would clip a full-bleed layout. */
+       `calc(100% - 6px - 2em)`, which would clip a full-bleed layout.
+       `display` is deliberately NOT set here: the UA hides a closed dialog with
+       `dialog:not([open]) { display: none }`, and any author `display` overrides it — leaving the
+       shell permanently in the page. The layout therefore lives on `[open]` below. */
     box-sizing: border-box;
     margin: 0;
     padding: var(--ui-modal-padding);
@@ -45,6 +49,16 @@
     max-inline-size: none;
     max-block-size: none;
     overflow: visible;
+  }
+
+  /* The shell CENTRES its panel itself, and only while open.
+     Consumers used to be told to inject `display: grid` through `style`, which overrode the UA's
+     `display: none` and broke the closed state — exactly the trap `.ui-drawer` fell into. Reposition
+     the panel with `--ui-modal-place-items` (or your own rule on a child), never by setting
+     `display` on the dialog. */
+  .ui-modal[open] {
+    display: grid;
+    place-items: var(--ui-modal-place-items);
   }
 
   .ui-modal::backdrop {
