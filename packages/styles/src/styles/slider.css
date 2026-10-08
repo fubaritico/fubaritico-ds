@@ -1,0 +1,199 @@
+/**
+ * Slider — native BEM skin.
+ *
+ * A value along a track: `.ui-slider` is the control, `__track` the groove, `__range` the filled
+ * portion, `__thumb` the handle. A real `<input type="range">` sits on top, transparent — it is
+ * what actually receives the pointer and the keyboard, so the role, the `aria-value*` attributes,
+ * arrow/Home/End/PageUp/PageDown and form participation all come from the platform. The visible
+ * parts are painted behind it and positioned from one custom property.
+ *
+ * THE OVERRIDE SURFACE IS THE POINT. Everything cosmetic is a `--ui-slider-*` variable: geometry,
+ * colours, states, focus ring, motion. What is NOT exposed is the mechanics — the thumb centred on
+ * the track, the hit area, the position maths — because exposing those only offers ways to break
+ * the control (the Rating/Skeleton rule: the skin owns the look, not the geometry).
+ *
+ * `--ui-slider-track-image` is the hook that makes a colour slider possible without a second
+ * component: set any gradient as the track and turn the filled range off. The hue strip, the alpha
+ * checkerboard and a per-channel ramp are all this one block.
+ *
+ * The default thumb is white with a dark border on purpose: a slider may sit on an arbitrary
+ * background (a rainbow, a photograph), and a single-colour handle disappears on some of it. The
+ * two-tone ring stays visible everywhere, which is as much WCAG 1.4.11 as it is taste.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-slider-*` vars on `.ui-slider`.
+ *   2. Redefine a global token → re-skins every Slider.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-slider {
+    /* ---- override API: geometry ---- */
+    --ui-slider-track-thickness: var(--spacing-1);
+    --ui-slider-track-radius: var(--radius-full);
+    --ui-slider-thumb-size: var(--spacing-4);
+    --ui-slider-thumb-radius: var(--radius-full);
+    --ui-slider-thumb-border-width: var(--spacing-0-5);
+
+    /* ---- override API: colours ---- */
+    --ui-slider-track-color: var(--color-primitive-neutral-200);
+    --ui-slider-range-color: var(--color-primary);
+    --ui-slider-thumb-color: var(--color-primitive-neutral-0);
+    --ui-slider-thumb-border-color: var(--color-primitive-neutral-900);
+    --ui-slider-thumb-shadow: var(--shadow-sm);
+    /* An arbitrary background for the track — a gradient, a checkerboard. Unset by default. */
+    --ui-slider-track-image: none;
+
+    /* ---- override API: states ---- */
+    --ui-slider-thumb-hover-scale: 1.15;
+    --ui-slider-thumb-active-scale: 0.95;
+    --ui-slider-disabled-opacity: 0.5;
+
+    /* ---- override API: focus ---- */
+    --ui-slider-ring-color: var(--color-ring);
+    --ui-slider-ring-width: 2px;
+    --ui-slider-ring-offset: var(--spacing-0-5);
+
+    /* ---- override API: motion ---- */
+    --ui-slider-transition-duration: var(--duration-fast);
+    --ui-slider-transition-easing: var(--easing-standard);
+
+    /* ---- base ---- */
+    /* The box is as tall as the thumb, so the handle never overflows its own control. */
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    align-items: center;
+    inline-size: 100%;
+    block-size: var(--ui-slider-thumb-size);
+    touch-action: none;
+  }
+
+  /* ---- track ---- */
+  .ui-slider__track {
+    position: relative;
+    inline-size: 100%;
+    block-size: var(--ui-slider-track-thickness);
+    border-radius: var(--ui-slider-track-radius);
+    background-color: var(--ui-slider-track-color);
+    background-image: var(--ui-slider-track-image);
+    overflow: hidden;
+  }
+
+  /* A track carrying its own image must not be covered by the filled range. */
+  .ui-slider--imaged .ui-slider__range {
+    display: none;
+  }
+
+  /* ---- range (the filled portion) ---- */
+  /* Sized logically from the single property the component sets, so it fills from the
+     inline-start edge and flips with the writing direction for free. */
+  .ui-slider__range {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: var(--ui-slider-progress, 0%);
+    background-color: var(--ui-slider-range-color);
+  }
+
+  /* ---- thumb ---- */
+  /* Centred on the value by shifting half its own size, so it never hangs off either end. */
+  .ui-slider__thumb {
+    position: absolute;
+    inset-inline-start: var(--ui-slider-progress, 0%);
+    translate: -50% 0;
+    inline-size: var(--ui-slider-thumb-size);
+    block-size: var(--ui-slider-thumb-size);
+    border: var(--ui-slider-thumb-border-width) solid
+      var(--ui-slider-thumb-border-color);
+    border-radius: var(--ui-slider-thumb-radius);
+    background-color: var(--ui-slider-thumb-color);
+    box-shadow: var(--ui-slider-thumb-shadow);
+    transition:
+      scale var(--ui-slider-transition-duration)
+        var(--ui-slider-transition-easing),
+      background-color var(--ui-slider-transition-duration)
+        var(--ui-slider-transition-easing);
+    pointer-events: none;
+  }
+
+  /* RTL: the thumb is offset from the inline-start edge, which the browser already flips, but the
+     physical translate must flip with it or the handle sits half a thumb off. */
+  .ui-slider__thumb:dir(rtl) {
+    translate: 50% 0;
+  }
+
+  /* ---- the real control ---- */
+  /* A transparent native range covering the whole box: it owns the interaction and the semantics,
+     the painted parts are decoration. Its own thumb is hidden per engine, since ours is a sibling. */
+  .ui-slider__input {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    appearance: none;
+  }
+
+  .ui-slider__input::-webkit-slider-thumb {
+    appearance: none;
+    inline-size: var(--ui-slider-thumb-size);
+    block-size: var(--ui-slider-thumb-size);
+  }
+
+  .ui-slider__input::-moz-range-thumb {
+    border: 0;
+    inline-size: var(--ui-slider-thumb-size);
+    block-size: var(--ui-slider-thumb-size);
+  }
+
+  /* ---- states ---- */
+  .ui-slider__input:hover + .ui-slider__thumb,
+  .ui-slider:has(.ui-slider__input:hover) .ui-slider__thumb {
+    scale: var(--ui-slider-thumb-hover-scale);
+  }
+
+  .ui-slider:has(.ui-slider__input:active) .ui-slider__thumb {
+    scale: var(--ui-slider-thumb-active-scale);
+  }
+
+  /* The ring lands on the visible thumb, because the element that actually holds focus is
+     transparent and the size of the whole control. */
+  .ui-slider:has(.ui-slider__input:focus-visible) .ui-slider__thumb {
+    outline: var(--ui-slider-ring-width) solid var(--ui-slider-ring-color);
+    outline-offset: var(--ui-slider-ring-offset);
+  }
+
+  .ui-slider--disabled {
+    opacity: var(--ui-slider-disabled-opacity);
+  }
+
+  .ui-slider--disabled .ui-slider__input {
+    cursor: not-allowed;
+  }
+
+  /* ---- size modifiers ---- */
+  .ui-slider--sm {
+    --ui-slider-track-thickness: var(--spacing-0-5);
+    --ui-slider-thumb-size: var(--spacing-3);
+  }
+
+  /* `md` is the default size (base) — fully defined by `.ui-slider`; no modifier emitted. */
+
+  .ui-slider--lg {
+    --ui-slider-track-thickness: var(--spacing-2);
+    --ui-slider-thumb-size: var(--spacing-5);
+  }
+
+  /* ---- reduced motion ---- */
+  /* The thumb's grow-on-hover is decorative feedback; the position change is the information and
+     is never animated anyway. Drop it when the user opts out (WCAG 2.3.3). */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-slider__thumb {
+      transition: none;
+    }
+  }
+}

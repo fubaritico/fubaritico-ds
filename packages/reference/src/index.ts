@@ -136,6 +136,9 @@ export type {
 export { Portal } from './components/Portal'
 export type { PortalProps } from './components/Portal'
 
+export { Slider } from './components/Slider'
+export type { SliderProps, SliderSize } from './components/Slider'
+
 export { Spinner } from './components/Spinner'
 export type { SpinnerProps, SpinnerSize } from './components/Spinner'
 
