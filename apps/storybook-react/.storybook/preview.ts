@@ -4,6 +4,9 @@ import '@fubaritico-ds/shared/fonts.css'
 import '@fubaritico-ds/tokens/css'
 import '@fubaritico-ds/styles/styles.css'
 
+// The host application's base typography, which the DS deliberately does not ship.
+import './preview-base.css'
+
 import type { Preview } from '@storybook/react-vite'
 
 /**

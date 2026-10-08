@@ -25,7 +25,13 @@ export type { ButtonProps } from './components/Button'
 //   import { NextLinkButton } from '@fubaritico-ds/reference/NextLinkButton' (next)
 
 export { Card } from './components/Card'
-export type { CardProps, CardVariant, CardSlotProps } from './components/Card'
+export type {
+  CardProps,
+  CardVariant,
+  CardSlotProps,
+  CardFooterProps,
+  CardFooterAlign,
+} from './components/Card'
 
 export { Checkbox } from './components/Checkbox'
 export type { CheckboxProps, CheckboxSize } from './components/Checkbox'

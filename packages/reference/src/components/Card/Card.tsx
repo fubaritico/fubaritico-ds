@@ -3,12 +3,12 @@ import { createContext, use } from 'react'
 
 import {
   CARD_BODY_CLASS,
-  CARD_FOOTER_CLASS,
+  cardFooterVariants,
   CARD_HEADER_CLASS,
   cardVariants,
 } from '@fubaritico-ds/variants'
 
-import type { CardVariant } from '@fubaritico-ds/variants'
+import type { CardFooterAlign, CardVariant } from '@fubaritico-ds/variants'
 import type { ComponentProps } from 'react'
 
 export type { CardVariant }
@@ -20,6 +20,17 @@ export interface CardProps extends ComponentProps<'div'> {
 
 /** Props shared by the Card slot elements (`Card.Body` / `Card.Header` / `Card.Footer`). */
 export type CardSlotProps = ComponentProps<'div'>
+
+/** Props of the {@link CardFooter} slot. */
+export interface CardFooterProps extends CardSlotProps {
+  /**
+   * Where the actions sit: `'center'` (default), `'start'`, `'end'`, or `'between'`.
+   *
+   * Stated explicitly because the row used to have no alignment at all and fell back to the
+   * inline-start edge, which read as an accident.
+   */
+  align?: CardFooterAlign
+}
 
 /**
  * Internal marker context: present only while rendering inside `<Card>`. The slot sub-components read
@@ -123,17 +134,20 @@ export function CardHeader({
  * Card.Footer — a padded footer region laying its children out in a row (e.g. actions). Throws if
  * used outside `<Card>`.
  *
- * @param props - Standard `<div>` props; see {@link CardSlotProps}.
+ * @param props - {@link CardFooterProps}.
+ * @param props.align - Where the actions sit; defaults to `'center'`.
  * @returns The padded footer element.
  */
 export function CardFooter({
+  align = 'center',
   className,
   children,
   ...rest
-}: Readonly<CardSlotProps>) {
+}: Readonly<CardFooterProps>) {
   useCardContext('Footer')
+
   return (
-    <div className={clsx(CARD_FOOTER_CLASS, className)} {...rest}>
+    <div className={clsx(cardFooterVariants({ align }), className)} {...rest}>
       {children}
     </div>
   )

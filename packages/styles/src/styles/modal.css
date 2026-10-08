@@ -31,6 +31,7 @@
     --ui-modal-backdrop-opacity: 0.8;
     --ui-modal-padding: var(--spacing-0);
     --ui-modal-place-items: center;
+    --ui-modal-font-family: var(--font-inter);
 
     /* ---- base ---- */
     /* The dialog is the top-layer SHELL, not the panel: transparent, edge to edge, chrome stripped.
@@ -44,6 +45,9 @@
     padding: var(--ui-modal-padding);
     border: 0;
     background-color: transparent;
+    /* Loose text dropped straight into the shell would otherwise fall back to the browser's serif,
+       since the DS ships no global reset. A composed Card brings its own font. */
+    font-family: var(--ui-modal-font-family);
     inline-size: 100%;
     block-size: 100%;
     max-inline-size: none;

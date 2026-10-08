@@ -77,7 +77,24 @@ import { Typography } from '@fubaritico-ds/reference/Typography'
 <Card className="my-utility">…</Card>
 ```
 
+### Aligning the footer's actions
+
+`Card.Footer` is itself the action row — it owns the gap and the placement, so do not wrap the
+buttons in a div (that collapses them into a single flex child and the alignment stops applying).
+
+```tsx
+<Card.Footer>                      {/* centred — the default */}
+  <Button variant="outline">Cancel</Button>
+  <Button>Confirm</Button>
+</Card.Footer>
+
+<Card.Footer align="end">…</Card.Footer>      {/* pushed to the inline-end edge */}
+<Card.Footer align="start">…</Card.Footer>    {/* inline-start */}
+<Card.Footer align="between">…</Card.Footer>  {/* pushed apart */}
+```
+
 ## Props
+
 
 ### `Card`
 

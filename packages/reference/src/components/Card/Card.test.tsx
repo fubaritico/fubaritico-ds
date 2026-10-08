@@ -168,4 +168,45 @@ describe('Card', () => {
       expect(screen.getByTestId('header')).toBeInTheDocument()
     })
   })
+
+  describe('footer alignment', () => {
+    it('centres the actions by default, emitting no modifier', () => {
+      const { container } = render(
+        <Card>
+          <Card.Footer>Actions</Card.Footer>
+        </Card>
+      )
+      const footer = container.querySelector('.ui-card__footer')
+
+      expect(footer?.className).toBe('ui-card__footer')
+    })
+
+    it.each([
+      ['start', 'ui-card__footer--start'],
+      ['end', 'ui-card__footer--end'],
+      ['between', 'ui-card__footer--between'],
+    ] as const)('applies the %s alignment', (align, modifier) => {
+      const { container } = render(
+        <Card>
+          <Card.Footer align={align}>Actions</Card.Footer>
+        </Card>
+      )
+
+      expect(container.querySelector('.ui-card__footer')).toHaveClass(modifier)
+    })
+
+    it('still merges a consumer className', () => {
+      const { container } = render(
+        <Card>
+          <Card.Footer align="end" className="custom">
+            Actions
+          </Card.Footer>
+        </Card>
+      )
+      const footer = container.querySelector('.ui-card__footer')
+
+      expect(footer).toHaveClass('ui-card__footer--end')
+      expect(footer).toHaveClass('custom')
+    })
+  })
 })

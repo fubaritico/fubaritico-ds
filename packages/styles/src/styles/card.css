@@ -91,11 +91,32 @@
   .ui-card__footer {
     --ui-card-footer-padding: var(--spacing-4);
     --ui-card-footer-gap: var(--spacing-2);
+    --ui-card-footer-justify: center;
 
     box-sizing: border-box;
     display: flex;
     align-items: center;
+    /* Without this the row fell back to `flex-start`, ferrying the actions to the inline-start
+       edge — which reads as an accident rather than a choice. The alignment is now explicit and
+       pickable; `center` is the DS default. */
+    justify-content: var(--ui-card-footer-justify);
     gap: var(--ui-card-footer-gap);
     padding: var(--ui-card-footer-padding);
+  }
+
+  /* Alignment modifiers. `flex-start`/`flex-end` resolve against the writing direction, so these
+     follow RTL on their own. */
+  .ui-card__footer--start {
+    --ui-card-footer-justify: flex-start;
+  }
+
+  /* `center` is the base — no modifier emitted. */
+
+  .ui-card__footer--end {
+    --ui-card-footer-justify: flex-end;
+  }
+
+  .ui-card__footer--between {
+    --ui-card-footer-justify: space-between;
   }
 }

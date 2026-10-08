@@ -4,6 +4,7 @@ import {
   CARD_BODY_CLASS,
   CARD_FOOTER_CLASS,
   CARD_HEADER_CLASS,
+  cardFooterVariants,
   cardVariants,
 } from './card.js'
 
@@ -50,6 +51,44 @@ describe('cardVariants', () => {
     it('never emits an empty-string token in the output', () => {
       const result = cardVariants({ variant: 'default' })
       expect(result.split(' ')).not.toContain('')
+    })
+  })
+})
+
+describe('cardFooterVariants', () => {
+  describe('happy path', () => {
+    it('returns the bare base with no args (centre is the default)', () => {
+      expect(cardFooterVariants()).toBe('ui-card__footer')
+    })
+  })
+
+  describe('variants', () => {
+    it('emits no modifier for the default centre alignment', () => {
+      expect(cardFooterVariants({ align: 'center' })).toBe('ui-card__footer')
+    })
+
+    it.each([
+      ['start', 'ui-card__footer ui-card__footer--start'],
+      ['end', 'ui-card__footer ui-card__footer--end'],
+      ['between', 'ui-card__footer ui-card__footer--between'],
+    ] as const)('emits the %s modifier', (align, expected) => {
+      expect(cardFooterVariants({ align })).toBe(expected)
+    })
+  })
+
+  describe('managed errors', () => {
+    it('falls back to the default when align is undefined', () => {
+      expect(cardFooterVariants({ align: undefined })).toBe('ui-card__footer')
+    })
+  })
+
+  // L4: N/A — a pure string resolver has no async path and no external dependency to fail.
+
+  describe('edge cases', () => {
+    it('keeps every modifier under the footer element namespace', () => {
+      for (const align of ['start', 'end', 'between'] as const) {
+        expect(cardFooterVariants({ align })).toContain('ui-card__footer--')
+      }
     })
   })
 })

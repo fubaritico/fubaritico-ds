@@ -31,6 +31,9 @@
     --ui-drawer-border-color: var(--color-border);
     --ui-drawer-border-width: var(--spacing-px);
     --ui-drawer-shadow: var(--shadow-2xl);
+    --ui-drawer-font-family: var(--font-inter);
+    --ui-drawer-content-gap: var(--spacing-2);
+    --ui-drawer-footer-justify: center;
     --ui-drawer-padding-inline: var(--spacing-4);
     --ui-drawer-padding-block: var(--spacing-3);
     --ui-drawer-backdrop-color: var(--color-primitive-neutral-950);
@@ -53,6 +56,10 @@
     max-block-size: none;
     background-color: var(--ui-drawer-bg);
     color: var(--ui-drawer-fg);
+    /* The DS ships no global reset, so loose text inside the panel would otherwise fall back to
+       the browser's serif (the Card precedent). Composing Typography stays the recommended path;
+       this only covers raw text. */
+    font-family: var(--ui-drawer-font-family);
     box-shadow: var(--ui-drawer-shadow);
     /* Duration and easing only: the KEYFRAMES come from the side modifier, since each edge slides
        in from its own direction. The resolver always emits one, so no base animation is needed. */
@@ -148,6 +155,8 @@
     display: flex;
     flex: 1;
     flex-direction: column;
+    /* Stacked content needs to breathe; without this the lines touch. */
+    gap: var(--ui-drawer-content-gap);
     overflow-y: auto;
     padding-inline: var(--ui-drawer-padding-inline);
     padding-block: var(--ui-drawer-padding-block);
@@ -156,7 +165,7 @@
   .ui-drawer__footer {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: var(--ui-drawer-footer-justify);
     gap: var(--ui-drawer-padding-block);
     padding-inline: var(--ui-drawer-padding-inline);
     padding-block: var(--ui-drawer-padding-block);

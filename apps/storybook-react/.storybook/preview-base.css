@@ -1,0 +1,16 @@
+/**
+ * Base typography for the Storybook canvas — the stand-in for a host application's own base
+ * styles, NOT part of the design system.
+ *
+ * The DS deliberately ships no global reset: each skin block declares its own font, and loose text
+ * outside one falls back to the browser's serif. A real consumer sets a base font on their app
+ * shell; without the equivalent here, every story's demo chrome (section labels, captions) renders
+ * in Times New Roman and misrepresents the components.
+ *
+ * Deliberately NOT a `*` rule and deliberately unlayered-but-low-specificity, so a component's own
+ * skin always wins.
+ */
+.sb-show-main {
+  font-family: var(--font-inter);
+  color: var(--color-foreground);
+}

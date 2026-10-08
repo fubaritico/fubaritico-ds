@@ -53,3 +53,38 @@ export const CARD_HEADER_CLASS = 'ui-card__header'
  * BEM element class for the Card's footer region (`.ui-card__footer` — a padded row, for actions).
  */
 export const CARD_FOOTER_CLASS = 'ui-card__footer'
+
+/** Horizontal placement of a Card footer's actions. */
+export type CardFooterAlign = 'start' | 'center' | 'end' | 'between'
+
+/**
+ * Resolves a Card footer's action alignment into BEM class names
+ * (`.ui-card__footer`, `+ --start` / `--end` / `--between`).
+ *
+ * Pure string output (framework-agnostic): consumed by the React reference and the
+ * Stencil / Angular / Vue packages alike, none of which it couples to a framework.
+ *
+ * `center` is the base. The row previously had no `justify-content` at all and fell back to
+ * `flex-start`, so the actions sat against the inline-start edge by accident rather than by
+ * choice — the alignment is now stated.
+ *
+ * @param props - Footer options (all optional — CVA defaults apply).
+ * @param props.align - Where the actions sit; defaults to `'center'` (base — no modifier emitted).
+ * @returns The space-separated BEM class string for the resolved props.
+ */
+export const cardFooterVariants = cva(CARD_FOOTER_CLASS, {
+  variants: {
+    align: {
+      start: 'ui-card__footer--start',
+      center: '', // default — fully defined by the base; no modifier emitted
+      end: 'ui-card__footer--end',
+      between: 'ui-card__footer--between',
+    },
+  },
+  defaultVariants: {
+    align: 'center',
+  },
+})
+
+/** Variant props inferred from {@link cardFooterVariants}. */
+export type CardFooterVariantProps = VariantProps<typeof cardFooterVariants>

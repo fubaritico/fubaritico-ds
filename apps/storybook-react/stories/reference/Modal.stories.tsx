@@ -5,6 +5,7 @@ import { Card } from '@fubaritico-ds/reference/Card'
 import { Modal } from '@fubaritico-ds/reference/Modal'
 import { Typography } from '@fubaritico-ds/reference/Typography'
 
+import type { CardFooterAlign } from '@fubaritico-ds/reference/Card'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 /** The shell centres its panel on its own; the panel only needs a width. */
@@ -13,6 +14,8 @@ const PANEL_WIDTH = '22rem'
 interface DemoProps {
   /** Intercept the backdrop click instead of closing, as for unsaved work. */
   guardOverlay?: boolean
+  /** Where the panel's actions sit. */
+  footerAlign?: CardFooterAlign
   /** Label of the trigger button. */
   label?: string
   /** Whether this modal is the one currently shown. */
@@ -36,6 +39,7 @@ interface DemoProps {
  */
 function ModalDemo({
   guardOverlay = false,
+  footerAlign = 'center',
   label,
   isOpen,
   onOpen,
@@ -75,15 +79,15 @@ function ModalDemo({
                 This action cannot be undone.
               </Typography>
             </Card.Body>
-            <Card.Footer>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <Button variant="outline" onClick={dismiss('cancelled')}>
-                  Cancel
-                </Button>
-                <Button variant="destructive" onClick={dismiss('deleted')}>
-                  Delete
-                </Button>
-              </div>
+            {/* No wrapper: the footer is itself the action row, so it owns the gap and the
+                alignment. Wrapping them in a div would collapse both into one flex child. */}
+            <Card.Footer align={footerAlign}>
+              <Button variant="outline" onClick={dismiss('cancelled')}>
+                Cancel
+              </Button>
+              <Button variant="destructive" onClick={dismiss('deleted')}>
+                Delete
+              </Button>
             </Card.Footer>
           </Card>
         </div>
@@ -181,6 +185,28 @@ export const Showcase: Story = {
               id: 'guarded',
               guardOverlay: true,
               label: 'Backdrop guarded',
+            },
+          ]}
+        />
+      </section>
+
+      <section
+        style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+      >
+        <strong>Action placement</strong>
+        <p style={{ fontSize: '0.8125rem', margin: 0 }}>
+          The panel is a `Card`, so its footer owns where the buttons sit.
+          `center` is the default.
+        </p>
+        <ModalGroup
+          demos={[
+            { id: 'align-center', footerAlign: 'center', label: 'Centred' },
+            { id: 'align-end', footerAlign: 'end', label: 'Inline-end' },
+            { id: 'align-start', footerAlign: 'start', label: 'Inline-start' },
+            {
+              id: 'align-between',
+              footerAlign: 'between',
+              label: 'Pushed apart',
             },
           ]}
         />
