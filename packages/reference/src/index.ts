@@ -39,6 +39,17 @@ export type {
   DataTableVirtualizedProps,
 } from './components/DataTable'
 
+export { Drawer } from './components/Drawer'
+export type {
+  DrawerProps,
+  DrawerHeaderProps,
+  DrawerBodyProps,
+  DrawerFooterProps,
+  DrawerSide,
+  DrawerSize,
+  DrawerVariant,
+} from './components/Drawer'
+
 export { Dropdown } from './components/Dropdown'
 export type { DropdownProps, DropdownOption } from './components/Dropdown'
 

@@ -1,0 +1,214 @@
+/**
+ * Drawer — native BEM skin.
+ *
+ * An edge-anchored panel built on a native `<dialog>` opened with `showModal()`. Unlike the
+ * BottomSheet — a partial-height card floating over the page — a Drawer FILLS the edge it is
+ * attached to: full block-size on `start` / `end`, full inline-size on `top`.
+ *
+ * Using `<dialog>` is the whole point: the focus trap, the inertness of the rest of the page, the
+ * Escape key and the top layer all come from the platform. The BottomSheet, a portalled `<div>`,
+ * has none of them — that gap is documented in its own README.
+ *
+ * The UA `<dialog>` chrome is neutralised the same way `modal.css` does it (centred auto margins,
+ * border, and the `max-width`/`max-height` caps that would stop the panel reaching the edges).
+ *
+ * Anchoring is LOGICAL: `--start` and `--end` follow the writing direction, so a left drawer in
+ * English becomes a right drawer in Arabic without a second rule. The slide-in matches, using a
+ * per-side translate.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-drawer-*` vars on `.ui-drawer`.
+ *   2. Redefine a global token → re-skins every Drawer.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-drawer {
+    /* ---- override API (component-scoped ROLE vars) ---- */
+    --ui-drawer-bg: var(--color-primitive-neutral-0);
+    --ui-drawer-fg: var(--color-foreground);
+    --ui-drawer-border-color: var(--color-border);
+    --ui-drawer-border-width: var(--spacing-px);
+    --ui-drawer-shadow: var(--shadow-2xl);
+    --ui-drawer-padding-inline: var(--spacing-4);
+    --ui-drawer-padding-block: var(--spacing-3);
+    --ui-drawer-backdrop-color: var(--color-primitive-neutral-950);
+    --ui-drawer-backdrop-opacity: 0.5;
+    --ui-drawer-transition-duration: var(--duration-slow);
+    --ui-drawer-transition-easing: var(--easing-standard);
+    /* size recipe (md default) — the extent ACROSS the anchored edge */
+    --ui-drawer-size: var(--spacing-80);
+
+    /* ---- base ---- */
+    /* Strip the UA dialog chrome; the modifiers then pin the panel to one edge. */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    max-inline-size: none;
+    max-block-size: none;
+    background-color: var(--ui-drawer-bg);
+    color: var(--ui-drawer-fg);
+    box-shadow: var(--ui-drawer-shadow);
+    animation: ui-drawer-fade var(--ui-drawer-transition-duration)
+      var(--ui-drawer-transition-easing);
+  }
+
+  .ui-drawer::backdrop {
+    background-color: var(--ui-drawer-backdrop-color);
+    opacity: var(--ui-drawer-backdrop-opacity);
+  }
+
+  /* ---- anchoring (logical: start/end follow the writing direction) ---- */
+  .ui-drawer--start,
+  .ui-drawer--end {
+    inset-block: 0;
+    block-size: 100%;
+    inline-size: var(--ui-drawer-size);
+  }
+
+  .ui-drawer--start {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+    border-inline-end: var(--ui-drawer-border-width) solid
+      var(--ui-drawer-border-color);
+    animation-name: ui-drawer-slide-in-start;
+  }
+
+  .ui-drawer--end {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+    border-inline-start: var(--ui-drawer-border-width) solid
+      var(--ui-drawer-border-color);
+    animation-name: ui-drawer-slide-in-end;
+  }
+
+  .ui-drawer--top {
+    inset-inline: 0;
+    inset-block-start: 0;
+    inset-block-end: auto;
+    inline-size: 100%;
+    block-size: var(--ui-drawer-size);
+    border-block-end: var(--ui-drawer-border-width) solid
+      var(--ui-drawer-border-color);
+    animation-name: ui-drawer-slide-in-top;
+  }
+
+  /* ---- size modifiers (extent across the anchored edge) ---- */
+  .ui-drawer--sm {
+    --ui-drawer-size: var(--spacing-64);
+  }
+
+  /* `md` is the default size (base) — fully defined by `.ui-drawer`; no modifier emitted. */
+
+  .ui-drawer--lg {
+    --ui-drawer-size: var(--spacing-96);
+  }
+
+  /* ---- dark surface ---- */
+  /* Re-points the role vars at the dark end of the neutral value scale, exactly as
+     `.ui-listbox--dark` and `.ui-bottom-sheet--dark` do. No on-dark alias family. */
+  .ui-drawer--dark {
+    --ui-drawer-bg: var(--color-primitive-neutral-900);
+    --ui-drawer-fg: var(--color-primitive-neutral-200);
+    --ui-drawer-border-color: var(--color-primitive-neutral-700);
+  }
+
+  /* ---- regions ---- */
+  .ui-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-drawer-padding-block);
+    padding-inline: var(--ui-drawer-padding-inline);
+    padding-block: var(--ui-drawer-padding-block);
+    border-block-end: var(--ui-drawer-border-width) solid
+      var(--ui-drawer-border-color);
+  }
+
+  /* Takes the free space so the close button stays pinned to the inline-end edge. */
+  .ui-drawer__title {
+    flex: 1;
+  }
+
+  .ui-drawer__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow-y: auto;
+    padding-inline: var(--ui-drawer-padding-inline);
+    padding-block: var(--ui-drawer-padding-block);
+  }
+
+  .ui-drawer__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--ui-drawer-padding-block);
+    padding-inline: var(--ui-drawer-padding-inline);
+    padding-block: var(--ui-drawer-padding-block);
+    border-block-start: var(--ui-drawer-border-width) solid
+      var(--ui-drawer-border-color);
+  }
+
+  /* ---- entrance animations (one per anchored edge) ---- */
+  @keyframes ui-drawer-slide-in-start {
+    from {
+      translate: -100% 0;
+    }
+    to {
+      translate: 0 0;
+    }
+  }
+
+  @keyframes ui-drawer-slide-in-end {
+    from {
+      translate: 100% 0;
+    }
+    to {
+      translate: 0 0;
+    }
+  }
+
+  @keyframes ui-drawer-slide-in-top {
+    from {
+      translate: 0 -100%;
+    }
+    to {
+      translate: 0 0;
+    }
+  }
+
+  /* Fallback for the base rule, before a side modifier applies its own. */
+  @keyframes ui-drawer-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* ---- RTL ---- */
+  /* `inset-inline-*` flips on its own, but a translate is PHYSICAL: in RTL the start edge is the
+     right one, so the panel must slide in from the opposite direction. */
+  .ui-drawer--start:dir(rtl) {
+    animation-name: ui-drawer-slide-in-end;
+  }
+
+  .ui-drawer--end:dir(rtl) {
+    animation-name: ui-drawer-slide-in-start;
+  }
+
+  /* ---- reduced motion ---- */
+  /* The slide is decorative: the panel appearing is the information. Drop it when the user opts
+     out (WCAG 2.3.3), matching the BottomSheet. */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-drawer {
+      animation: none;
+    }
+  }
+}

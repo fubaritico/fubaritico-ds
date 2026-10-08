@@ -16,6 +16,7 @@
 @import './styles/button.css';
 @import './styles/card.css';
 @import './styles/checkbox.css';
+@import './styles/drawer.css';
 @import './styles/dropdown.css';
 @import './styles/field.css';
 @import './styles/icon-button.css'; /* extension of button.css — MUST load after it */
