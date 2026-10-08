@@ -1,0 +1,104 @@
+/**
+ * Alert — native BEM skin.
+ *
+ * A standing message block: a leading intent glyph, an optional title, the message, and an optional
+ * dismiss control. `.ui-alert` is the surface; `__icon`, `__content`, `__title`, `__description`
+ * and `__dismiss` are its parts.
+ *
+ * INTENT IS NOT CARRIED BY A TINTED BACKGROUND. The surface stays neutral and only the border and
+ * the glyph take the intent colour, so the message text keeps full foreground contrast whatever the
+ * intent (a tinted panel with coloured text is the usual way DS alerts fail WCAG 1.4.3). The glyph
+ * also differs per intent, so meaning never rests on hue alone (WCAG 1.4.1).
+ *
+ * Intent colours wire straight to the VALUE scale (`--color-success`, `--color-destructive`,
+ * `--color-primitive-amber-600`) — the settled convention, same as `.ui-listbox--dark` and
+ * `.ui-drawer--dark`. No parallel semantic alias family is minted for warning.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-alert-*` vars on `.ui-alert`.
+ *   2. Redefine a global token → re-skins every Alert.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-alert {
+    /* ---- override API (component-scoped ROLE vars) ---- */
+    --ui-alert-bg: var(--color-primitive-neutral-0);
+    --ui-alert-fg: var(--color-foreground);
+    --ui-alert-border-color: var(--color-border);
+    --ui-alert-border-width: var(--spacing-px);
+    --ui-alert-accent: var(--color-foreground-muted);
+    --ui-alert-radius: var(--radius-md);
+    --ui-alert-gap: var(--spacing-3);
+    --ui-alert-padding-inline: var(--spacing-4);
+    --ui-alert-padding-block: var(--spacing-3);
+    --ui-alert-font-family: var(--font-inter);
+    --ui-alert-title-font-size: var(--font-size-sm);
+    --ui-alert-title-font-weight: var(--font-weight-semibold);
+    --ui-alert-description-font-size: var(--font-size-sm);
+    --ui-alert-line-height: var(--font-line-height-normal);
+
+    /* ---- base (info) ---- */
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ui-alert-gap);
+    padding-inline: var(--ui-alert-padding-inline);
+    padding-block: var(--ui-alert-padding-block);
+    border: var(--ui-alert-border-width) solid var(--ui-alert-border-color);
+    border-radius: var(--ui-alert-radius);
+    background-color: var(--ui-alert-bg);
+    color: var(--ui-alert-fg);
+    font-family: var(--ui-alert-font-family);
+    line-height: var(--ui-alert-line-height);
+  }
+
+  /* ---- intent modifiers (border + glyph only; the text stays at full contrast) ---- */
+  .ui-alert--success {
+    --ui-alert-accent: var(--color-success);
+    --ui-alert-border-color: var(--color-success);
+  }
+
+  .ui-alert--warning {
+    --ui-alert-accent: var(--color-primitive-amber-600);
+    --ui-alert-border-color: var(--color-primitive-amber-600);
+  }
+
+  .ui-alert--error {
+    --ui-alert-accent: var(--color-destructive-hover);
+    --ui-alert-border-color: var(--color-destructive-hover);
+  }
+
+  /* ---- parts ---- */
+  /* `flex-shrink: 0` so a long message never squeezes the glyph out of shape. */
+  .ui-alert__icon {
+    flex-shrink: 0;
+    color: var(--ui-alert-accent);
+  }
+
+  .ui-alert__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    /* Half the block padding: title and description belong together, tighter than the surface. */
+    gap: var(--spacing-1);
+    /* Lets a long unbroken string wrap instead of widening the flex item past its share. */
+    min-inline-size: 0;
+  }
+
+  .ui-alert__title {
+    font-size: var(--ui-alert-title-font-size);
+    font-weight: var(--ui-alert-title-font-weight);
+  }
+
+  .ui-alert__description {
+    font-size: var(--ui-alert-description-font-size);
+  }
+
+  /* Pinned to the inline-end edge, aligned with the first line of text. */
+  .ui-alert__dismiss {
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+}
