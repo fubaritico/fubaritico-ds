@@ -83,6 +83,13 @@ export type { ModalProps } from './components/Modal'
 export { Pagination } from './components/Pagination'
 export type { PaginationProps } from './components/Pagination'
 
+export { ProgressBar } from './components/ProgressBar'
+export type {
+  ProgressBarProps,
+  ProgressBarSize,
+  ProgressBarVariant,
+} from './components/ProgressBar'
+
 export { Rating } from './components/Rating'
 export type {
   RatingProps,

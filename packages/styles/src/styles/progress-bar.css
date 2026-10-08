@@ -1,0 +1,128 @@
+/**
+ * ProgressBar — native BEM skin.
+ *
+ * A determinate progress readout: a `__track` groove filled by an `__indicator`, with an optional
+ * `__meta` legend row underneath (`__meta-start` / `__meta-end`).
+ *
+ * NEUTRAL by default (the DS emphasis strategy): the indicator is `--color-primary` (neutral.900).
+ * Brand/semantic colour is opt-in through the CLOSED `--success` / `--destructive` modifiers, or
+ * surgically through `--ui-progress-bar-indicator-color`. There is deliberately NO open `color`
+ * prop — an arbitrary token name interpolated into a `var()` cannot be type-checked and silently
+ * yields a transparent bar when the token does not exist.
+ *
+ * RTL: the fill is sized with the LOGICAL `inline-size`, inside a block-flow track, so it grows from
+ * the inline-start edge and flips with the writing direction for free. The consumer passes ONLY the
+ * fraction, as `--ui-progress-bar-value` (a 0–100% length) — the skin owns the direction. Do NOT
+ * reintroduce a physical `width`/`left` here (that was the bug class fixed on Rating's clip-path).
+ *
+ * The component-to-skin contract is the single custom property `--ui-progress-bar-value`.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-progress-bar-*` vars on `.ui-progress-bar`.
+ *   2. Redefine a global token (e.g. `--color-primary`) → re-skins every ProgressBar.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens. The skin is self-sufficient (own box-sizing + font-family)
+ * since the DS ships no global reset.
+ */
+@layer ui.components {
+  .ui-progress-bar {
+    /* ---- override API (component-scoped) ---- */
+    --ui-progress-bar-track-color: var(--color-primitive-neutral-200);
+    --ui-progress-bar-indicator-color: var(--color-primary);
+    --ui-progress-bar-radius: var(--radius-full);
+    --ui-progress-bar-gap: var(--spacing-1);
+    --ui-progress-bar-meta-color: var(--color-foreground-muted);
+    --ui-progress-bar-meta-font-family: var(--font-inter);
+    --ui-progress-bar-meta-font-size: var(--font-size-xs);
+    --ui-progress-bar-meta-line-height: var(--font-line-height-normal);
+    --ui-progress-bar-transition-duration: var(--duration-normal);
+    --ui-progress-bar-transition-easing: var(--easing-standard);
+    /* thickness recipe (md default) */
+    --ui-progress-bar-thickness: var(--spacing-2);
+
+    /* ---- base ---- */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-progress-bar-gap);
+    inline-size: 100%;
+    font-family: var(--ui-progress-bar-meta-font-family);
+  }
+
+  /* ---- track (the groove; carries role="progressbar") ---- */
+  .ui-progress-bar__track {
+    box-sizing: border-box;
+    overflow: hidden;
+    inline-size: 100%;
+    block-size: var(--ui-progress-bar-thickness);
+    border-radius: var(--ui-progress-bar-radius);
+    background-color: var(--ui-progress-bar-track-color);
+  }
+
+  /* ---- indicator (the fill) ---- */
+  /* `inline-size` + normal block flow = starts at the inline-start edge, RTL-correct with no rule. */
+  .ui-progress-bar__indicator {
+    inline-size: var(--ui-progress-bar-value, 0%);
+    block-size: 100%;
+    border-radius: inherit;
+    background-color: var(--ui-progress-bar-indicator-color);
+    transition: inline-size var(--ui-progress-bar-transition-duration)
+      var(--ui-progress-bar-transition-easing);
+  }
+
+  /* ---- meta row (optional legend under the bar) ---- */
+  .ui-progress-bar__meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ui-progress-bar-gap);
+    color: var(--ui-progress-bar-meta-color);
+    font-size: var(--ui-progress-bar-meta-font-size);
+    line-height: var(--ui-progress-bar-meta-line-height);
+  }
+
+  /* `space-between` already pins the two ends; the elements exist so consumers can target or
+     override them (e.g. a different colour on the trailing side) without reaching into child
+     selectors, and so a single present slot keeps its own side. */
+  .ui-progress-bar__meta-start {
+    margin-inline-end: auto;
+  }
+
+  .ui-progress-bar__meta-end {
+    margin-inline-start: auto;
+    text-align: end;
+  }
+
+  /* ---- size modifiers (thickness only) ---- */
+  .ui-progress-bar--sm {
+    --ui-progress-bar-thickness: var(--spacing-1);
+  }
+
+  /* `md` is the default size (base) — fully defined by `.ui-progress-bar`; no modifier emitted. */
+
+  .ui-progress-bar--lg {
+    --ui-progress-bar-thickness: var(--spacing-3);
+  }
+
+  /* ---- variant modifiers (indicator colour only; the track stays neutral) ---- */
+  /* `default` is the base variant (neutral emphasis) — no modifier emitted. */
+
+  .ui-progress-bar--success {
+    --ui-progress-bar-indicator-color: var(--color-success);
+  }
+
+  .ui-progress-bar--destructive {
+    --ui-progress-bar-indicator-color: var(--color-destructive);
+  }
+
+  /* ---- reduced motion ---- */
+  /* The fill animation is decorative: the bar's final extent and the accessible value convey the
+     progress on their own, so drop the transition when the user opts out (WCAG 2.3.3, mirroring the
+     Rating/Button precedent — NOT the Spinner, whose motion is essential). */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-progress-bar__indicator {
+      transition: none;
+    }
+  }
+}
