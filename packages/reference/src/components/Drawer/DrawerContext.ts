@@ -12,6 +12,11 @@ export interface DrawerContextValue {
   onClose: () => void
 }
 
+/**
+ * Context carrying {@link DrawerContextValue} to the Drawer regions.
+ *
+ * Read it through {@link useDrawerContext}, never directly — the hook owns the composition guard.
+ */
 export const DrawerContext = createContext<DrawerContextValue | null>(null)
 
 /**
@@ -25,6 +30,7 @@ export const DrawerContext = createContext<DrawerContextValue | null>(null)
  * @throws If called outside a `<Drawer>`.
  */
 export function useDrawerContext(): DrawerContextValue {
+  // `null` means there is no surrounding <Drawer>, which is a composition error, not a mode.
   const context = use(DrawerContext)
   if (!context) throw new Error('Drawer.* must be used within <Drawer>')
 

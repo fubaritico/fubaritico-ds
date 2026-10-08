@@ -99,4 +99,5 @@ import { ListboxList, ListboxItem } from '@fubaritico-ds/reference/Listbox'
 > surface; each item styles itself — they don't inherit the scheme from one another.
 
 > **Note** — the dark scheme reaches into the primitive neutral scale (no semantic on-dark tokens
-> yet); it will repoint to `--color-on-dark-*` tokens when the Drawer/bottom-sheet work mints them.
+> yet). That is now the SETTLED convention, not a stopgap: no `--color-on-dark-*` family is minted —
+> every dark surface re-points its own role variables at the dark end of the neutral value scale.

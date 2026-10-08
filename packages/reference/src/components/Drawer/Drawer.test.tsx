@@ -253,6 +253,20 @@ describe('Drawer', () => {
       expect(showModalMock).toHaveBeenCalledTimes(2)
     })
 
+    it('keeps working when the consumer also passes a ref to the dialog', () => {
+      const consumerRef = { current: null as HTMLDialogElement | null }
+
+      render(
+        <Drawer open onClose={vi.fn()} aria-label="Filters" ref={consumerRef}>
+          <Drawer.Body>Content</Drawer.Body>
+        </Drawer>
+      )
+
+      // The internal ref drives showModal(); a consumer ref must not displace it.
+      expect(showModalMock).toHaveBeenCalled()
+      expect(consumerRef.current).toBeInstanceOf(HTMLDialogElement)
+    })
+
     it('merges a consumer className without dropping the block class', () => {
       renderDrawer({ className: 'custom' })
       const dialog = screen.getByRole('dialog')

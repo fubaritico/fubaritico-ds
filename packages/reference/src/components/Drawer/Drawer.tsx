@@ -1,7 +1,9 @@
 import clsx from 'clsx'
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 
 import { drawerVariants } from '@fubaritico-ds/variants'
+
+import { useNativeDialog } from '../../hooks'
 
 import { DrawerBody } from './DrawerBody'
 import { DrawerContext } from './DrawerContext'
@@ -13,7 +15,7 @@ import type {
   DrawerSize,
   DrawerVariant,
 } from '@fubaritico-ds/variants'
-import type { ComponentProps, MouseEvent } from 'react'
+import type { ComponentProps } from 'react'
 
 export type {
   DrawerSide,
@@ -73,51 +75,20 @@ export function Drawer({
   onOverlayClick,
   className,
   children,
+  ref: forwardedRef,
   ...rest
 }: Readonly<DrawerProps>) {
-  const ref = useRef<HTMLDialogElement>(null)
-
-  // Drive the dialog imperatively: `showModal()` is what grants the top layer, the focus trap and
-  // the backdrop — the `open` attribute alone gives none of them. The previous body overflow is
-  // restored rather than blanked, so a host that set its own keeps it.
-  useEffect(() => {
-    const dialog = ref.current
-    if (!dialog) return
-
-    const previousOverflow = document.body.style.overflow
-
-    if (open) {
-      dialog.showModal()
-      document.body.style.overflow = 'hidden'
-    } else {
-      dialog.close()
-      document.body.style.overflow = previousOverflow
-    }
-
-    return () => {
-      document.body.style.overflow = previousOverflow
-    }
-  }, [open])
+  // The whole native-dialog lifecycle — showModal/close, scroll lock, backdrop click, ref merging
+  // — lives in one shared hook, so Modal and Drawer cannot drift apart.
+  const { ref, handleClick, handleClose } = useNativeDialog({
+    open,
+    onClose,
+    onOverlayClick,
+    forwardedRef,
+  })
 
   // Memoised so the regions do not re-render on every parent render.
   const contextValue = useMemo(() => ({ variant, onClose }), [variant, onClose])
-
-  /**
-   * Closes on a click landing on the dialog box itself, i.e. the backdrop area.
-   *
-   * `e.target` is the dialog only when the click missed the content: clicks inside bubble from a
-   * child, so they never match.
-   *
-   * @param e - The click event on the dialog.
-   */
-  const handleClick = (e: MouseEvent<HTMLDialogElement>) => {
-    if (e.target === ref.current) (onOverlayClick ?? onClose)()
-  }
-
-  /** Mirrors the browser's own close event (Escape) back into the consumer's state. */
-  const handleClose = () => {
-    onClose()
-  }
 
   return (
     <dialog

@@ -126,6 +126,8 @@ Re-skinning the backdrop on one instance:
   Escape key come from the platform, not from JavaScript we wrote.
 - **`aria-label` is required and type-checked** — a `<dialog>` has no implicit accessible name, and
   the content is yours, so nothing can be inferred. Use a label that states the dialog's purpose.
+  When your panel shows a **visible title**, give it an `id` and pass `aria-labelledby` as well:
+  ARIA gives it precedence, so the heard name cannot drift from the one on screen.
 - Focus moves into the dialog on open and returns to the invoker on close — browser behaviour.
 - The backdrop is `::backdrop`, which is not in the accessibility tree; a backdrop click is a
   pointer-only affordance, which is why Escape must stay available (it does).

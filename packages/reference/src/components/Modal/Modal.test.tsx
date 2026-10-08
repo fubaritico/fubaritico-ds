@@ -221,6 +221,20 @@ describe('Modal', () => {
       expect(showModalMock).toHaveBeenCalledTimes(2)
     })
 
+    it('keeps working when the consumer also passes a ref to the dialog', () => {
+      const consumerRef = { current: null as HTMLDialogElement | null }
+
+      render(
+        <Modal isOpen onClose={vi.fn()} aria-label="Dialog" ref={consumerRef}>
+          <p>Content</p>
+        </Modal>
+      )
+
+      // The internal ref drives showModal(); a consumer ref must not displace it.
+      expect(showModalMock).toHaveBeenCalled()
+      expect(consumerRef.current).toBeInstanceOf(HTMLDialogElement)
+    })
+
     it('merges a consumer className without dropping the block class', () => {
       const { container } = render(
         <Modal isOpen onClose={vi.fn()} aria-label="Dialog" className="custom">

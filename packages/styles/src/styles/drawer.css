@@ -53,8 +53,10 @@
     background-color: var(--ui-drawer-bg);
     color: var(--ui-drawer-fg);
     box-shadow: var(--ui-drawer-shadow);
-    animation: ui-drawer-fade var(--ui-drawer-transition-duration)
-      var(--ui-drawer-transition-easing);
+    /* Duration and easing only: the KEYFRAMES come from the side modifier, since each edge slides
+       in from its own direction. The resolver always emits one, so no base animation is needed. */
+    animation-duration: var(--ui-drawer-transition-duration);
+    animation-timing-function: var(--ui-drawer-transition-easing);
   }
 
   .ui-drawer::backdrop {
@@ -179,16 +181,6 @@
     }
     to {
       translate: 0 0;
-    }
-  }
-
-  /* Fallback for the base rule, before a side modifier applies its own. */
-  @keyframes ui-drawer-fade {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
     }
   }
 

@@ -33,9 +33,14 @@ import { Drawer } from '@fubaritico-ds/reference/Drawer'
 ```tsx
 const [isOpen, setIsOpen] = useState(false)
 
-<Drawer open={isOpen} onClose={() => setIsOpen(false)} aria-label="Filters">
+<Drawer
+  open={isOpen}
+  onClose={() => setIsOpen(false)}
+  aria-label="Filters"
+  aria-labelledby="filters-title"
+>
   <Drawer.Header>
-    <Typography variant="h6">Filters</Typography>
+    <Typography variant="h6" id="filters-title">Filters</Typography>
   </Drawer.Header>
   <Drawer.Body>
     <FilterList />
@@ -147,6 +152,9 @@ Resizing one instance beyond the scale:
   page behind it and the Escape key come from the platform, not from code we wrote — this is the
   reason the component is a `<dialog>` and not a portalled `<div>`.
 - **`aria-label` is required and type-checked** — a `<dialog>` has no implicit accessible name.
+  When the panel shows a **visible title**, give that title an `id` and pass `aria-labelledby` too:
+  ARIA gives it precedence, and the name a screen reader hears then cannot drift from the one on
+  screen. `aria-label` remains the fallback.
 - Focus moves into the panel on open and returns to the invoker on close: browser behaviour.
 - The close button carries an accessible name (`'Close'` by default, renameable for localisation).
 - The backdrop is `::backdrop`, not in the accessibility tree; a backdrop click is a pointer-only
@@ -165,8 +173,10 @@ Resizing one instance beyond the scale:
 > omitted from the props because, on its own, it grants no top layer, no focus trap and no
 > backdrop.
 
-> **Note** — without a `Drawer.Header` there is no close button. Escape still works, but give
-> pointer users a visible way out.
+> **Warning** — combining `onOverlayClick` (which cancels backdrop-closing) with **no**
+> `Drawer.Header` (which removes the close button) leaves **Escape as the only way out**. That is a
+> dead end for touch-only users, who have no Escape key. If you opt out of backdrop-closing, render
+> a close affordance — a header, or your own button wired to `onClose`.
 
 > **Note** — the scroll lock reads and restores `document.body.style.overflow`. Two stacked
 > drawers would have the inner one restore the outer one's value on close; stack with care.

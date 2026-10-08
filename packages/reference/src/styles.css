@@ -6,7 +6,7 @@
  * contributes NOTHING here.
  *
  * Keyframes and custom classes used to live in this file; they moved into the skin alongside their
- * components (`ui-skeleton-shimmer` → `skeleton.css`, `slide-up` → `drawer.css`), which is why the
+ * components (`ui-skeleton-shimmer` → `skeleton.css`, `slide-up` → `bottom-sheet.css`), which is why the
  * `@layer base` / `@layer components` blocks are now empty and gone.
  *
  * Delete this file once the last `ui:` consumer is migrated.

@@ -32,6 +32,7 @@ export function DrawerHeader({
   children,
   ...rest
 }: Readonly<DrawerHeaderProps>) {
+  // The colour scheme picks the close button's variant; the handler is the panel's own.
   const { variant, onClose } = useDrawerContext()
 
   return (
