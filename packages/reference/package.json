@@ -1,7 +1,7 @@
 {
   "name": "@fubaritico-ds/reference",
-  "version": "1.0.0",
-  "description": "Design system components for reference",
+  "version": "0.1.0",
+  "description": "React design-system components wearing the @fubaritico-ds/styles native BEM skin. Tailwind-free: the skin is plain CSS driven by design tokens.",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -16,30 +16,21 @@
         "default": "./dist/index.js"
       }
     },
-    "./next": {
-      "import": {
-        "types": "./dist/components/next/index.d.ts",
-        "default": "./dist/components/next/index.js"
-      }
-    },
     "./*": {
       "import": {
         "types": "./dist/components/*/index.d.ts",
         "default": "./dist/components/*/index.js"
       }
-    },
-    "./styles.css": "./dist/styles.css"
+    }
   },
-  "sideEffects": [
-    "*.css"
-  ],
+  "sideEffects": false,
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
-    "build:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify",
     "build:js": "tsup && tsc -p tsconfig.build.json",
-    "build": "pnpm build:js && pnpm build:css",
+    "build": "pnpm build:js && pnpm build:docs",
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -51,13 +42,14 @@
     "local-release:major": "./publish-local.sh major",
     "release:patch": "./publish.sh patch",
     "release:minor": "./publish.sh minor",
-    "release:major": "./publish.sh major"
+    "release:major": "./publish.sh major",
+    "build:docs": "node script/copy-docs.mjs"
   },
   "peerDependencies": {
     "next": ">=14",
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "react-router-dom": "catalog:"
+    "react": ">=19",
+    "react-dom": ">=19",
+    "react-router-dom": ">=7"
   },
   "peerDependenciesMeta": {
     "react-router-dom": {
@@ -68,7 +60,7 @@
     }
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "catalog:",
+    "@fubaritico-ds/shared": "workspace:*",
     "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",
     "@testing-library/user-event": "catalog:",
@@ -76,20 +68,16 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/coverage-v8": "catalog:",
-    "autoprefixer": "catalog:",
     "conventional-changelog": "catalog:",
     "jsdom": "catalog:",
     "next": "^16.2.0",
-    "postcss": "catalog:",
     "react-router-dom": "catalog:",
-    "tailwindcss": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
-    "@fubaritico-ds/shared": "workspace:*",
     "@fubaritico-ds/variants": "workspace:*",
     "@tanstack/react-table": "catalog:",
     "@tanstack/react-virtual": "catalog:",

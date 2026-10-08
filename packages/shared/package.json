@@ -1,6 +1,6 @@
 {
   "name": "@fubaritico-ds/shared",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -63,7 +63,6 @@
   },
   "dependencies": {
     "@fubaritico-ds/tokens": "workspace:*",
-    "msw": "catalog:",
     "svg-to-jsx": "^1.0.4",
     "svgr": "^2.0.0"
   },
@@ -71,10 +70,11 @@
     "@tanstack/react-query": "catalog:",
     "@testing-library/react": "catalog:",
     "clsx": "catalog:",
-    "tailwind-merge": "^3.5.0",
+    "msw": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "react-router-dom": "catalog:"
+    "react-router-dom": "catalog:",
+    "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
     "@fontsource/inter": "catalog:",
@@ -87,13 +87,19 @@
     "@types/react-dom": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "conventional-changelog": "catalog:",
+    "glob": "13.0.6",
+    "jsdom": "catalog:",
+    "msw": "catalog:",
     "postcss": "catalog:",
     "postcss-cli": "^11.0.1",
     "postcss-import": "^16.1.0",
-    "glob": "13.0.6",
-    "jsdom": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "msw": {
+      "optional": true
+    }
   }
 }

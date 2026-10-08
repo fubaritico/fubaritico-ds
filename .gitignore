@@ -51,3 +51,6 @@ packages/e2e/src/reports/report.json
 
 # opensrc - source code for packages
 opensrc/
+
+# Local packing output for consuming the DS from a sibling project
+dist-tarballs

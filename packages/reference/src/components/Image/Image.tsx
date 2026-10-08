@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { getBlurDataUrl } from '@fubaritico-ds/shared'
+import { getBlurDataUrl } from '../../utils'
 
 import {
   IMAGE_BLUR_CLASS,

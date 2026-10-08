@@ -34,6 +34,76 @@ Put here the know issues to avoid cluttering the context window.
   `collapse` qui les honore (d'où `border-collapse: collapse` sur `.ui-data-table__table`).
 - **`:has([role=checkbox])` NE matche PAS un `<input type=checkbox>` natif** (rôle checkbox implicite, pas
   d'attribut `role`) → utiliser **`:has(input[type=checkbox])`** (colonne select carrée/flush).
+- **SonarCloud : branche principale `master` alors que le dépôt est sur `main` (résolu 2026-10-08)** —
+  piège coûteux, à ne pas re-subir. Le projet avait été initialisé avec **`master`** comme branche
+  principale (`isMain: true`), branche qui **n'existe pas** dans le dépôt et n'a été analysée qu'une
+  fois, le 07/06, par le workflow one-shot `sonar-init.yml`. Toutes les analyses de la CI depuis juin
+  partaient donc sur une branche **`main` de type SHORT**, et **le plan gratuit interdit la lecture des
+  branches non principales** (`"Organization is not allowed to access data from non main branches"`).
+  **Symptôme trompeur** : la CI est verte, les tâches Compute Engine sont en `SUCCESS`, le scanner
+  publie — mais l'API, la page projet et le quality gate lisent `master` et renvoient des données
+  gelées au 07/06 (anciens chemins `src/<Component>/`, `MovieCard`, `react-router/`, tous supprimés
+  depuis). **Ne PAS en conclure que la CI est cassée** : vérifier d'abord
+  `api/project_branches/list?project=…` et la valeur de `isMain`. Correctif appliqué :
+  `project_branches/delete?branch=main` puis `project_branches/rename?name=main`. Le projet a aussi été
+  basculé **public** (`visibility: public`) — gratuit et illimité, le dépôt GitHub l'étant déjà.
+- **`SONAR_TOKEN` : il faut un USER token, pas un token d'analyse** — `/sonar` interroge
+  `api/qualitygates/project_status` et `api/issues/search`, deux endpoints de **lecture** (permission
+  *Browse*). Un **Project/Global Analysis Token** ne donne que *Execute Analysis* : il fait tourner le
+  scan en CI mais **ne peut pas lire** les issues. D'où l'asymétrie normale : le secret GitHub Actions
+  (analyse) et le `.env` local (lecture) n'ont pas le même besoin. Alternative moindre-privilège pour
+  le local : un **Scoped Organization Token** (`sqco_`) en *Browse* sur le seul projet — mais seul un
+  sous-ensemble des endpoints est compatible SOT, à vérifier avant de s'y fier.
+- **Police serif par défaut : le DS ne livre AUCUN reset global (rappel, élargi 2026-10-08)** —
+  chaque bloc de skin déclare sa propre `font-family` ; tout texte brut **hors** d'un bloc retombe
+  sur le serif du navigateur (Times New Roman). Déjà connu pour la `Card` ; `drawer.css`,
+  `bottom-sheet.css` et `modal.css` l'avaient oublié → corrigé. **Côté Storybook** le canvas n'avait
+  pas non plus de police de base, donc tout le décor des stories (libellés `<strong>`, légendes)
+  était en serif : ajout de `.storybook/preview-base.css` qui pose `--font-inter` sur `.sb-show-main`
+  — c'est le **rôle de l'app hôte**, pas du DS, et c'est documenté comme tel dans le fichier.
+  **Règle pour un nouveau bloc** : si du texte brut peut y atterrir, poser `--ui-<bloc>-font-family`.
+- **`.ui-card__footer` n'avait aucun `justify-content` (corrigé 2026-10-08)** — il retombait donc sur
+  `flex-start`, et les actions se ferraient à gauche par accident plutôt que par choix. Le footer
+  porte désormais un axe `align` (`start` / `center` / `end` / `between`), **`center` par défaut**
+  (choix dev). Corollaire : `Card.Footer` **EST** la rangée d'actions — ne pas emballer les boutons
+  dans un `div`, ça les réduit à un seul enfant flex et neutralise gap ET alignement.
+- **JAMAIS de `display` sur un `<dialog>` hors de `[open]` (piège rencontré DEUX fois, 2026-10-08)** —
+  le navigateur masque un dialog fermé via la règle UA `dialog:not([open]) { display: none }`. Toute
+  déclaration `display` d'auteur (skin **ou** style inline) l'écrase, et le dialog reste affiché en
+  permanence. Symptômes observés : « tous les drawers sont ouverts au démarrage », « ils s'empilent
+  dans le showcase », « le bouton close est inactif » (il marchait, le panneau ne disparaissait
+  jamais) ; côté Modal, la story injectait `style={{ display: 'grid' }}` pour centrer et cassait tout
+  l'état fermé. **Règle** : le layout d'un dialog va sur `.ui-<bloc>[open]`, jamais sur la base, et
+  **jamais** via `style`/`className` côté consommateur. Pour repositionner, exposer une var
+  (`--ui-modal-place-items`). Concerne `.ui-modal` et `.ui-drawer`. Non couvert par les tests : jsdom
+  n'évalue pas la feuille de styles, et `packages/styles` n'a pas de test runner.
+- **Le backdrop d'un `<dialog>` se déclare LUI-MÊME comme cible du clic (2026-10-08)** — donc
+  `e.target === dialog` ne distingue PAS un clic sur le backdrop d'un clic sur le fond propre du
+  panneau. Ça ne marche que si le dialog couvre le viewport et que le panneau est un enfant (cas
+  `Modal`). Quand le dialog **EST** le panneau (cas `Drawer`), il faut un test géométrique contre sa
+  bounding box. D'où l'option `backdropArea: 'self' | 'outside'` de `useNativeDialog`. En test, jsdom
+  mesure tout à zéro : stubber `getBoundingClientRect` et cliquer via `user.pointer({ coords })`.
+- **Surcharge des border-radius : granularité par COIN non prévue — passe dédiée à faire (relevé
+  2026-10-08)** — audit du skin : **14 composants** exposent bien une var radius unique
+  (`--ui-<bloc>-radius` : avatar, badge, button, card, checkbox, icon-button, input, listbox,
+  listbox-item, pagination, progress-bar, skeleton, spinner, tooltip), mais **AUCUN n'expose de coin
+  individuel**. Impossible, via l'API de vars, d'arrondir un seul coin ou deux coins d'une forme
+  carrée/rectangulaire — or c'est un besoin explicite du système de surcharge (dev, 2026-10-08). Le
+  seul contournement actuel est une règle non-layered côté consommateur (elle bat le skin sans guerre
+  de spécificité), ce qui marche mais contourne l'API. **À traiter dans une passe border-radius
+  dédiée**, pas composant par composant — la forme à retenir (ex. `--ui-<bloc>-radius` + quatre
+  `--ui-<bloc>-radius-{start-start,start-end,end-start,end-end}` en propriétés logiques, chacune
+  retombant sur la var globale) doit être tranchée UNE fois puis appliquée partout, sinon les
+  composants divergeront. Voir [[theming-strategy]].
+- **Deux `border-radius` hors tokens dans le skin (relevé 2026-10-08)** — `dropdown.css:96` écrit
+  `border-radius: 9999px` en dur : **vraie violation**, à remplacer par `var(--radius-full)` ou une
+  var de composant (à faire dans la passe border-radius ci-dessus). `progress-bar.css:68` écrit
+  `border-radius: inherit` sur l'indicateur : **légitime**, l'indicateur épouse l'arrondi de la piste
+  — ne pas le « corriger ».
+- **`ProgressBar` : arrondi par défaut `--radius-full` (pilule) — divergence assumée temporairement
+  (2026-10-08)** — le dev a énoncé « zéro radius par défaut » pour le thème de base, mais a choisi de
+  laisser la barre en pilule pour l'instant. Surchargeable via `--ui-progress-bar-radius`. **À
+  repasser dans la passe border-radius**, ce n'est pas un oubli.
 - **Chevron atténué d'`ArrowUpDown` : exception WCAG 1.4.11 ASSUMÉE (2026-10-08)** :
   `--ui-sort-arrows-dimmed-opacity: 0.5` ramène `--color-foreground-muted` (neutral.500) à ~2,05:1 sur
   blanc, sous le plancher de 3:1 des objets graphiques. **Accepté, ce n'est pas un trou** : la direction

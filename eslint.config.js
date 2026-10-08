@@ -38,6 +38,7 @@ export default tseslint.config(
       '**/storybook-static/**',
       '**/.temp-svg/**',
       '**/files/**',
+      '**/script/**',
       '**/scripts/**',
       '**/coverage/**',
       'pnpm-lock.yaml',

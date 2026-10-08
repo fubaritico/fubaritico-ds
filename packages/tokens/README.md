@@ -1,82 +1,42 @@
 # @fubaritico-ds/tokens
 
-Design tokens for the fubaritico-ds project, built with [Style Dictionary](https://styledictionary.com/).
+The design decisions of the fubaritico design system — colour, spacing, radius, typography, motion
+— authored once in DTCG JSON and compiled by Style Dictionary into several outputs.
 
-## Structure
-
-```
-tokens/
-├── color/
-│   ├── primitive.json    # Raw color palette (not for direct use)
-│   └── semantic.json     # Semantic color aliases (use these)
-├── spacing.json          # Spacing scale
-├── radius.json           # Border radius scale
-├── font.json             # Typography tokens
-└── shadow.json           # Box shadow scale
-```
-
-## Build
+## Install
 
 ```bash
-pnpm build
+pnpm add @fubaritico-ds/tokens
 ```
 
-This generates:
+## Use
 
-- `dist/css/variables.css` - CSS custom properties
-- `dist/tailwind/theme.css` - Tailwind CSS v4 @theme format
-- `dist/js/tokens.js` - JavaScript ES6 export
-- `dist/ts/tokens.ts` - TypeScript export with types
-
-## Usage
-
-### In CSS
-
-```css
-@import '@fubaritico-ds/tokens/css';
-
-.my-component {
-  background: var(--color-semantic-background-default);
-  color: var(--color-semantic-foreground-default);
-}
+```ts
+import '@fubaritico-ds/tokens/css' // CSS custom properties on :root
 ```
 
-### In Tailwind CSS v4
+That is what `@fubaritico-ds/styles` reads, and it is the only import most projects need. Also
+available:
 
-```css
-@import '@fubaritico-ds/tokens/tailwind';
+```ts
+import { color, spacing } from '@fubaritico-ds/tokens' // the same values as a typed JS object
+import '@fubaritico-ds/tokens/tailwind' // a Tailwind v4 @theme block, if your app uses Tailwind
 ```
 
-### In JavaScript/TypeScript
+The Tailwind output exists for **your** application; the design system itself uses none.
 
-```typescript
-import { tokens } from '@fubaritico-ds/tokens'
+## Shape
 
-const primaryColor = tokens.color.semantic.primary.default
-```
+- **Primitives** — the raw scales: `--color-primitive-neutral-0` … `-950`, `--spacing-0` … `-96`.
+  Twenty steps of grey, because the DS default is neutral.
+- **Semantic roles** — what a value is _for_: `--color-primary`, `--color-destructive`,
+  `--color-foreground-muted`, `--color-border`.
 
-## Token Categories
+Components read role tokens, roles read primitives. Redefine a role to re-theme broadly; redefine
+a primitive to shift a whole scale.
 
-### Colors
+## Note on naming
 
-- **Primitive**: Raw color palette (neutral, amber, red, green)
-- **Semantic**: Contextual colors (background, foreground, primary, header, footer, badge, rating, etc.)
-
-### Spacing
-
-Based on 0.25rem (4px) increments, from `0` to `96` (24rem).
-
-### Radius
-
-Border radius scale: `none`, `sm`, `md`, `lg`, `xl`, `2xl`, `3xl`, `full`.
-
-### Font
-
-- **Family**: sans, mono
-- **Size**: xs to 9xl
-- **Weight**: thin to black
-- **Line Height**: none, tight, snug, normal, relaxed, loose
-
-### Shadow
-
-Box shadow scale: `none`, `sm`, `default`, `md`, `lg`, `xl`, `2xl`.
+The CSS output dash-ifies dotted names: `spacing.0.5` becomes `--spacing-0-5`. The **Tailwind**
+output keeps the dots (`--spacing-0.5`) to match Tailwind's own `p-0.5` convention. The two
+outputs diverge on purpose.

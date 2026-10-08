@@ -1,7 +1,14 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig((options) => ({
-  entry: ['src/**/*.{ts,tsx}', '!src/**/*.test.*'],
+  // Carousel and the Next adapters still carry Tailwind `ui:` classes, so they are kept in the
+  // repo (migration backlog) but excluded from the published build, which ships Tailwind-free.
+  entry: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.test.*',
+    '!src/components/Carousel/**',
+    '!src/components/next/**',
+  ],
   format: ['esm'],
   bundle: false,
   dts: false,

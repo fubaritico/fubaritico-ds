@@ -8,6 +8,16 @@
     "outDir": "dist",
     "types": []
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "src/**/*.test.*", "vitest.setup.ts"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/*.test.*",
+    "vitest.setup.ts",
+    "src/components/Carousel/**",
+    "src/components/next/**",
+    "src/**/*.bak"
+  ]
 }

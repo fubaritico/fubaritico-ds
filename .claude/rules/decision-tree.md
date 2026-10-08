@@ -18,6 +18,7 @@
 | Fetch the SonarCloud report                       | `/sonar`               |
 | Start a work session                              | `/start-session`       |
 | End a work session                                | `/end-session`         |
+| Answer "how long / since when / when did we…"     | `/timeline`            |
 
 ## Apply when writing/reviewing component code (composition primitives)
 

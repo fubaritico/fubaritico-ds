@@ -1,6 +1,6 @@
 {
   "name": "@fubaritico-ds/tokens",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -16,7 +16,8 @@
     "./tailwind": "./dist/tailwind/theme.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "clean": "rm -rf dist",
@@ -31,5 +32,6 @@
   "devDependencies": {
     "conventional-changelog": "catalog:",
     "style-dictionary": "^4.3.0"
-  }
+  },
+  "description": "Design tokens for the fubaritico design system \u2014 OKLCH/DTCG sources compiled by Style Dictionary into CSS custom properties, JS/TS objects and a Tailwind theme."
 }

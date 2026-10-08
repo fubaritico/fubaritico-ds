@@ -1,5 +1,3 @@
-import './styles.css'
-
 export { Alert } from './components/Alert'
 export type { AlertProps, AlertVariant } from './components/Alert'
 
@@ -94,9 +92,6 @@ export type {
 export { Menu } from './components/Menu'
 export type { MenuProps, MenuItemProps, MenuVariant } from './components/Menu'
 
-export { HeroImage } from './components/HeroImage'
-export type { HeroImageProps } from './components/HeroImage'
-
 export { Modal } from './components/Modal'
 export type { ModalProps } from './components/Modal'
 
@@ -117,28 +112,6 @@ export type {
   RatingVariant,
 } from './components/Rating'
 
-export { TrailerCard } from './components/TrailerCard'
-export type { TrailerCardProps } from './components/TrailerCard'
-
-export {
-  Carousel,
-  CarouselCounter,
-  CarouselItem,
-  CarouselLoading,
-  CarouselNavigation,
-  CarouselPagination,
-} from './components/Carousel'
-export type {
-  CarouselArrowPosition,
-  CarouselCounterProps,
-  CarouselItemProps,
-  CarouselLoadingProps,
-  CarouselNavigationPosition,
-  CarouselNavigationProps,
-  CarouselPaginationProps,
-  CarouselProps,
-  CarouselVariant,
-} from './components/Carousel'
 
 export { Tabs } from './components/Tabs'
 export type { TabsProps, TabsVariant } from './components/Tabs'

@@ -1,11 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getBlurDataUrl } from '@fubaritico-ds/shared'
+import { getBlurDataUrl } from '../../utils'
 
 import Image from './Image'
 
-vi.mock('@fubaritico-ds/shared', () => ({
+vi.mock('../../utils', () => ({
   getBlurDataUrl: vi
     .fn()
     .mockResolvedValue('data:image/jpeg;base64,mockAutoBlur'),

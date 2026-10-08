@@ -3,15 +3,87 @@
 > Loaded at session start (CLAUDE.md `### Next` → `@next.md`). Single source for "what's next".
 > North-star program: **`files/plans/roadmap.md`** (phases A→F).
 
-> **▶ PROCHAINE SESSION — CRÉER UN COMPOSANT FEATURE « Tooltip on truncated text ».** Un composant/feature
-> qui déclenche une **Tooltip** quand un texte est **tronqué** (ellipsis) — remplace les stopgaps `title`/
-> `aria-label` partout où on tronque (DataTable cells, `TruncatedContent`, `DateCell`, Badge `canTruncate`,
-> Listbox items…). Bases : DS `Tooltip` (migré) + hook `useIsTextTruncated` (existe déjà, ResizeObserver).
-> Charger `patterns-ui` (+ `state-storage` si stateful) ; `/new-react-component` + `/story` + `/test`.
-> Idée : un wrapper `TruncateWithTooltip` (ConditionalWrapper) qui n'affiche la Tooltip que si tronqué.
+> ## ✅ CONSIGNE DE BRIEFING — HONORÉE LE 2026-10-08
 >
-> **Thread parallèle** : adoption « agent-ready » (étude Astryx) — plans dans `files/plans/agent-ready/`,
-> commencer par **P1 doc-as-data** (Button cobaye). Voir [[astryx-agent-ready-study]].
+> Le briefing de reprise demandé le 2026-09-16 a été délivré (écart réel : ~12 semaines depuis le
+> dernier commit de code `672acdc`, 2026-07-16). Garder le réflexe pour toute reprise espacée : se
+> situer dans le temps d'abord (hook `SessionStart` + `~/.claude/hooks/session-log.sh report`), puis
+> briefer avant de coder. Voir [[document-why-of-uncommitted-work]].
+>
+> **Soldé dans la foulée** : la dette doc (commit `199e99d`) et `ArrowUpDown` (commit `742887e`).
+> **Reste ouvert** : le stub `WithTooltip` (voir EN SUSPENS) et `/sonar`, **bloqué faute de
+> `SONAR_TOKEN`** — aucun fichier `.env` n'existe à la racine ; le dev doit en générer un sur
+> SonarCloud (Account → Security) et l'y ajouter. Donc l'hypothèse **S3358** sur l'origine du ternaire
+> imbriqué reste **non confirmée** (sans conséquence : le ternaire a disparu).
+
+> **▶ PROCHAINE SESSION — PORTER LE COMPOSANT `ProgressBar`** (cadrage validé le 2026-09-16, rien de
+> codé encore). Priorisée par le dev : composant **riche en options**, bon candidat **marque blanche**,
+> destiné à être **réutilisé dans un autre projet** — c'est la raison de le faire maintenant.
+>
+> **Source à porter** (validée) : repo sibling
+> `react-and-react-native-financial-app/packages/ui/src/components/atoms/ProgressBar/` (RN+Web → on garde
+> **web-only**). Même origine que Checkbox/Tooltip/Pagination/Dropdown (cf. `completed.md` 2026-06-18).
+> Cible : `packages/reference/src/components/ProgressBar/` (**dossier vide** aujourd'hui).
+>
+> **Décisions de cadrage (verrouillées) :**
+>
+> - **Périmètre v1 = déterminé seul** (`value`/`max`). `buffer` (2e segment, à la MUI) et **mode
+>   indéterminé** = extensions v2 possibles, PAS dans ce lot. L'indéterminé recoupe le `Spinner` → devra
+>   être justifié + trancher reduced-motion (précédents opposés : Skeleton retire / Spinner ralentit).
+> - **REJET de `color: string`** (la source interpole `var(--color-base-${color}-DEFAULT)` → zéro
+>   type-safety, token non garanti, contredit « neutral par défaut, brand en opt-in »). Remplacé par un
+>   **axe `variant` fermé** (précédent Badge/Button) + override `--ui-progress-bar-indicator-color`.
+> - **REJET de `size: thick | thin`** → **`sm | md | lg`**, l'axe de tous les composants migrés.
+> - **`metaLeft`/`metaRight` GARDÉS** (ligne de légende sous la barre, choix explicite du dev contre ma
+>   recommandation de les sortir en composition). ⚠️ **Question ouverte** : les renommer `metaStart`/
+>   `metaEnd` (noms logiques, cohérent avec la culture logical-properties du repo / RTL de Rating) ?
+> - **a11y — 2 trous de la source à corriger** : `role="progressbar"` **sans nom accessible**
+>   (`aria-label`/`aria-labelledby` obligatoire) ; pas d'`aria-valuetext` pour un affichage non-%.
+> - **RTL** : fill en **`inline-size`**, le **skin possède la direction** (la source utilise `width: %`
+>   dans un flex row physique — même piège que le `clip-path` inline qui avait cassé le RTL de Rating).
+>
+> Livrables : skin BEM `progress-bar.css` + resolver `progressBarVariants` (`@fubaritico-ds/variants`) +
+> composant + tests 5 niveaux + story + README. `/new-react-component` → `/story` → `/test` → `/review`.
+
+## EN SUSPENS — à finir proprement, PAS abandonné
+
+Un chantier ouvert laissé **non commité** dans le working tree (`ArrowUpDown` a été soldé le
+2026-10-08 par `742887e`). **Ne pas supprimer, ne pas commiter en l'état.**
+
+- **`components/WithTooltip/WithTooltip.tsx`** — **stub vide** (`prop: unknown`, `console.warn`,
+  `return null`, non typé). C'était le démarrage de la feature **« Tooltip on truncated text »** :
+  déclencher la `Tooltip` DS quand un texte est **tronqué** (ellipsis), pour remplacer les stopgaps
+  `title`/`aria-label` partout où on tronque (cells DataTable, `TruncatedContent`, `DateCell`, Badge
+  `canTruncate`, items Listbox…). Bases prêtes : `Tooltip` migrée + hook `useIsTextTruncated`
+  (ResizeObserver). Idée notée : wrapper `TruncateWithTooltip` via `ConditionalWrapper`, qui n'affiche la
+  Tooltip **que si** tronqué. ⚠️ Nom à trancher (`WithTooltip` vs `TruncateWithTooltip`).
+
+## PASSE À FAIRE — border-radius & granularité de surcharge
+
+**Décidé le 2026-10-08, pas encore planifié.** Une passe **transverse**, pas du composant par
+composant : la forme de l'API doit être tranchée UNE fois puis appliquée partout, sinon les 14
+composants divergeront.
+
+Trois choses à traiter ensemble :
+
+1. **Coins individuels** — aucun composant n'expose aujourd'hui de coin séparé. Besoin explicite du
+   dev : pouvoir arrondir **un coin, deux coins** d'une forme carrée/rectangulaire. Piste à valider :
+   `--ui-<bloc>-radius` (globale, existante) + quatre vars logiques
+   `--ui-<bloc>-radius-{start-start,start-end,end-start,end-end}` retombant chacune sur la globale.
+   Logique, pas physique — cohérent avec le reste du skin.
+2. **Valeur par défaut** — le dev a énoncé « **zéro par défaut** » pour le thème de base, puis a
+   constaté de petits arrondis un peu partout et préféré reporter. À trancher dans cette passe.
+   Cas connu : `ProgressBar` est en `--radius-full` (pilule), divergence assumée.
+3. **Deux littéraux à nettoyer** — `dropdown.css:96` (`9999px` en dur → token). Ne PAS toucher
+   `progress-bar.css:68` (`border-radius: inherit`, légitime).
+
+Objectif de fond : **le système de surcharge**, pas l'esthétique. Détails dans `known-issues.md`.
+Voir [[theming-strategy]].
+
+## Thread parallèle
+
+Adoption « agent-ready » (étude Astryx) — plans dans `files/plans/agent-ready/`, commencer par
+**P1 doc-as-data** (Button cobaye). Voir [[astryx-agent-ready-study]].
 
 ## North-star (roadmap.md)
 
