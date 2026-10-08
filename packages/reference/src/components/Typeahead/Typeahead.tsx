@@ -1,18 +1,22 @@
 import clsx from 'clsx'
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
+import { TYPEAHEAD_CLASS } from '@fubaritico-ds/variants'
+
 import { TypeaheadContext } from './TypeaheadContext'
-import TypeaheadEmpty from './TypeaheadEmpty'
-import TypeaheadHighlight from './TypeaheadHighlight'
-import TypeaheadInput from './TypeaheadInput'
-import TypeaheadItem from './TypeaheadItem'
-import TypeaheadMenu from './TypeaheadMenu'
+import { TypeaheadEmpty } from './TypeaheadEmpty'
+import { TypeaheadHighlight } from './TypeaheadHighlight'
+import { TypeaheadInput } from './TypeaheadInput'
+import { TypeaheadItem } from './TypeaheadItem'
+import { TypeaheadMenu } from './TypeaheadMenu'
 
-import type { HTMLAttributes, ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 
-/** Internal registry entry for a single Typeahead.Item */
+/** Internal registry entry for a single Typeahead.Item. */
 interface ItemEntry {
+  /** Value reported to `onSelect` when the entry is chosen. */
   value: string
+  /** Whether the entry is skipped by keyboard traversal. */
   disabled: boolean
 }
 
@@ -23,7 +27,7 @@ interface ItemEntry {
  * for item selection).
  */
 export interface TypeaheadProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, 'onSelect'> {
+  extends Omit<ComponentProps<'div'>, 'onSelect'> {
   /** Called with the search value (debounced if debounceMs is set) */
   onSearch?: (value: string) => void
   /** Called when an item is selected via click or keyboard */
@@ -65,7 +69,7 @@ export interface TypeaheadProps
  * </Typeahead>
  * ```
  */
-function Typeahead({
+export function Typeahead({
   onSearch,
   onSelect,
   debounceMs = 0,
@@ -260,15 +264,15 @@ function Typeahead({
   )
 
   return (
-    <TypeaheadContext.Provider value={contextValue}>
+    <TypeaheadContext value={contextValue}>
       <div
         ref={rootRef}
-        className={clsx('ui:relative ui:w-full', className)}
+        className={clsx(TYPEAHEAD_CLASS, className)}
         {...rest}
       >
         {children}
       </div>
-    </TypeaheadContext.Provider>
+    </TypeaheadContext>
   )
 }
 

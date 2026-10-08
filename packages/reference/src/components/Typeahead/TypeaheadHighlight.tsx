@@ -1,42 +1,53 @@
-import clsx from 'clsx'
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react'
 
-import { TypeaheadContext } from './TypeaheadContext'
+import { TYPEAHEAD_MARK_CLASS } from '@fubaritico-ds/variants'
 
-import type { FC } from 'react'
+import { useTypeaheadContext } from './TypeaheadContext'
 
-/** Props for Typeahead.Highlight */
+/** Props of {@link TypeaheadHighlight}. */
 export interface TypeaheadHighlightProps {
-  /** The text to highlight matching characters in */
+  /** Text in which the current query is highlighted. */
   children: string
-  /** Additional CSS class names */
+  /** Extra classes for the wrapping span. */
   className?: string
 }
 
-/** Escapes special regex characters in a string */
+/**
+ * Escapes the regex metacharacters of a user-typed query.
+ *
+ * The query goes straight into a `RegExp`, so an unescaped `(` or `*` would either throw or match
+ * something the user never typed.
+ *
+ * @param str - Raw query string.
+ * @returns The same string, safe to embed in a regex.
+ */
 const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 /**
- * Highlights the portion of text matching the current search query.
+ * Highlights the part of a label matching the current Typeahead query.
  *
- * Splits the text on the query (case-insensitive) and wraps matched
- * segments in `<mark>` with bold styling. Preserves original casing.
+ * Splits the text on the query (case-insensitively, original casing preserved) and wraps the
+ * matches in `<mark>`. The skin conveys the match by WEIGHT, not colour, so it survives a
+ * monochrome theme and does not rely on hue alone.
  *
- * Must be used within a `<Typeahead>` provider.
+ * Must be rendered inside a `<Typeahead>`.
+ *
+ * @param props - {@link TypeaheadHighlightProps}.
+ * @param props.children - The label to highlight.
+ * @returns The label with its matching segments marked.
  */
-const TypeaheadHighlight: FC<TypeaheadHighlightProps> = ({
+export function TypeaheadHighlight({
   children,
   className,
-}) => {
-  const context = useContext(TypeaheadContext)
-  if (!context)
-    throw new Error('Typeahead.Highlight must be used within Typeahead')
-
-  const { inputValue } = context
+}: Readonly<TypeaheadHighlightProps>) {
+  const { inputValue } = useTypeaheadContext('Typeahead.Highlight')
   const query = inputValue.trim()
 
+  // Splitting on a capturing group keeps the matches in the output, so the original casing and
+  // spacing survive; recomputed only when the label or the query actually changes.
   const parts = useMemo(() => {
     if (!query) return [children]
+
     return children.split(new RegExp(`(${escapeRegex(query)})`, 'gi'))
   }, [children, query])
 
@@ -44,12 +55,7 @@ const TypeaheadHighlight: FC<TypeaheadHighlightProps> = ({
     <span className={className}>
       {parts.map((part, i) =>
         part.toLowerCase() === query.toLowerCase() ? (
-          <mark
-            key={i}
-            className={clsx(
-              'ui:bg-transparent ui:font-extrabold ui:text-inherit'
-            )}
-          >
+          <mark key={`${part}-${String(i)}`} className={TYPEAHEAD_MARK_CLASS}>
             {part}
           </mark>
         ) : (

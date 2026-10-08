@@ -415,13 +415,13 @@ describe('Typeahead', () => {
 
   it('should throw if Typeahead.Input is used outside Typeahead', () => {
     expect(() => render(<Typeahead.Input placeholder="test" />)).toThrow(
-      'Typeahead.Input must be used within Typeahead'
+      'Typeahead.Input must be used within <Typeahead>'
     )
   })
 
   it('should throw if Typeahead.Menu is used outside Typeahead', () => {
     expect(() => render(<Typeahead.Menu />)).toThrow(
-      'Typeahead.Menu must be used within Typeahead'
+      'Typeahead.Menu must be used within <Typeahead>'
     )
   })
 
@@ -432,19 +432,19 @@ describe('Typeahead', () => {
           Test
         </Typeahead.Item>
       )
-    ).toThrow('Typeahead.Item must be used within Typeahead')
+    ).toThrow('Typeahead.Item must be used within <Typeahead>')
   })
 
   it('should throw if Typeahead.Empty is used outside Typeahead', () => {
     expect(() => render(<Typeahead.Empty>No results</Typeahead.Empty>)).toThrow(
-      'Typeahead.Empty must be used within Typeahead'
+      'Typeahead.Empty must be used within <Typeahead>'
     )
   })
 
   it('should throw if Typeahead.Highlight is used outside Typeahead', () => {
     expect(() =>
       render(<Typeahead.Highlight>text</Typeahead.Highlight>)
-    ).toThrow('Typeahead.Highlight must be used within Typeahead')
+    ).toThrow('Typeahead.Highlight must be used within <Typeahead>')
   })
 
   // --- Highlight ---
@@ -463,7 +463,7 @@ describe('Typeahead', () => {
     await userEvent.type(screen.getByRole('combobox'), 'app')
     const marks = screen.getAllByText('App')
     expect(marks[0].tagName).toBe('MARK')
-    expect(marks[0]).toHaveClass('ui:font-extrabold')
+    expect(marks[0]).toHaveClass('ui-typeahead__mark')
   })
 
   it('should preserve original casing in Highlight', async () => {

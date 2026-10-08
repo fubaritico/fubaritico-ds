@@ -1,4 +1,4 @@
-import { createContext } from 'react'
+import { createContext, use } from 'react'
 
 import type { RefObject } from 'react'
 
@@ -47,3 +47,21 @@ export interface TypeaheadContextValue {
 export const TypeaheadContext = createContext<TypeaheadContextValue | null>(
   null
 )
+
+/**
+ * Reads the Typeahead context, guarding the composition contract.
+ *
+ * Every `Typeahead.*` part is meaningless on its own — it reads the open/active state and reports
+ * back through the shared actions — so a missing provider is a programming error, not a standalone
+ * mode: the hook THROWS rather than degrading silently.
+ *
+ * @param part - Name of the calling part, used to make the error actionable.
+ * @returns The surrounding Typeahead's context value.
+ * @throws If called outside a `<Typeahead>`.
+ */
+export function useTypeaheadContext(part: string): TypeaheadContextValue {
+  const context = use(TypeaheadContext)
+  if (!context) throw new Error(`${part} must be used within <Typeahead>`)
+
+  return context
+}

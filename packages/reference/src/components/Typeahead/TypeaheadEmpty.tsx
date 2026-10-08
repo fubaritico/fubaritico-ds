@@ -1,43 +1,40 @@
 import clsx from 'clsx'
-import { useContext } from 'react'
 
-import { TypeaheadContext } from './TypeaheadContext'
+import { typeaheadEmptyVariants } from '@fubaritico-ds/variants'
 
-import type { FC, PropsWithChildren } from 'react'
+import { useTypeaheadContext } from './TypeaheadContext'
 
-/** Props for Typeahead.Empty */
-export interface TypeaheadEmptyProps {
-  /** Additional CSS class names */
-  className?: string
-}
+import type { ComponentProps } from 'react'
+
+/** Props of {@link TypeaheadEmpty}. */
+export type TypeaheadEmptyProps = Omit<ComponentProps<'li'>, 'role'>
 
 /**
- * Empty state placeholder for the Typeahead dropdown.
+ * The "no results" row of the Typeahead dropdown.
  *
- * Renders a disabled `<li role="option">` with centered text, used when
- * no search results match the query. Styled with light/dark variant
- * from context.
+ * Renders a non-selectable `<li role="option" aria-disabled>` so the list keeps a valid listbox
+ * structure while telling assistive technology the row cannot be chosen. The colour scheme follows
+ * the surrounding Typeahead.
  *
- * Must be used within a `<Typeahead>` provider (inside `Typeahead.Menu`).
+ * Must be rendered inside a `<Typeahead>`, within `Typeahead.Menu`.
+ *
+ * @param props - {@link TypeaheadEmptyProps}.
+ * @returns The rendered empty row.
  */
-const TypeaheadEmpty: FC<PropsWithChildren<TypeaheadEmptyProps>> = ({
+export function TypeaheadEmpty({
   children,
   className,
-}) => {
-  const context = useContext(TypeaheadContext)
-  if (!context) throw new Error('Typeahead.Empty must be used within Typeahead')
-
-  const isDark = context.variant === 'dark'
+  ...rest
+}: Readonly<TypeaheadEmptyProps>) {
+  const { variant } = useTypeaheadContext('Typeahead.Empty')
 
   return (
     <li
       role="option"
       aria-disabled="true"
-      className={clsx(
-        'ui:select-none ui:px-3 ui:py-2 ui:text-center ui:text-sm ui:font-roboto',
-        isDark ? 'ui:text-neutral-400' : 'ui:text-muted-foreground',
-        className
-      )}
+      aria-selected={false}
+      className={clsx(typeaheadEmptyVariants({ variant }), className)}
+      {...rest}
     >
       {children}
     </li>

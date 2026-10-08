@@ -1,10 +1,10 @@
-import { useContext, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { ListboxItem } from '../Listbox'
 
-import { TypeaheadContext } from './TypeaheadContext'
+import { useTypeaheadContext } from './TypeaheadContext'
 
-import type { ComponentProps, FC } from 'react'
+import type { ComponentProps } from 'react'
 
 /**
  * Props for Typeahead.Item.
@@ -32,17 +32,14 @@ export interface TypeaheadItemProps
  *
  * Must be used within a `<Typeahead>` provider (inside `Typeahead.Menu`).
  */
-const TypeaheadItem: FC<TypeaheadItemProps> = ({
+export function TypeaheadItem({
   value,
   disabled = false,
   children,
   index,
   className,
   ...rest
-}) => {
-  const context = useContext(TypeaheadContext)
-  if (!context) throw new Error('Typeahead.Item must be used within Typeahead')
-
+}: Readonly<TypeaheadItemProps>) {
   const {
     activeIndex,
     variant,
@@ -51,12 +48,13 @@ const TypeaheadItem: FC<TypeaheadItemProps> = ({
     unregisterItem,
     getItemId,
     setActiveIndex,
-  } = context
+  } = useTypeaheadContext('Typeahead.Item')
   const isActive = activeIndex === index
   const itemId = getItemId(index)
   const ref = useRef<HTMLLIElement>(null)
 
-  /** Registers this item in the Typeahead registry; unregisters on unmount */
+  // Publish this item so keyboard traversal can reach it, and withdraw it on unmount so a filtered
+  // -out suggestion can never be selected by an arrow key.
   useEffect(() => {
     registerItem(index, value, disabled)
     return () => {
@@ -64,7 +62,7 @@ const TypeaheadItem: FC<TypeaheadItemProps> = ({
     }
   }, [index, value, disabled, registerItem, unregisterItem])
 
-  /** Scrolls the active item into view when navigated to via keyboard */
+  // Keep the keyboard cursor visible inside the scrollable dropdown as it moves.
   useEffect(() => {
     if (isActive && ref.current && 'scrollIntoView' in ref.current) {
       ref.current.scrollIntoView({ block: 'nearest' })

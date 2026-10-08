@@ -1,0 +1,89 @@
+/**
+ * Typeahead — native BEM skin.
+ *
+ * The combobox shell around the shared pieces: `.ui-typeahead` is the positioning context for the
+ * input + dropdown, `.ui-typeahead__menu` places the suggestion list under the field,
+ * `.ui-typeahead__empty` is the "no results" row, and `.ui-typeahead__mark` resets the `<mark>`
+ * used to highlight the matched substring.
+ *
+ * The LIST ITSELF is not styled here — `Typeahead.Menu` composes `.ui-listbox` and the items
+ * compose `.ui-listbox__item`, so the popup look stays shared with `Menu`. This block only adds what
+ * a combobox needs on top: anchoring, the empty row and the highlight.
+ *
+ * Positioning is LOGICAL (`inset-inline-start`, `margin-block-start`): the dropdown anchors to the
+ * field's inline-start edge, so it follows the writing direction. The Tailwind version used a
+ * physical `left-0`, which placed the menu on the wrong side in RTL.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-typeahead-*` vars on `.ui-typeahead`.
+ *   2. Redefine a global token → re-skins every Typeahead.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-typeahead {
+    /* ---- override API (component-scoped) ---- */
+    --ui-typeahead-menu-offset: var(--spacing-1);
+    --ui-typeahead-menu-z-index: 50;
+    --ui-typeahead-empty-color: var(--color-foreground-muted);
+    --ui-typeahead-empty-padding-block: var(--spacing-2);
+    --ui-typeahead-empty-padding-inline: var(--spacing-3);
+    --ui-typeahead-empty-font-family: var(--font-roboto);
+    --ui-typeahead-empty-font-size: var(--font-size-sm);
+    --ui-typeahead-mark-font-weight: var(--font-weight-extrabold);
+
+    /* ---- base ---- */
+    /* Positioning context for the anchored dropdown. */
+    box-sizing: border-box;
+    position: relative;
+    inline-size: 100%;
+  }
+
+  /* ---- menu (anchored under the field) ---- */
+  .ui-typeahead__menu {
+    position: absolute;
+    inset-inline-start: 0;
+    inline-size: 100%;
+    margin-block-start: var(--ui-typeahead-menu-offset);
+    z-index: var(--ui-typeahead-menu-z-index);
+  }
+
+  /* Portalled: the menu is positioned by the consumer (it lives outside this subtree), so the skin
+     contributes the stacking order ONLY — anchoring would fight the inline coordinates. */
+  .ui-typeahead__menu--portal {
+    position: static;
+    inset-inline-start: auto;
+    inline-size: auto;
+    margin-block-start: 0;
+    z-index: var(--ui-typeahead-menu-z-index);
+  }
+
+  /* ---- empty state ---- */
+  /* A non-selectable `<li role="option" aria-disabled>` row; centred, muted, never a hover target. */
+  .ui-typeahead__empty {
+    padding-block: var(--ui-typeahead-empty-padding-block);
+    padding-inline: var(--ui-typeahead-empty-padding-inline);
+    color: var(--ui-typeahead-empty-color);
+    font-family: var(--ui-typeahead-empty-font-family);
+    font-size: var(--ui-typeahead-empty-font-size);
+    text-align: center;
+    user-select: none;
+  }
+
+  /* Dark surface — re-points the role var to the readable end of the neutral scale, mirroring how
+     `.ui-listbox--dark` re-maps its own role vars. */
+  .ui-typeahead__empty--dark {
+    --ui-typeahead-empty-color: var(--color-primitive-neutral-400);
+  }
+
+  /* ---- matched-substring highlight ---- */
+  /* `<mark>` carries a UA yellow background and black text; the DS conveys the match by WEIGHT
+     instead, so the colour is inherited and the background removed. Weight is a non-colour channel,
+     which keeps the match perceivable without relying on hue (WCAG 1.4.1). */
+  .ui-typeahead__mark {
+    background-color: transparent;
+    color: inherit;
+    font-weight: var(--ui-typeahead-mark-font-weight);
+  }
+}

@@ -1,15 +1,11 @@
-import { useContext } from 'react'
-
 import { Input } from '../Input'
 
-import { TypeaheadContext } from './TypeaheadContext'
+import { useTypeaheadContext } from './TypeaheadContext'
 
-import type { ChangeEvent, ComponentProps, FC, KeyboardEvent } from 'react'
+import type { ChangeEvent, ComponentProps, KeyboardEvent } from 'react'
 
 /**
- * Props for Typeahead.Input.
- *
- * Derives from Input, omitting props managed by Typeahead context.
+ * Props of {@link TypeaheadInput} — the Input props minus everything the Typeahead drives itself.
  */
 export type TypeaheadInputProps = Omit<
   ComponentProps<typeof Input>,
@@ -17,19 +13,18 @@ export type TypeaheadInputProps = Omit<
 >
 
 /**
- * Combobox input for the Typeahead compound component.
+ * The combobox field of the Typeahead.
  *
- * Wraps the base Input component, wiring it to Typeahead context for
- * controlled value, keyboard navigation (ArrowUp/Down, Home/End, Enter,
- * Escape), and ARIA combobox attributes. Opens the menu on focus/click
- * when the input has a value.
+ * Wraps the DS {@link Input} and wires it to the surrounding Typeahead: controlled value, the ARIA
+ * combobox attributes, and the keyboard model (Arrow Up/Down, Home, End, Enter, Escape). Reopens
+ * the dropdown on focus or click once the query is long enough.
  *
- * Must be used within a `<Typeahead>` provider.
+ * Must be rendered inside a `<Typeahead>`.
+ *
+ * @param props - {@link TypeaheadInputProps}.
+ * @returns The rendered combobox input.
  */
-const TypeaheadInput: FC<TypeaheadInputProps> = (props) => {
-  const context = useContext(TypeaheadContext)
-  if (!context) throw new Error('Typeahead.Input must be used within Typeahead')
-
+export function TypeaheadInput(props: Readonly<TypeaheadInputProps>) {
   const {
     isOpen,
     inputValue,
@@ -44,75 +39,91 @@ const TypeaheadInput: FC<TypeaheadInputProps> = (props) => {
     selectItem,
     getItemId,
     inputRef,
-  } = context
+  } = useTypeaheadContext('Typeahead.Input')
 
   const activeDescendant = activeIndex >= 0 ? getItemId(activeIndex) : undefined
 
-  /** Forwards input changes to the Typeahead context (triggers search + open/close) */
+  /**
+   * Forwards typing to the Typeahead, which debounces the search and opens or closes the menu.
+   *
+   * @param e - The input change event.
+   */
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value)
   }
 
   /**
-   * Handles keyboard navigation within the combobox.
+   * Confirms the item under the keyboard cursor, if it can be selected.
    *
-   * - ArrowDown: opens menu if closed, moves active index down (wraps)
-   * - ArrowUp: moves active index up (wraps)
-   * - Home/End: jumps to first/last enabled item
-   * - Enter: selects the active item
-   * - Escape: closes the menu and resets active index
+   * @returns Whether the key was consumed.
    */
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    switch (e.key) {
-      case 'ArrowDown': {
-        e.preventDefault()
-        if (!isOpen) {
-          setIsOpen(true)
-          navigateItems('first')
-        } else {
-          navigateItems('down')
-        }
-        break
-      }
-      case 'ArrowUp': {
-        e.preventDefault()
-        if (isOpen) navigateItems('up')
-        break
-      }
-      case 'Home': {
-        if (isOpen) {
-          e.preventDefault()
-          navigateItems('first')
-        }
-        break
-      }
-      case 'End': {
-        if (isOpen) {
-          e.preventDefault()
-          navigateItems('last')
-        }
-        break
-      }
-      case 'Enter': {
-        if (isOpen && activeIndex >= 0) {
-          e.preventDefault()
-          const entry = getActiveEntry(activeIndex)
-          if (entry && !entry.disabled) selectItem(entry.value)
-        }
-        break
-      }
-      case 'Escape': {
-        if (isOpen) {
-          e.preventDefault()
-          setIsOpen(false)
-          setActiveIndex(-1)
-        }
-        break
-      }
-    }
+  const confirmActiveItem = () => {
+    if (!isOpen || activeIndex < 0) return false
+
+    const entry = getActiveEntry(activeIndex)
+    if (!entry || entry.disabled) return false
+    selectItem(entry.value)
+
+    return true
   }
 
-  /** Reopens the dropdown on focus or click when the input contains text */
+  /**
+   * The keyboard model, as a key → handler table.
+   *
+   * Each handler returns whether it CONSUMED the key, which is what decides `preventDefault`. A
+   * table keeps every branch flat and independently readable — the previous nested `switch` carried
+   * its conditions inside each case and tripped SonarCloud's cognitive-complexity ceiling.
+   */
+  const keyHandlers: Record<string, () => boolean> = {
+    ArrowDown: () => {
+      if (isOpen) {
+        navigateItems('down')
+      } else {
+        setIsOpen(true)
+        navigateItems('first')
+      }
+
+      return true
+    },
+    ArrowUp: () => {
+      if (!isOpen) return false
+      navigateItems('up')
+
+      return true
+    },
+    Home: () => {
+      if (!isOpen) return false
+      navigateItems('first')
+
+      return true
+    },
+    End: () => {
+      if (!isOpen) return false
+      navigateItems('last')
+
+      return true
+    },
+    Enter: confirmActiveItem,
+    Escape: () => {
+      if (!isOpen) return false
+      setIsOpen(false)
+      setActiveIndex(-1)
+
+      return true
+    },
+  }
+
+  /**
+   * Routes a keystroke to its handler, suppressing the browser default only when consumed.
+   *
+   * @param e - The keyboard event on the input.
+   */
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    const consumed = keyHandlers[e.key]?.()
+    if (consumed) e.preventDefault()
+  }
+
+  /** Reopens the dropdown on focus or click once the query reaches `minChars`. */
   const handleOpen = () => {
     if (inputValue.trim().length >= minChars) setIsOpen(true)
   }

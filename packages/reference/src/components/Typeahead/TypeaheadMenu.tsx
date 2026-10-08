@@ -1,12 +1,14 @@
 import clsx from 'clsx'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+
+import { typeaheadMenuVariants } from '@fubaritico-ds/variants'
 
 import { ListboxList } from '../Listbox'
 import { Portal } from '../Portal'
 
-import { TypeaheadContext } from './TypeaheadContext'
+import { useTypeaheadContext } from './TypeaheadContext'
 
-import type { CSSProperties, ComponentProps, FC } from 'react'
+import type { CSSProperties, ComponentProps } from 'react'
 
 /** Props for Typeahead.Menu — omits variant (managed by context) */
 export type TypeaheadMenuProps = Omit<
@@ -15,26 +17,29 @@ export type TypeaheadMenuProps = Omit<
 >
 
 /**
- * Dropdown listbox for the Typeahead compound component.
+ * The Typeahead dropdown — a `<ul role="listbox">` shown under the field while the menu is open.
  *
- * Renders a `<ul role="listbox">` below the input when the menu is open.
- * Positioned absolutely by default, or via Portal when `portal` is enabled
- * on the parent Typeahead (avoids overflow clipping). Portal mode tracks
- * scroll and resize to keep the menu anchored to the input.
+ * Anchored by the skin in the default mode. With `portal` on the parent, it is rendered out of the
+ * subtree (escaping any `overflow: hidden` ancestor) and positioned from measured coordinates
+ * instead, kept in sync on scroll and resize.
  *
- * Must be used within a `<Typeahead>` provider.
+ * Must be rendered inside a `<Typeahead>`.
+ *
+ * @param props - {@link TypeaheadMenuProps}.
+ * @returns The dropdown, or `null` while closed.
  */
-const TypeaheadMenu: FC<TypeaheadMenuProps> = ({
+export function TypeaheadMenu({
   className,
   children,
   ...rest
-}) => {
-  const context = useContext(TypeaheadContext)
-  if (!context) throw new Error('Typeahead.Menu must be used within Typeahead')
-
-  const { isOpen, menuId, variant, portal, inputRef } = context
+}: Readonly<TypeaheadMenuProps>) {
+  const { isOpen, menuId, variant, portal, inputRef } =
+    useTypeaheadContext('Typeahead.Menu')
   const [position, setPosition] = useState<CSSProperties>({})
 
+  // In portal mode the menu lives outside this subtree, so it cannot be anchored by CSS: its
+  // coordinates are measured from the input and refreshed on scroll/resize. Capture-phase scroll
+  // listening catches scrolling in any ancestor, not just the window.
   useEffect(() => {
     if (!portal || !isOpen || !inputRef.current) return
 
@@ -68,10 +73,7 @@ const TypeaheadMenu: FC<TypeaheadMenuProps> = ({
       id={menuId}
       role="listbox"
       style={portal ? position : undefined}
-      className={clsx(
-        portal ? 'ui:z-50' : 'ui:absolute ui:left-0 ui:z-50 ui:mt-1 ui:w-full',
-        className
-      )}
+      className={clsx(typeaheadMenuVariants({ portal }), className)}
       {...rest}
     >
       {children}
