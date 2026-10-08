@@ -21,6 +21,35 @@ export interface ListboxItemProps
 }
 
 /**
+ * Resolves the item's mutually-exclusive visual state from the three independent flags.
+ *
+ * Precedence is `disabled` > `isActive` > `isSelected`: a disabled item shows neither active nor
+ * selected styling (only the dimming, applied separately), and the keyboard/hover cursor wins over
+ * a persistent selection. The resolver expects a SINGLE state axis, so exactly one is returned.
+ *
+ * @param flags - The item's state flags.
+ * @param flags.disabled - Whether the item is non-interactive.
+ * @param flags.isActive - Whether the item holds the keyboard/hover cursor.
+ * @param flags.isSelected - Whether the item is the persistently selected value.
+ * @returns The single visual state to hand to `listboxItemVariants`.
+ */
+const resolveItemState = ({
+  disabled,
+  isActive,
+  isSelected,
+}: {
+  disabled: boolean
+  isActive: boolean
+  isSelected: boolean
+}): ListboxItemState => {
+  if (disabled) return 'default'
+  if (isActive) return 'active'
+  if (isSelected) return 'selected'
+
+  return 'default'
+}
+
+/**
  * Visual `<li>` for listbox-style items — wears the native skin (`.ui-listbox__item`).
  *
  * Provides the shared look (padding, font, active/selected/hover/disabled states) composed by both
@@ -39,13 +68,7 @@ export function ListboxItem({
   children,
   ...rest
 }: Readonly<ListboxItemProps>) {
-  const state: ListboxItemState = disabled
-    ? 'default'
-    : isActive
-      ? 'active'
-      : isSelected
-        ? 'selected'
-        : 'default'
+  const state = resolveItemState({ disabled, isActive, isSelected })
 
   return (
     <li
