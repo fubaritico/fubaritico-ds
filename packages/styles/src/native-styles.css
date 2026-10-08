@@ -19,6 +19,7 @@
 @import './styles/icon-button.css'; /* extension of button.css — MUST load after it */
 @import './styles/input.css';
 @import './styles/listbox.css';
+@import './styles/modal.css';
 @import './styles/pagination.css';
 @import './styles/progress-bar.css';
 @import './styles/rating.css';

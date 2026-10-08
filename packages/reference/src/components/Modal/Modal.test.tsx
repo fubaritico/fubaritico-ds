@@ -2,10 +2,10 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import Modal from './Modal'
+import { Modal } from './Modal'
 
-// jsdom does not implement <dialog> methods — mock them with open attribute side-effect
-// so Testing Library treats the dialog as accessible (visible).
+// jsdom does not implement <dialog> methods — mock them with an `open` attribute side-effect so
+// Testing Library treats the dialog as accessible (visible).
 // Stored in variables to avoid @typescript-eslint/unbound-method on prototype access.
 const showModalMock = vi.fn(() => {
   screen.getByRole('dialog', { hidden: true }).setAttribute('open', '')
@@ -26,103 +26,227 @@ describe('Modal', () => {
     document.body.style.overflow = ''
   })
 
-  it('renders children', () => {
-    render(
-      <Modal isOpen onClose={vi.fn()} aria-label="Test modal">
-        <p>Modal content</p>
-      </Modal>
-    )
-    expect(screen.getByText('Modal content')).toBeInTheDocument()
+  describe('happy path', () => {
+    it('renders its children', () => {
+      render(
+        <Modal isOpen onClose={vi.fn()} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+
+      expect(screen.getByText('Content')).toBeInTheDocument()
+    })
+
+    it('opens through showModal, so the dialog lands in the top layer', () => {
+      render(
+        <Modal isOpen onClose={vi.fn()} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+
+      expect(showModalMock).toHaveBeenCalled()
+    })
+
+    it('wears the skin block class', () => {
+      const { container } = render(
+        <Modal isOpen onClose={vi.fn()} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+
+      expect(container.querySelector('dialog')).toHaveClass('ui-modal')
+    })
   })
 
-  it('calls showModal when isOpen is true', () => {
-    render(
-      <Modal isOpen onClose={vi.fn()} aria-label="Test modal">
-        content
-      </Modal>
-    )
-    expect(showModalMock).toHaveBeenCalledOnce()
+  describe('variants', () => {
+    it('closes the native dialog when isOpen is false', () => {
+      render(
+        <Modal isOpen={false} onClose={vi.fn()} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+
+      expect(closeMock).toHaveBeenCalled()
+    })
+
+    it('locks body scroll while open', () => {
+      render(
+        <Modal isOpen onClose={vi.fn()} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+
+      expect(document.body.style.overflow).toBe('hidden')
+    })
+
+    it('releases body scroll when closed', () => {
+      render(
+        <Modal isOpen={false} onClose={vi.fn()} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+
+      expect(document.body.style.overflow).toBe('')
+    })
+
+    it('exposes the dialog role with its required name', () => {
+      render(
+        <Modal isOpen onClose={vi.fn()} aria-label="Confirm deletion">
+          <p>Content</p>
+        </Modal>
+      )
+
+      const dialog = screen.getByRole('dialog', { name: 'Confirm deletion' })
+      expect(dialog).toHaveAttribute('aria-modal', 'true')
+    })
+
+    it('prefers onOverlayClick over onClose for a backdrop click', async () => {
+      const onClose = vi.fn()
+      const onOverlayClick = vi.fn()
+      const user = userEvent.setup()
+      render(
+        <Modal
+          isOpen
+          onClose={onClose}
+          onOverlayClick={onOverlayClick}
+          aria-label="Dialog"
+        >
+          <p>Content</p>
+        </Modal>
+      )
+
+      await user.click(screen.getByRole('dialog'))
+
+      expect(onOverlayClick).toHaveBeenCalledOnce()
+      expect(onClose).not.toHaveBeenCalled()
+    })
   })
 
-  it('calls close when isOpen is false', () => {
-    render(
-      <Modal isOpen={false} onClose={vi.fn()} aria-label="Test modal">
-        content
-      </Modal>
-    )
-    expect(closeMock).toHaveBeenCalledOnce()
+  describe('managed errors', () => {
+    it('closes on the browser close event (Escape)', () => {
+      const onClose = vi.fn()
+      render(
+        <Modal isOpen onClose={onClose} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+
+      screen.getByRole('dialog').dispatchEvent(new Event('close'))
+
+      expect(onClose).toHaveBeenCalledOnce()
+    })
+
+    it('closes on a backdrop click', async () => {
+      const onClose = vi.fn()
+      const user = userEvent.setup()
+      render(
+        <Modal isOpen onClose={onClose} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+
+      await user.click(screen.getByRole('dialog'))
+
+      expect(onClose).toHaveBeenCalledOnce()
+    })
+
+    it('ignores a click landing on the content', async () => {
+      const onClose = vi.fn()
+      const user = userEvent.setup()
+      render(
+        <Modal isOpen onClose={onClose} aria-label="Dialog">
+          <button type="button">Inside</button>
+        </Modal>
+      )
+
+      await user.click(screen.getByRole('button', { name: 'Inside' }))
+
+      expect(onClose).not.toHaveBeenCalled()
+    })
   })
 
-  it('locks body scroll when open', () => {
-    render(
-      <Modal isOpen onClose={vi.fn()} aria-label="Test modal">
-        content
-      </Modal>
-    )
-    expect(document.body.style.overflow).toBe('hidden')
+  describe('unmanaged errors', () => {
+    it('restores body scroll when unmounted while still open', () => {
+      const { unmount } = render(
+        <Modal isOpen onClose={vi.fn()} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+      expect(document.body.style.overflow).toBe('hidden')
+
+      unmount()
+
+      expect(document.body.style.overflow).toBe('')
+    })
+
+    it('restores the host page overflow instead of blanking it', () => {
+      document.body.style.overflow = 'scroll'
+
+      const { unmount } = render(
+        <Modal isOpen onClose={vi.fn()} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+      unmount()
+
+      expect(document.body.style.overflow).toBe('scroll')
+    })
   })
 
-  it('restores body scroll when closed', () => {
-    const { rerender } = render(
-      <Modal isOpen onClose={vi.fn()} aria-label="Test modal">
-        content
-      </Modal>
-    )
-    expect(document.body.style.overflow).toBe('hidden')
+  describe('edge cases', () => {
+    it('renders an empty dialog without crashing', () => {
+      render(<Modal isOpen onClose={vi.fn()} aria-label="Empty" />)
 
-    rerender(
-      <Modal isOpen={false} onClose={vi.fn()} aria-label="Test modal">
-        content
-      </Modal>
-    )
-    expect(document.body.style.overflow).toBe('')
-  })
+      expect(screen.getByRole('dialog', { name: 'Empty' })).toBeInTheDocument()
+    })
 
-  it('calls onClose when native close event fires (ESC key)', () => {
-    const onClose = vi.fn()
-    render(
-      <Modal isOpen onClose={onClose} aria-label="Test modal">
-        content
-      </Modal>
-    )
-    const dialog = screen.getByRole('dialog')
-    dialog.dispatchEvent(new Event('close'))
-    expect(onClose).toHaveBeenCalledOnce()
-  })
+    it('survives a rapid open / close / open cycle', () => {
+      const { rerender } = render(
+        <Modal isOpen onClose={vi.fn()} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+      rerender(
+        <Modal isOpen={false} onClose={vi.fn()} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+      rerender(
+        <Modal isOpen onClose={vi.fn()} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
 
-  it('calls onClose when clicking the backdrop (dialog element itself)', async () => {
-    const user = userEvent.setup()
-    const onClose = vi.fn()
-    render(
-      <Modal isOpen onClose={onClose} aria-label="Test modal">
-        content
-      </Modal>
-    )
-    const dialog = screen.getByRole('dialog')
-    await user.click(dialog)
-    expect(onClose).toHaveBeenCalledOnce()
-  })
+      expect(document.body.style.overflow).toBe('hidden')
+      expect(showModalMock).toHaveBeenCalledTimes(2)
+    })
 
-  it('does not call onClose when clicking modal content', async () => {
-    const user = userEvent.setup()
-    const onClose = vi.fn()
-    render(
-      <Modal isOpen onClose={onClose} aria-label="Test modal">
-        <button>Inside button</button>
-      </Modal>
-    )
-    await user.click(screen.getByRole('button', { name: 'Inside button' }))
-    expect(onClose).not.toHaveBeenCalled()
-  })
+    it('merges a consumer className without dropping the block class', () => {
+      const { container } = render(
+        <Modal isOpen onClose={vi.fn()} aria-label="Dialog" className="custom">
+          <p>Content</p>
+        </Modal>
+      )
+      const dialog = container.querySelector('dialog')
 
-  it('has correct aria attributes', () => {
-    render(
-      <Modal isOpen onClose={vi.fn()} aria-label="PhotosModal viewer">
-        content
-      </Modal>
-    )
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toHaveAttribute('aria-label', 'PhotosModal viewer')
-    expect(dialog).toHaveAttribute('aria-modal', 'true')
+      expect(dialog).toHaveClass('ui-modal')
+      expect(dialog).toHaveClass('custom')
+    })
+
+    it('forwards rest props to the dialog element', () => {
+      render(
+        <Modal
+          isOpen
+          onClose={vi.fn()}
+          aria-label="Dialog"
+          data-testid="modal"
+          id="confirm"
+        >
+          <p>Content</p>
+        </Modal>
+      )
+
+      expect(screen.getByTestId('modal')).toHaveAttribute('id', 'confirm')
+    })
   })
 })

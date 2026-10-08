@@ -1,69 +1,88 @@
 import clsx from 'clsx'
 import { useEffect, useRef } from 'react'
 
-import type { MouseEvent, ReactNode } from 'react'
+import { MODAL_CLASS } from '@fubaritico-ds/variants'
 
-export interface ModalProps {
-  /** Whether the modal is open */
+import type { ComponentProps, MouseEvent } from 'react'
+
+/** Props of the {@link Modal}. */
+export interface ModalProps
+  extends Omit<ComponentProps<'dialog'>, 'aria-label' | 'open'> {
+  /** Whether the modal is open. */
   isOpen: boolean
-  /** Callback when modal should close (ESC key, backdrop click) */
+  /** Called when the modal should close — Escape, or a click on the backdrop. */
   onClose: () => void
-  /** Modal content */
-  children: ReactNode
-  /** Accessible label for screen readers (required) */
+  /**
+   * Accessible name of the dialog — **required**: a `<dialog>` has no implicit name, and the
+   * content inside it is the consumer's, so nothing can be inferred.
+   */
   'aria-label': string
-  /** Additional class name for the dialog element */
-  className?: string
-  /** Optional callback for backdrop click. Falls back to onClose if not provided. */
+  /** Called instead of `onClose` when the backdrop is clicked, to opt out of click-outside closing. */
   onOverlayClick?: () => void
 }
 
-function Modal({
+/**
+ * Modal — a native `<dialog>` opened in the browser's top layer.
+ *
+ * The element is a transparent, full-viewport SHELL: it guarantees the content paints above every
+ * stacking context (no `z-index`, immune to a host's `overflow`/`transform` traps) and paints the
+ * backdrop. The visible panel is yours to compose inside — a `Card`, a form, anything.
+ *
+ * Focus trapping, the Escape key and inertness of the rest of the page come free from `showModal()`.
+ *
+ * @param props - {@link ModalProps}.
+ * @param props.isOpen - Whether the dialog is shown.
+ * @param props.onClose - Called on Escape or a backdrop click.
+ * @param props.onOverlayClick - Overrides the backdrop-click behaviour.
+ * @returns The rendered dialog.
+ */
+export function Modal({
   isOpen,
   onClose,
   children,
   'aria-label': ariaLabel,
   className,
   onOverlayClick,
+  ...rest
 }: Readonly<ModalProps>) {
   const ref = useRef<HTMLDialogElement>(null)
 
-  /**
-   * Effect: Opens or closes the native <dialog> element and locks body scroll.
-   * - showModal() places dialog in the top layer (above all MFE remotes, no z-index needed).
-   * - Scroll lock is manual — <dialog> does not lock scroll natively.
-   * - Cleanup restores overflow in case the component unmounts while open.
-   */
+  // Drive the native dialog imperatively — `showModal()` is what grants the top layer, the focus
+  // trap and the backdrop; the `open` attribute alone gives none of them. Scroll lock is manual
+  // because `<dialog>` does not lock the page itself, and the previous inline value is restored
+  // rather than blanked, so a host that set its own `overflow` keeps it.
   useEffect(() => {
     const dialog = ref.current
     if (!dialog) return
+
+    const previousOverflow = document.body.style.overflow
 
     if (isOpen) {
       dialog.showModal()
       document.body.style.overflow = 'hidden'
     } else {
       dialog.close()
-      document.body.style.overflow = ''
+      document.body.style.overflow = previousOverflow
     }
 
     return () => {
-      document.body.style.overflow = ''
+      document.body.style.overflow = previousOverflow
     }
   }, [isOpen])
 
   /**
-   * Closes the modal when clicking the <dialog> element itself (the backdrop area).
-   * e.target === ref.current only when clicking outside the dialog content,
-   * since content clicks bubble up to a child, not to the dialog element directly.
+   * Closes on a click landing on the dialog box itself, i.e. the backdrop area.
+   *
+   * `e.target` is the dialog only when the click missed the content: clicks inside bubble from a
+   * child, so they never match.
+   *
+   * @param e - The click event on the dialog.
    */
   const handleClick = (e: MouseEvent<HTMLDialogElement>) => {
     if (e.target === ref.current) (onOverlayClick ?? onClose)()
   }
 
-  /**
-   * Syncs the native ESC key close event (fired by the browser on <dialog>)
-   * with the onClose callback, so parent state stays in sync.
-   */
+  /** Mirrors the browser's own close event (Escape) back into the consumer's state. */
   const handleClose = () => {
     onClose()
   }
@@ -75,12 +94,8 @@ function Modal({
       aria-modal="true"
       onClick={handleClick}
       onClose={handleClose}
-      className={clsx(
-        'ui:backdrop:bg-black/80',
-        'ui:bg-transparent ui:border-0 ui:p-0',
-        'ui:max-w-none ui:max-h-none ui:w-full ui:h-full',
-        className
-      )}
+      className={clsx(MODAL_CLASS, className)}
+      {...rest}
     >
       {children}
     </dialog>

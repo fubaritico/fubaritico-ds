@@ -1,0 +1,54 @@
+/**
+ * Modal — native BEM skin.
+ *
+ * `.ui-modal` dresses a native `<dialog>` opened with `showModal()`. The element itself is a
+ * TRANSPARENT, full-viewport container: it exists to put the content in the browser's top layer
+ * (above every stacking context, no `z-index` needed) and to paint the backdrop. The visible panel
+ * is the consumer's own markup — compose a `Card`, or anything else, inside.
+ *
+ * The skin therefore has two jobs:
+ *   1. Neutralise the user-agent `<dialog>` styles — centred auto margins, border, padding, and the
+ *      `max-width`/`max-height` caps that would otherwise clip a full-bleed layout.
+ *   2. Paint `::backdrop`, which cannot be reached from the element's own box.
+ *
+ * `::backdrop` reads the component vars because it is a TREE-ABIDING pseudo-element since late 2023
+ * (Chrome 122, Firefox 120, Safari 17.4): it inherits from its originating element, so
+ * `--ui-modal-backdrop-*` set on `.ui-modal` reaches it. Before that change it inherited from
+ * nothing and the declarations had to be duplicated — don't "restore" that duplication.
+ * Ref: https://developer.chrome.com/blog/css-backdrop-inheritance
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-modal-*` vars on `.ui-modal`.
+ *   2. Redefine a global token → re-skins every Modal.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-modal {
+    /* ---- override API (component-scoped) ---- */
+    --ui-modal-backdrop-color: var(--color-primitive-neutral-950);
+    --ui-modal-backdrop-opacity: 0.8;
+    --ui-modal-padding: var(--spacing-0);
+
+    /* ---- base ---- */
+    /* The dialog is the top-layer SHELL, not the panel: transparent, edge to edge, chrome stripped.
+       `max-inline-size`/`max-block-size` must be unset explicitly — the UA caps them at roughly
+       `calc(100% - 6px - 2em)`, which would clip a full-bleed layout. */
+    box-sizing: border-box;
+    margin: 0;
+    padding: var(--ui-modal-padding);
+    border: 0;
+    background-color: transparent;
+    inline-size: 100%;
+    block-size: 100%;
+    max-inline-size: none;
+    max-block-size: none;
+    overflow: visible;
+  }
+
+  .ui-modal::backdrop {
+    background-color: var(--ui-modal-backdrop-color);
+    opacity: var(--ui-modal-backdrop-opacity);
+  }
+}
