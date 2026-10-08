@@ -2,21 +2,21 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
-import Drawer from './Drawer'
+import BottomSheet from './BottomSheet'
 
 import type { ComponentProps } from 'react'
 
-const renderDrawer = (props: Partial<ComponentProps<typeof Drawer>> = {}) =>
+const renderBottomSheet = (props: Partial<ComponentProps<typeof BottomSheet>> = {}) =>
   render(
-    <Drawer open onClose={vi.fn()} {...props}>
-      <Drawer.Header>Title</Drawer.Header>
-      <Drawer.Body>Content</Drawer.Body>
-    </Drawer>
+    <BottomSheet open onClose={vi.fn()} {...props}>
+      <BottomSheet.Header>Title</BottomSheet.Header>
+      <BottomSheet.Body>Content</BottomSheet.Body>
+    </BottomSheet>
   )
 
-describe('Drawer', () => {
+describe('BottomSheet', () => {
   it('should render when open', () => {
-    renderDrawer()
+    renderBottomSheet()
 
     expect(screen.getByRole('dialog')).toBeInTheDocument()
     expect(screen.getByText('Title')).toBeInTheDocument()
@@ -24,7 +24,7 @@ describe('Drawer', () => {
   })
 
   it('should not render when closed', () => {
-    renderDrawer({ open: false })
+    renderBottomSheet({ open: false })
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
@@ -32,7 +32,7 @@ describe('Drawer', () => {
   it('should call onClose when close button is clicked', async () => {
     const user = userEvent.setup()
     const onClose = vi.fn()
-    renderDrawer({ onClose })
+    renderBottomSheet({ onClose })
 
     await user.click(screen.getByRole('button', { name: 'Close' }))
 
@@ -42,7 +42,7 @@ describe('Drawer', () => {
   it('should call onClose when Escape is pressed', async () => {
     const user = userEvent.setup()
     const onClose = vi.fn()
-    renderDrawer({ onClose })
+    renderBottomSheet({ onClose })
 
     await user.keyboard('{Escape}')
 
@@ -50,13 +50,13 @@ describe('Drawer', () => {
   })
 
   it('should render overlay when overlay prop is true', () => {
-    renderDrawer({ overlay: true })
+    renderBottomSheet({ overlay: true })
 
     expect(screen.getByRole('dialog').getAttribute('aria-modal')).toBe('true')
   })
 
   it('should not render overlay by default', () => {
-    renderDrawer()
+    renderBottomSheet()
 
     expect(screen.getByRole('dialog').getAttribute('aria-modal')).toBe('false')
   })
@@ -64,7 +64,7 @@ describe('Drawer', () => {
   it('should call onClose when overlay is clicked', async () => {
     const user = userEvent.setup()
     const onClose = vi.fn()
-    renderDrawer({ onClose, overlay: true })
+    renderBottomSheet({ onClose, overlay: true })
 
     const overlay = document.querySelector('[aria-hidden="true"]')
     expect(overlay).toBeInTheDocument()
@@ -76,29 +76,29 @@ describe('Drawer', () => {
   })
 
   it('should apply dark variant classes', () => {
-    renderDrawer({ variant: 'dark' })
+    renderBottomSheet({ variant: 'dark' })
 
     const dialog = screen.getByRole('dialog')
     // One modifier now carries both the dark background and foreground, through role vars.
-    expect(dialog.className).toContain('ui-drawer--dark')
+    expect(dialog.className).toContain('ui-bottom-sheet--dark')
   })
 
   it('should apply light variant classes by default', () => {
-    renderDrawer()
+    renderBottomSheet()
 
     const dialog = screen.getByRole('dialog')
-    expect(dialog.className).toContain('ui-drawer')
+    expect(dialog.className).toContain('ui-bottom-sheet')
   })
 
   it('should animate on first open', () => {
-    renderDrawer()
+    renderBottomSheet()
 
     const dialog = screen.getByRole('dialog')
-    expect(dialog.className).toContain('ui-drawer--animated')
+    expect(dialog.className).toContain('ui-bottom-sheet--animated')
   })
 
   it('should render in a portal', () => {
-    renderDrawer()
+    renderBottomSheet()
 
     const portalRoot = document.getElementById('portal')
     expect(portalRoot).toBeInTheDocument()
@@ -106,34 +106,34 @@ describe('Drawer', () => {
   })
 
   it('should render children in Header', () => {
-    renderDrawer()
+    renderBottomSheet()
 
     expect(screen.getByText('Title')).toBeInTheDocument()
   })
 
   it('should render children in Body', () => {
-    renderDrawer()
+    renderBottomSheet()
 
     expect(screen.getByText('Content')).toBeInTheDocument()
   })
 
   it('should forward className to dialog element', () => {
-    renderDrawer({ className: 'custom-class' })
+    renderBottomSheet({ className: 'custom-class' })
 
     expect(screen.getByRole('dialog').className).toContain('custom-class')
   })
 
   it('should use ghost-dark variant on close button when dark', () => {
-    renderDrawer({ variant: 'dark' })
+    renderBottomSheet({ variant: 'dark' })
 
     const closeBtn = screen.getByRole('button', { name: 'Close' })
     // IconButton migrated to the native skin: ghost-dark now emits the BEM extension class.
     expect(closeBtn.className).toContain('ui-icon-button--ghost-dark')
   })
 
-  it('should throw if Header is used outside Drawer', () => {
+  it('should throw if Header is used outside BottomSheet', () => {
     expect(() => {
-      render(<Drawer.Header>Orphan</Drawer.Header>)
-    }).toThrow('Drawer.* must be used within <Drawer>')
+      render(<BottomSheet.Header>Orphan</BottomSheet.Header>)
+    }).toThrow('BottomSheet.* must be used within <BottomSheet>')
   })
 })

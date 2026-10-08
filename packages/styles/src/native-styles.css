@@ -12,10 +12,10 @@
 @import './styles/alert.css';
 @import './styles/avatar.css';
 @import './styles/badge.css';
+@import './styles/bottom-sheet.css';
 @import './styles/button.css';
 @import './styles/card.css';
 @import './styles/checkbox.css';
-@import './styles/drawer.css';
 @import './styles/dropdown.css';
 @import './styles/field.css';
 @import './styles/icon-button.css'; /* extension of button.css — MUST load after it */

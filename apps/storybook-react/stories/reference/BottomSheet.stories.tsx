@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
+import { BottomSheet } from '@fubaritico-ds/reference/BottomSheet'
 import { Button } from '@fubaritico-ds/reference/Button'
-import { Drawer } from '@fubaritico-ds/reference/Drawer'
 import { Typography } from '@fubaritico-ds/reference/Typography'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
@@ -16,7 +16,7 @@ interface DemoProps {
 }
 
 /** A self-contained trigger + sheet, so every story is interactive. */
-function DrawerDemo({
+function BottomSheetDemo({
   variant = 'light',
   overlay = false,
   long = false,
@@ -34,7 +34,7 @@ function DrawerDemo({
         Open {variant} sheet{overlay ? ' (with overlay)' : ''}
       </Button>
 
-      <Drawer
+      <BottomSheet
         open={isOpen}
         onClose={() => {
           setIsOpen(false)
@@ -43,24 +43,24 @@ function DrawerDemo({
         overlay={overlay}
         aria-label="Filters"
       >
-        <Drawer.Header>
+        <BottomSheet.Header>
           <Typography variant="h6">Filters</Typography>
-        </Drawer.Header>
-        <Drawer.Body>
+        </BottomSheet.Header>
+        <BottomSheet.Body>
           {Array.from({ length: rows }, (_, i) => (
             <Typography key={i} variant="body2">
               Filter option {i + 1}
             </Typography>
           ))}
-        </Drawer.Body>
-      </Drawer>
+        </BottomSheet.Body>
+      </BottomSheet>
     </>
   )
 }
 
 const meta = {
-  title: 'Reference/Drawer',
-  component: Drawer,
+  title: 'Reference/BottomSheet',
+  component: BottomSheet,
   tags: ['autodocs'],
   argTypes: {
     variant: { control: 'inline-radio', options: ['light', 'dark'] },
@@ -76,7 +76,7 @@ const meta = {
     onClose: () => undefined,
     children: null,
   },
-} satisfies Meta<typeof Drawer>
+} satisfies Meta<typeof BottomSheet>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -84,7 +84,7 @@ type Story = StoryObj<typeof meta>
 /** Open it, then try Escape and the close button. */
 export const Playground: Story = {
   render: (args) => (
-    <DrawerDemo variant={args.variant} overlay={args.overlay} />
+    <BottomSheetDemo variant={args.variant} overlay={args.overlay} />
   ),
 }
 
@@ -93,10 +93,10 @@ export const Showcase: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-      <DrawerDemo />
-      <DrawerDemo overlay />
-      <DrawerDemo variant="dark" overlay />
-      <DrawerDemo long />
+      <BottomSheetDemo />
+      <BottomSheetDemo overlay />
+      <BottomSheetDemo variant="dark" overlay />
+      <BottomSheetDemo long />
     </div>
   ),
 }

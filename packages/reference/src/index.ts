@@ -42,13 +42,13 @@ export type {
 export { Dropdown } from './components/Dropdown'
 export type { DropdownProps, DropdownOption } from './components/Dropdown'
 
-export { Drawer } from './components/Drawer'
+export { BottomSheet } from './components/BottomSheet'
 export type {
-  DrawerProps,
-  DrawerHeaderProps,
-  DrawerBodyProps,
-  DrawerVariant,
-} from './components/Drawer'
+  BottomSheetProps,
+  BottomSheetHeaderProps,
+  BottomSheetBodyProps,
+  BottomSheetVariant,
+} from './components/BottomSheet'
 
 export { Icon } from './components/Icon'
 export type { IconProps, IconName, IconSize } from './components/Icon'

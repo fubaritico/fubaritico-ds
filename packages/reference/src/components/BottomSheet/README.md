@@ -1,4 +1,4 @@
-# Drawer
+# BottomSheet
 
 A bottom sheet, portalled above the page. Slides up on first open, then holds still while its
 content changes.
@@ -12,10 +12,10 @@ content changes.
   not replay it.
 - **Optional scrim** — `overlay` dims the page and makes the sheet modal (`aria-modal`).
 - **Two colour schemes** — `variant="light"` (default) or `"dark"`; the close button follows.
-- **Two regions** — `Drawer.Header` (fixed title bar) and `Drawer.Body` (scrolls on overflow).
+- **Two regions** — `BottomSheet.Header` (fixed title bar) and `BottomSheet.Body` (scrolls on overflow).
 - **Height-capped** — never grows past 60vh, so the page stays reachable behind it.
 - **Motion-aware** — the slide is dropped under `prefers-reduced-motion`.
-- **Composition guard** — the regions throw outside a `<Drawer>`.
+- **Composition guard** — the regions throw outside a `<BottomSheet>`.
 
 > **N/A — focus trapping.** The sheet does **not** trap focus, even with `overlay`. See the warning
 > in Notes before using it for a true modal flow.
@@ -23,7 +23,7 @@ content changes.
 ## Import
 
 ```tsx
-import { Drawer } from '@fubaritico-ds/reference/Drawer'
+import { BottomSheet } from '@fubaritico-ds/reference/BottomSheet'
 ```
 
 ## Basic usage
@@ -31,14 +31,14 @@ import { Drawer } from '@fubaritico-ds/reference/Drawer'
 ```tsx
 const [isOpen, setIsOpen] = useState(false)
 
-<Drawer open={isOpen} onClose={() => setIsOpen(false)}>
-  <Drawer.Header>
+<BottomSheet open={isOpen} onClose={() => setIsOpen(false)}>
+  <BottomSheet.Header>
     <Typography variant="h6">Filters</Typography>
-  </Drawer.Header>
-  <Drawer.Body>
+  </BottomSheet.Header>
+  <BottomSheet.Body>
     <FilterList />
-  </Drawer.Body>
-</Drawer>
+  </BottomSheet.Body>
+</BottomSheet>
 ```
 
 ## Variants & options
@@ -46,40 +46,40 @@ const [isOpen, setIsOpen] = useState(false)
 With a scrim, which also marks the sheet modal:
 
 ```tsx
-<Drawer open={isOpen} onClose={close} overlay>
-  <Drawer.Header>Results</Drawer.Header>
-  <Drawer.Body>{results}</Drawer.Body>
-</Drawer>
+<BottomSheet open={isOpen} onClose={close} overlay>
+  <BottomSheet.Header>Results</BottomSheet.Header>
+  <BottomSheet.Body>{results}</BottomSheet.Body>
+</BottomSheet>
 ```
 
 Dark surface — the close button switches to its on-dark variant automatically:
 
 ```tsx
-<Drawer open={isOpen} onClose={close} variant="dark">
-  <Drawer.Header>Playback settings</Drawer.Header>
-  <Drawer.Body>{settings}</Drawer.Body>
-</Drawer>
+<BottomSheet open={isOpen} onClose={close} variant="dark">
+  <BottomSheet.Header>Playback settings</BottomSheet.Header>
+  <BottomSheet.Body>{settings}</BottomSheet.Body>
+</BottomSheet>
 ```
 
 Header without a close affordance of your own — one is always provided:
 
 ```tsx
-<Drawer open={isOpen} onClose={close}>
-  <Drawer.Header /> {/* empty title, close button still rendered */}
-  <Drawer.Body>{content}</Drawer.Body>
-</Drawer>
+<BottomSheet open={isOpen} onClose={close}>
+  <BottomSheet.Header /> {/* empty title, close button still rendered */}
+  <BottomSheet.Body>{content}</BottomSheet.Body>
+</BottomSheet>
 ```
 
 Raising the height cap for one instance:
 
 ```tsx
-<Drawer
+<BottomSheet
   open={isOpen}
   onClose={close}
-  style={{ '--ui-drawer-max-block-size': '85vh' } as CSSProperties}
+  style={{ '--ui-bottom-sheet-max-block-size': '85vh' } as CSSProperties}
 >
   …
-</Drawer>
+</BottomSheet>
 ```
 
 ## Edge cases
@@ -88,16 +88,16 @@ Raising the height cap for one instance:
 {
   /* Closed renders nothing at all — not a hidden node */
 }
-;<Drawer open={false} onClose={close}>
+;<BottomSheet open={false} onClose={close}>
   …
-</Drawer>
+</BottomSheet>
 
 {
   /* Body-only: the header is optional */
 }
-;<Drawer open onClose={close}>
-  <Drawer.Body>{content}</Drawer.Body>
-</Drawer>
+;<BottomSheet open onClose={close}>
+  <BottomSheet.Body>{content}</BottomSheet.Body>
+</BottomSheet>
 
 {
   /* Long content scrolls inside the body; the header stays put */
@@ -106,7 +106,7 @@ Raising the height cap for one instance:
 
 ## Props
 
-### `Drawer`
+### `BottomSheet`
 
 | Name                     | Type                | Default   | Description                                                       |
 | ------------------------ | ------------------- | --------- | ----------------------------------------------------------------- |
@@ -114,10 +114,10 @@ Raising the height cap for one instance:
 | `onClose`                | `() => void`        | —         | Called by the close button, Escape and the overlay. **Required.** |
 | `variant`                | `'light' \| 'dark'` | `'light'` | Colour scheme.                                                    |
 | `overlay`                | `boolean`           | `false`   | Dim the page behind and set `aria-modal`.                         |
-| `children`               | `ReactNode`         | —         | `Drawer.Header` and / or `Drawer.Body`.                           |
+| `children`               | `ReactNode`         | —         | `BottomSheet.Header` and / or `BottomSheet.Body`.                           |
 | …`ComponentProps<'div'>` | —                   | —         | Everything else lands on the panel.                               |
 
-`Drawer.Header` and `Drawer.Body` both take plain `<div>` props.
+`BottomSheet.Header` and `BottomSheet.Body` both take plain `<div>` props.
 
 ## Accessibility
 
@@ -131,7 +131,7 @@ Raising the height cap for one instance:
 
 ## Notes
 
-> **Warning** — the Drawer does **not** trap focus and does not make the page inert, even with
+> **Warning** — the BottomSheet does **not** trap focus and does not make the page inert, even with
 > `overlay`. A keyboard or screen-reader user can Tab straight out into the content behind it. For a
 > flow that genuinely must be modal, use `Modal`, which gets trapping and inertness from the native
 > `<dialog>`.
@@ -143,5 +143,5 @@ Raising the height cap for one instance:
 > close; lift anything that must survive.
 
 > **Note** — the dark surface re-points the same role variables at the dark end of the neutral
-> scale rather than using a separate on-dark token family. Override `--ui-drawer-bg` / `-fg` /
+> scale rather than using a separate on-dark token family. Override `--ui-bottom-sheet-bg` / `-fg` /
 > `-border-color` to re-skin either scheme.

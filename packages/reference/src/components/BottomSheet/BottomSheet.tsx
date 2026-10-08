@@ -1,33 +1,33 @@
 import clsx from 'clsx'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 
-import { DRAWER_OVERLAY_CLASS, drawerVariants } from '@fubaritico-ds/variants'
+import { BOTTOM_SHEET_OVERLAY_CLASS, bottomSheetVariants } from '@fubaritico-ds/variants'
 
 import { Portal } from '../Portal'
 
-import { DrawerBody } from './DrawerBody'
-import { DrawerContext } from './DrawerContext'
-import { DrawerHeader } from './DrawerHeader'
+import { BottomSheetBody } from './BottomSheetBody'
+import { BottomSheetContext } from './BottomSheetContext'
+import { BottomSheetHeader } from './BottomSheetHeader'
 
-import type { DrawerVariant } from '@fubaritico-ds/variants'
+import type { BottomSheetVariant } from '@fubaritico-ds/variants'
 import type { ComponentProps, ReactNode } from 'react'
 
-/** Props for the Drawer root component */
-export interface DrawerProps extends Omit<ComponentProps<'div'>, 'children'> {
-  /** Whether the drawer is visible */
+/** Props for the BottomSheet root component */
+export interface BottomSheetProps extends Omit<ComponentProps<'div'>, 'children'> {
+  /** Whether the bottom-sheet is visible */
   open: boolean
-  /** Called when the drawer should close (close button, Escape, overlay click) */
+  /** Called when the bottom-sheet should close (close button, Escape, overlay click) */
   onClose: () => void
   /** Color scheme matching Menu/Listbox conventions */
-  variant?: DrawerVariant
-  /** Show a backdrop overlay behind the drawer (default: false) */
+  variant?: BottomSheetVariant
+  /** Show a backdrop overlay behind the bottom-sheet (default: false) */
   overlay?: boolean
-  /** Compound children: Drawer.Header, Drawer.Body */
+  /** Compound children: BottomSheet.Header, BottomSheet.Body */
   children: ReactNode
 }
 
 /**
- * Drawer compound component — bottom sheet panel rendered in a Portal.
+ * BottomSheet compound component — bottom sheet panel rendered in a Portal.
  *
  * Slides up from the bottom of the viewport on first open, then stays
  * in place while content updates. Closes via the close button, Escape
@@ -38,13 +38,13 @@ export interface DrawerProps extends Omit<ComponentProps<'div'>, 'children'> {
  *
  * @example
  * ```tsx
- * <Drawer open={isOpen} onClose={close} variant="dark">
- *   <Drawer.Header>Results</Drawer.Header>
- *   <Drawer.Body>{children}</Drawer.Body>
- * </Drawer>
+ * <BottomSheet open={isOpen} onClose={close} variant="dark">
+ *   <BottomSheet.Header>Results</BottomSheet.Header>
+ *   <BottomSheet.Body>{children}</BottomSheet.Body>
+ * </BottomSheet>
  * ```
  */
-export function Drawer({
+export function BottomSheet({
   open,
   onClose,
   variant = 'light',
@@ -52,7 +52,7 @@ export function Drawer({
   className,
   children,
   ...rest
-}: Readonly<DrawerProps>) {
+}: Readonly<BottomSheetProps>) {
   const wasOpenRef = useRef(false)
 
   const handleEscape = useCallback(
@@ -89,10 +89,10 @@ export function Drawer({
 
   return (
     <Portal>
-      <DrawerContext value={contextValue}>
+      <BottomSheetContext value={contextValue}>
         {overlay ? (
           <div
-            className={DRAWER_OVERLAY_CLASS}
+            className={BOTTOM_SHEET_OVERLAY_CLASS}
             onClick={onClose}
             aria-hidden="true"
           />
@@ -101,19 +101,19 @@ export function Drawer({
           role="dialog"
           aria-modal={overlay}
           className={clsx(
-            drawerVariants({ variant, animated: shouldAnimate }),
+            bottomSheetVariants({ variant, animated: shouldAnimate }),
             className
           )}
           {...rest}
         >
           {children}
         </div>
-      </DrawerContext>
+      </BottomSheetContext>
     </Portal>
   )
 }
 
-Drawer.Header = DrawerHeader
-Drawer.Body = DrawerBody
+BottomSheet.Header = BottomSheetHeader
+BottomSheet.Body = BottomSheetBody
 
-export default Drawer
+export default BottomSheet

@@ -1,0 +1,125 @@
+/**
+ * BottomSheet — native BEM skin.
+ *
+ * A bottom sheet rendered in a portal: `.ui-bottom-sheet` is the panel pinned to the bottom edge,
+ * `.ui-bottom-sheet__overlay` is the optional scrim behind it, and `__header` / `__body` are its two
+ * regions (a fixed title bar and a scrollable content area).
+ *
+ * ON-DARK COLOURS — this resolves the `TODO(tokens)` left in `icon-button.css`. No
+ * `--color-on-dark-*` semantic family is minted: the `--dark` modifier re-points the same role vars
+ * at the dark end of the neutral VALUE scale, exactly as `.ui-listbox--dark` does. One convention
+ * for every dark surface, no parallel alias family to keep in sync.
+ *
+ * Geometry is logical (`inset-inline`, `inset-block-end`, `border-start-*-radius`,
+ * `padding-inline`) so the sheet behaves in any writing mode. The slide-in is a block-axis
+ * translate, which is what "up from the bottom" means for a bottom-anchored sheet.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-bottom-sheet-*` vars on `.ui-bottom-sheet`.
+ *   2. Redefine a global token → re-skins every BottomSheet.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-bottom-sheet {
+    /* ---- override API (component-scoped ROLE vars) ---- */
+    --ui-bottom-sheet-bg: var(--color-primitive-neutral-0);
+    --ui-bottom-sheet-fg: var(--color-foreground);
+    --ui-bottom-sheet-border-color: var(--color-border);
+    --ui-bottom-sheet-radius: var(--radius-lg);
+    --ui-bottom-sheet-shadow: var(--shadow-2xl);
+    --ui-bottom-sheet-max-block-size: 60vh;
+    --ui-bottom-sheet-padding-inline: var(--spacing-4);
+    --ui-bottom-sheet-padding-block: var(--spacing-3);
+    --ui-bottom-sheet-z-index: 50;
+    --ui-bottom-sheet-transition-duration: var(--duration-slow);
+    --ui-bottom-sheet-transition-easing: var(--easing-standard);
+
+    /* ---- base (light surface) ---- */
+    box-sizing: border-box;
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: var(--ui-bottom-sheet-z-index);
+    display: flex;
+    flex-direction: column;
+    max-block-size: var(--ui-bottom-sheet-max-block-size);
+    border-start-start-radius: var(--ui-bottom-sheet-radius);
+    border-start-end-radius: var(--ui-bottom-sheet-radius);
+    background-color: var(--ui-bottom-sheet-bg);
+    color: var(--ui-bottom-sheet-fg);
+    box-shadow: var(--ui-bottom-sheet-shadow);
+  }
+
+  /* Dark surface — re-points the role vars at the dark end of the neutral value scale, mirroring
+     `.ui-listbox--dark`. The composed close button switches to `ghost-dark` on the React side. */
+  .ui-bottom-sheet--dark {
+    --ui-bottom-sheet-bg: var(--color-primitive-neutral-900);
+    --ui-bottom-sheet-fg: var(--color-primitive-neutral-200);
+    --ui-bottom-sheet-border-color: var(--color-primitive-neutral-700);
+  }
+
+  /* Entrance only — applied on first open, so a content update inside an already-open sheet does
+     not replay the slide. */
+  .ui-bottom-sheet--animated {
+    animation: ui-bottom-sheet-slide-in var(--ui-bottom-sheet-transition-duration)
+      var(--ui-bottom-sheet-transition-easing);
+  }
+
+  @keyframes ui-bottom-sheet-slide-in {
+    from {
+      translate: 0 100%;
+    }
+    to {
+      translate: 0 0;
+    }
+  }
+
+  /* ---- overlay (scrim) ---- */
+  .ui-bottom-sheet__overlay {
+    --ui-bottom-sheet-overlay-color: var(--color-primitive-neutral-950);
+    --ui-bottom-sheet-overlay-opacity: 0.5;
+
+    position: fixed;
+    inset: 0;
+    z-index: var(--ui-bottom-sheet-z-index, 50);
+    background-color: var(--ui-bottom-sheet-overlay-color);
+    opacity: var(--ui-bottom-sheet-overlay-opacity);
+  }
+
+  /* ---- header ---- */
+  .ui-bottom-sheet__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-bottom-sheet-padding-block);
+    padding-inline: var(--ui-bottom-sheet-padding-inline);
+    padding-block: var(--ui-bottom-sheet-padding-block);
+    border-block-end: var(--spacing-px) solid var(--ui-bottom-sheet-border-color);
+  }
+
+  /* Takes the free space so the close button stays pinned to the inline-end edge. */
+  .ui-bottom-sheet__title {
+    flex: 1;
+  }
+
+  /* ---- body ---- */
+  .ui-bottom-sheet__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow-y: auto;
+    padding-inline: var(--ui-bottom-sheet-padding-inline);
+    padding-block: var(--ui-bottom-sheet-padding-block);
+  }
+
+  /* ---- reduced motion ---- */
+  /* The slide is decorative: the sheet appearing is the information. Drop it when the user opts
+     out (WCAG 2.3.3), matching the Skeleton precedent — removal, not slow-down. */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-bottom-sheet--animated {
+      animation: none;
+    }
+  }
+}
