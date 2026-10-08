@@ -1,0 +1,125 @@
+/**
+ * Drawer — native BEM skin.
+ *
+ * A bottom sheet rendered in a portal: `.ui-drawer` is the panel pinned to the bottom edge,
+ * `.ui-drawer__overlay` is the optional scrim behind it, and `__header` / `__body` are its two
+ * regions (a fixed title bar and a scrollable content area).
+ *
+ * ON-DARK COLOURS — this resolves the `TODO(tokens)` left in `icon-button.css`. No
+ * `--color-on-dark-*` semantic family is minted: the `--dark` modifier re-points the same role vars
+ * at the dark end of the neutral VALUE scale, exactly as `.ui-listbox--dark` does. One convention
+ * for every dark surface, no parallel alias family to keep in sync.
+ *
+ * Geometry is logical (`inset-inline`, `inset-block-end`, `border-start-*-radius`,
+ * `padding-inline`) so the sheet behaves in any writing mode. The slide-in is a block-axis
+ * translate, which is what "up from the bottom" means for a bottom-anchored sheet.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-drawer-*` vars on `.ui-drawer`.
+ *   2. Redefine a global token → re-skins every Drawer.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico-ds/tokens.
+ */
+@layer ui.components {
+  .ui-drawer {
+    /* ---- override API (component-scoped ROLE vars) ---- */
+    --ui-drawer-bg: var(--color-primitive-neutral-0);
+    --ui-drawer-fg: var(--color-foreground);
+    --ui-drawer-border-color: var(--color-border);
+    --ui-drawer-radius: var(--radius-lg);
+    --ui-drawer-shadow: var(--shadow-2xl);
+    --ui-drawer-max-block-size: 60vh;
+    --ui-drawer-padding-inline: var(--spacing-4);
+    --ui-drawer-padding-block: var(--spacing-3);
+    --ui-drawer-z-index: 50;
+    --ui-drawer-transition-duration: var(--duration-slow);
+    --ui-drawer-transition-easing: var(--easing-standard);
+
+    /* ---- base (light surface) ---- */
+    box-sizing: border-box;
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: var(--ui-drawer-z-index);
+    display: flex;
+    flex-direction: column;
+    max-block-size: var(--ui-drawer-max-block-size);
+    border-start-start-radius: var(--ui-drawer-radius);
+    border-start-end-radius: var(--ui-drawer-radius);
+    background-color: var(--ui-drawer-bg);
+    color: var(--ui-drawer-fg);
+    box-shadow: var(--ui-drawer-shadow);
+  }
+
+  /* Dark surface — re-points the role vars at the dark end of the neutral value scale, mirroring
+     `.ui-listbox--dark`. The composed close button switches to `ghost-dark` on the React side. */
+  .ui-drawer--dark {
+    --ui-drawer-bg: var(--color-primitive-neutral-900);
+    --ui-drawer-fg: var(--color-primitive-neutral-200);
+    --ui-drawer-border-color: var(--color-primitive-neutral-700);
+  }
+
+  /* Entrance only — applied on first open, so a content update inside an already-open sheet does
+     not replay the slide. */
+  .ui-drawer--animated {
+    animation: ui-drawer-slide-in var(--ui-drawer-transition-duration)
+      var(--ui-drawer-transition-easing);
+  }
+
+  @keyframes ui-drawer-slide-in {
+    from {
+      translate: 0 100%;
+    }
+    to {
+      translate: 0 0;
+    }
+  }
+
+  /* ---- overlay (scrim) ---- */
+  .ui-drawer__overlay {
+    --ui-drawer-overlay-color: var(--color-primitive-neutral-950);
+    --ui-drawer-overlay-opacity: 0.5;
+
+    position: fixed;
+    inset: 0;
+    z-index: var(--ui-drawer-z-index, 50);
+    background-color: var(--ui-drawer-overlay-color);
+    opacity: var(--ui-drawer-overlay-opacity);
+  }
+
+  /* ---- header ---- */
+  .ui-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-drawer-padding-block);
+    padding-inline: var(--ui-drawer-padding-inline);
+    padding-block: var(--ui-drawer-padding-block);
+    border-block-end: var(--spacing-px) solid var(--ui-drawer-border-color);
+  }
+
+  /* Takes the free space so the close button stays pinned to the inline-end edge. */
+  .ui-drawer__title {
+    flex: 1;
+  }
+
+  /* ---- body ---- */
+  .ui-drawer__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow-y: auto;
+    padding-inline: var(--ui-drawer-padding-inline);
+    padding-block: var(--ui-drawer-padding-block);
+  }
+
+  /* ---- reduced motion ---- */
+  /* The slide is decorative: the sheet appearing is the information. Drop it when the user opts
+     out (WCAG 2.3.3), matching the Skeleton precedent — removal, not slow-down. */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-drawer--animated {
+      animation: none;
+    }
+  }
+}

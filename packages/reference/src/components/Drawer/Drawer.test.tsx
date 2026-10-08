@@ -79,22 +79,22 @@ describe('Drawer', () => {
     renderDrawer({ variant: 'dark' })
 
     const dialog = screen.getByRole('dialog')
-    expect(dialog.className).toContain('ui:bg-neutral-900')
-    expect(dialog.className).toContain('ui:text-neutral-200')
+    // One modifier now carries both the dark background and foreground, through role vars.
+    expect(dialog.className).toContain('ui-drawer--dark')
   })
 
   it('should apply light variant classes by default', () => {
     renderDrawer()
 
     const dialog = screen.getByRole('dialog')
-    expect(dialog.className).toContain('ui:bg-popover')
+    expect(dialog.className).toContain('ui-drawer')
   })
 
   it('should animate on first open', () => {
     renderDrawer()
 
     const dialog = screen.getByRole('dialog')
-    expect(dialog.className).toContain('ui:animate-slide-up')
+    expect(dialog.className).toContain('ui-drawer--animated')
   })
 
   it('should render in a portal', () => {
@@ -134,6 +134,6 @@ describe('Drawer', () => {
   it('should throw if Header is used outside Drawer', () => {
     expect(() => {
       render(<Drawer.Header>Orphan</Drawer.Header>)
-    }).toThrow('Drawer subcomponents must be used within Drawer')
+    }).toThrow('Drawer.* must be used within <Drawer>')
   })
 })

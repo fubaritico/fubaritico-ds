@@ -1,13 +1,15 @@
 import clsx from 'clsx'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
+
+import { DRAWER_OVERLAY_CLASS, drawerVariants } from '@fubaritico-ds/variants'
 
 import { Portal } from '../Portal'
 
-import DrawerBody from './DrawerBody'
+import { DrawerBody } from './DrawerBody'
 import { DrawerContext } from './DrawerContext'
-import DrawerHeader from './DrawerHeader'
+import { DrawerHeader } from './DrawerHeader'
 
-import type { DrawerVariant } from './DrawerContext'
+import type { DrawerVariant } from '@fubaritico-ds/variants'
 import type { ComponentProps, ReactNode } from 'react'
 
 /** Props for the Drawer root component */
@@ -42,7 +44,7 @@ export interface DrawerProps extends Omit<ComponentProps<'div'>, 'children'> {
  * </Drawer>
  * ```
  */
-function Drawer({
+export function Drawer({
   open,
   onClose,
   variant = 'light',
@@ -51,7 +53,6 @@ function Drawer({
   children,
   ...rest
 }: Readonly<DrawerProps>) {
-  const isDark = variant === 'dark'
   const wasOpenRef = useRef(false)
 
   const handleEscape = useCallback(
@@ -61,21 +62,26 @@ function Drawer({
     [onClose]
   )
 
+  // Escape closes the sheet. The listener is document-level because the panel is portalled and
+  // may not hold focus, so a key handler on the element itself would miss.
   useEffect(() => {
     if (!open) return
+
     document.addEventListener('keydown', handleEscape)
+
     return () => {
       document.removeEventListener('keydown', handleEscape)
     }
   }, [open, handleEscape])
 
+  // Remember that the sheet has been shown, so the entrance slide plays on the FIRST open only and
+  // a content update inside an open sheet does not replay it.
   useEffect(() => {
-    if (open) {
-      wasOpenRef.current = true
-    } else {
-      wasOpenRef.current = false
-    }
+    wasOpenRef.current = open
   }, [open])
+
+  // Memoised so the two regions do not re-render on every parent render.
+  const contextValue = useMemo(() => ({ variant, onClose }), [variant, onClose])
 
   if (!open) return null
 
@@ -83,32 +89,26 @@ function Drawer({
 
   return (
     <Portal>
-      <DrawerContext.Provider value={{ variant, onClose }}>
-        {overlay && (
+      <DrawerContext value={contextValue}>
+        {overlay ? (
           <div
-            className="ui:fixed ui:inset-0 ui:z-50 ui:bg-black/50"
+            className={DRAWER_OVERLAY_CLASS}
             onClick={onClose}
             aria-hidden="true"
           />
-        )}
+        ) : null}
         <div
           role="dialog"
           aria-modal={overlay}
           className={clsx(
-            'ui:fixed ui:inset-x-0 ui:bottom-0 ui:z-50',
-            'ui:flex ui:flex-col ui:max-h-[60vh]',
-            'ui:rounded-t-lg ui:shadow-2xl',
-            shouldAnimate && 'ui:animate-slide-up',
-            isDark
-              ? 'ui:bg-neutral-900 ui:text-neutral-200'
-              : 'ui:bg-popover ui:text-popover-foreground',
+            drawerVariants({ variant, animated: shouldAnimate }),
             className
           )}
           {...rest}
         >
           {children}
         </div>
-      </DrawerContext.Provider>
+      </DrawerContext>
     </Portal>
   )
 }

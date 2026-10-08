@@ -1,27 +1,28 @@
 import clsx from 'clsx'
 
-import type { ComponentProps, FC, ReactNode } from 'react'
+import { DRAWER_BODY_CLASS } from '@fubaritico-ds/variants'
 
-/** Props for the Drawer.Body sub-component */
-export interface DrawerBodyProps extends ComponentProps<'div'> {
-  children?: ReactNode
-}
+import type { ComponentProps } from 'react'
+
+/** Props of {@link DrawerBody}. */
+export type DrawerBodyProps = ComponentProps<'div'>
 
 /**
- * Scrollable content area of the Drawer.
+ * The Drawer's scrollable content area.
  *
- * Fills remaining vertical space and scrolls when content overflows.
- * Uses flex-col layout so children stack vertically.
+ * Takes the space the header leaves and scrolls on overflow, so the sheet never grows past its
+ * maximum height.
+ *
+ * @param props - {@link DrawerBodyProps}.
+ * @returns The rendered body.
  */
-const DrawerBody: FC<DrawerBodyProps> = ({ className, children, ...rest }) => {
+export function DrawerBody({
+  className,
+  children,
+  ...rest
+}: Readonly<DrawerBodyProps>) {
   return (
-    <div
-      className={clsx(
-        'ui:flex ui:flex-1 ui:flex-col ui:overflow-y-auto ui:px-4 ui:py-3',
-        className
-      )}
-      {...rest}
-    >
+    <div className={clsx(DRAWER_BODY_CLASS, className)} {...rest}>
       {children}
     </div>
   )

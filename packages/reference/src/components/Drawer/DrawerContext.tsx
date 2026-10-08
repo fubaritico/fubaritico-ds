@@ -1,24 +1,31 @@
-import { createContext, useContext } from 'react'
+import { createContext, use } from 'react'
 
-/** Color scheme for the Drawer */
-export type DrawerVariant = 'light' | 'dark'
+import type { DrawerVariant } from '@fubaritico-ds/variants'
 
-/** Shared state for Drawer compound sub-components */
+export type { DrawerVariant } from '@fubaritico-ds/variants'
+
+/** Value shared by {@link Drawer} with its regions. */
 export interface DrawerContextValue {
+  /** Colour scheme, so the header can pick the matching close-button variant. */
   variant: DrawerVariant
+  /** Closes the sheet — wired to the header's close button. */
   onClose: () => void
 }
 
 export const DrawerContext = createContext<DrawerContextValue | null>(null)
 
 /**
- * Accesses the Drawer compound context.
+ * Reads the Drawer context, guarding the composition contract.
  *
- * @throws If used outside a `<Drawer>` provider.
+ * `Drawer.Header` and `Drawer.Body` are regions of a sheet, meaningless on their own, so a missing
+ * provider is a programming error: the hook THROWS rather than degrading silently.
+ *
+ * @returns The surrounding Drawer's context value.
+ * @throws If called outside a `<Drawer>`.
  */
-export const useDrawerContext = () => {
-  const context = useContext(DrawerContext)
-  if (!context)
-    throw new Error('Drawer subcomponents must be used within Drawer')
+export function useDrawerContext(): DrawerContextValue {
+  const context = use(DrawerContext)
+  if (!context) throw new Error('Drawer.* must be used within <Drawer>')
+
   return context
 }
