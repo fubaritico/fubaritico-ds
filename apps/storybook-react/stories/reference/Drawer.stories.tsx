@@ -18,18 +18,32 @@ interface DemoProps {
   long?: boolean
   /** Label of the trigger button. */
   label?: string
+  /** Render the title bar, which brings the built-in close button with it. */
+  header?: boolean
+  /** Render the pinned action bar. */
+  footer?: boolean
 }
 
-/** A self-contained trigger + drawer, so every story is interactive. */
+/**
+ * A self-contained trigger + drawer, so every story is interactive.
+ *
+ * The three regions are independent: `header` and `footer` compose the shape. The body is always
+ * rendered — a drawer with no content would show nothing.
+ */
 function DrawerDemo({
   side = 'start',
   size = 'md',
   variant = 'light',
   long = false,
   label,
+  header = true,
+  footer = true,
 }: Readonly<DemoProps>) {
   const [isOpen, setIsOpen] = useState(false)
   const rows = long ? 30 : 5
+  const close = () => {
+    setIsOpen(false)
+  }
 
   return (
     <>
@@ -43,43 +57,47 @@ function DrawerDemo({
 
       <Drawer
         open={isOpen}
-        onClose={() => {
-          setIsOpen(false)
-        }}
+        onClose={close}
         side={side}
         size={size}
         variant={variant}
         aria-label="Filters"
       >
-        <Drawer.Header>
-          <Typography variant="h6">Filters</Typography>
-        </Drawer.Header>
+        {header ? (
+          <Drawer.Header>
+            <Typography variant="h6">Filters</Typography>
+          </Drawer.Header>
+        ) : null}
 
         <Drawer.Body>
+          {header ? null : (
+            <Typography variant="body2">
+              No header, so no built-in close button — Escape and the backdrop
+              are the remaining ways out.
+            </Typography>
+          )}
+
           {Array.from({ length: rows }, (_, i) => (
             <Typography key={i} variant="body2">
               Filter option {i + 1}
             </Typography>
           ))}
+
+          {header || footer ? null : (
+            <Button variant="outline" onClick={close}>
+              Close
+            </Button>
+          )}
         </Drawer.Body>
 
-        <Drawer.Footer>
-          <Button
-            variant="outline"
-            onClick={() => {
-              setIsOpen(false)
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              setIsOpen(false)
-            }}
-          >
-            Apply
-          </Button>
-        </Drawer.Footer>
+        {footer ? (
+          <Drawer.Footer>
+            <Button variant="outline" onClick={close}>
+              Cancel
+            </Button>
+            <Button onClick={close}>Apply</Button>
+          </Drawer.Footer>
+        ) : null}
       </Drawer>
     </>
   )
@@ -156,6 +174,22 @@ export const Showcase: Story = {
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           <DrawerDemo variant="dark" label="Dark" />
           <DrawerDemo long label="Long content" />
+        </div>
+      </section>
+
+      <section
+        style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+      >
+        <strong>Composition — the three regions are independent</strong>
+        <p style={{ fontSize: '0.8125rem', margin: 0 }}>
+          Only the body is mandatory. Dropping the header also drops the
+          built-in close button, so provide your own affordance.
+        </p>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <DrawerDemo header={false} footer={false} label="Body only" />
+          <DrawerDemo header footer={false} label="Header + body" />
+          <DrawerDemo header={false} footer label="Body + footer" />
+          <DrawerDemo header footer label="All three" />
         </div>
       </section>
 
