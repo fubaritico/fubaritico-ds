@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/fubaritico/fubaritico-ds/compare/v0.2.0...v0.2.1) (2026-10-09)
+
+### Bug Fixes
+
+- **reference:** emit complete ESM import paths so the package loads under Node ([1460cc7](https://github.com/fubaritico/fubaritico-ds/commit/1460cc721ad3b82780a6fef800d0d44007fb194b))
+
 # 0.2.0 (2026-10-09)
 
 ### Bug Fixes
