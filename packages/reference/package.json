@@ -77,8 +77,9 @@
     "vitest": "catalog:"
   },
   "dependencies": {
-    "@heroicons/react": "^2.2.0",
+    "@fubaritico-ds/behaviors": "workspace:*",
     "@fubaritico-ds/variants": "workspace:*",
+    "@heroicons/react": "^2.2.0",
     "@tanstack/react-table": "catalog:",
     "@tanstack/react-virtual": "catalog:",
     "clsx": "catalog:",

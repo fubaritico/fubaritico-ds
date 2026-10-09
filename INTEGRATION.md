@@ -5,14 +5,15 @@ what ships, what does not, and the rules that are not guessable from the types.
 
 ## What you install
 
-Four packages. Three carry code, one is pure CSS.
+Five packages. Four carry code, one is pure CSS.
 
-| Package                    | What it is                                                   | Why you need it                                                                        |
-| -------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
-| `@fubaritico-ds/tokens`    | Design tokens → CSS custom properties, plus JS/TS objects    | Every value the skin reads. **Required.**                                              |
-| `@fubaritico-ds/styles`    | The native BEM skin: plain CSS in `@layer`, no framework     | How the components look. **Required.**                                                 |
-| `@fubaritico-ds/variants`  | Framework-agnostic CVA resolvers (pure TS, no React, no DOM) | Pulled in by `reference`; install directly only if you render the BEM classes yourself |
-| `@fubaritico-ds/reference` | The React components                                         | **Required** for React.                                                                |
+| Package                    | What it is                                                   | Why you need it                                                                                                   |
+| -------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `@fubaritico-ds/tokens`    | Design tokens → CSS custom properties, plus JS/TS objects    | Every value the skin reads. **Required.**                                                                         |
+| `@fubaritico-ds/styles`    | The native BEM skin: plain CSS in `@layer`, no framework     | How the components look. **Required.**                                                                            |
+| `@fubaritico-ds/variants`  | Framework-agnostic CVA resolvers (pure TS, no React, no DOM) | Pulled in by `reference`; install directly only if you render the BEM classes yourself                            |
+| `@fubaritico-ds/behaviors` | Component behaviour services (pure TS, no React, no DOM)     | Pulled in by `reference`; use directly to drive a component from outside, or to build another framework's adapter |
+| `@fubaritico-ds/reference` | The React components                                         | **Required** for React.                                                                                           |
 
 There is **no Tailwind anywhere** in these packages, and none is required of you.
 

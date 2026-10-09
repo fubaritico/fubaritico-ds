@@ -1,86 +1,85 @@
 import clsx from 'clsx'
-import { useCallback, useMemo, useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 
 import { tabsListVariants } from '@fubaritico-ds/variants'
 
-import { useTabsContext } from './TabsContext'
-import { TabsListContext } from './TabsListContext'
+import { useMergedRef } from '../../hooks'
+import { toReactAttributes } from '../../utils'
+import { useTabsContext, useTabsSelector } from './TabsContext'
 
-import type { ComponentProps } from 'react'
+import type { ComponentProps, FocusEvent, KeyboardEvent } from 'react'
 
-/** Props of {@link TabsList}. */
-export type TabsListProps = ComponentProps<'div'>
+/** Props of {@link TabsList}. The ARIA attributes the service owns are not overridable. */
+export type TabsListProps = Omit<
+  ComponentProps<'div'>,
+  'role' | 'aria-orientation'
+>
 
 /**
- * The tab row — holds the triggers and the registry that arrow-key navigation walks.
+ * The tab row — `role="tablist"`, and the single keyboard listener of the whole row: keydown
+ * bubbles up from the focused trigger and the service moves focus and selection.
+ *
+ * Give it an accessible name (`aria-label` or `aria-labelledby`).
  *
  * Must be rendered inside a `<Tabs>`.
  *
  * @param props - {@link TabsListProps}.
  * @returns The rendered `role="tablist"` row.
  */
-export function TabsList({ className, children, ...rest }: Readonly<TabsListProps>) {
-  const { variant } = useTabsContext()
-  const triggersRef = useRef<string[]>([])
-  const disabledRef = useRef<Set<string>>(new Set())
+export function TabsList({
+  className,
+  children,
+  onKeyDown,
+  onBlur,
+  ref,
+  ...rest
+}: Readonly<TabsListProps>) {
+  const { service, variant } = useTabsContext()
+  // Only the orientation feeds `listAttrs()` — re-render on that slice, not on every focus move.
+  useTabsSelector(service, (snapshot) => snapshot.orientation)
+  const listRef = useRef<HTMLDivElement>(null)
+  const mergedRef = useMergedRef(listRef, ref)
+
+  // The text direction lives in the DOM (`dir` on an ancestor), not in a prop: read it once
+  // mounted, so the service maps ArrowLeft / ArrowRight the visual way round.
+  useLayoutEffect(() => {
+    const dir = listRef.current?.closest('[dir]')?.getAttribute('dir')
+    service.setOptions({ dir: dir === 'rtl' ? 'rtl' : 'ltr' })
+  }, [service])
 
   /**
-   * Adds a trigger to the navigation registry, recording whether it is skippable.
+   * Runs the consumer's handler first; the service handles the key unless it was prevented.
    *
-   * @param value - The trigger's value.
-   * @param disabled - Whether arrow-key traversal should skip it.
+   * @param event - The keydown bubbling from a trigger.
    */
-  const registerTrigger = useCallback((value: string, disabled?: boolean) => {
-    if (!triggersRef.current.includes(value)) triggersRef.current.push(value)
-
-    if (disabled) disabledRef.current.add(value)
-    else disabledRef.current.delete(value)
-  }, [])
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    onKeyDown?.(event)
+    if (!event.defaultPrevented) service.handleKeydown(event)
+  }
 
   /**
-   * Removes a trigger from the registry, so an unmounted tab is unreachable.
+   * When focus leaves the row, the selected tab becomes the tab stop again (APG re-entry rule).
    *
-   * @param value - The trigger's value.
+   * @param event - The blur bubbling from a trigger.
    */
-  const unregisterTrigger = useCallback((value: string) => {
-    triggersRef.current = triggersRef.current.filter((v) => v !== value)
-    disabledRef.current.delete(value)
-  }, [])
-
-  /**
-   * Lists the registered trigger values, in mount order.
-   *
-   * @returns The ordered trigger values.
-   */
-  const getTriggers = useCallback(() => triggersRef.current, [])
-
-  /**
-   * Reports whether a trigger is skippable.
-   *
-   * @param value - The trigger's value.
-   * @returns `true` when the trigger is disabled.
-   */
-  const isDisabled = useCallback(
-    (value: string) => disabledRef.current.has(value),
-    []
-  )
-
-  // The registry lives in refs, so this value is referentially stable for the whole mount.
-  const contextValue = useMemo(
-    () => ({ registerTrigger, unregisterTrigger, getTriggers, isDisabled }),
-    [registerTrigger, unregisterTrigger, getTriggers, isDisabled]
-  )
+  const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
+    onBlur?.(event)
+    const next = event.relatedTarget
+    if (!(next instanceof Node && event.currentTarget.contains(next)))
+      service.resetFocus()
+  }
 
   return (
-    <TabsListContext value={contextValue}>
-      <div
-        className={clsx(tabsListVariants({ variant }), className)}
-        role="tablist"
-        {...rest}
-      >
-        {children}
-      </div>
-    </TabsListContext>
+    <div
+      className={clsx(tabsListVariants({ variant }), className)}
+      {...rest}
+      {...toReactAttributes(service.listAttrs())}
+      ref={mergedRef}
+      onKeyDown={handleKeyDown}
+      onBlur={handleBlur}
+    >
+      {children}
+    </div>
   )
 }
 

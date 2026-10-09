@@ -9,9 +9,22 @@ const WIDTH = '32rem'
 function Demo({
   variant,
   prefix,
-}: Readonly<{ variant?: 'underline' | 'pills'; prefix: string }>) {
+  activation,
+  loop,
+}: Readonly<{
+  variant?: 'underline' | 'pills'
+  prefix?: string
+  activation?: 'automatic' | 'manual'
+  loop?: boolean
+}>) {
   return (
-    <Tabs defaultValue="overview" variant={variant} prefix={prefix}>
+    <Tabs
+      defaultValue="overview"
+      variant={variant}
+      prefix={prefix}
+      activation={activation}
+      loop={loop}
+    >
       <Tabs.List>
         <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
         <Tabs.Trigger value="activity">Activity</Tabs.Trigger>
@@ -53,6 +66,8 @@ const meta = {
   ],
   argTypes: {
     variant: { control: 'inline-radio', options: ['underline', 'pills'] },
+    activation: { control: 'inline-radio', options: ['automatic', 'manual'] },
+    loop: { control: 'boolean' },
     defaultValue: { table: { disable: true } },
     value: { table: { disable: true } },
     onValueChange: { table: { disable: true } },
@@ -61,6 +76,8 @@ const meta = {
   },
   args: {
     variant: 'underline',
+    activation: 'automatic',
+    loop: true,
     children: null,
   },
 } satisfies Meta<typeof Tabs>
@@ -70,7 +87,19 @@ type Story = StoryObj<typeof meta>
 
 /** Click a tab, then drive the row with the arrow keys. */
 export const Playground: Story = {
-  render: (args) => <Demo variant={args.variant} prefix="playground" />,
+  render: (args) => (
+    <Demo
+      variant={args.variant}
+      activation={args.activation}
+      loop={args.loop}
+    />
+  ),
+}
+
+/** Manual activation: the arrows only move focus — press Enter or Space to open the tab. */
+export const ManualActivation: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => <Demo activation="manual" />,
 }
 
 /** Both looks side by side, plus two independent Tabs sharing a page. */
@@ -80,21 +109,21 @@ export const Showcase: Story = {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
       <section>
         <strong>Underline</strong>
-        <Demo variant="underline" prefix="showcase-underline" />
+        <Demo variant="underline" />
       </section>
 
       <section>
         <strong>Pills</strong>
-        <Demo variant="pills" prefix="showcase-pills" />
+        <Demo variant="pills" />
       </section>
 
       <section>
         <strong>
-          Two sets on one page — distinct prefixes keep the ids apart
+          Two sets on one page — ids stay unique without any prefix
         </strong>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <Demo variant="pills" prefix="popular" />
-          <Demo variant="pills" prefix="recent" />
+          <Demo variant="pills" />
+          <Demo variant="pills" />
         </div>
       </section>
     </div>

@@ -2,39 +2,54 @@ import clsx from 'clsx'
 
 import { TABS_PANEL_CLASS } from '@fubaritico-ds/variants'
 
-import { useTabsContext } from './TabsContext'
+import { toReactAttributes } from '../../utils'
+import { useTabsContext, useTabsSelector } from './TabsContext'
 
-import type { HTMLAttributes, ReactNode } from 'react'
+import type { ComponentProps } from 'react'
 
-export interface TabsPanelProps extends HTMLAttributes<HTMLDivElement> {
-  /** Value that identifies this panel (must match a Tabs.Trigger value) */
+/** Props of {@link TabsPanel}. The ARIA attributes the service owns are not overridable. */
+export interface TabsPanelProps
+  extends Omit<
+    ComponentProps<'div'>,
+    'role' | 'id' | 'tabIndex' | 'hidden' | 'aria-labelledby'
+  > {
+  /** Value that identifies this panel (must match a `Tabs.Trigger` value). */
   value: string
-  /** Panel content */
-  children: ReactNode
+  /**
+   * Whether the panel itself is a tab stop. Keep `true` when its content starts with no focusable
+   * element (APG); set `false` when it starts with a link, button or field, to avoid a redundant
+   * stop.
+   */
+  focusable?: boolean
 }
 
 /**
- * Tabpanel for Tabs component.
- * Automatically hidden/shown based on active tab value.
- * Provides proper ARIA attributes for accessibility.
+ * The panel of one tab — `role="tabpanel"`, labelled by its trigger, hidden while inactive. It does
+ * not register: it only reads the selection, so it may live anywhere under `<Tabs>`.
+ *
+ * Must be rendered inside a `<Tabs>`.
+ *
+ * @param props - {@link TabsPanelProps}.
+ * @param props.value - Value of the tab this panel belongs to.
+ * @param props.focusable - Whether the panel is a tab stop; defaults to `true`.
+ * @returns The rendered `role="tabpanel"` region.
  */
-export function TabsPanel({ value, children, ...rest }: Readonly<TabsPanelProps>) {
-  const { value: activeValue, prefix } = useTabsContext()
-  const isActive = value === activeValue
-
-  const getTabId = (val: string) =>
-    prefix ? `tab-${prefix}-${val}` : `tab-${val}`
-  const getTabPanelId = (val: string) =>
-    prefix ? `tabpanel-${prefix}-${val}` : `tabpanel-${val}`
+export function TabsPanel({
+  value,
+  focusable = true,
+  className,
+  children,
+  ...rest
+}: Readonly<TabsPanelProps>) {
+  const { service } = useTabsContext()
+  // Re-render only when THIS panel's visibility flips, not on every focus move.
+  useTabsSelector(service, (snapshot) => snapshot.activeId === value)
 
   return (
     <div
-      role="tabpanel"
-      id={getTabPanelId(value)}
-      aria-labelledby={getTabId(value)}
-      hidden={!isActive}
       {...rest}
-      className={clsx(TABS_PANEL_CLASS, rest.className)}
+      {...toReactAttributes(service.panelAttrs(value, { focusable }))}
+      className={clsx(TABS_PANEL_CLASS, className)}
     >
       {children}
     </div>

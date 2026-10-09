@@ -254,6 +254,9 @@ importers:
 
   packages/reference:
     dependencies:
+      '@fubaritico-ds/behaviors':
+        specifier: workspace:*
+        version: link:../behaviors
       '@fubaritico-ds/variants':
         specifier: workspace:*
         version: link:../variants

@@ -1,28 +1,39 @@
 import clsx from 'clsx'
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 
 import { tabsTriggerVariants } from '@fubaritico-ds/variants'
 
-import { useTabsContext } from './TabsContext'
-import { useTabsListContext } from './TabsListContext'
+import { useMergedRef } from '../../hooks'
+import { toReactAttributes } from '../../utils'
+import { useTabsContext, useTabsSnapshot } from './TabsContext'
 
-import type { ComponentProps, KeyboardEvent, ReactNode } from 'react'
+import type { ComponentProps, MouseEvent, ReactNode } from 'react'
 
-/** Props of {@link TabsTrigger}. */
-export interface TabsTriggerProps extends ComponentProps<'button'> {
-  /** Value that identifies this tab */
+/** Props of {@link TabsTrigger}. The ARIA attributes the service owns are not overridable. */
+export interface TabsTriggerProps
+  extends Omit<
+    ComponentProps<'button'>,
+    | 'role'
+    | 'id'
+    | 'tabIndex'
+    | 'aria-selected'
+    | 'aria-controls'
+    | 'aria-disabled'
+  > {
+  /** Value that identifies this tab and its panel. */
   value: string
-  /** Optional icon component */
+  /** Optional leading glyph. */
   icon?: ReactNode
 }
 
 /**
  * A single tab button.
  *
- * Registers itself with the surrounding `Tabs.List` so arrow keys can reach it, and carries the
- * roving `tabIndex` that keeps exactly one tab in the tab order.
+ * Registers itself with the service on mount (and leaves on unmount), so adding or removing a
+ * trigger is all it takes to change the tab list. Its ARIA attributes and roving `tabIndex` come
+ * from the service; it takes DOM focus only when the service explicitly asks for it.
  *
- * Must be rendered inside a `<Tabs.List>`.
+ * Must be rendered inside a `<Tabs>`.
  *
  * @param props - {@link TabsTriggerProps}.
  * @param props.value - Value identifying the tab and its panel.
@@ -32,113 +43,60 @@ export interface TabsTriggerProps extends ComponentProps<'button'> {
 export function TabsTrigger({
   value,
   icon,
-  disabled,
+  disabled = false,
   className,
   children,
+  onClick,
+  ref,
   ...rest
 }: Readonly<TabsTriggerProps>) {
-  const {
-    value: activeValue,
-    onValueChange,
-    variant,
-    prefix,
-  } = useTabsContext()
-  const { registerTrigger, unregisterTrigger, getTriggers, isDisabled } =
-    useTabsListContext()
+  const { service, variant } = useTabsContext()
+  // The whole snapshot: a trigger reads its selection, its focus AND the focus token.
+  const state = useTabsSnapshot(service)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const mergedRef = useMergedRef(buttonRef, ref)
+  // The token seen last: a focus move is honoured only when the token CHANGES, so mounting while
+  // already focused never steals focus.
+  const lastFocusToken = useRef(state.focusToken)
 
-  const isActive = value === activeValue
+  // Before paint, so the first painted frame already knows every tab. `register` returns the
+  // matching unregister, which is exactly the cleanup — symmetric, hence StrictMode-safe.
+  useLayoutEffect(() => service.register({ id: value }), [service, value])
 
-  const getTabId = (val: string) =>
-    prefix ? `tab-${prefix}-${val}` : `tab-${val}`
-  const getTabPanelId = (val: string) =>
-    prefix ? `tabpanel-${prefix}-${val}` : `tabpanel-${val}`
+  // Separate from registration: re-registering on a `disabled` change would move the tab to the end.
+  useLayoutEffect(() => {
+    service.update(value, { disabled })
+  }, [service, value, disabled])
 
+  const focused = state.focusedId === value
   useEffect(() => {
-    registerTrigger(value, disabled)
-    return () => {
-      unregisterTrigger(value)
-    }
-  }, [value, disabled, registerTrigger, unregisterTrigger])
+    const requested = state.focusToken !== lastFocusToken.current
+    lastFocusToken.current = state.focusToken
+    if (requested && focused) buttonRef.current?.focus()
+  }, [focused, state.focusToken])
 
-  const handleClick = () => {
-    if (!disabled) {
-      onValueChange(value)
-    }
-  }
-
-  const findNextEnabledTab = (
-    triggers: string[],
-    startIndex: number,
-    direction: 1 | -1
-  ): number => {
-    const length = triggers.length
-    let index = startIndex
-
-    for (let i = 0; i < length; i++) {
-      index = (index + direction + length) % length
-      if (!isDisabled(triggers[index])) {
-        return index
-      }
-    }
-    return startIndex
-  }
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    if (disabled) return
-
-    const triggers = getTriggers()
-    const currentIndex = triggers.indexOf(value)
-    let newIndex = currentIndex
-
-    switch (event.key) {
-      case 'ArrowLeft':
-        event.preventDefault()
-        newIndex = findNextEnabledTab(triggers, currentIndex, -1)
-        break
-      case 'ArrowRight':
-        event.preventDefault()
-        newIndex = findNextEnabledTab(triggers, currentIndex, 1)
-        break
-      case 'Home':
-        event.preventDefault()
-        newIndex = 0
-        while (newIndex < triggers.length && isDisabled(triggers[newIndex])) {
-          newIndex++
-        }
-        break
-      case 'End':
-        event.preventDefault()
-        newIndex = triggers.length - 1
-        while (newIndex >= 0 && isDisabled(triggers[newIndex])) {
-          newIndex--
-        }
-        break
-      default:
-        return
-    }
-
-    const newValue = triggers[newIndex]
-    if (newValue && newValue !== value) {
-      onValueChange(newValue)
-    }
+  /**
+   * Runs the consumer's handler first; selects unless it was prevented.
+   *
+   * @param event - The click.
+   */
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    onClick?.(event)
+    if (!event.defaultPrevented && !disabled) service.setActive(value)
   }
 
   return (
     <button
       type="button"
-      role="tab"
-      aria-selected={isActive ? 'true' : 'false'}
-      aria-controls={getTabPanelId(value)}
-      id={getTabId(value)}
-      tabIndex={isActive ? 0 : -1}
       disabled={disabled}
       className={clsx(
-        tabsTriggerVariants({ variant, active: isActive }),
+        tabsTriggerVariants({ variant, active: state.activeId === value }),
         className
       )}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
       {...rest}
+      {...toReactAttributes(service.triggerAttrs(value))}
+      ref={mergedRef}
+      onClick={handleClick}
     >
       {icon}
       {children}
