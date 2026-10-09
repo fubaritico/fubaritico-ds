@@ -1,4 +1,4 @@
-import { clamp } from '../internal/math.js'
+import { clamp } from '../../internal/math.js'
 
 import type { HslaColor, HsvaColor, RgbaColor } from './types.js'
 

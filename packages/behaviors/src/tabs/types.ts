@@ -1,11 +1,13 @@
+import type { Direction } from '../common/types.js'
+
 /** Identifier of a tab — the `value` a trigger and its panel share. */
 export type TabId = string
 
 /** Axis the arrow keys follow. */
 export type TabsOrientation = 'horizontal' | 'vertical'
 
-/** Text direction — decides which horizontal arrow means "next". */
-export type TabsDirection = 'ltr' | 'rtl'
+/** Text direction of the tablist (alias of the shared `Direction`). */
+export type TabsDirection = Direction
 
 /**
  * How keyboard focus relates to selection.
@@ -108,29 +110,3 @@ export interface TabsOptions {
   /** Called on a non-fatal misuse (e.g. a duplicate tab id). Silent when absent. */
   onWarn?: (message: string) => void
 }
-
-/**
- * Minimal subset of a keyboard event. Keeps the service DOM-free (testable in plain Node) and
- * accepts any framework's keyboard event as well as a native one.
- */
-export interface KeyboardLike {
-  /** The `KeyboardEvent.key` value. */
-  key: string
-  /** Called when the service consumes the key. */
-  preventDefault?: () => void
-  /** Modifier state: a modified key is a browser / AT shortcut and is never consumed. */
-  altKey?: boolean
-  /** See `altKey`. */
-  ctrlKey?: boolean
-  /** See `altKey`. */
-  metaKey?: boolean
-}
-
-/**
- * DOM attributes in their DOM spelling (`tabindex`, `aria-*`), with **presence semantics**: a value
- * means "set the attribute to this string", `undefined` means "omit it" — so a boolean attribute is
- * `''` when on and `undefined` when off. Strings and numbers only, because a boolean `false` is
- * written as the string `"false"` by `setAttribute` and attribute bindings, which keeps the
- * attribute present. Adapters apply them as-is; React needs its own mapping (`toReactAttributes`).
- */
-export type DomAttributes = Record<string, string | number | undefined>

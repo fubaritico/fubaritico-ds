@@ -205,6 +205,49 @@ describe('TabsService', () => {
       expect(service.getState().activeId).toBe('b')
     })
 
+    it('updates a tab in place, keeping its position', () => {
+      const { service } = setup({ defaultActiveId: 'a' })
+      service.update('b', { disabled: true })
+      expect(service.getState().tabs.map((t) => [t.id, t.disabled])).toEqual([
+        ['a', undefined],
+        ['b', true],
+        ['c', undefined],
+      ])
+      service.handleKeydown(key('ArrowRight'))
+      expect(service.getState().activeId).toBe('c')
+    })
+
+    it('forgets the roving focus when the focused tab is removed', () => {
+      const { service, unregister } = setup({
+        defaultActiveId: 'a',
+        activation: 'manual',
+      })
+      service.handleKeydown(key('ArrowRight'))
+      expect(service.getState().focusedId).toBe('b')
+      unregister.b()
+      expect(service.getState().focusedId).toBeNull()
+    })
+
+    it('in controlled mode, never picks a replacement for a removed active tab', () => {
+      const onActiveChange = vi.fn()
+      const { service, unregister } = setup({ activeId: 'b', onActiveChange })
+      unregister.b()
+      expect(service.getState().activeId).toBeNull()
+      expect(onActiveChange).not.toHaveBeenCalled()
+    })
+
+    it('enters from the edge when nothing is selected or focused', () => {
+      const forward = setup({ defaultActiveId: 'a' }).service
+      forward.setActive(null)
+      forward.handleKeydown(key('ArrowRight'))
+      expect(forward.getState().activeId).toBe('a')
+
+      const backward = setup({ defaultActiveId: 'a' }).service
+      backward.setActive(null)
+      backward.handleKeydown(key('ArrowLeft'))
+      expect(backward.getState().activeId).toBe('c')
+    })
+
     it('honours explicit order over registration order', () => {
       const service = createTabsService({ uid: 't' })
       service.register({ id: 'late', order: 0 })

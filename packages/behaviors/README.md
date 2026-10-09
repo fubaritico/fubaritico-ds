@@ -52,6 +52,66 @@ tabs.triggerAttrs('billing') // → { role: 'tab', 'aria-selected': 'true', tabi
 > **Note** — before any tab registers (first render, server render), the snapshot reports the
 > **intended** selection, so the initial markup already shows the right tab.
 
+## Colour picker
+
+`ColorPickerService` — the colour picker's behaviour: the HSVA source of truth, an optional
+**"automatic / no colour"** state (`null`), pointer drags on the 2D area and the hue / alpha tracks,
+keyboard steps, the hex field's draft, and the ARIA attributes of every control.
+
+```ts
+import { createColorPickerService, pointFromRect } from '@fubaritico/behaviors'
+
+const picker = createColorPickerService({
+  uid: 'fill',
+  defaultValue: { h: 210, s: 80, v: 60, a: 1 },
+  nullable: true, // allow "automatic"
+  onChange: (value) => preview(value), // continuous while dragging
+  onChangeComplete: (value) => save(value), // once settled
+})
+
+// pointer: the adapter measures, the service decides
+const rect = area.getBoundingClientRect()
+picker.startDrag(
+  'area',
+  pointFromRect(event.clientX, event.clientY, rect, 'ltr')
+)
+picker.moveDrag(pointFromRect(event.clientX, event.clientY, rect, 'ltr'))
+picker.endDrag() // or cancelDrag() on Escape
+
+picker.handleKeydown('area', event) // arrows, PageUp/Down, Home/End, Shift ×10
+picker.setHexDraft('#ff0') // typing never reformats the field…
+picker.commitHexDraft() // …until Enter / blur
+picker.getState().hex // '#ffff00'
+```
+
+| Contract                                            | Rule                                                                         |
+| --------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `value` / `defaultValue`                            | `HsvaColor` or `null` (automatic, nullable pickers only)                     |
+| `getState()`                                        | `value`, `color` (working colour), `hex`, `hueHex`, `opaqueHex`, `hexDraft`… |
+| `startDrag` / `moveDrag` / `endDrag` / `cancelDrag` | points as fractions from `pointFromRect`; rtl handled there                  |
+| `areaInputAttrs(axis)`                              | the area's two hidden range inputs, announced as a "2D slider"               |
+| `trackInputAttrs('hue' \| 'alpha')`                 | the `Slider`s' native inputs                                                 |
+| `hexInputAttrs` / `autoToggleAttrs` / `swatchAttrs` | the hex field, the "automatic" button, a swatch                              |
+| `labels` / `describeColor`                          | injected to localise; `aria-valuetext` says "dark blue", not "x: 120"        |
+
+Accessibility the adapter must render, all driven by the service:
+
+- **`snapshot.announcement`** in a polite live region (`statusAttrs()`): the colour's description
+  after each settled change — never during a drag.
+- **`hexErrorText()`** in an element with `hexErrorAttrs()` while `snapshot.hexInvalid`; the field
+  already points at it with `aria-describedby`.
+- **No alpha input** when `snapshot.alpha` is `false` (its attributes are only a disabled fallback).
+
+> **Warning** — `value` in the input attributes is a DOM **property**: bind it with your framework's
+> property binding, never with `setAttribute` (an edited field ignores its `value` attribute).
+
+> **Warning** — keep the picker's own value (HSVA) as the truth. If you store hex and pass it back
+> as a controlled value, a gray comes back with `h: 0`; the service recognises the same colour and
+> keeps the hue thumb where it was — but anything you derive yourself from hex will not.
+
+> **Note** — `labels` is compared by content, so passing a fresh object on every render costs
+> nothing. `describeColor` is read on use: memoise it if it changes.
+
 ## Colour
 
 Conversions between HSVA, RGBA, HSLA and hex, with no colour dependency.

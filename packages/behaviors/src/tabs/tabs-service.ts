@@ -1,15 +1,13 @@
+import { Store } from '../internal/store.js'
+
 import type {
-  DomAttributes,
-  KeyboardLike,
   TabDescriptor,
   TabId,
   TabNode,
   TabsOptions,
   TabsSnapshot,
 } from './types.js'
-
-/** Listener notified with each new snapshot. */
-type Listener = (snapshot: TabsSnapshot) => void
+import type { DomAttributes, KeyboardLike } from '../common/types.js'
 
 /** Registry entry: the descriptor plus its arrival rank. */
 interface Entry extends TabDescriptor {
@@ -36,7 +34,7 @@ const slug = (value: string): string => value.replace(/[^\w-]/g, '-')
  * selection, roving focus, keyboard navigation and ARIA attributes. Framework adapters only render
  * and wire lifecycles; they never compute an attribute themselves.
  */
-export class TabsService {
+export class TabsService extends Store<TabsSnapshot> {
   private opts: ResolvedOptions
   /** `true` while the parent drives `activeId`. */
   private controlled: boolean
@@ -61,18 +59,11 @@ export class TabsService {
    */
   private emptyIsIntended = false
 
-  private readonly listeners = new Set<Listener>()
-  /** Memoised snapshot, invalidated by `commit`. */
-  private cache: TabsSnapshot | null = null
-
-  /** Depth of nested `batch` calls, and whether a notification waits for the outermost one. */
-  private depth = 0
-  private queued = false
-
   /**
    * @param options - Initial options; `uid` is required (see {@link TabsOptions.uid}).
    */
   constructor(options: TabsOptions) {
+    super()
     this.opts = {
       orientation: 'horizontal',
       activation: 'automatic',
@@ -89,49 +80,31 @@ export class TabsService {
   // ---------- reading ----------
 
   /**
-   * Returns the current snapshot — the same reference until something changes. An arrow function so
-   * the reference is stable and can be handed straight to a framework's store subscription.
-   *
-   * Before any tab registers (first render, server render), the snapshot reports the INTENDED
-   * selection — the controlled value or `defaultActiveId` — so the initial markup is already right.
+   * Builds the snapshot. Before any tab registers (first render, server render), it reports the
+   * INTENDED selection — the controlled value or `defaultActiveId` — so the initial markup is
+   * already right.
    *
    * @returns The immutable snapshot.
    */
-  getState = (): TabsSnapshot => {
-    if (!this.cache) {
-      const activeId = this.currentActiveId()
-      const tabs: TabNode[] = this.ordered().map(
-        ({ seq: _seq, ...descriptor }, index) => ({
-          ...descriptor,
-          index,
-          active: descriptor.id === activeId,
-          focused: descriptor.id === this.focusedId,
-        })
-      )
+  protected createSnapshot(): TabsSnapshot {
+    const activeId = this.currentActiveId()
+    const tabs: TabNode[] = this.ordered().map(
+      ({ seq: _seq, ...descriptor }, index) => ({
+        ...descriptor,
+        index,
+        active: descriptor.id === activeId,
+        focused: descriptor.id === this.focusedId,
+      })
+    )
 
-      this.cache = {
-        tabs,
-        activeId,
-        focusedId: this.focusedId,
-        initialized: this.entries.size > 0,
-        focusToken: this.focusToken,
-        orientation: this.opts.orientation,
-        activation: this.opts.activation,
-      }
-    }
-    return this.cache
-  }
-
-  /**
-   * Subscribes to snapshot changes.
-   *
-   * @param listener - Called with each new snapshot.
-   * @returns The unsubscribe function, for the framework's cleanup.
-   */
-  subscribe = (listener: Listener): (() => void) => {
-    this.listeners.add(listener)
-    return () => {
-      this.listeners.delete(listener)
+    return {
+      tabs,
+      activeId,
+      focusedId: this.focusedId,
+      initialized: this.entries.size > 0,
+      focusToken: this.focusToken,
+      orientation: this.opts.orientation,
+      activation: this.opts.activation,
     }
   }
 
@@ -173,7 +146,15 @@ export class TabsService {
     this.opts = { ...this.opts, ...patch }
     if ('activeId' in patch) this.controlled = patch.activeId !== undefined
     this.reconcile()
-    this.commitIfChanged(before, uidChanged)
+    this.commitIfChanged(
+      before,
+      (b, a) =>
+        uidChanged ||
+        b.activeId !== a.activeId ||
+        b.focusedId !== a.focusedId ||
+        b.orientation !== a.orientation ||
+        b.activation !== a.activation
+    )
   }
 
   // ---------- registry ----------
@@ -249,33 +230,13 @@ export class TabsService {
   }
 
   /**
-   * Groups mutations into a single notification (e.g. replacing the whole tab list).
-   *
-   * @param fn - The mutations to run.
-   * @returns Whatever `fn` returns.
-   */
-  batch<T>(fn: () => T): T {
-    this.depth++
-    try {
-      return fn()
-    } finally {
-      this.depth--
-      if (this.depth === 0 && this.queued) {
-        this.queued = false
-        this.notify()
-      }
-    }
-  }
-
-  /**
    * Drops every listener and registration. Optional: each subscriber and each tab already releases
    * itself through the functions `subscribe` / `register` returned. The instance stays usable — a
    * remount of the same component (e.g. a development double-mount) may keep using it.
    */
   destroy(): void {
-    this.listeners.clear()
+    this.clearStore()
     this.entries.clear()
-    this.cache = null
   }
 
   // ---------- selection ----------
@@ -439,6 +400,9 @@ export class TabsService {
    * Attributes of a panel.
    *
    * @param id - The tab id the panel belongs to.
+   * @param options - Panel options.
+   * @param options.focusable - Whether the panel is a tab stop; defaults to `true`. `false` omits
+   *   its `tabindex` (for a panel that starts with a focusable element).
    * @returns DOM attributes.
    */
   panelAttrs(
@@ -600,45 +564,6 @@ export class TabsService {
 
     if (this.focusedId && !this.entries.has(this.focusedId))
       this.focusedId = null
-  }
-
-  /**
-   * Invalidates the snapshot and notifies, unless a batch is in progress.
-   */
-  private commit(): void {
-    this.cache = null
-    if (this.depth > 0) {
-      this.queued = true
-      return
-    }
-    this.notify()
-  }
-
-  /**
-   * Commits only when the snapshot differs from `before` on a field the views read.
-   *
-   * @param before - The snapshot taken before the mutation.
-   * @param force - Commit regardless (a change the snapshot cannot see, such as the ids' `uid`).
-   */
-  private commitIfChanged(before: TabsSnapshot, force: boolean): void {
-    this.cache = null
-    const after = this.getState()
-    const changed =
-      force ||
-      before.activeId !== after.activeId ||
-      before.focusedId !== after.focusedId ||
-      before.orientation !== after.orientation ||
-      before.activation !== after.activation
-    if (changed) this.commit()
-    else this.cache = before
-  }
-
-  /** Sends the current snapshot to every listener. */
-  private notify(): void {
-    const snapshot = this.getState()
-    this.listeners.forEach((listener) => {
-      listener(snapshot)
-    })
   }
 }
 
