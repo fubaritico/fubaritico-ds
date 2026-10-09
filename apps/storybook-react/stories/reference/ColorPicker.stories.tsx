@@ -28,6 +28,7 @@ const meta = {
     nullable: { control: 'boolean' },
     alpha: { control: 'boolean' },
     disabled: { control: 'boolean' },
+    density: { control: 'inline-radio', options: ['default', 'compact'] },
     value: { table: { disable: true } },
     defaultValue: { table: { disable: true } },
     onChange: { table: { disable: true } },
@@ -59,6 +60,11 @@ export const Playground: Story = {}
  * The "automatic / no colour" state: the toggle switches to `null` and back to the last colour,
  * whose hue is kept.
  */
+/** The compact density: narrower panel, wide 2:1 area, tighter gaps. */
+export const Compact: Story = {
+  args: { density: 'compact', alpha: true },
+}
+
 export const Automatic: Story = {
   args: { nullable: true, defaultValue: null },
 }

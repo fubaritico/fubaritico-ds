@@ -35,6 +35,18 @@ describe('colorPickerVariants', () => {
       )
       expect(colorPickerVariants({ disabled: false })).toBe('ui-color-picker')
     })
+
+    it('adds the compact modifier, and nothing for the default density', () => {
+      expect(colorPickerVariants({ density: 'compact' })).toBe(
+        'ui-color-picker ui-color-picker--compact'
+      )
+      expect(colorPickerVariants({ density: 'default' })).toBe(
+        'ui-color-picker'
+      )
+      expect(colorPickerVariants({ density: 'compact', disabled: true })).toBe(
+        'ui-color-picker ui-color-picker--compact ui-color-picker--disabled'
+      )
+    })
   })
 
   // L3: N/A — a pure string resolver has no error path.

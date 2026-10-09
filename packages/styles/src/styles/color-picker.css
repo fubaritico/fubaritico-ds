@@ -200,6 +200,23 @@
     clip-path: inset(50%);
   }
 
+  /* ---- density: compact — a tighter panel for small surfaces (a popover, a toolbar). Only the
+     override vars move, so a theme that redefines them keeps working in both densities. ---- */
+
+  .ui-color-picker--compact {
+    --ui-color-picker-width: calc(var(--spacing-48) + var(--spacing-4));
+    --ui-color-picker-gap: var(--spacing-2);
+    --ui-color-picker-area-aspect-ratio: 2 / 1;
+    --ui-color-picker-thumb-size: var(--spacing-3);
+    --ui-color-picker-swatch-size: var(--spacing-6);
+    --ui-color-picker-compact-track-thumb-size: var(--spacing-3);
+  }
+
+  /* The Sliders define their thumb size on themselves: re-set it on the track, not the panel. */
+  .ui-color-picker--compact .ui-color-picker__track {
+    --ui-slider-thumb-size: var(--ui-color-picker-compact-track-thumb-size);
+  }
+
   /* ---- tracks: the hue / alpha Sliders keep their own skin; only the width is ours ---- */
 
   .ui-color-picker__track {

@@ -23,7 +23,8 @@
     --ui-color-field-trigger-size: var(--spacing-8);
     --ui-color-field-trigger-radius: var(--radius-sm);
     --ui-color-field-trigger-ring-color: var(--color-ring);
-    --ui-color-field-panel-width: calc(var(--spacing-64) + var(--spacing-4));
+    /* Follows the picker's width, so the compact density narrows the popover too. */
+    --ui-color-field-panel-width: var(--ui-color-picker-width);
 
     gap: var(--ui-color-field-gap);
     inline-size: var(--ui-color-field-width);

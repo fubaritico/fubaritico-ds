@@ -50,6 +50,13 @@ export function FillField({ onSave }: { onSave: (value: ColorValue) => void }) {
 
 ## Variants & options
 
+Compact density — narrower panel, wide 2:1 area, tighter gaps and smaller thumbs, for popovers
+and toolbars (the default density is unchanged):
+
+```tsx
+<ColorPicker defaultValue={{ h: 210, s: 80, v: 60, a: 1 }} density="compact" />
+```
+
 The automatic state — `null` means "no colour, the palette decides":
 
 ```tsx
@@ -189,20 +196,21 @@ hsvaToHex({ h: 210, s: 80, v: 60, a: 1 }) // '#1f5c99'
 
 ### `ColorPicker`
 
-| Name                     | Type                           | Default  | Description                                     |
-| ------------------------ | ------------------------------ | -------- | ----------------------------------------------- |
-| `value`                  | `HsvaColor \| null`            | —        | Controlled value (`null` = automatic).          |
-| `defaultValue`           | `HsvaColor \| null`            | —        | Initial value when uncontrolled.                |
-| `onChange`               | `(value: ColorValue) => void`  | —        | Every change, continuously while dragging.      |
-| `onChangeComplete`       | `(value: ColorValue) => void`  | —        | Once a change settles.                          |
-| `nullable`               | `boolean`                      | `false`  | Allows the automatic state.                     |
-| `alpha`                  | `boolean`                      | `false`  | Edits the alpha channel.                        |
-| `disabled`               | `boolean`                      | `false`  | Blocks every change.                            |
-| `placeholder`            | `HsvaColor`                    | pure red | Thumb position while nothing was chosen.        |
-| `labels`                 | `Partial<ColorPickerLabels>`   | English  | Accessible labels and messages (below).         |
-| `describeColor`          | `(color: HsvaColor) => string` | English  | Colour-to-words for screen readers.             |
-| `service`                | `ColorPickerService`           | created  | Injected behaviour service; read once at mount. |
-| …`ComponentProps<'div'>` | —                              | —        | On the panel root (`aria-label` overrides).     |
+| Name                     | Type                           | Default     | Description                                     |
+| ------------------------ | ------------------------------ | ----------- | ----------------------------------------------- |
+| `value`                  | `HsvaColor \| null`            | —           | Controlled value (`null` = automatic).          |
+| `defaultValue`           | `HsvaColor \| null`            | —           | Initial value when uncontrolled.                |
+| `onChange`               | `(value: ColorValue) => void`  | —           | Every change, continuously while dragging.      |
+| `onChangeComplete`       | `(value: ColorValue) => void`  | —           | Once a change settles.                          |
+| `nullable`               | `boolean`                      | `false`     | Allows the automatic state.                     |
+| `alpha`                  | `boolean`                      | `false`     | Edits the alpha channel.                        |
+| `disabled`               | `boolean`                      | `false`     | Blocks every change.                            |
+| `density`                | `'default' \| 'compact'`       | `'default'` | Panel density.                                  |
+| `placeholder`            | `HsvaColor`                    | pure red    | Thumb position while nothing was chosen.        |
+| `labels`                 | `Partial<ColorPickerLabels>`   | English     | Accessible labels and messages (below).         |
+| `describeColor`          | `(color: HsvaColor) => string` | English     | Colour-to-words for screen readers.             |
+| `service`                | `ColorPickerService`           | created     | Injected behaviour service; read once at mount. |
+| …`ComponentProps<'div'>` | —                              | —           | On the panel root (`aria-label` overrides).     |
 
 `HsvaColor` is `{ h: 0–360, s: 0–100, v: 0–100, a: 0–1 }`; `ColorValue` is `HsvaColor | null`.
 

@@ -55,6 +55,28 @@ describe('ColorField (browser)', () => {
   })
 
   describe('variants', () => {
+    it('opens a tighter panel in the compact density: narrower, with a 2:1 area', async () => {
+      const measure = async (density: 'default' | 'compact') => {
+        const { unmount } = render(
+          <ColorField label="Fill" defaultValue={BLUE} density={density} />
+        )
+        await userEvent.click(trigger())
+        const panel = document.querySelector('.ui-popover')?.getBoundingClientRect()
+        const area = document
+          .querySelector('.ui-color-picker__area')
+          ?.getBoundingClientRect()
+        unmount()
+        if (!panel || !area) throw new Error('panel not rendered')
+        return { panel, area }
+      }
+      const normal = await measure('default')
+      const compact = await measure('compact')
+      expect(compact.panel.width).toBeLessThan(normal.panel.width)
+      expect(compact.panel.height).toBeLessThan(normal.panel.height * 0.75)
+      expect(compact.area.width / compact.area.height).toBeCloseTo(2, 1)
+      expect(normal.area.width / normal.area.height).toBeCloseTo(4 / 3, 1)
+    })
+
     it('applies a typed hex without opening anything', async () => {
       const onChange = vi.fn()
       render(

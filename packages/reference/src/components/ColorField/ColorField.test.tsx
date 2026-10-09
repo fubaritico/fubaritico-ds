@@ -26,6 +26,13 @@ describe('ColorField', () => {
   })
 
   describe('variants', () => {
+    it('passes the compact density to the picker it composes', () => {
+      render(<ColorField label="Fill" defaultValue={BLUE} density="compact" />)
+      expect(screen.getByRole('group', { name: 'Fill' })).toHaveClass(
+        'ui-color-picker--compact'
+      )
+    })
+
     it('edits the colour from the hex field directly', async () => {
       const user = userEvent.setup()
       const onChangeComplete = vi.fn()

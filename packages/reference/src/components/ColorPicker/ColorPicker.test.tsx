@@ -91,6 +91,17 @@ describe('ColorPicker', () => {
   })
 
   describe('variants', () => {
+    it('emits the compact modifier for the compact density only', () => {
+      const { container, rerender } = render(
+        <ColorPicker defaultValue={BLUE} density="compact" />
+      )
+      expect(container.firstElementChild).toHaveClass('ui-color-picker--compact')
+      rerender(<ColorPicker defaultValue={BLUE} />)
+      expect(container.firstElementChild).not.toHaveClass(
+        'ui-color-picker--compact'
+      )
+    })
+
     it('drives both area axes from the keyboard on the saturation input', async () => {
       const user = userEvent.setup()
       const onChangeComplete = vi.fn()

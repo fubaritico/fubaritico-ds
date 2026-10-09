@@ -40,6 +40,7 @@ export type {
   ColorPickerAreaProps,
   ColorPickerAutoToggleProps,
   ColorPickerController,
+  ColorPickerDensity,
   ColorPickerHexFieldProps,
   ColorPickerProps,
   ColorPickerSwatchProps,

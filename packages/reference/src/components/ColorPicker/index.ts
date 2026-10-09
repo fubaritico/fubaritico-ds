@@ -7,6 +7,7 @@ export { ColorPickerAutoToggle } from './ColorPickerAutoToggle'
 export { useColorPickerController } from './ColorPickerContext'
 
 export type { ColorPickerProps, ColorValue, HsvaColor } from './ColorPicker'
+export type { ColorPickerDensity } from '@fubaritico/variants'
 export type { ColorPickerAreaProps } from './ColorPickerArea'
 export type { ColorPickerTrackProps } from './ColorPickerTrack'
 export type { ColorPickerHexFieldProps } from './ColorPickerHexField'

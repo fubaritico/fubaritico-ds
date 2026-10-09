@@ -33,6 +33,12 @@ Automatic state and alpha:
 <ColorField label="Stroke" nullable alpha defaultValue={null} />
 ```
 
+Compact density — a tighter popover:
+
+```tsx
+<ColorField label="Fill" density="compact" />
+```
+
 Controlled, in a form:
 
 ```tsx
@@ -90,7 +96,7 @@ export function EditLayer({ onClose }: Readonly<{ onClose: () => void }>) {
 ## Props
 
 Every `ColorPicker` prop (`value`, `defaultValue`, `onChange`, `onChangeComplete`, `nullable`,
-`alpha`, `disabled`, `placeholder`, `labels`, `describeColor`, `service`, `<div>` props except
+`alpha`, `disabled`, `density`, `placeholder`, `labels`, `describeColor`, `service`, `<div>` props except
 `aria-label` / `aria-labelledby` — the visible label names the field), plus:
 
 | Name           | Type                      | Default        | Description                                   |

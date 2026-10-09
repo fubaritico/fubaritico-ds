@@ -20,6 +20,7 @@ const meta = {
     nullable: { control: 'boolean' },
     alpha: { control: 'boolean' },
     disabled: { control: 'boolean' },
+    density: { control: 'inline-radio', options: ['default', 'compact'] },
     label: { control: 'text' },
     value: { table: { disable: true } },
     defaultValue: { table: { disable: true } },
@@ -50,6 +51,12 @@ export const Playground: Story = {}
 /** Open from the start — the picker in its popover. */
 export const Open: Story = {
   args: { open: true, nullable: true },
+  parameters: { layout: 'padded' },
+}
+
+/** The compact density, opened: a tighter popover for dense toolbars and forms. */
+export const Compact: Story = {
+  args: { density: 'compact', open: true, alpha: true, nullable: true },
   parameters: { layout: 'padded' },
 }
 

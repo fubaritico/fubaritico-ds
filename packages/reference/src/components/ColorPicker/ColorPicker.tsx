@@ -29,6 +29,7 @@ import type {
   DescribeColor,
   HsvaColor,
 } from '@fubaritico/behaviors'
+import type { ColorPickerDensity } from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
 export type { ColorValue, HsvaColor } from '@fubaritico/behaviors'
@@ -50,6 +51,8 @@ export interface ColorPickerProps
   alpha?: boolean
   /** Blocks every change. */
   disabled?: boolean
+  /** `'compact'`: narrower panel, wide 2:1 area, tighter gaps, smaller thumbs. Defaults to `'default'`. */
+  density?: ColorPickerDensity
   /** Where the thumbs sit while the value is `null` and nothing was chosen yet. */
   placeholder?: HsvaColor
   /** Accessible labels; English defaults. Compared by content — a fresh object per render is fine. */
@@ -142,6 +145,7 @@ function DefaultLayout() {
  * @param props.nullable - Allows the automatic state.
  * @param props.alpha - Edits the alpha channel.
  * @param props.disabled - Blocks every change.
+ * @param props.density - Panel density; defaults to `'default'`.
  * @param props.placeholder - Thumb position while nothing was chosen.
  * @param props.labels - Accessible labels.
  * @param props.describeColor - Colour-to-words function.
@@ -156,6 +160,7 @@ export function ColorPicker({
   nullable = false,
   alpha = false,
   disabled = false,
+  density = 'default',
   placeholder,
   labels,
   describeColor,
@@ -227,7 +232,7 @@ export function ColorPicker({
     <ColorPickerContext value={contextValue}>
       <div
         className={clsx(
-          colorPickerVariants({ disabled: isDisabled }),
+          colorPickerVariants({ density, disabled: isDisabled }),
           className
         )}
         {...toReactAttributes(service.pickerAttrs())}

@@ -4,27 +4,37 @@ import type { VariantProps } from 'class-variance-authority'
 
 /**
  * Resolves a ColorPicker panel into the BEM class names of the native skin
- * (`.ui-color-picker`, `+ --disabled`).
+ * (`.ui-color-picker`, `+ --compact`, `+ --disabled`).
  *
  * Pure string output (framework-agnostic): consumed by the React reference and the Stencil /
  * Angular / Vue packages alike. The behaviour lives in `ColorPickerService`
  * (`@fubaritico/behaviors`); this only names the parts.
  *
  * @param props - ColorPicker options (all optional — CVA defaults apply).
+ * @param props.density - `'default'` or `'compact'` (narrower panel, wide 2:1 area, tighter
+ *   gaps and smaller thumbs); defaults to `'default'`.
  * @param props.disabled - Non-interactive; defaults to `false`.
  * @returns The space-separated BEM class string for the resolved props.
  */
 export const colorPickerVariants = cva('ui-color-picker', {
   variants: {
+    density: {
+      default: '',
+      compact: 'ui-color-picker--compact',
+    },
     disabled: {
       false: '',
       true: 'ui-color-picker--disabled',
     },
   },
   defaultVariants: {
+    density: 'default',
     disabled: false,
   },
 })
+
+/** Density of a ColorPicker panel: the original layout, or a tighter one for small surfaces. */
+export type ColorPickerDensity = 'default' | 'compact'
 
 /** Variant props inferred from {@link colorPickerVariants}. */
 export type ColorPickerVariantProps = VariantProps<typeof colorPickerVariants>
