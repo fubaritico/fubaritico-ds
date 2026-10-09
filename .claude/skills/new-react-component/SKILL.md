@@ -52,13 +52,11 @@ component (`reference`). Never start with the `.tsx`.
 
 - **The native BEM skin, NOT Tailwind** — classes come from the `@fubaritico-ds/variants` resolver.
   Never write new `ui:` Tailwind classes (that prefix only survives in the not-yet-migrated components).
-- **Soyez GÉNÉREUX en variables de surcharge — mieux vaut trop que pas assez.** Chaque propriété
-  cosmétique d'un bloc mérite sa `--ui-<bloc>-*` : couleurs, géométrie, états, focus, mouvement.
-  Une variable inutilisée ne coûte qu'une ligne ; une variable manquante oblige le consommateur à
-  écrire une règle qui court-circuite le skin, et c'est là qu'un thème se met à diverger. Référence
-  de densité : `Slider` expose **20** variables. La seule limite est la **mécanique** — ce qui fait
-  fonctionner le composant (centrage, zone de clic, calculs de position) n'est PAS surchargeable,
-  car l'exposer n'offre que des façons de le casser.
+- **GÉNÉREUX en variables de surcharge — mieux trop que pas assez.** Chaque propriété cosmétique
+  mérite sa `--ui-<bloc>-*`. Une var inutilisée coûte une ligne ; une var manquante force le
+  consommateur à court-circuiter le skin, et c'est là qu'un thème diverge. Densité de référence :
+  `Slider` en expose **20**. Seule limite, la **mécanique** (centrage, zone de clic, calculs) : la
+  skin possède le look, pas la géométrie.
 - No domain logic — pure, presentational design-system components only
 - Extend with `ComponentProps<'element'>` (never `HTMLAttributes`); `Omit` any native prop you repurpose
 - Export the props interface as a named export, the component as default
