@@ -77,7 +77,8 @@ Put here the know issues to avoid cluttering the context window.
   `Slider` en test unitaire. Les tests du Slider couvrent le **câblage** (mapping valeur→pourcentage,
   quel callback part sur quel événement DOM) via `fireEvent`, **exception assumée** à la règle
   « toujours userEvent » ; le clavier lui-même se vérifie dans Storybook. **Ne pas lire l'absence de
-  test clavier comme une absence de support clavier.**
+  test clavier comme une absence de support clavier.** → la vraie réponse est le **Vitest Browser
+  Mode** (Playwright), consigné comme passe à faire dans `next.md`.
 - **`--ui-slider-track-image` est la couture du futur color picker (2026-10-09)** — un curseur de
   teinte, d'alpha ou de canal **n'est pas un composant de plus** : c'est le `Slider` avec un fond de
   piste et `imaged: true` (qui escamote la portion remplie). Ne pas créer de `ColorSlider` séparé.
