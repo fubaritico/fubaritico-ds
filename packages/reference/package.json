@@ -1,6 +1,6 @@
 {
   "name": "@fubaritico/react",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React design-system components wearing the @fubaritico/styles native BEM skin. Tailwind-free: the skin is plain CSS driven by design tokens.",
   "repository": {
     "type": "git",

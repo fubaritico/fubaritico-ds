@@ -1,6 +1,6 @@
 {
   "name": "@fubaritico/styles",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Portable native BEM skin for the fubaritico design system — plain CSS in @layer, driven by @fubaritico/tokens and overridable through component-scoped --ui-* variables.",
   "repository": {

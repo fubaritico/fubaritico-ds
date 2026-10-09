@@ -1,0 +1,51 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# 0.2.0 (2026-10-09)
+
+### Bug Fixes
+
+- **reference:** a11y pass on DataTable cells ([0038c77](https://github.com/fubaritico/fubaritico-ds/commit/0038c775d0c4b8faf7ff97d13e1625f4a24a5c80))
+- **reference:** give the dialog skins a font, breathing room and a footer axis ([30e7d59](https://github.com/fubaritico/fubaritico-ds/commit/30e7d59057a9a532d11bf4a6f7430f269d6db0a5))
+- **reference:** let the Modal shell centre its own panel ([7d74755](https://github.com/fubaritico/fubaritico-ds/commit/7d74755552821f08332effb47d56a79463dab975))
+- **reference:** polish DataTable skin + add DateCell truncation ([ae91759](https://github.com/fubaritico/fubaritico-ds/commit/ae9175970470ec26bd35ed658a5cdfbc6198f11d))
+- **reference:** scroll the paginated DataTable body, reserve <tfoot> for summaries ([e533e11](https://github.com/fubaritico/fubaritico-ds/commit/e533e1104757799906c264f87808f114e86a39f4))
+- **reference:** stop a consumer ref from silently disabling Modal and Drawer ([30d557d](https://github.com/fubaritico/fubaritico-ds/commit/30d557d6ea5c59e2667e8b6faf4152d914dcddf1))
+- **reference:** stop the drawer rendering while closed and closing on itself ([77122a4](https://github.com/fubaritico/fubaritico-ds/commit/77122a40801157eda4ff2d892a6c1fd037ea48bc))
+- **repo:** stop Storybook pulling Tailwind preflight; Badge padding renders ([4688b93](https://github.com/fubaritico/fubaritico-ds/commit/4688b93172c12002f3fbc540277a3f15097cff26))
+- **styles:** badge applies --font-inter via --ui-badge-font-family ([fdfad78](https://github.com/fubaritico/fubaritico-ds/commit/fdfad788f34c2d4f3c27d3699de6a76081ea65c1))
+- **styles:** raise focus-ring contrast and honour reduced motion on the button skin ([bacc280](https://github.com/fubaritico/fubaritico-ds/commit/bacc28029250b40894cf5448cfc1b6ee43afa818)), closes [#6b6b6](https://github.com/fubaritico/fubaritico-ds/issues/6b6b6)
+- **styles:** scale Spinner ring thickness with its size ([d6c7c45](https://github.com/fubaritico/fubaritico-ds/commit/d6c7c45d3c36aa3bfc1ff99ab1b058753a7fc6b5))
+- **tokens:** darken DataTable column-header text to clear WCAG AA ([2df4c3b](https://github.com/fubaritico/fubaritico-ds/commit/2df4c3b2268d2c04f9868fa4cc3edeb3532db6f0))
+
+### Features
+
+- **reference:** add a real edge-anchored Drawer on the native dialog ([eb36157](https://github.com/fubaritico/fubaritico-ds/commit/eb36157d9303e2d5bc9170252a79aed013b9ad22))
+- **reference:** add Badge canTruncate + AA outline border ([d80302c](https://github.com/fubaritico/fubaritico-ds/commit/d80302c6524c9b0f521b7b2a5a5007b88e4dc557))
+- **reference:** add the Alert message component ([3c376d0](https://github.com/fubaritico/fubaritico-ds/commit/3c376d03ab29c063ba6411f60628952ead770af1))
+- **reference:** add the ProgressBar determinate progress component ([1d37a2e](https://github.com/fubaritico/fubaritico-ds/commit/1d37a2eee1f5f3ce7e43603d9974a8bc51d0a8d7))
+- **reference:** add the Slider primitive, built for re-skinning ([dfe58e5](https://github.com/fubaritico/fubaritico-ds/commit/dfe58e57b4e90d12bf64466b331fc9e27f974239))
+- **reference:** migrate Avatar onto the native BEM skin ([facecc5](https://github.com/fubaritico/fubaritico-ds/commit/facecc5e81b983061a60d6e9ab26ebe087a400fc))
+- **reference:** migrate Button to native skin; split Button/LinkButton/NextLinkButton ([532cb3c](https://github.com/fubaritico/fubaritico-ds/commit/532cb3c95ce706931dc0e93eb61238f27bca38f7))
+- **reference:** migrate Card onto the native skin as a slotted compound ([2d30644](https://github.com/fubaritico/fubaritico-ds/commit/2d30644068d6430b273dba0489c8bb5b03c0c3b4))
+- **reference:** migrate checkbox, tooltip, dropdown, pagination onto the native skin ([e1db9f5](https://github.com/fubaritico/fubaritico-ds/commit/e1db9f588f0fd366da7ca20568f00780484d674a))
+- **reference:** migrate Drawer onto the native skin ([95721b9](https://github.com/fubaritico/fubaritico-ds/commit/95721b9e612cc2a55d8ee3d1713d1e21c297886a))
+- **reference:** migrate IconButton as an Open/Closed extension of Button ([10de488](https://github.com/fubaritico/fubaritico-ds/commit/10de488a3256f39857bddcdb2f17f46b9ef30cb8))
+- **reference:** migrate Image onto the native skin ([063dd93](https://github.com/fubaritico/fubaritico-ds/commit/063dd9333766193321fc9dc9de386c909d2f50aa))
+- **reference:** migrate Input onto the native skin ([587712b](https://github.com/fubaritico/fubaritico-ds/commit/587712b82037d16bc39938351e71daa5a795b4f6)), closes [#949494](https://github.com/fubaritico/fubaritico-ds/issues/949494)
+- **reference:** migrate Listbox onto the BEM skin ([4302490](https://github.com/fubaritico/fubaritico-ds/commit/4302490c02bc5be16841034dc389877b1cbe3779))
+- **reference:** migrate Menu onto the native skin ([5aa4fab](https://github.com/fubaritico/fubaritico-ds/commit/5aa4fab093fa53110d4026b8b00ec4f08f41f638))
+- **reference:** migrate Modal onto the native skin ([bf20c89](https://github.com/fubaritico/fubaritico-ds/commit/bf20c8974e1ba28b26b08926dc1eac227071eae4))
+- **reference:** migrate Rating onto the native skin (grayscale, display-only) ([f3c572b](https://github.com/fubaritico/fubaritico-ds/commit/f3c572b234973f4367f0819436ea8caa719d6b3b))
+- **reference:** migrate Skeleton onto the native BEM skin ([07cf01e](https://github.com/fubaritico/fubaritico-ds/commit/07cf01e7a8400edd1a58af26178f730b36465fff))
+- **reference:** migrate Spinner to native skin with sm/md/lg sizes ([77262f5](https://github.com/fubaritico/fubaritico-ds/commit/77262f58d9ffba0d7d4b748d6967a5edc95fe022))
+- **reference:** migrate Tabs onto the native skin ([3589b24](https://github.com/fubaritico/fubaritico-ds/commit/3589b244119c09f2313675ae48a22fad9d56b271))
+- **reference:** migrate Typeahead onto the native skin ([1cd06e1](https://github.com/fubaritico/fubaritico-ds/commit/1cd06e19777526532e893af10e7b51573fb6af70))
+- **reference:** migrate Typography to native skin (BEM + CVA + tokens) ([e1b3ba8](https://github.com/fubaritico/fubaritico-ds/commit/e1b3ba8a1e5dba3ae9b615dec9aea3ca3ea2d173))
+- **reference:** rewrite Avatar as a React 19 compound ([4136a10](https://github.com/fubaritico/fubaritico-ds/commit/4136a10c1214591a0b1a0fd5629fd916722216ba))
+- **reference:** split Typography body into body1 and body2 ([ffb6a0b](https://github.com/fubaritico/fubaritico-ds/commit/ffb6a0b92f35a28f359b7d97300aadb97156cf33))
+- **repo:** make the design system installable, Tailwind-free, in a sibling project ([01be734](https://github.com/fubaritico/fubaritico-ds/commit/01be734c5c7ae73e61ed357b8a5b18f7f0925b4a))
+- **styles:** white-label native BEM skin + Badge spike ([fc30ab7](https://github.com/fubaritico/fubaritico-ds/commit/fc30ab7fa818b6d9073d9d08956a497fe3ac0efe)), closes [#1976d2](https://github.com/fubaritico/fubaritico-ds/issues/1976d2)
+- **tokens:** 20-step neutral grey scale + dash-ify dotted CSS var names ([fecac53](https://github.com/fubaritico/fubaritico-ds/commit/fecac539c9998c0b77e868fc0b76f59cb075d345))
