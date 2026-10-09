@@ -10,7 +10,11 @@
 > (source indicative : `files/tabs-state-service (1).md`, 7 corrections relevées). Structure du paquet
 > **provisoire** : par composant, le commun émerge en codant. `src/color/` descendra dans `src/color-picker/`.
 
-> ## ▶ PREMIÈRE PUBLICATION — GitHub Packages (préparée, PAS lancée)
+> ## ▶ PUBLICATION GitHub Packages — **0.2.0 PUBLIÉE le 2026-10-09** (run `37938876637`)
+>
+> Étapes 1–3 faites (dry-run, `lerna version` → `v0.2.0`, publication). Reste 3b (accès europe-map) et 4.
+>
+> _Historique du plan :_
 >
 > Décidé 2026-10-09 (`d9bc1db`) : scope **`@fubaritico`**, `reference` = **`@fubaritico/react`**,
 > Lerna **mode fixe**, `shared` privé, workflow **`release.yml`** (manuel, dry-run par défaut). Reste,
