@@ -10,6 +10,24 @@
 > (source indicative : `files/tabs-state-service (1).md`, 7 corrections relevées). Structure du paquet
 > **provisoire** : par composant, le commun émerge en codant. `src/color/` descendra dans `src/color-picker/`.
 
+> ## ▶ PREMIÈRE PUBLICATION — GitHub Packages (préparée, PAS lancée)
+>
+> Décidé 2026-10-09 (`d9bc1db`) : scope **`@fubaritico`**, `reference` = **`@fubaritico/react`**,
+> Lerna **mode fixe**, `shared` privé, workflow **`release.yml`** (manuel, dry-run par défaut). Reste,
+> dans l'ordre — **chaque publication = action sortante, feu vert du dev à chaque fois** :
+>
+> 1. Lancer `release.yml` en **dry-run** → vérifier la liste des 5 paquets et leurs `dependencies`
+>    (`workspace:*` réécrits en `0.1.0` exact). Confirmer au passage que GitHub accepte le scope.
+> 2. `pnpm exec lerna version minor --conventional-commits` → **0.2.0** partout + changelogs, push du tag.
+> 3. `release.yml` sans dry-run. Puis réglages du paquet sur GitHub : accès en lecture au dépôt europe-map.
+> 4. **Note de livraison pour europe-map** : nouveaux noms (`@fubaritico/react` au lieu de
+>    `@fubaritico-ds/reference` → imports à changer), `.npmrc` + token, suppression des tarballs
+>    vendorisés ET de l'override `variants` (remplacé par le registre), `behaviors` arrive en dépendance.
+>
+> **Exigence consommateur pour le ColorPicker** (handoff europe-map) : un état explicite
+> **« automatique / pas de couleur »** — valeur `HsvaColor | null`, `null` = état à part entière (UI +
+> `aria-valuetext`), pas une absence de valeur.
+
 > ## ▶ PUIS — LE COLOR PICKER, PAR LE SOCLE
 >
 > Cadrage fait le 2026-10-09, **`Slider` livré** (`dfe58e5`). Le reste est à construire.
