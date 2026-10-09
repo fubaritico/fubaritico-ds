@@ -59,6 +59,18 @@ Un chantier ouvert laissé **non commité** dans le working tree (`ArrowUpDown` 
   (ResizeObserver). Idée notée : wrapper `TruncateWithTooltip` via `ConditionalWrapper`, qui n'affiche la
   Tooltip **que si** tronqué. ⚠️ Nom à trancher (`WithTooltip` vs `TruncateWithTooltip`).
 
+## Dette doc — `patterns-ui.md` dépasse le plafond
+
+**202 lignes pour un plafond de 200** (`CLAUDE.md`). Il était déjà à 197 avant l'ajout de la règle
+« généreux en variables de surcharge » du 2026-10-09 : il allait céder au prochain ajout, quel
+qu'il soit. Raboter encore la formulation serait contourner la règle, pas la respecter.
+
+**À scinder.** Découpe la plus naturelle : sortir la section **Compound Components (React 19)**
+dans son propre `rules/patterns-compound.md` — c'est un bloc autonome, long, et qui ne concerne
+qu'une minorité de composants. `patterns-ui.md` garderait le template, la structure de fichiers,
+les règles de style et l'ordre des imports. Penser à repointer les références
+(`new-react-component` cite la section Compound).
+
 ## PASSE À FAIRE — tests navigateur (Vitest Browser Mode + Playwright)
 
 **Décidé le 2026-10-09.** Le besoin n'est pas théorique : il a bloqué **trois fois** dans la même
