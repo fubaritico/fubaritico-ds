@@ -1,6 +1,6 @@
 {
   "name": "@fubaritico/variants",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "description": "Framework-agnostic CVA resolvers emitting the BEM class names of @fubaritico/styles. Pure TypeScript: no React, no DOM.",
   "repository": {

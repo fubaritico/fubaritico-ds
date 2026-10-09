@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.2.1...v0.3.0) (2026-10-09)
+
+### Bug Fixes
+
+- **reference:** apply the ColorPicker review — behaviour back in the service, browser-tested ([d79c753](https://github.com/fubaritico/fubaritico-ds/commit/d79c753793e24f92abb764f1769cdfa70b9ebc43))
+
+### Features
+
+- **reference:** add the ColorPicker panel on ColorPickerService ([6cb5c5d](https://github.com/fubaritico/fubaritico-ds/commit/6cb5c5d2f0d2637530a665b03b2e746d895bbf58))
+
 # 0.2.0 (2026-10-09)
 
 ### Bug Fixes
