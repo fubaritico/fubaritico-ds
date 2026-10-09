@@ -44,6 +44,8 @@
     --ui-slider-thumb-shadow: var(--shadow-sm);
     /* An arbitrary background for the track — a gradient, a checkerboard. Unset by default. */
     --ui-slider-track-image: none;
+    /* Size of each track-image layer (`background-size`): a checkerboard layer needs a tile size. */
+    --ui-slider-track-size: auto;
 
     /* ---- override API: states ---- */
     --ui-slider-thumb-hover-scale: 1.15;
@@ -78,6 +80,7 @@
     border-radius: var(--ui-slider-track-radius);
     background-color: var(--ui-slider-track-color);
     background-image: var(--ui-slider-track-image);
+    background-size: var(--ui-slider-track-size);
     overflow: hidden;
   }
 

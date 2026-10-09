@@ -8,13 +8,16 @@ import {
   COLOR_PICKER_COLOR_VAR,
   COLOR_PICKER_HEX_CLASS,
   COLOR_PICKER_HEX_ERROR_CLASS,
+  COLOR_PICKER_HEX_FIELD_CLASS,
   COLOR_PICKER_HUE_VAR,
   COLOR_PICKER_ROW_CLASS,
   COLOR_PICKER_STATUS_CLASS,
   COLOR_PICKER_TRACK_CLASS,
+  COLOR_PICKER_TRACK_IMAGE_VAR,
   COLOR_PICKER_X_VAR,
   COLOR_PICKER_Y_VAR,
   colorPickerSwatchVariants,
+  colorPickerTrackVariants,
   colorPickerVariants,
 } from './color-picker.js'
 
@@ -53,6 +56,7 @@ describe('colorPickerVariants', () => {
         COLOR_PICKER_TRACK_CLASS,
         COLOR_PICKER_ROW_CLASS,
         COLOR_PICKER_HEX_CLASS,
+        COLOR_PICKER_HEX_FIELD_CLASS,
         COLOR_PICKER_HEX_ERROR_CLASS,
         COLOR_PICKER_STATUS_CLASS,
       ]) {
@@ -64,8 +68,9 @@ describe('colorPickerVariants', () => {
         COLOR_PICKER_X_VAR,
         COLOR_PICKER_Y_VAR,
         COLOR_PICKER_CHECKERBOARD_VAR,
+        COLOR_PICKER_TRACK_IMAGE_VAR,
       ]) {
-        expect(name).toMatch(/^--ui-color-picker-[a-z]+$/)
+        expect(name).toMatch(/^--ui-color-picker-[a-z-]+$/)
       }
     })
   })
@@ -92,6 +97,34 @@ describe('colorPickerSwatchVariants', () => {
     it('emits no modifier for auto: false', () => {
       expect(colorPickerSwatchVariants({ auto: false })).toBe(
         'ui-color-picker__swatch'
+      )
+    })
+  })
+})
+
+describe('colorPickerTrackVariants', () => {
+  describe('happy path', () => {
+    it('defaults to the hue track', () => {
+      expect(colorPickerTrackVariants()).toBe(
+        'ui-color-picker__track ui-color-picker__track--hue'
+      )
+    })
+  })
+
+  describe('variants', () => {
+    it('emits the alpha modifier', () => {
+      expect(colorPickerTrackVariants({ channel: 'alpha' })).toBe(
+        'ui-color-picker__track ui-color-picker__track--alpha'
+      )
+    })
+  })
+
+  // L3 / L4: N/A — pure string resolver.
+
+  describe('edge cases', () => {
+    it('falls back to hue for an undefined channel', () => {
+      expect(colorPickerTrackVariants({ channel: undefined })).toContain(
+        '--hue'
       )
     })
   })

@@ -37,8 +37,12 @@ const DEFAULT_LABELS: ColorPickerLabels = {
   automatic: 'Automatic',
   automaticDescription: 'Automatic, no color selected',
   areaRoleDescription: '2D slider',
+  picker: 'Color picker',
   hexInvalid: 'Enter a hex color such as #1976d2',
 }
+
+/** Percentage denominator — alpha is a fraction in the state, a percentage on its slider. */
+const PERCENT = 100
 
 /** Where the thumbs start when nothing else is known: pure red. */
 const DEFAULT_PLACEHOLDER: HsvaColor = { h: 0, s: 100, v: 100, a: 1 }
@@ -151,7 +155,18 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
       alpha: this.opts.alpha,
       nullable: this.opts.nullable,
       disabled: this.opts.disabled,
+      dir: this.opts.dir,
     }
+  }
+
+  /**
+   * The resolved accessible labels — for visible text an adapter renders (the automatic toggle's
+   * caption, a hex error), so it never reads text back out of an ARIA attribute.
+   *
+   * @returns The labels, defaults filled in.
+   */
+  getLabels(): ColorPickerLabels {
+    return this.opts.labels
   }
 
   /**
@@ -302,6 +317,52 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
     return this.applyValue(null, true)
   }
 
+  /**
+   * The automatic toggle's action: enters the automatic state, or leaves it back to the last colour
+   * (whose hue was kept).
+   *
+   * @returns `false` when blocked.
+   */
+  toggleAuto(): boolean {
+    return this.currentValue() === null
+      ? this.setColor(this.working)
+      : this.setAuto()
+  }
+
+  /**
+   * A track's native input reported a value, in the TRACK's scale (hue in degrees, alpha in
+   * percent — what `trackInputAttrs` exposes). The service converts; adapters never do.
+   *
+   * @param target - `'hue'` or `'alpha'`.
+   * @param raw - The input's value.
+   * @param options - Change options.
+   * @param options.complete - Settled change; `false` while a slider is being dragged.
+   * @returns `false` when blocked or unchanged.
+   */
+  setTrackValue(
+    target: 'hue' | 'alpha',
+    raw: number,
+    { complete = true }: { complete?: boolean } = {}
+  ): boolean {
+    if (this.isTargetBlocked(target)) return false
+    return target === 'hue'
+      ? this.setChannel('h', raw, { complete })
+      : this.setChannel('a', raw / PERCENT, { complete })
+  }
+
+  /**
+   * One of the area's range inputs reported a value (an assistive technology adjusted it directly,
+   * without a keydown): a settled change of that axis, in percent.
+   *
+   * @param axis - `'saturation'` or `'brightness'`.
+   * @param raw - The input's value, `[0, 100]`.
+   * @returns `false` when blocked or unchanged.
+   */
+  setAreaAxis(axis: ColorAreaAxis, raw: number): boolean {
+    if (this.opts.disabled) return false
+    return this.setChannel(axis === 'saturation' ? 's' : 'v', raw)
+  }
+
   // ---------- pointer ----------
 
   /**
@@ -374,6 +435,14 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
     if (event.altKey || event.ctrlKey || event.metaKey) return false
     if (this.isTargetBlocked(target)) return false
 
+    // Escape during a drag on this surface puts the colour back.
+    if (event.key === 'Escape') {
+      if (this.dragging !== target) return false
+      event.preventDefault?.()
+      this.cancelDrag()
+      return true
+    }
+
     const { dir } = this.opts
     const patch =
       target === 'area'
@@ -436,6 +505,26 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
     const unchanged = current !== null && hsvaToHex(next) === hsvaToHex(current)
     if (unchanged || !this.applyValue(next, true)) this.commit()
     return true
+  }
+
+  /**
+   * Keyboard model of the hex field: Enter commits the draft (keeping an invalid one, flagged, for
+   * correction), Escape abandons it.
+   *
+   * @param event - The key event.
+   * @returns `true` when the key was consumed.
+   */
+  handleHexKeydown(event: KeyboardLike): boolean {
+    if (event.key === 'Enter') {
+      event.preventDefault?.()
+      this.commitHexDraft()
+      return true
+    }
+    if (event.key === 'Escape' && (this.draft !== null || this.hexInvalid)) {
+      this.cancelHexDraft()
+      return true
+    }
+    return false
   }
 
   /** Abandons the draft (Escape): the field shows the current hex again. */
@@ -513,6 +602,15 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
    */
   autoToggleAttrs(): DomAttributes {
     return attrs.autoToggleAttrs(this.attrsContext())
+  }
+
+  /**
+   * Attributes of the picker's root: a named group, so several pickers on a page are told apart.
+   *
+   * @returns DOM attributes.
+   */
+  pickerAttrs(): DomAttributes {
+    return attrs.pickerAttrs(this.attrsContext())
   }
 
   /**

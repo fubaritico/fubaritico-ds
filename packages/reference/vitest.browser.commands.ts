@@ -1,4 +1,18 @@
+import type { Frame, Page } from 'playwright'
 import type { BrowserCommand } from 'vitest/node'
+
+// The Playwright provider augments the command context with `page` / `frame` — but on ITS copy of
+// `vitest/node`. vitest and the provider are mutual peers, so pnpm can install two vitest copies
+// (different peer hashes) and the augmentation then misses the copy this package resolves. Declare
+// it here, on our own `vitest/node`: a duplicate on the other copy is harmless.
+declare module 'vitest/node' {
+  interface BrowserCommandContext {
+    /** The Playwright page running the tests. */
+    page: Page
+    /** The frame the test file runs in. */
+    frame: () => Promise<Frame>
+  }
+}
 
 /**
  * Pointer commands for browser tests that need a gesture `userEvent` cannot express — a press,
@@ -7,8 +21,17 @@ import type { BrowserCommand } from 'vitest/node'
  * the iframe the tests run in.
  */
 
+/** The test frame a command resolves elements in. */
+type TestFrame = Frame
+
+/**
+ * Intermediate positions per mouse move: enough `pointermove` events for a drag handler to see a
+ * path, not a teleport.
+ */
+const MOVE_STEPS = 4
+
 /** Position inside an element, as fractions of its box (`0`–`1`). */
-interface Fraction {
+export interface Fraction {
   /** Fraction of the width, from the left. */
   x: number
   /** Fraction of the height, from the top. */
@@ -25,7 +48,7 @@ interface Fraction {
  * @throws Error when the element has no box (absent, hidden).
  */
 async function pagePoint(
-  frame: Awaited<ReturnType<Parameters<BrowserCommand>[0]['frame']>>,
+  frame: TestFrame,
   selector: string,
   at: Fraction
 ): Promise<{ x: number; y: number }> {
@@ -60,7 +83,7 @@ export const pointerMove: BrowserCommand<
   [selector: string, at: Fraction]
 > = async (context, selector, at) => {
   const { x, y } = await pagePoint(await context.frame(), selector, at)
-  await context.page.mouse.move(x, y, { steps: 4 })
+  await context.page.mouse.move(x, y, { steps: MOVE_STEPS })
 }
 
 /**
@@ -70,15 +93,4 @@ export const pointerMove: BrowserCommand<
  */
 export const pointerUp: BrowserCommand<[]> = async (context) => {
   await context.page.mouse.up()
-}
-
-declare module 'vitest/browser' {
-  interface BrowserCommands {
-    /** Presses the mouse at a point of an element. */
-    pointerDown: (selector: string, at: Fraction) => Promise<void>
-    /** Moves the mouse to a point of an element (inside or out). */
-    pointerMove: (selector: string, at: Fraction) => Promise<void>
-    /** Releases the mouse. */
-    pointerUp: () => Promise<void>
-  }
 }

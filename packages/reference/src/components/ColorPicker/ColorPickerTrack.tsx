@@ -1,82 +1,104 @@
 import clsx from 'clsx'
 
 import {
-  COLOR_PICKER_CHECKERBOARD_VAR,
-  COLOR_PICKER_TRACK_CLASS,
+  COLOR_PICKER_COLOR_VAR,
+  COLOR_PICKER_TRACK_IMAGE_VAR,
+  colorPickerTrackVariants,
 } from '@fubaritico/variants'
 
 import { Slider } from '../Slider'
-
 import {
   useColorPickerContext,
   useColorPickerSnapshot,
 } from './ColorPickerContext'
 
-import type { ColorPickerDirection } from '@fubaritico/behaviors'
+import type { SliderProps } from '../Slider'
+import type { CSSProperties } from 'react'
 
-/** Props of the hue and alpha tracks. */
-export interface ColorPickerTrackProps {
-  /** Extra class on the track's `Slider`. */
-  className?: string
+/**
+ * Props of the hue and alpha tracks: the Slider's, minus what the service owns (value, range,
+ * ARIA, callbacks, track image).
+ */
+export type ColorPickerTrackProps = Omit<
+  SliderProps,
+  | 'id'
+  | 'value'
+  | 'defaultValue'
+  | 'min'
+  | 'max'
+  | 'step'
+  | 'disabled'
+  | 'onChange'
+  | 'onChangeComplete'
+  | 'trackImage'
+  | 'formatValue'
+  | 'aria-label'
+>
+
+/** Internal props: the public ones plus which channel the track edits. */
+interface ColorPickerTrackInternalProps extends ColorPickerTrackProps {
+  /** `'hue'` or `'alpha'`. */
+  target: 'hue' | 'alpha'
 }
 
-/** The hue wheel unrolled: red → yellow → green → cyan → blue → magenta → red. */
-const HUE_STOPS =
-  '#ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000'
-
 /**
- * The gradient direction that runs from the track's inline-start, where the value is 0.
+ * One colour track: a `Slider` driven by the service. Every step is reported (`complete: false`);
+ * the run settles once — on release (the Slider's `onChangeComplete`), on blur and on pointer
+ * cancel, so a change made by an assistive technology (no key or pointer release) settles too.
+ * `settle()` is a no-op when nothing is pending, so the overlap costs nothing.
  *
- * @param dir - Text direction.
- * @returns A `linear-gradient` direction keyword.
- */
-const inlineDirection = (dir: ColorPickerDirection) =>
-  dir === 'rtl' ? 'to left' : 'to right'
-
-/**
- * One colour track, a `Slider` with the service's value, ARIA text and settle semantics: every
- * step is reported (`onChange`), the run completes once on release (`onChangeComplete`).
+ * The gradient is the skin's (per modifier, mirrored in rtl); the alpha ramp ends on the current
+ * opaque colour, passed as a custom property. Values are forwarded in the track's own scale — the
+ * service converts.
  *
- * @param props - Track props.
+ * @param props - {@link ColorPickerTrackInternalProps}.
  * @param props.target - `'hue'` or `'alpha'`.
- * @param props.className - Extra class.
  * @returns The rendered track, or `null` for the alpha track of a picker without alpha.
  */
 function ColorPickerTrack({
   target,
   className,
-}: Readonly<ColorPickerTrackProps & { target: 'hue' | 'alpha' }>) {
-  const { service, dir } = useColorPickerContext()
+  style,
+  onBlur,
+  onPointerCancel,
+  ...rest
+}: Readonly<ColorPickerTrackInternalProps>) {
+  const { service } = useColorPickerContext()
   const state = useColorPickerSnapshot(service)
   if (target === 'alpha' && !state.alpha) return null
 
   const attrs = service.trackInputAttrs(target)
-  const direction = inlineDirection(dir)
-  const trackImage =
-    target === 'hue'
-      ? `linear-gradient(${direction}, ${HUE_STOPS})`
-      : `linear-gradient(${direction}, transparent, ${state.opaqueHex}), var(${COLOR_PICKER_CHECKERBOARD_VAR})`
-  // Alpha is a fraction in the service, a percentage on the slider (which reads better).
-  const toChannel = (value: number) => (target === 'hue' ? value : value / 100)
+  const trackStyle: CSSProperties & Record<`--${string}`, string> = {
+    ...style,
+    [COLOR_PICKER_COLOR_VAR]: state.opaqueHex,
+  }
 
   return (
     <Slider
+      {...rest}
       id={String(attrs.id)}
-      className={clsx(COLOR_PICKER_TRACK_CLASS, className)}
+      className={clsx(colorPickerTrackVariants({ channel: target }), className)}
+      style={trackStyle}
       min={Number(attrs.min)}
       max={Number(attrs.max)}
       step={Number(attrs.step)}
       value={Number(attrs.value)}
       disabled={attrs.disabled !== undefined}
-      trackImage={trackImage}
+      trackImage={`var(${COLOR_PICKER_TRACK_IMAGE_VAR})`}
       aria-label={String(attrs['aria-label'])}
       formatValue={() => String(attrs['aria-valuetext'])}
       onChange={(value) => {
-        service.setChannel(target === 'hue' ? 'h' : 'a', toChannel(value), {
-          complete: false,
-        })
+        service.setTrackValue(target, value, { complete: false })
       }}
       onChangeComplete={() => {
+        service.settle()
+      }}
+      onBlur={(event) => {
+        onBlur?.(event)
+        service.settle()
+      }}
+      onPointerCancel={(event) => {
+        onPointerCancel?.(event)
         service.settle()
       }}
     />

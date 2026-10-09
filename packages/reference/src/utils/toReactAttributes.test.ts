@@ -24,6 +24,21 @@ describe('toReactAttributes', () => {
       })
     })
 
+    it('camel-cases the attributes React spells differently', () => {
+      expect(
+        toReactAttributes({
+          maxlength: 9,
+          spellcheck: 'false',
+          autocapitalize: 'off',
+          autocomplete: 'off',
+        })
+      ).toEqual({ maxLength: 9, spellCheck: 'false', autoCapitalize: 'off', autoComplete: 'off' })
+    })
+
+    it('renames AND turns on a boolean attribute (readonly → readOnly: true)', () => {
+      expect(toReactAttributes({ readonly: '' })).toEqual({ readOnly: true })
+    })
+
     it('turns a present boolean attribute into true (React drops an empty string)', () => {
       expect(toReactAttributes({ hidden: '' })).toEqual({ hidden: true })
     })

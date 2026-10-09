@@ -13,7 +13,6 @@ import {
 } from '@fubaritico/variants'
 
 import { toReactAttributes } from '../../utils'
-
 import {
   useColorPickerContext,
   useColorPickerSnapshot,
@@ -28,25 +27,31 @@ import type {
   PointerEvent,
 } from 'react'
 
-/** Props of {@link ColorPickerArea}. */
+/** Props of {@link ColorPickerArea}. The service owns the group's role and name. */
 export type ColorPickerAreaProps = Omit<
   ComponentProps<'div'>,
-  'role' | 'aria-label' | 'children'
+  'role' | 'aria-label' | 'aria-disabled' | 'children'
 >
 
 /** The area's two axes, in render order. */
 const AXES: readonly ColorAreaAxis[] = ['saturation', 'brightness']
 
-/** Which HSVA channel each axis drives. */
-const CHANNEL = { saturation: 's', brightness: 'v' } as const
+/**
+ * Reads which axis an area input stands for (set on it as `data-axis`).
+ *
+ * @param input - The input element.
+ * @returns The axis.
+ */
+const axisOf = (input: HTMLInputElement): ColorAreaAxis =>
+  input.dataset.axis === 'brightness' ? 'brightness' : 'saturation'
 
 /**
  * The 2D saturation × brightness surface.
  *
- * The pointer is handled here — measured, captured, handed to the service as a point. Keyboard and
+ * The pointer is measured and captured here, then handed to the service as a point; keyboard and
  * assistive technology go through two visually hidden native range inputs (the service's "2D
- * slider"): only the saturation input is tabbable, and its keydown drives both axes. Escape during
- * a drag puts the colour back.
+ * slider"). Every decision — the colour under the pointer, the axis a key moves, Escape during a
+ * drag — is the service's. A consumer's pointer handlers run first and may `preventDefault()`.
  *
  * Must be rendered inside a `<ColorPicker>`.
  *
@@ -56,9 +61,13 @@ const CHANNEL = { saturation: 's', brightness: 'v' } as const
 export function ColorPickerArea({
   className,
   style,
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onPointerCancel,
   ...rest
 }: Readonly<ColorPickerAreaProps>) {
-  const { service, dir } = useColorPickerContext()
+  const { service } = useColorPickerContext()
   const state = useColorPickerSnapshot(service)
   const inputRef = useRef<HTMLInputElement>(null)
   const thumb = service.thumbPosition('area')
@@ -74,7 +83,7 @@ export function ColorPickerArea({
       event.clientX,
       event.clientY,
       event.currentTarget.getBoundingClientRect(),
-      dir
+      service.getState().dir
     )
 
   /**
@@ -84,47 +93,43 @@ export function ColorPickerArea({
    * @param event - The pointer press.
    */
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0 || state.disabled) return
+    onPointerDown?.(event)
+    if (event.defaultPrevented || event.button !== 0) return
+    if (!service.startDrag('area', pointOf(event))) return
     event.preventDefault()
     event.currentTarget.setPointerCapture(event.pointerId)
     inputRef.current?.focus({ preventScroll: true })
-    service.startDrag('area', pointOf(event))
   }
 
   /**
-   * Follows the captured pointer.
+   * Follows the captured pointer — the service ignores moves outside a drag.
    *
    * @param event - The pointer move.
    */
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (state.dragging === 'area') service.moveDrag(pointOf(event))
+    onPointerMove?.(event)
+    if (service.getState().dragging === 'area') service.moveDrag(pointOf(event))
   }
 
   /**
-   * Keyboard on the focused input: Escape cancels a drag in progress; everything else is the
-   * service's area model (arrows, PageUp / PageDown, Home / End).
+   * Keyboard on the saturation input: the service's area model, Escape included.
    *
    * @param event - The key press.
    */
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Escape' && state.dragging === 'area') {
-      service.cancelDrag()
-      return
-    }
     service.handleKeydown('area', event)
   }
 
   /**
-   * An assistive technology adjusted one axis directly (no keydown): apply it as a settled change.
+   * An assistive technology adjusted one axis directly (no keydown).
    *
-   * @param axis - The axis whose input changed.
    * @param event - The input's change.
    */
-  const handleInputChange = (
-    axis: ColorAreaAxis,
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
-    service.setChannel(CHANNEL[axis], Number(event.target.value))
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    service.setAreaAxis(
+      axisOf(event.currentTarget),
+      Number(event.currentTarget.value)
+    )
   }
 
   // The skin reads the hue and the thumb from custom properties; `CSSProperties` models no `--*`.
@@ -144,10 +149,12 @@ export function ColorPickerArea({
       style={areaStyle}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
-      onPointerUp={() => {
+      onPointerUp={(event) => {
+        onPointerUp?.(event)
         service.endDrag()
       }}
-      onPointerCancel={() => {
+      onPointerCancel={(event) => {
+        onPointerCancel?.(event)
         service.cancelDrag()
       }}
     >
@@ -156,12 +163,11 @@ export function ColorPickerArea({
         <input
           key={axis}
           {...toReactAttributes(service.areaInputAttrs(axis))}
+          data-axis={axis}
           ref={axis === 'saturation' ? inputRef : undefined}
           className={COLOR_PICKER_AREA_INPUT_CLASS}
           onKeyDown={handleKeyDown}
-          onChange={(event) => {
-            handleInputChange(axis, event)
-          }}
+          onChange={handleInputChange}
         />
       ))}
     </div>

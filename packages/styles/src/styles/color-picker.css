@@ -38,6 +38,7 @@
     /* ---- override API: area ---- */
     --ui-color-picker-area-aspect-ratio: 4 / 3;
     --ui-color-picker-area-radius: var(--radius-sm);
+    --ui-color-picker-area-border-width: 1px;
     --ui-color-picker-area-border-color: var(--color-border);
     --ui-color-picker-area-cursor: crosshair;
 
@@ -48,10 +49,13 @@
     --ui-color-picker-thumb-outline-color: var(--color-primitive-neutral-900);
     --ui-color-picker-thumb-shadow: var(--shadow-sm);
     --ui-color-picker-thumb-active-scale: 1.15;
+    /* The thumb's current scale — the area redefines it while dragged. */
+    --ui-color-picker-thumb-scale: 1;
 
     /* ---- override API: swatch ---- */
     --ui-color-picker-swatch-size: var(--spacing-8);
     --ui-color-picker-swatch-radius: var(--radius-sm);
+    --ui-color-picker-swatch-border-width: 1px;
     --ui-color-picker-swatch-border-color: var(--color-border);
     --ui-color-picker-auto-stroke-color: var(--color-foreground-muted);
     --ui-color-picker-auto-stroke-width: 2px;
@@ -60,11 +64,15 @@
     --ui-color-picker-checker-size: var(--spacing-2);
     --ui-color-picker-checker-light: var(--color-primitive-neutral-0);
     --ui-color-picker-checker-dark: var(--color-primitive-neutral-200);
+    /* An IMAGE only (no position / size): it must stay valid inside `background-image`, where
+       the Slider uses it. Its tile size travels separately, as `--ui-color-picker-checker-tile`. */
     --ui-color-picker-checkerboard: repeating-conic-gradient(
-        var(--ui-color-picker-checker-dark) 0 25%,
-        var(--ui-color-picker-checker-light) 0 50%
+      var(--ui-color-picker-checker-dark) 0 25%,
+      var(--ui-color-picker-checker-light) 0 50%
+    );
+    --ui-color-picker-checker-tile: calc(
+        var(--ui-color-picker-checker-size) * 2
       )
-      0 0 / calc(var(--ui-color-picker-checker-size) * 2)
       calc(var(--ui-color-picker-checker-size) * 2);
 
     /* ---- override API: hex error ---- */
@@ -73,11 +81,16 @@
 
     /* ---- override API: focus / states / motion ---- */
     --ui-color-picker-ring-color: var(--color-ring);
+    /* Second tone of the focus ring: the ring sits on every colour, one tone alone can vanish. */
+    --ui-color-picker-ring-contrast-color: var(--color-primitive-neutral-0);
     --ui-color-picker-ring-width: 2px;
     --ui-color-picker-ring-offset: var(--spacing-0-5);
     --ui-color-picker-disabled-opacity: 0.5;
     --ui-color-picker-transition-duration: var(--duration-fast);
     --ui-color-picker-transition-easing: var(--easing-standard);
+
+    /* ---- direction: the gradients run from inline-start (flipped under :dir(rtl)) ---- */
+    --ui-color-picker-inline-direction: to right;
 
     /* ---- data, set by the component ---- */
     --ui-color-picker-hue: #ff0000;
@@ -85,6 +98,8 @@
     --ui-color-picker-x: 1;
     --ui-color-picker-y: 0;
 
+    /* Contains the visually hidden live region (absolutely positioned). */
+    position: relative;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -96,7 +111,12 @@
     color: var(--ui-color-picker-text-color);
   }
 
+  .ui-color-picker:dir(rtl) {
+    --ui-color-picker-inline-direction: to left;
+  }
+
   .ui-color-picker--disabled {
+    --ui-color-picker-area-cursor: not-allowed;
     opacity: var(--ui-color-picker-disabled-opacity);
   }
 
@@ -107,27 +127,26 @@
     box-sizing: border-box;
     inline-size: 100%;
     aspect-ratio: var(--ui-color-picker-area-aspect-ratio);
-    border: 1px solid var(--ui-color-picker-area-border-color);
+    border: var(--ui-color-picker-area-border-width) solid
+      var(--ui-color-picker-area-border-color);
     border-radius: var(--ui-color-picker-area-radius);
     /* The HSV model itself — see the header: these two gradients are mechanics, not theme. */
     background-color: var(--ui-color-picker-hue);
     background-image:
       linear-gradient(to top, #000000, transparent),
-      linear-gradient(to right, #ffffff, transparent);
+      linear-gradient(
+        var(--ui-color-picker-inline-direction),
+        #ffffff,
+        transparent
+      );
     cursor: var(--ui-color-picker-area-cursor);
     /* The pointer drag owns the gesture: no scroll, no pinch while picking. */
     touch-action: none;
     user-select: none;
   }
 
-  .ui-color-picker__area:dir(rtl) {
-    background-image:
-      linear-gradient(to top, #000000, transparent),
-      linear-gradient(to left, #ffffff, transparent);
-  }
-
-  .ui-color-picker--disabled .ui-color-picker__area {
-    cursor: not-allowed;
+  .ui-color-picker__area[data-dragging] {
+    --ui-color-picker-thumb-scale: var(--ui-color-picker-thumb-active-scale);
   }
 
   .ui-color-picker__area-thumb {
@@ -148,20 +167,23 @@
       0 0 0 1px var(--ui-color-picker-thumb-outline-color),
       var(--ui-color-picker-thumb-shadow);
     background-color: var(--ui-color-picker-color);
+    scale: var(--ui-color-picker-thumb-scale);
     pointer-events: none;
     transition: scale var(--ui-color-picker-transition-duration)
       var(--ui-color-picker-transition-easing);
   }
 
-  .ui-color-picker__area[data-dragging] .ui-color-picker__area-thumb {
-    scale: var(--ui-color-picker-thumb-active-scale);
-  }
-
   .ui-color-picker__area:has(.ui-color-picker__area-input:focus-visible)
     .ui-color-picker__area-thumb {
+    /* Two-tone: the light halo and the dark ring keep 3:1 against any colour under the thumb. */
     outline: var(--ui-color-picker-ring-width) solid
       var(--ui-color-picker-ring-color);
     outline-offset: var(--ui-color-picker-ring-offset);
+    box-shadow:
+      0 0 0 1px var(--ui-color-picker-thumb-outline-color),
+      0 0 0 calc(var(--ui-color-picker-ring-offset) + 1px)
+        var(--ui-color-picker-ring-contrast-color),
+      var(--ui-color-picker-thumb-shadow);
   }
 
   /* sr-only: hidden visually, still in the accessibility tree and focusable. */
@@ -184,6 +206,31 @@
     inline-size: 100%;
   }
 
+  /* The gradients are the hue / alpha data; mirrored in rtl so a value grows from inline-start. */
+  .ui-color-picker__track--hue {
+    --ui-color-picker-track-image: linear-gradient(
+      var(--ui-color-picker-inline-direction),
+      #ff0000,
+      #ffff00,
+      #00ff00,
+      #00ffff,
+      #0000ff,
+      #ff00ff,
+      #ff0000
+    );
+  }
+
+  .ui-color-picker__track--alpha {
+    --ui-color-picker-track-image:
+      linear-gradient(
+        var(--ui-color-picker-inline-direction),
+        transparent,
+        var(--ui-color-picker-color)
+      ),
+      var(--ui-color-picker-checkerboard);
+    --ui-slider-track-size: 100% 100%, var(--ui-color-picker-checker-tile);
+  }
+
   /* ---- row: swatch + hex + automatic ---- */
 
   .ui-color-picker__row {
@@ -197,15 +244,19 @@
     flex-shrink: 0;
     inline-size: var(--ui-color-picker-swatch-size);
     block-size: var(--ui-color-picker-swatch-size);
-    border: 1px solid var(--ui-color-picker-swatch-border-color);
+    border: var(--ui-color-picker-swatch-border-width) solid
+      var(--ui-color-picker-swatch-border-color);
     border-radius: var(--ui-color-picker-swatch-radius);
     /* The colour over a checkerboard, so translucency shows. */
-    background:
+    background-image:
       linear-gradient(
         var(--ui-color-picker-color),
         var(--ui-color-picker-color)
       ),
       var(--ui-color-picker-checkerboard);
+    background-size:
+      100% 100%,
+      var(--ui-color-picker-checker-tile);
   }
 
   /* "Automatic / no colour": an empty swatch struck through. */
@@ -222,9 +273,16 @@
       var(--ui-color-picker-checker-light);
   }
 
-  .ui-color-picker__hex {
+  /* The hex input and its error, stacked: the message gets the field's full width. */
+  .ui-color-picker__hex-field {
+    display: flex;
     flex: 1;
+    flex-direction: column;
+    gap: var(--spacing-1);
     min-inline-size: 0;
+  }
+
+  .ui-color-picker__hex {
     font-variant-numeric: tabular-nums;
   }
 

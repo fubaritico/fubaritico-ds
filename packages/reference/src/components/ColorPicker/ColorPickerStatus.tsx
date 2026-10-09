@@ -1,10 +1,9 @@
 import { COLOR_PICKER_STATUS_CLASS } from '@fubaritico/variants'
 
 import { toReactAttributes } from '../../utils'
-
 import {
   useColorPickerContext,
-  useColorPickerSnapshot,
+  useColorPickerSelector,
 } from './ColorPickerContext'
 
 /**
@@ -15,14 +14,18 @@ import {
  */
 export function ColorPickerStatus() {
   const { service } = useColorPickerContext()
-  const state = useColorPickerSnapshot(service)
+  // A slice: the region re-renders when the announcement changes, not on every pointer move.
+  const announcement = useColorPickerSelector(
+    service,
+    (state) => state.announcement
+  )
 
   return (
     <div
       {...toReactAttributes(service.statusAttrs())}
       className={COLOR_PICKER_STATUS_CLASS}
     >
-      {state.announcement}
+      {announcement}
     </div>
   )
 }

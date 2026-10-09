@@ -112,7 +112,12 @@ pointer capture and drags, `:has()` / `:dir()` / `:focus-visible`, RTL rendering
 
 - Import `userEvent` from `vitest/browser` (real CDP input); `render` / `screen` from RTL.
 - Gestures `userEvent` cannot express (press → key → release) use the pointer commands of
-  `vitest.browser.commands.ts` (`commands.pointerDown/Move/Up`, from `vitest/browser`).
+  `vitest.browser.commands.ts`, called through `pointer` from `vitest.browser.pointer.ts` (typed
+  there, not by augmenting `BrowserCommands`: pnpm may install two vitest copies).
+- Naming: `.browser.test.tsx` = one component in a real browser (Vitest + Testing Library);
+  `.e2e.ts` is reserved for real journeys with Playwright Test against an app / Storybook.
+- Check the `Test Files` line, not only `Tests`: a browser file that fails to import is a failed
+  FILE with zero tests.
 - Never stub geometry or the platform there — if a browser test needs a mock, it belongs in `unit`.
 
 ## Test Utilities & Mocks

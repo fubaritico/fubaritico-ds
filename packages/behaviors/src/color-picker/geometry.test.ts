@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { pointFromRect } from './geometry.js'
+import { pointFromRect, resolveDirection } from './geometry.js'
 
 const RECT = { left: 100, top: 50, width: 200, height: 100 }
 
@@ -64,6 +64,50 @@ describe('pointFromRect', () => {
         x: 0.5,
         y: 0.5,
       })
+    })
+  })
+})
+
+describe('resolveDirection', () => {
+  /** A stand-in element: `:dir()` support and the closest `dir` attribute are injected. */
+  const element = (
+    dirMatches: boolean | 'unsupported',
+    attribute: string | null
+  ) => ({
+    matches: () => {
+      if (dirMatches === 'unsupported')
+        throw new SyntaxError("':dir(rtl)' is not a valid selector")
+      return dirMatches
+    },
+    closest: () =>
+      attribute === null ? null : { getAttribute: () => attribute },
+  })
+
+  describe('happy path', () => {
+    it('reads :dir(rtl)', () => {
+      expect(resolveDirection(element(true, null))).toBe('rtl')
+      expect(resolveDirection(element(false, 'rtl'))).toBe('ltr')
+    })
+  })
+
+  describe('variants', () => {
+    it('falls back to the closest dir attribute when :dir() is unsupported', () => {
+      expect(resolveDirection(element('unsupported', 'rtl'))).toBe('rtl')
+      expect(resolveDirection(element('unsupported', 'ltr'))).toBe('ltr')
+    })
+  })
+
+  // L3: N/A — any element has a direction.
+
+  describe('unmanaged errors', () => {
+    it('reads an unknown dir value as ltr', () => {
+      expect(resolveDirection(element('unsupported', 'auto'))).toBe('ltr')
+    })
+  })
+
+  describe('edge cases', () => {
+    it('defaults to ltr with no dir anywhere', () => {
+      expect(resolveDirection(element('unsupported', null))).toBe('ltr')
     })
   })
 })

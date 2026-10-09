@@ -214,6 +214,16 @@ export function autoToggleAttrs(ctx: AttrsContext): DomAttributes {
 }
 
 /**
+ * Attributes of the picker's root: a named group, so several pickers on one page are told apart.
+ *
+ * @param ctx - The service state.
+ * @returns DOM attributes.
+ */
+export function pickerAttrs(ctx: AttrsContext): DomAttributes {
+  return { role: 'group', 'aria-label': ctx.labels.picker }
+}
+
+/**
  * Attributes of a swatch showing the current value.
  *
  * @param ctx - The service state.

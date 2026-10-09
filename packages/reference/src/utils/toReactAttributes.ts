@@ -17,6 +17,19 @@ const BOOLEAN_ATTRIBUTES = new Set([
 ])
 
 /**
+ * DOM attribute names React spells differently (camelCase props). Anything not listed — `aria-*`,
+ * `data-*`, `role`, `id` — passes through verbatim.
+ */
+const REACT_NAMES: ReadonlyMap<string, string> = new Map([
+  ['tabindex', 'tabIndex'],
+  ['maxlength', 'maxLength'],
+  ['spellcheck', 'spellCheck'],
+  ['autocapitalize', 'autoCapitalize'],
+  ['autocomplete', 'autoComplete'],
+  ['readonly', 'readOnly'],
+])
+
+/**
  * Turns the DOM-spelled attributes a `@fubaritico/behaviors` service produces into React props.
  *
  * Services speak the DOM with presence semantics (`''` = on, `undefined` = omit) so every framework
@@ -30,8 +43,8 @@ export function toReactAttributes(attributes: DomAttributes): ReactAttributes {
   const props: ReactAttributes = {}
   for (const [name, value] of Object.entries(attributes)) {
     if (value === undefined) continue
-    if (BOOLEAN_ATTRIBUTES.has(name)) props[name] = true
-    else props[name === 'tabindex' ? 'tabIndex' : name] = value
+    const reactName = REACT_NAMES.get(name) ?? name
+    props[reactName] = BOOLEAN_ATTRIBUTES.has(name) ? true : value
   }
   return props
 }

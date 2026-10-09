@@ -1,19 +1,20 @@
 import clsx from 'clsx'
 import { useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
 
-import { createColorPickerService } from '@fubaritico/behaviors'
+import { createColorPickerService, resolveDirection } from '@fubaritico/behaviors'
 import {
   COLOR_PICKER_ROW_CLASS,
   colorPickerVariants,
 } from '@fubaritico/variants'
 
 import { useMergedRef } from '../../hooks'
+import { toReactAttributes } from '../../utils'
 
 import { ColorPickerArea } from './ColorPickerArea'
 import { ColorPickerAutoToggle } from './ColorPickerAutoToggle'
 import {
   ColorPickerContext,
-  useColorPickerSnapshot,
+  useColorPickerSelector,
 } from './ColorPickerContext'
 import { ColorPickerHexField } from './ColorPickerHexField'
 import { ColorPickerStatus } from './ColorPickerStatus'
@@ -21,7 +22,6 @@ import { ColorPickerSwatch } from './ColorPickerSwatch'
 import { ColorPickerAlpha, ColorPickerHue } from './ColorPickerTrack'
 
 import type {
-  ColorPickerDirection,
   ColorPickerLabels,
   ColorPickerOptions,
   ColorPickerService,
@@ -65,8 +65,9 @@ export interface ColorPickerProps
 }
 
 /**
- * Projects the root props onto service options. `value` is set only when given: the key's
- * presence is what makes the service controlled.
+ * Projects the root props onto service options. `value` is always passed: `undefined` means
+ * uncontrolled (the service reads `value !== undefined`), so a prop switching to `undefined`
+ * releases control.
  *
  * @param props - The props driving the service.
  * @returns The matching service options.
@@ -167,7 +168,6 @@ export function ColorPicker({
   const uid = useId()
   const rootRef = useRef<HTMLDivElement>(null)
   const mergedRef = useMergedRef(rootRef, ref)
-  const [dir, setDir] = useState<ColorPickerDirection>('ltr')
 
   const options = toServiceOptions({
     value,
@@ -199,16 +199,29 @@ export function ColorPicker({
     service.setOptions(options)
   })
 
-  // The direction lives in the DOM (`dir` on an ancestor), not in a prop.
+  // The direction lives in the DOM (`dir` on an ancestor), not in a prop: resolved by the service's
+  // helper at mount, and again whenever any `dir` attribute in the document changes.
   useLayoutEffect(() => {
-    const found = rootRef.current?.closest('[dir]')?.getAttribute('dir')
-    const next: ColorPickerDirection = found === 'rtl' ? 'rtl' : 'ltr'
-    setDir(next)
-    service.setOptions({ dir: next })
+    const root = rootRef.current
+    if (!root) return undefined
+    const sync = () => {
+      service.setOptions({ dir: resolveDirection(root) })
+    }
+    sync()
+    const observer = new MutationObserver(sync)
+    observer.observe(root.ownerDocument.documentElement, {
+      attributes: true,
+      attributeFilter: ['dir'],
+      subtree: true,
+    })
+    return () => {
+      observer.disconnect()
+    }
   }, [service])
 
-  const isDisabled = useColorPickerSnapshot(service).disabled
-  const contextValue = useMemo(() => ({ service, dir }), [service, dir])
+  // A slice, not the snapshot: the root must not re-render on every pointer move.
+  const isDisabled = useColorPickerSelector(service, (state) => state.disabled)
+  const contextValue = useMemo(() => ({ service }), [service])
 
   return (
     <ColorPickerContext value={contextValue}>
@@ -217,6 +230,7 @@ export function ColorPicker({
           colorPickerVariants({ disabled: isDisabled }),
           className
         )}
+        {...toReactAttributes(service.pickerAttrs())}
         {...rest}
         ref={mergedRef}
       >

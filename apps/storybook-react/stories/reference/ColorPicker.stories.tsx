@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { hsvaToHex } from '@fubaritico/behaviors'
+import { Card } from '@fubaritico/react/Card'
 import { ColorPicker } from '@fubaritico/react/ColorPicker'
 import { Typography } from '@fubaritico/react/Typography'
 
@@ -13,6 +14,16 @@ const meta = {
   title: 'Reference/ColorPicker',
   component: ColorPicker,
   tags: ['autodocs'],
+  // The panel is surface-less on purpose (a popover brings its own); inline, compose a Card.
+  decorators: [
+    (Story) => (
+      <Card variant="outline">
+        <Card.Body>
+          <Story />
+        </Card.Body>
+      </Card>
+    ),
+  ],
   argTypes: {
     nullable: { control: 'boolean' },
     alpha: { control: 'boolean' },

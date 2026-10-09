@@ -295,10 +295,10 @@ importers:
         specifier: workspace:*
         version: link:../shared
       '@fubaritico/styles':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../styles
       '@fubaritico/tokens':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../tokens
       '@testing-library/jest-dom':
         specifier: 'catalog:'
@@ -9861,7 +9861,7 @@ snapshots:
       '@vitest/mocker': 4.1.8(msw@2.8.3(@types/node@22.14.0)(typescript@5.7.2))(vite@6.3.4(@types/node@22.14.0)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))
       playwright: 1.63.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.8(@types/node@22.14.0)(@vitest/browser-playwright@4.1.8)(@vitest/coverage-v8@4.1.8)(jsdom@26.0.0)(msw@2.8.3(@types/node@22.14.0)(typescript@5.7.2))(vite@6.3.4(@types/node@22.14.0)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))
+      vitest: 4.1.8(@types/node@22.14.0)(@vitest/browser-playwright@4.1.8)(@vitest/coverage-v8@4.1.8)(jsdom@26.1.0)(msw@2.8.3(@types/node@22.14.0)(typescript@5.7.2))(vite@6.3.4(@types/node@22.14.0)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))
     transitivePeerDependencies:
       - bufferutil
       - msw
@@ -9875,7 +9875,7 @@ snapshots:
       '@vitest/mocker': 4.1.8(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.2))(vite@7.3.5(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))
       playwright: 1.63.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.8(@types/node@25.9.2)(@vitest/browser-playwright@4.1.8)(@vitest/coverage-v8@4.1.8)(jsdom@26.0.0)(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.2))(vite@7.3.5(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))
+      vitest: 4.1.8(@types/node@25.9.2)(@vitest/browser-playwright@4.1.8)(@vitest/coverage-v8@4.1.8)(jsdom@26.1.0)(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.2))(vite@7.3.5(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))
     transitivePeerDependencies:
       - bufferutil
       - msw
@@ -9905,7 +9905,7 @@ snapshots:
       pngjs: 7.0.0
       sirv: 3.0.2
       tinyrainbow: 3.1.0
-      vitest: 4.1.8(@types/node@22.14.0)(@vitest/browser-playwright@4.1.8)(@vitest/coverage-v8@4.1.8)(jsdom@26.0.0)(msw@2.8.3(@types/node@22.14.0)(typescript@5.7.2))(vite@6.3.4(@types/node@22.14.0)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))
+      vitest: 4.1.8(@types/node@22.14.0)(@vitest/browser-playwright@4.1.8)(@vitest/coverage-v8@4.1.8)(jsdom@26.1.0)(msw@2.8.3(@types/node@22.14.0)(typescript@5.7.2))(vite@6.3.4(@types/node@22.14.0)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))
       ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
@@ -9923,7 +9923,7 @@ snapshots:
       pngjs: 7.0.0
       sirv: 3.0.2
       tinyrainbow: 3.1.0
-      vitest: 4.1.8(@types/node@25.9.2)(@vitest/browser-playwright@4.1.8)(@vitest/coverage-v8@4.1.8)(jsdom@26.0.0)(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.2))(vite@7.3.5(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))
+      vitest: 4.1.8(@types/node@25.9.2)(@vitest/browser-playwright@4.1.8)(@vitest/coverage-v8@4.1.8)(jsdom@26.1.0)(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.2))(vite@7.3.5(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))
       ws: 8.21.0
     transitivePeerDependencies:
       - bufferutil
@@ -9961,9 +9961,9 @@ snapshots:
       obug: 2.1.2
       std-env: 4.1.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.8(@types/node@25.9.2)(@vitest/browser-playwright@4.1.8)(@vitest/coverage-v8@4.1.8)(jsdom@26.0.0)(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.2))(vite@7.3.5(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))
+      vitest: 4.1.8(@types/node@22.14.0)(@vitest/browser-playwright@4.1.8)(@vitest/coverage-v8@4.1.8)(jsdom@26.1.0)(msw@2.8.3(@types/node@22.14.0)(typescript@5.7.2))(vite@6.3.4(@types/node@22.14.0)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))
     optionalDependencies:
-      '@vitest/browser': 4.1.8(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.2))(vite@7.3.5(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))(vitest@4.1.8)
+      '@vitest/browser': 4.1.8(msw@2.8.3(@types/node@22.14.0)(typescript@5.7.2))(vite@6.3.4(@types/node@22.14.0)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0))(vitest@4.1.8)
 
   '@vitest/expect@3.2.4':
     dependencies:
@@ -13870,7 +13870,7 @@ snapshots:
   postcss-minify@1.2.0(postcss@8.5.3):
     dependencies:
       postcss: 8.5.3
-      postcss-selector-parser: 6.1.2
+      postcss-selector-parser: 7.1.1
       postcss-value-parser: 4.2.0
 
   postcss-nested@7.0.2(postcss@8.5.3):
@@ -15334,7 +15334,6 @@ snapshots:
       jsdom: 26.1.0
     transitivePeerDependencies:
       - msw
-    optional: true
 
   vitest@4.1.8(@types/node@25.9.2)(@vitest/browser-playwright@4.1.8)(@vitest/coverage-v8@4.1.8)(jsdom@26.0.0)(msw@2.8.3(@types/node@25.9.2)(typescript@5.7.2))(vite@7.3.5(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.29.2)(yaml@2.9.0)):
     dependencies:

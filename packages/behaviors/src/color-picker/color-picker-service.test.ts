@@ -174,6 +174,82 @@ describe('ColorPickerService', () => {
       })
     })
 
+    describe('adapter entry points (the service converts, adapters forward)', () => {
+      it('takes a track value in the track scale: hue in degrees, alpha in percent', () => {
+        const { service, onChangeComplete } = setup({ alpha: true })
+        service.setTrackValue('hue', 120, { complete: false })
+        service.setTrackValue('alpha', 25, { complete: false })
+        expect(onChangeComplete).not.toHaveBeenCalled()
+        service.settle()
+        expect(service.getState().value).toEqual({ ...BLUE, h: 120, a: 0.25 })
+        expect(service.setTrackValue('alpha', 50)).toBe(true)
+        expect(service.getState().color.a).toBe(0.5)
+      })
+
+      it('refuses an alpha track value when the alpha channel is off', () => {
+        const { service } = setup()
+        expect(service.setTrackValue('alpha', 10)).toBe(false)
+      })
+
+      it('takes an area axis value from an assistive technology as a settled change', () => {
+        const { service, onChangeComplete } = setup()
+        service.setAreaAxis('saturation', 30)
+        service.setAreaAxis('brightness', 90)
+        expect(service.getState().value).toEqual({ ...BLUE, s: 30, v: 90 })
+        expect(onChangeComplete).toHaveBeenCalledTimes(2)
+      })
+
+      it('toggles the automatic state and back to the last colour', () => {
+        const { service } = setup({ nullable: true })
+        expect(service.toggleAuto()).toBe(true)
+        expect(service.getState().isAuto).toBe(true)
+        expect(service.toggleAuto()).toBe(true)
+        expect(service.getState().value).toEqual(BLUE)
+      })
+
+      it('handles the hex field keys: Enter commits, Escape cancels, others pass', () => {
+        const { service } = setup()
+        service.setHexDraft('#ff0000')
+        const enter = key('Enter')
+        expect(service.handleHexKeydown(enter)).toBe(true)
+        expect(enter.preventDefault).toHaveBeenCalled()
+        expect(service.getState().hex).toBe('#ff0000')
+
+        service.setHexDraft('#12')
+        expect(service.handleHexKeydown(key('Escape'))).toBe(true)
+        expect(service.getState().hexDraft).toBe('#ff0000')
+        expect(service.handleHexKeydown(key('Escape'))).toBe(false)
+        expect(service.handleHexKeydown(key('a'))).toBe(false)
+      })
+
+      it('cancels a drag with Escape on the dragged surface only', () => {
+        const { service } = setup()
+        expect(service.handleKeydown('area', key('Escape'))).toBe(false)
+        service.startDrag('area', { x: 0, y: 1 })
+        expect(service.handleKeydown('hue', key('Escape'))).toBe(false)
+        const escape = key('Escape')
+        expect(service.handleKeydown('area', escape)).toBe(true)
+        expect(escape.preventDefault).toHaveBeenCalled()
+        expect(service.getState()).toMatchObject({
+          value: BLUE,
+          dragging: null,
+        })
+      })
+
+      it('names the root group and exposes the labels and the direction', () => {
+        const { service } = setup({
+          labels: { picker: 'Fill colour' },
+          dir: 'rtl',
+        })
+        expect(service.pickerAttrs()).toEqual({
+          role: 'group',
+          'aria-label': 'Fill colour',
+        })
+        expect(service.getLabels().automatic).toBe('Automatic')
+        expect(service.getState().dir).toBe('rtl')
+      })
+    })
+
     describe('keyboard', () => {
       it.each([
         ['ArrowRight', { s: 81 }],

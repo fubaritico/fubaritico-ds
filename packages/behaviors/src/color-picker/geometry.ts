@@ -31,3 +31,36 @@ export function pointFromRect(
   const y = clamp((clientY - rect.top) / rect.height, 0, 1)
   return { x: dir === 'rtl' ? 1 - x : x, y }
 }
+
+/**
+ * The part of an element `resolveDirection` reads — structural, so the package stays DOM-free.
+ */
+export interface DirectionSource {
+  /** `Element.matches`. */
+  matches: (selector: string) => boolean
+  /** `Element.closest`. */
+  closest: (
+    selector: string
+  ) => { getAttribute: (name: string) => string | null } | null
+}
+
+/**
+ * The text direction an element is laid out in: `:dir(rtl)` when the engine supports it (it
+ * follows the inherited `dir`), else the closest `dir` attribute. Adapters call it at mount and
+ * whenever a `dir` attribute changes, then hand the result to the service.
+ *
+ * @param element - The picker's root element.
+ * @returns `'rtl'` or `'ltr'`.
+ */
+export function resolveDirection(
+  element: DirectionSource
+): ColorPickerDirection {
+  try {
+    return element.matches(':dir(rtl)') ? 'rtl' : 'ltr'
+  } catch {
+    // An engine without `:dir()` throws a SyntaxError: fall back to the attribute.
+    return element.closest('[dir]')?.getAttribute('dir') === 'rtl'
+      ? 'rtl'
+      : 'ltr'
+  }
+}

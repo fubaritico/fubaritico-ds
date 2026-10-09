@@ -15,6 +15,6 @@
     "resolveJsonModule": true,
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src", "vitest.setup.ts"],
+  "include": ["src", "vitest.setup.ts", "vitest.browser.setup.ts", "vitest.browser.commands.ts", "vitest.browser.pointer.ts"],
   "exclude": ["node_modules", "dist"]
 }

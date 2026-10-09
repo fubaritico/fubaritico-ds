@@ -65,8 +65,42 @@ export const COLOR_PICKER_AREA_INPUT_CLASS = 'ui-color-picker__area-input'
 /** BEM element: a hue / alpha `Slider` inside the picker. */
 export const COLOR_PICKER_TRACK_CLASS = 'ui-color-picker__track'
 
+/**
+ * Resolves a hue / alpha track (`.ui-color-picker__track` + `--hue` / `--alpha`): the modifier picks
+ * the gradient the skin feeds to the `Slider` (mirrored in rtl by the skin).
+ *
+ * @param props - Track options.
+ * @param props.channel - `'hue'` or `'alpha'`.
+ * @returns The BEM class string.
+ */
+export const colorPickerTrackVariants = cva(COLOR_PICKER_TRACK_CLASS, {
+  variants: {
+    channel: {
+      hue: 'ui-color-picker__track--hue',
+      alpha: 'ui-color-picker__track--alpha',
+    },
+  },
+  defaultVariants: {
+    channel: 'hue',
+  },
+})
+
+/** Variant props inferred from {@link colorPickerTrackVariants}. */
+export type ColorPickerTrackVariantProps = VariantProps<
+  typeof colorPickerTrackVariants
+>
+
+/**
+ * Custom property the skin sets per track modifier (the hue ramp, the alpha ramp over a
+ * checkerboard) — handed to the `Slider` as its `trackImage`.
+ */
+export const COLOR_PICKER_TRACK_IMAGE_VAR = '--ui-color-picker-track-image'
+
 /** BEM element: a horizontal row of controls (swatch, hex field, automatic toggle). */
 export const COLOR_PICKER_ROW_CLASS = 'ui-color-picker__row'
+
+/** BEM element: the hex field's column (input + error message). */
+export const COLOR_PICKER_HEX_FIELD_CLASS = 'ui-color-picker__hex-field'
 
 /** BEM element: the hex text field (also wears the Input skin). */
 export const COLOR_PICKER_HEX_CLASS = 'ui-color-picker__hex'

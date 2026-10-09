@@ -61,6 +61,8 @@ export interface ColorPickerLabels {
   areaRoleDescription: string
   /** Error text shown when the hex draft is not a colour. */
   hexInvalid: string
+  /** The picker as a whole (its root group). */
+  picker: string
 }
 
 /**
@@ -140,4 +142,6 @@ export interface ColorPickerSnapshot {
   nullable: boolean
   /** Whether every change is blocked. */
   disabled: boolean
+  /** Text direction the pointer and arrow keys follow. */
+  dir: ColorPickerDirection
 }

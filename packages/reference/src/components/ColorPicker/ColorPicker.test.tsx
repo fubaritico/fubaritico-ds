@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createColorPickerService } from '@fubaritico/behaviors'
 
 import ColorPicker from './ColorPicker'
+import { useColorPickerController } from './ColorPickerContext'
 
 import type { ColorValue, HsvaColor } from './ColorPicker'
 
@@ -191,15 +192,81 @@ describe('ColorPicker', () => {
         return (
           <>
             <ColorPicker value={value} onChange={setValue} />
-            <output>{value === null ? 'none' : String(value.s)}</output>
+            <output aria-label="Saturation value">
+              {value === null ? 'none' : String(value.s)}
+            </output>
           </>
         )
       }
       render(<Controlled />)
       saturation().focus()
       await user.keyboard('{Home}')
-      expect(screen.getByText('0')).toBeInTheDocument()
+      expect(screen.getByRole('status', { name: 'Saturation value' })).toHaveTextContent('0')
       expect(hexField()).toHaveValue('#999999')
+    })
+
+    it('follows a controlled value changed by the parent', () => {
+      const { rerender } = render(<ColorPicker value={BLUE} />)
+      rerender(<ColorPicker value={{ h: 120, s: 100, v: 100, a: 1 }} />)
+      expect(hexField()).toHaveValue('#00ff00')
+      expect(swatch()).toHaveAccessibleName('vivid green')
+    })
+
+    it('uses injected labels and colour words', () => {
+      render(
+        <ColorPicker
+          defaultValue={BLUE}
+          nullable
+          labels={{ picker: 'Couleur du fond', hex: 'Hexadécimal', automatic: 'Auto' }}
+          describeColor={() => 'bleu'}
+        />
+      )
+      expect(screen.getByRole('group', { name: 'Couleur du fond' })).toBeInTheDocument()
+      expect(screen.getByRole('textbox', { name: 'Hexadécimal' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Auto' })).toHaveTextContent('Auto')
+      expect(swatch()).toHaveAccessibleName('bleu')
+    })
+
+    it('starts a null, non-nullable picker from the given placeholder', () => {
+      render(<ColorPicker defaultValue={null} placeholder={{ h: 0, s: 0, v: 100, a: 1 }} />)
+      expect(hexField()).toHaveValue('#ffffff')
+    })
+
+    it('names the panel as a group', () => {
+      render(<ColorPicker defaultValue={BLUE} />)
+      expect(screen.getByRole('group', { name: 'Color picker' })).toBeInTheDocument()
+    })
+
+    it('gives a custom part the snapshot and the service through the controller hook', async () => {
+      const user = userEvent.setup()
+      function Readout() {
+        const { state, service } = useColorPickerController()
+        return (
+          <button type="button" onClick={() => service.setColor({ h: 0, s: 100, v: 100, a: 1 })}>
+            {state.hex}
+          </button>
+        )
+      }
+      render(
+        <ColorPicker defaultValue={BLUE}>
+          <Readout />
+        </ColorPicker>
+      )
+      const readout = screen.getByRole('button', { name: BLUE_HEX })
+      await user.click(readout)
+      expect(readout).toHaveTextContent('#ff0000')
+    })
+
+    it('runs a consumer pointer handler first, and lets it prevent the drag', async () => {
+      const user = userEvent.setup()
+      const onChange = vi.fn()
+      render(
+        <ColorPicker defaultValue={BLUE} onChange={onChange}>
+          <ColorPicker.Area onPointerDown={(event) => event.preventDefault()} />
+        </ColorPicker>
+      )
+      await user.pointer({ keys: '[MouseLeft]', target: area(), coords: { clientX: 0, clientY: 0 } })
+      expect(onChange).not.toHaveBeenCalled()
     })
 
     it('accepts a custom arrangement of parts', () => {
@@ -281,6 +348,17 @@ describe('ColorPicker', () => {
         coords: { clientX: 0, clientY: 0 },
       })
       expect(onChange).not.toHaveBeenCalled()
+    })
+
+    it('clamps an out-of-range controlled value', () => {
+      render(<ColorPicker value={{ h: 400, s: 150, v: -10, a: 1 }} />)
+      expect(hexField()).toHaveValue('#000000')
+      expect(hue()).toHaveValue('360')
+    })
+
+    it('renders no automatic toggle on a picker that is not nullable', () => {
+      render(<ColorPicker defaultValue={BLUE} />)
+      expect(screen.queryByRole('button', { name: 'Automatic' })).toBeNull()
     })
 
     it('starts from the placeholder when a non-nullable picker gets a null default', () => {
