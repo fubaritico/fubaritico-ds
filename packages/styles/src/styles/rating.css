@@ -20,7 +20,7 @@
  *   2. Redefine a global token (e.g. `--color-rating-filled`) → re-skins every Rating.
  *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
  *
- * Values come from @fubaritico-ds/tokens. The skin is self-sufficient (own box-sizing + font-family)
+ * Values come from @fubaritico/tokens. The skin is self-sufficient (own box-sizing + font-family)
  * since the DS ships no global reset.
  */
 @layer ui.components {

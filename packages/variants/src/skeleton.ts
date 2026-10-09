@@ -7,7 +7,7 @@ export type SkeletonShape = 'rectangle' | 'circle' | 'line'
 
 /**
  * Resolves Skeleton shape/rounded props into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-skeleton`, `.ui-skeleton--circle`, …).
+ * (`@fubaritico/styles` → `.ui-skeleton`, `.ui-skeleton--circle`, …).
  *
  * Pure string output (framework-agnostic): consumed by the React reference and the
  * Stencil / Angular / Vue packages alike, none of which it couples to a framework.

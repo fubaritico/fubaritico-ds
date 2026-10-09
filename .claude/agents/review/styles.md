@@ -10,7 +10,7 @@ multi-framework, white-label design-system monorepo.
 
 The skin is **portable native CSS** in `packages/styles` (BEM, `@layer`, component-scoped CSS
 variables), consumed identically by React / Web Components / Angular / Vue. Theme palette/scales
-come from `@fubaritico-ds/tokens`. Variant→class mapping is done with CVA (e.g. `*.variants.ts`).
+come from `@fubaritico/tokens`. Variant→class mapping is done with CVA (e.g. `*.variants.ts`).
 Rules are sourced from the project skills `bem-structure` and ` audit-style`.
 
 Review the files provided against the rules below. Return ONLY a valid JSON array of findings. No

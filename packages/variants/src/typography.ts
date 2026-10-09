@@ -30,7 +30,7 @@ export type TypographyAlign =
 
 /**
  * Resolves Typography props into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-typography`, `.ui-typography--h1`, …).
+ * (`@fubaritico/styles` → `.ui-typography`, `.ui-typography--h1`, …).
  *
  * Pure string output (framework-agnostic). The skin sets size/weight/line-height from the semantic
  * `--typography-*` tokens; it never sets `color` (inherited from the parent).

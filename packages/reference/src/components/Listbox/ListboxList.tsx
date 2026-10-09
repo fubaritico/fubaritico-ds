@@ -1,8 +1,8 @@
 import clsx from 'clsx'
 
-import { listboxVariants } from '@fubaritico-ds/variants'
+import { listboxVariants } from '@fubaritico/variants'
 
-import type { ListboxVariant } from '@fubaritico-ds/variants'
+import type { ListboxVariant } from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
 /** Props for the visual listbox container. */

@@ -22,7 +22,7 @@ skinned with a painted box, an optional label and an optional error message.
 ## Import
 
 ```tsx
-import { Checkbox } from '@fubaritico-ds/reference/Checkbox'
+import { Checkbox } from '@fubaritico/react/Checkbox'
 ```
 
 ## Basic usage

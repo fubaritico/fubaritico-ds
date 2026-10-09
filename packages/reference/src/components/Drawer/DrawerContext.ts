@@ -1,8 +1,8 @@
 import { createContext, use } from 'react'
 
-import type { DrawerVariant } from '@fubaritico-ds/variants'
+import type { DrawerVariant } from '@fubaritico/variants'
 
-export type { DrawerSide, DrawerSize, DrawerVariant } from '@fubaritico-ds/variants'
+export type { DrawerSide, DrawerSize, DrawerVariant } from '@fubaritico/variants'
 
 /** Value shared by {@link Drawer} with its regions. */
 export interface DrawerContextValue {

@@ -23,7 +23,7 @@ legend line underneath. Purely presentational — it holds no state and runs no 
 ## Import
 
 ```tsx
-import { ProgressBar } from '@fubaritico-ds/reference/ProgressBar'
+import { ProgressBar } from '@fubaritico/react/ProgressBar'
 ```
 
 ## Basic usage

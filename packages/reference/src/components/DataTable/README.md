@@ -28,13 +28,13 @@ table instance in. This is the dependency-injection seam that keeps the grid fra
 ```tsx
 import DataTable, {
   DataTableVirtualized,
-} from '@fubaritico-ds/reference/DataTable'
+} from '@fubaritico/react/DataTable'
 // building blocks for your columns:
 import {
   BadgeStatusCell,
   DateCell,
   SimpleCell,
-} from '@fubaritico-ds/reference/DataTable'
+} from '@fubaritico/react/DataTable'
 ```
 
 ## Basic usage
@@ -50,7 +50,7 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table'
 import { useState } from 'react'
-import DataTable from '@fubaritico-ds/reference/DataTable'
+import DataTable from '@fubaritico/react/DataTable'
 
 function JobsTable({ data, columns }) {
   const [globalFilter, setGlobalFilter] = useState('')
@@ -160,4 +160,4 @@ the header is always sticky in virtualized mode).
 > visible below). The `<tfoot>` element is reserved for future column-summary rows, not pagination.
 
 > **Note** — this is a **reference/sandbox** component (`packages/reference`), not a shipped package.
-> The public deliverable will be the framework packages consuming `@fubaritico-ds/{tokens,styles}`.
+> The public deliverable will be the framework packages consuming `@fubaritico/{tokens,styles}`.

@@ -16,7 +16,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       # - name: Install Playwright browsers
-      #   run: pnpm --filter @fubaritico-ds/e2e exec playwright install --with-deps chromium
+      #   run: pnpm --filter @fubaritico/e2e exec playwright install --with-deps chromium
       #
       # - name: Run e2e
       #   run: pnpm test:e2e:ci

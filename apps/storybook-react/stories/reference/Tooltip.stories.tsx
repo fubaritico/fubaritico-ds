@@ -1,18 +1,15 @@
 import { useRef, useState } from 'react'
 
 // Tooltip — CSS-free subpath (no Tailwind leak in Storybook).
-import { Tooltip } from '@fubaritico-ds/reference/Tooltip'
+import { Tooltip } from '@fubaritico/react/Tooltip'
 
-import type {
-  TooltipPlacement,
-  TooltipProps,
-} from '@fubaritico-ds/reference/Tooltip'
+import type { TooltipPlacement, TooltipProps } from '@fubaritico/react/Tooltip'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 /**
  * Tooltip — a controlled, portalled floating bubble that anchors to a target (with viewport-aware
  * flipping) or to explicit coordinates. The parent owns `visible`; the skin owns the look
- * (`@fubaritico-ds/variants` → `.ui-tooltip` + `.ui-tooltip__arrow`).
+ * (`@fubaritico/variants` → `.ui-tooltip` + `.ui-tooltip__arrow`).
  */
 const meta = {
   title: 'Reference/Tooltip',

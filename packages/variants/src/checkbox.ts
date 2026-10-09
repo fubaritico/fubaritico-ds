@@ -7,7 +7,7 @@ export type CheckboxSize = 'sm' | 'md'
 
 /**
  * Resolves the Checkbox label-row props into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-checkbox`, `.ui-checkbox--sm`, `.ui-checkbox--invalid`).
+ * (`@fubaritico/styles` → `.ui-checkbox`, `.ui-checkbox--sm`, `.ui-checkbox--invalid`).
  *
  * Pure string output (framework-agnostic): consumed by the React reference and the
  * Stencil / Angular / Vue packages alike, none of which it couples to a framework.

@@ -1,20 +1,20 @@
 import clsx from 'clsx'
 import { useId, useLayoutEffect, useMemo, useState } from 'react'
 
-import { createTabsService } from '@fubaritico-ds/behaviors'
-import { TABS_CLASS } from '@fubaritico-ds/variants'
+import { createTabsService } from '@fubaritico/behaviors'
+import { TABS_CLASS } from '@fubaritico/variants'
 
 import { TabsContext } from './TabsContext'
 import { TabsList } from './TabsList'
 import { TabsPanel } from './TabsPanel'
 import { TabsTrigger } from './TabsTrigger'
 
-import type { TabsActivation, TabsOptions, TabsService } from '@fubaritico-ds/behaviors'
-import type { TabsVariant } from '@fubaritico-ds/variants'
+import type { TabsActivation, TabsOptions, TabsService } from '@fubaritico/behaviors'
+import type { TabsVariant } from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
-export type { TabsActivation } from '@fubaritico-ds/behaviors'
-export type { TabsVariant } from '@fubaritico-ds/variants'
+export type { TabsActivation } from '@fubaritico/behaviors'
+export type { TabsVariant } from '@fubaritico/variants'
 
 /** Props of the {@link Tabs} root. */
 export interface TabsProps extends ComponentProps<'div'> {
@@ -78,7 +78,7 @@ function toServiceOptions({
 /**
  * Tabs — switches between sibling panels, following the ARIA tabs pattern.
  *
- * A thin React adapter over `TabsService` (`@fubaritico-ds/behaviors`), which owns the registry,
+ * A thin React adapter over `TabsService` (`@fubaritico/behaviors`), which owns the registry,
  * selection, roving focus, keyboard and ARIA. Works controlled (`value` + `onValueChange`) or
  * uncontrolled (`defaultValue`). Composes `Tabs.List`, `Tabs.Trigger` and `Tabs.Panel`.
  *

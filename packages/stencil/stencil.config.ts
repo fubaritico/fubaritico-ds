@@ -32,7 +32,7 @@ export const config: Config = {
 
     // 4) Wrapper Angular généré (standalone, s'appuie sur dist-custom-elements).
     angularOutputTarget({
-      componentCorePackage: '@fubaritico-ds/stencil', // doit = "name" du package.json
+      componentCorePackage: '@fubaritico/stencil', // doit = "name" du package.json
       outputType: 'standalone',
       directivesProxyFile: './dist/angular/components.ts',
       directivesArrayFile: './dist/angular/index.ts',

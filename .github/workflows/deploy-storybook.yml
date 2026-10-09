@@ -23,7 +23,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       # - name: Build Storybook (web-component)
-      #   run: pnpm --filter @fubaritico-ds/storybook-web-component build
+      #   run: pnpm --filter @fubaritico/storybook-web-component build
       #
       # - name: Deploy to Netlify
       #   run: |

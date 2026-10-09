@@ -5,7 +5,7 @@ import { Fragment, useCallback, useEffect, useMemo } from 'react'
 import {
   UI_DATA_TABLE_CLASS,
   UI_DATA_TABLE_HEADER_STICKY_MODIFIER,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { Card } from '../Card'
 

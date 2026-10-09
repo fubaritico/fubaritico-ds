@@ -1,7 +1,7 @@
-# @fubaritico-ds/variants
+# @fubaritico/variants
 
 Framework-agnostic resolvers that turn a component's props into the BEM class names of
-`@fubaritico-ds/styles`.
+`@fubaritico/styles`.
 
 **Pure TypeScript: no React, no DOM.** That is the point — the React reference, and later the Web
 Component, Angular and Vue packages, all consume the same resolvers, so the variant-to-class
@@ -10,16 +10,16 @@ mapping exists once.
 ## Install
 
 ```bash
-pnpm add @fubaritico-ds/variants
+pnpm add @fubaritico/variants
 ```
 
-You rarely need it directly: `@fubaritico-ds/reference` depends on it. Install it when you render
+You rarely need it directly: `@fubaritico/react` depends on it. Install it when you render
 the markup yourself — in another framework, in a server template, anywhere.
 
 ## Use
 
 ```ts
-import { buttonVariants, PROGRESS_BAR_TRACK_CLASS } from '@fubaritico-ds/variants'
+import { buttonVariants, PROGRESS_BAR_TRACK_CLASS } from '@fubaritico/variants'
 
 buttonVariants({ variant: 'primary', size: 'lg' })
 // → 'ui-button ui-button--lg'

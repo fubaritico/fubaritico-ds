@@ -1,7 +1,7 @@
 import {
   UI_DATA_TABLE_HEADER_ROW_CLASS,
   tableRowVariants,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { cn } from '../../../utils'
 

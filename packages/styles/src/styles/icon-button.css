@@ -10,7 +10,7 @@
  * these single-class rules win the geometry props they override on `.ui-button`.
  *
  * Override surface: redefine `--ui-icon-button-size` on `.ui-icon-button`, or any reused
- * `--ui-button-*` var. Values come from @fubaritico-ds/tokens.
+ * `--ui-button-*` var. Values come from @fubaritico/tokens.
  */
 @layer ui.components {
   .ui-icon-button {

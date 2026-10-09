@@ -19,8 +19,8 @@ export { Button } from './components/Button'
 export type { ButtonProps } from './components/Button'
 // Router-coupled Button adapters are intentionally NOT re-exported here — import them from their
 // dedicated subpaths so the plain `Button` stays framework-free (presentational-first):
-//   import { LinkButton } from '@fubaritico-ds/reference/LinkButton'         (react-router)
-//   import { NextLinkButton } from '@fubaritico-ds/reference/NextLinkButton' (next)
+//   import { LinkButton } from '@fubaritico/react/LinkButton'         (react-router)
+//   import { NextLinkButton } from '@fubaritico/react/NextLinkButton' (next)
 
 export { Card } from './components/Card'
 export type {

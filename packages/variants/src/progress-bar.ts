@@ -17,7 +17,7 @@ export type ProgressBarSize = 'sm' | 'md' | 'lg'
 
 /**
  * Resolves the ProgressBar's variant/size props into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-progress-bar`, `.ui-progress-bar--success`, …).
+ * (`@fubaritico/styles` → `.ui-progress-bar`, `.ui-progress-bar--success`, …).
  *
  * Pure string output (framework-agnostic): consumed by the React reference and the
  * Stencil / Angular / Vue packages alike, none of which it couples to a framework.

@@ -9,12 +9,12 @@ import {
   SLIDER_TRACK_CLASS,
   SLIDER_TRACK_IMAGE_VAR,
   sliderVariants,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
-import type { SliderSize } from '@fubaritico-ds/variants'
+import type { SliderSize } from '@fubaritico/variants'
 import type { CSSProperties, ChangeEvent, ComponentProps } from 'react'
 
-export type { SliderSize } from '@fubaritico-ds/variants'
+export type { SliderSize } from '@fubaritico/variants'
 
 /** Percentage denominator — the thumb position is handed to the skin as a 0–100% length. */
 const PERCENT = 100

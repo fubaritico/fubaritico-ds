@@ -1,13 +1,13 @@
 // Import from the per-component subpath (CSS-free), NOT the package barrel
-// (`@fubaritico-ds/reference`) whose `import './styles.css'` side-effect pulls Tailwind preflight
+// (`@fubaritico/react`) whose `import './styles.css'` side-effect pulls Tailwind preflight
 // into the skin-based Storybook and strips the skin's box-model. See the /story skill.
-import { Rating } from '@fubaritico-ds/reference/Rating'
+import { Rating } from '@fubaritico/react/Rating'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 /**
  * Rating — a display-only, grayscale score readout migrated to the native BEM skin
- * (`@fubaritico-ds/styles`); the look/size resolve to BEM classes via `@fubaritico-ds/variants`. Two
+ * (`@fubaritico/styles`); the look/size resolve to BEM classes via `@fubaritico/variants`. Two
  * looks (`circle` ring, `stars` row); the score is read from the fill proportion AND the number, never
  * from colour — so the palette stays grayscale with no loss of information.
  */

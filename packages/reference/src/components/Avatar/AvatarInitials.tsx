@@ -1,4 +1,4 @@
-import { AVATAR_INITIALS_CLASS } from '@fubaritico-ds/variants'
+import { AVATAR_INITIALS_CLASS } from '@fubaritico/variants'
 
 import { useResolverCandidate } from './AvatarContext'
 

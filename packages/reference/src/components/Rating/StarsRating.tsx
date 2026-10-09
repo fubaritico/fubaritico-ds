@@ -3,12 +3,12 @@ import {
   RATING_STARS_FILL_CLASS,
   RATING_STARS_TRACK_CLASS,
   RATING_VALUE_CLASS,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { Icon } from '../Icon'
 
 import type { IconSize } from '../Icon'
-import type { RatingSize } from '@fubaritico-ds/variants'
+import type { RatingSize } from '@fubaritico/variants'
 import type { CSSProperties } from 'react'
 
 /**

@@ -1,5 +1,5 @@
 // Plain (CSS-free, router-free) subpath import — no Tailwind, no router in Storybook.
-import { Typography } from '@fubaritico-ds/reference/Typography'
+import { Typography } from '@fubaritico/react/Typography'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 

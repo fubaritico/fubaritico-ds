@@ -6,7 +6,7 @@ import type { ButtonProps } from './Button.types'
 
 /**
  * Button — the design-system plain `<button>` wearing the native skin. The primitive: zero
- * routing/data coupling. Variant/size resolve to BEM classes via `@fubaritico-ds/variants`;
+ * routing/data coupling. Variant/size resolve to BEM classes via `@fubaritico/variants`;
  * disabled/focus are handled by the skin (`:disabled`, `:focus-visible`).
  *
  * @param props - {@link ButtonProps}

@@ -1,11 +1,11 @@
 import { useState } from 'react'
 
-import { Button } from '@fubaritico-ds/reference/Button'
-import { Card } from '@fubaritico-ds/reference/Card'
-import { Modal } from '@fubaritico-ds/reference/Modal'
-import { Typography } from '@fubaritico-ds/reference/Typography'
+import { Button } from '@fubaritico/react/Button'
+import { Card } from '@fubaritico/react/Card'
+import { Modal } from '@fubaritico/react/Modal'
+import { Typography } from '@fubaritico/react/Typography'
 
-import type { CardFooterAlign } from '@fubaritico-ds/reference/Card'
+import type { CardFooterAlign } from '@fubaritico/react/Card'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 /** The shell centres its panel on its own; the panel only needs a width. */

@@ -1,5 +1,5 @@
-import { Tabs } from '@fubaritico-ds/reference/Tabs'
-import { Typography } from '@fubaritico-ds/reference/Typography'
+import { Tabs } from '@fubaritico/react/Tabs'
+import { Typography } from '@fubaritico/react/Typography'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 

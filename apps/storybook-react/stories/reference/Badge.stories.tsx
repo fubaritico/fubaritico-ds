@@ -1,13 +1,13 @@
 // Import from the per-component subpath (CSS-free), NOT the package barrel
-// (`@fubaritico-ds/reference`) whose `import './styles.css'` side-effect pulls Tailwind preflight
+// (`@fubaritico/react`) whose `import './styles.css'` side-effect pulls Tailwind preflight
 // into the skin-based Storybook and strips the skin's box-model. See the /story skill.
-import { Badge } from '@fubaritico-ds/reference/Badge'
+import { Badge } from '@fubaritico/react/Badge'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 /**
- * Badge — first component migrated to the native BEM skin (`@fubaritico-ds/styles`),
- * variant/size resolved by `@fubaritico-ds/variants`. Validates the whole chain visually.
+ * Badge — first component migrated to the native BEM skin (`@fubaritico/styles`),
+ * variant/size resolved by `@fubaritico/variants`. Validates the whole chain visually.
  */
 const meta = {
   title: 'Reference/Badge',

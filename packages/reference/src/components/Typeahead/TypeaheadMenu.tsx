@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 
-import { typeaheadMenuVariants } from '@fubaritico-ds/variants'
+import { typeaheadMenuVariants } from '@fubaritico/variants'
 
 import { ListboxList } from '../Listbox'
 import { Portal } from '../Portal'

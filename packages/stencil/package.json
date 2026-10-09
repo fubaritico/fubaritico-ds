@@ -1,5 +1,5 @@
 {
-  "name": "@fubaritico-ds/stencil",
+  "name": "@fubaritico/stencil",
   "version": "0.0.0",
   "private": true,
   "description": "Stencil Web Components sandbox — BEM-styled, overridable design system base. Generates React + Angular wrappers.",
@@ -51,7 +51,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitest/coverage-v8": "catalog:",
-    "@fubaritico-ds/tokens": "workspace:*",
+    "@fubaritico/tokens": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:",
     "vitest": "catalog:"

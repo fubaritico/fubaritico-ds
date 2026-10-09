@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { UI_DATA_TABLE_HEAD_STRONG_MODIFIER } from '@fubaritico-ds/variants'
+import { UI_DATA_TABLE_HEAD_STRONG_MODIFIER } from '@fubaritico/variants'
 
 import { TableHead } from '../../primitives/TableHead'
 

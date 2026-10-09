@@ -8,7 +8,7 @@ import {
   IMAGE_CLASS,
   IMAGE_FALLBACK_CLASS,
   imageVariants,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { Icon } from '../Icon'
 

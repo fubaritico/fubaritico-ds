@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { DRAWER_HEADER_CLASS, DRAWER_TITLE_CLASS } from '@fubaritico-ds/variants'
+import { DRAWER_HEADER_CLASS, DRAWER_TITLE_CLASS } from '@fubaritico/variants'
 
 import { IconButton } from '../IconButton'
 

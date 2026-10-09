@@ -7,7 +7,7 @@ export type InputSize = 'sm' | 'md' | 'lg'
 
 /**
  * Resolves the Input control's size/state props into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-input`, `.ui-input--sm`, …).
+ * (`@fubaritico/styles` → `.ui-input`, `.ui-input--sm`, …).
  *
  * Pure string output (framework-agnostic): consumed by the React reference and the
  * Stencil / Angular / Vue packages alike, none of which it couples to a framework.
@@ -50,7 +50,7 @@ export type InputVariantProps = VariantProps<typeof inputVariants>
 
 /**
  * Resolves the icon-positioning wrapper's size into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-input-affix`, `.ui-input-affix--sm`, …). Only rendered when the
+ * (`@fubaritico/styles` → `.ui-input-affix`, `.ui-input-affix--sm`, …). Only rendered when the
  * Input carries a trailing icon; the size only adjusts the icon inset.
  *
  * @param props - Affix options (all optional — CVA defaults apply).
@@ -75,7 +75,7 @@ export type InputAffixVariantProps = VariantProps<typeof inputAffixVariants>
 
 /**
  * Resolves the field layer's size into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-field`, `.ui-field--sm`, …). The size only sets the label/message
+ * (`@fubaritico/styles` → `.ui-field`, `.ui-field--sm`, …). The size only sets the label/message
  * font-size vars; the slot element classes are static (see below).
  *
  * @param props - Field options (all optional — CVA defaults apply).

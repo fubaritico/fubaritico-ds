@@ -5,4 +5,4 @@ export type {
   CardSlotProps,
   CardFooterProps,
 } from './Card'
-export type { CardFooterAlign } from '@fubaritico-ds/variants'
+export type { CardFooterAlign } from '@fubaritico/variants'

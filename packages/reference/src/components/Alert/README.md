@@ -23,7 +23,7 @@ control. Presentational and stateless.
 ## Import
 
 ```tsx
-import { Alert } from '@fubaritico-ds/reference/Alert'
+import { Alert } from '@fubaritico/react/Alert'
 ```
 
 ## Basic usage

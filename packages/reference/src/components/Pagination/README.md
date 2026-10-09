@@ -19,7 +19,7 @@ five page buttons, then next / last arrows.
 ## Import
 
 ```tsx
-import { Pagination } from '@fubaritico-ds/reference/Pagination'
+import { Pagination } from '@fubaritico/react/Pagination'
 ```
 
 ## Basic usage

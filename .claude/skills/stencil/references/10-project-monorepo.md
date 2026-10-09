@@ -51,7 +51,7 @@ export const config: Config = {
     },
     reactOutputTarget({ outDir: './dist/react/' }),
     angularOutputTarget({
-      componentCorePackage: '@fubaritico-ds/stencil',
+      componentCorePackage: '@fubaritico/stencil',
       outputType: 'standalone',
       directivesProxyFile: './dist/angular/components.ts',
       directivesArrayFile: './dist/angular/index.ts',
@@ -64,7 +64,7 @@ export const config: Config = {
 ## Monorepo integration steps
 
 1. **Workspace** — confirm `packages/*` is in `pnpm-workspace.yaml` (it is). The Stencil package
-   joins as `@fubaritico-ds/stencil`. Its Rollup/TS toolchain is independent of the root Vite.
+   joins as `@fubaritico/stencil`. Its Rollup/TS toolchain is independent of the root Vite.
 2. **ESLint override (not exclude)** — Stencil's JSX is **not** React JSX. Stencil **is the subject of
    this project**, so it must be linted by the root `pnpm lint`. Add a dedicated override block to the
    **root** `eslint.config.js` (`{ files: ['packages/stencil/**/*.{ts,tsx}'], ... }`) that sets the `h`
@@ -79,7 +79,7 @@ export const config: Config = {
 4. **Lerna / root verifs** — Stencil has its own `build`/`test`/`type-check` scripts. Wire them into the
    root verifs (`type-check`, `test`, `build`) so the pre-commit gate covers Stencil. Its own
    compiler type-checks during `stencil build`; `stencil test --spec` runs its Jest-based specs.
-5. **Naming** — package name `@fubaritico-ds/stencil`; component tags prefixed `ui-` to mirror the
+5. **Naming** — package name `@fubaritico/stencil`; component tags prefixed `ui-` to mirror the
    `packages/reference` design system being ported.
 
 ## Conventions to keep (from CLAUDE.md)

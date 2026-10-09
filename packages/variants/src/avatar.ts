@@ -16,7 +16,7 @@ export const AVATAR_ICON_CLASS = 'ui-avatar__icon'
 
 /**
  * Resolves Avatar size props into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-avatar`, `.ui-avatar--sm`, …).
+ * (`@fubaritico/styles` → `.ui-avatar`, `.ui-avatar--sm`, …).
  *
  * Pure string output (framework-agnostic): consumed by the React reference and the
  * Stencil / Angular / Vue packages alike, none of which it couples to a framework.

@@ -1,8 +1,8 @@
 import { createContext, use } from 'react'
 
-import type { BottomSheetVariant } from '@fubaritico-ds/variants'
+import type { BottomSheetVariant } from '@fubaritico/variants'
 
-export type { BottomSheetVariant } from '@fubaritico-ds/variants'
+export type { BottomSheetVariant } from '@fubaritico/variants'
 
 /** Value shared by {@link BottomSheet} with its regions. */
 export interface BottomSheetContextValue {

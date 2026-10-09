@@ -77,8 +77,8 @@ consomme comme **v1 temporaire**, décision assumée du dev ; les chemins pourro
 
 ## Décisions verrouillées
 
-Lerna + Nx (no Turbo) ; `reference` = sandbox **NON livrable** ; skin = `@fubaritico-ds/styles` ; CVA
-resolvers in `@fubaritico-ds/variants` (pur TS, React/DOM-free) ; web-only. Stateful/compound → skill
+Lerna + Nx (no Turbo) ; `reference` = sandbox **NON livrable** ; skin = `@fubaritico/styles` ; CVA
+resolvers in `@fubaritico/variants` (pur TS, React/DOM-free) ; web-only. Stateful/compound → skill
 `/state-storage`. Phase 2 (dev) = 9 composants neufs + package `icons`. Phase 3 = finir Stencil → wire `build:packages`.
 
 ## Artefacts d'analyse (ce soir, persistés)

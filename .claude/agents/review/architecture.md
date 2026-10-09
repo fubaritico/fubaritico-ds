@@ -51,7 +51,7 @@ If a finding depends on library/API behavior you are not 100% sure about, set `"
 - **Files**: All (except `packages/tokens/**`)
 - **Check**: No raw hex colors, raw px for spacing/sizing/font; no Tailwind arbitrary values
   (`ui:bg-[#1a1a2e]`, `ui:text-[14px]`, `ui:p-[12px]`)
-- **Required**: use design tokens / theme variables (`@fubaritico-ds/tokens`)
+- **Required**: use design tokens / theme variables (`@fubaritico/tokens`)
 
 ### ARCH-003: Editing generated artefacts
 
@@ -73,7 +73,7 @@ If a finding depends on library/API behavior you are not 100% sure about, set `"
 
 ### ARCH-006: package.json missing required fields
 
-- **Check**: `name` (scope `@fubaritico-ds/`), `exports`, `types`
+- **Check**: `name` (scope `@fubaritico/`), `exports`, `types`
 - **Stencil**: `exports` for `.`/`./components/*`/`./loader`; `dist-custom-elements` with `externalRuntime: false`
 
 ## Medium Violations

@@ -7,15 +7,15 @@ import {
   ALERT_ICON_CLASS,
   ALERT_TITLE_CLASS,
   alertVariants,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { Icon } from '../Icon'
 import { IconButton } from '../IconButton'
 
-import type { AlertVariant } from '@fubaritico-ds/variants'
+import type { AlertVariant } from '@fubaritico/variants'
 import type { ComponentProps, ReactNode } from 'react'
 
-export type { AlertVariant } from '@fubaritico-ds/variants'
+export type { AlertVariant } from '@fubaritico/variants'
 
 /** Pixel size of the leading intent glyph. */
 const ICON_SIZE = 20

@@ -7,7 +7,7 @@ export type SpinnerSize = 'sm' | 'md' | 'lg'
 
 /**
  * Resolves Spinner size props into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-spinner`, `.ui-spinner--sm`, …).
+ * (`@fubaritico/styles` → `.ui-spinner`, `.ui-spinner--sm`, …).
  *
  * Pure string output (framework-agnostic): consumed by the React reference and the
  * Stencil / Angular / Vue packages alike, none of which it couples to a framework.

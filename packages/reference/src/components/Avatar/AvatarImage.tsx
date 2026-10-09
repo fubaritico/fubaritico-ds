@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 
-import { AVATAR_IMAGE_CLASS } from '@fubaritico-ds/variants'
+import { AVATAR_IMAGE_CLASS } from '@fubaritico/variants'
 
 import { useResolverCandidate } from './AvatarContext'
 

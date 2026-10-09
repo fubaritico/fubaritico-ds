@@ -43,7 +43,7 @@ export interface NotifyHostOnHmrOptions {
  *
  * ```typescript
  * // In remote's vite.config.ts
- * import { notifyHostOnHmr } from '@fubaritico-ds/shared'
+ * import { notifyHostOnHmr } from '@fubaritico/shared'
  *
  * export default defineConfig({
  *   plugins: [

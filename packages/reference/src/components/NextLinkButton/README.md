@@ -18,7 +18,7 @@ link.
 ## Import
 
 ```tsx
-import { NextLinkButton } from '@fubaritico-ds/reference/NextLinkButton'
+import { NextLinkButton } from '@fubaritico/react/NextLinkButton'
 ```
 
 ## Basic usage

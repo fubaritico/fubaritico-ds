@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useMemo } from 'react'
 
-import { drawerVariants } from '@fubaritico-ds/variants'
+import { drawerVariants } from '@fubaritico/variants'
 
 import { useNativeDialog } from '../../hooks'
 
@@ -14,14 +14,14 @@ import type {
   DrawerSide,
   DrawerSize,
   DrawerVariant,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
 export type {
   DrawerSide,
   DrawerSize,
   DrawerVariant,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 /** Props of the {@link Drawer} root. */
 export interface DrawerProps

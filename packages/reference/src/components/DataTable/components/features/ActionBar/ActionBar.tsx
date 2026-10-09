@@ -5,7 +5,7 @@ import {
   UI_DATA_TABLE_TOOLBAR_CLASS,
   UI_DATA_TABLE_TOOLBAR_SEARCH_CLASS,
   UI_DATA_TABLE_TOOLBAR_STICKY_MODIFIER,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { Input } from '../../../../Input'
 

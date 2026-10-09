@@ -1,6 +1,6 @@
 /**
  * Shared Tailwind CSS theme configuration
- * Generated from @fubaritico-ds/tokens via Style Dictionary
+ * Generated from @fubaritico/tokens via Style Dictionary
  * These tokens will be used by host and remotes
  *
  * All tokens are defined in packages/tokens and compiled to this @theme format.
@@ -10,7 +10,7 @@
 /* Fonts must be imported before tokens */
 @import '../fonts/fonts.css';
 
-@import '@fubaritico-ds/tokens/tailwind';
+@import '@fubaritico/tokens/tailwind';
 
 /* Custom utilities */
 @layer utilities {

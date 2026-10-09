@@ -25,7 +25,7 @@ content changes.
 ## Import
 
 ```tsx
-import { BottomSheet } from '@fubaritico-ds/reference/BottomSheet'
+import { BottomSheet } from '@fubaritico/react/BottomSheet'
 ```
 
 ## Basic usage

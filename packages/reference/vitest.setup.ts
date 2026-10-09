@@ -1,4 +1,4 @@
 import '@testing-library/jest-dom/vitest'
-import { setupBrowserMocks } from '@fubaritico-ds/shared/mocks'
+import { setupBrowserMocks } from '@fubaritico/shared/mocks'
 
 setupBrowserMocks()

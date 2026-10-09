@@ -1,7 +1,7 @@
 import {
   UI_DATA_TABLE_SCROLL_CLASS,
   UI_DATA_TABLE_TABLE_CLASS,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { cn } from '../../../utils'
 

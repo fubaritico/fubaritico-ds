@@ -9,12 +9,12 @@ import {
   inputAffixVariants,
   inputFieldVariants,
   inputVariants,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { Icon } from '../Icon'
 
 import type { IconName, IconSize } from '../Icon'
-import type { InputSize } from '@fubaritico-ds/variants'
+import type { InputSize } from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
 export type { InputSize }

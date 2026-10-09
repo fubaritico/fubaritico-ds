@@ -1,4 +1,4 @@
-# @fubaritico-ds/behaviors
+# @fubaritico/behaviors
 
 Framework-agnostic component behaviour: pure functions and state machines.
 
@@ -10,7 +10,7 @@ rendering anything.
 ## Install
 
 ```bash
-pnpm add @fubaritico-ds/behaviors
+pnpm add @fubaritico/behaviors
 ```
 
 ## Tabs
@@ -20,7 +20,7 @@ uncontrolled selection, roving focus, keyboard (APG tabs pattern), ARIA attribut
 adapter only renders and wires lifecycles; it never computes an attribute itself.
 
 ```ts
-import { createTabsService } from '@fubaritico-ds/behaviors'
+import { createTabsService } from '@fubaritico/behaviors'
 
 const tabs = createTabsService({ uid: 'settings', defaultActiveId: 'profile' })
 const unregister = tabs.register({ id: 'profile' }) // returns its own cleanup
@@ -57,7 +57,7 @@ tabs.triggerAttrs('billing') // → { role: 'tab', 'aria-selected': 'true', tabi
 Conversions between HSVA, RGBA, HSLA and hex, with no colour dependency.
 
 ```ts
-import { hexToRgba, hsvaToHex, rgbaToHsva } from '@fubaritico-ds/behaviors'
+import { hexToRgba, hsvaToHex, rgbaToHsva } from '@fubaritico/behaviors'
 
 hsvaToHex({ h: 210, s: 88, v: 82, a: 1 }) // → '#1975d1'
 hexToRgba('#f008') // → { r: 255, g: 0, b: 0, a: 0.53 }

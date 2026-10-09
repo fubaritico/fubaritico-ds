@@ -1,4 +1,4 @@
-import { UI_DATA_TABLE_CELL_CLASS } from '@fubaritico-ds/variants'
+import { UI_DATA_TABLE_CELL_CLASS } from '@fubaritico/variants'
 
 import { cn } from '../../../utils'
 

@@ -10,11 +10,11 @@ import {
   CHECKBOX_MESSAGE_CLASS,
   CHECKBOX_MESSAGE_ERROR_CLASS,
   checkboxVariants,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { Icon } from '../Icon'
 
-import type { CheckboxSize } from '@fubaritico-ds/variants'
+import type { CheckboxSize } from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
 export type { CheckboxSize }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-import { Alert } from '@fubaritico-ds/reference/Alert'
-import { Button } from '@fubaritico-ds/reference/Button'
+import { Alert } from '@fubaritico/react/Alert'
+import { Button } from '@fubaritico/react/Button'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 

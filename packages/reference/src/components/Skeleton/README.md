@@ -21,7 +21,7 @@ loads. Presentational only, no state of its own; you size it to match the conten
 ## Import
 
 ```tsx
-import { Skeleton } from '@fubaritico-ds/reference/Skeleton'
+import { Skeleton } from '@fubaritico/react/Skeleton'
 ```
 
 ## Basic usage

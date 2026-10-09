@@ -1,8 +1,8 @@
 /**
- * @fubaritico-ds/styles — portable native skin (barrel).
+ * @fubaritico/styles — portable native skin (barrel).
  *
  * The theme palette/scales (--color-*, --spacing-*, --radius-*, --font-*) come from
- * @fubaritico-ds/tokens, loaded SEPARATELY by the consumer (decoupled theme vs skin).
+ * @fubaritico/tokens, loaded SEPARATELY by the consumer (decoupled theme vs skin).
  *
  * Layer order matters: the skin lives in `ui.components`, so any UNLAYERED consumer rule
  * (e.g. `.ui-badge { ... }`) wins over the skin without specificity wars or !important.

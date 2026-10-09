@@ -1,10 +1,10 @@
 import { useState } from 'react'
 
-import { Button } from '@fubaritico-ds/reference/Button'
-import { Drawer } from '@fubaritico-ds/reference/Drawer'
-import { Typography } from '@fubaritico-ds/reference/Typography'
+import { Button } from '@fubaritico/react/Button'
+import { Drawer } from '@fubaritico/react/Drawer'
+import { Typography } from '@fubaritico/react/Typography'
 
-import type { DrawerSide, DrawerSize } from '@fubaritico-ds/reference/Drawer'
+import type { DrawerSide, DrawerSize } from '@fubaritico/react/Drawer'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 interface DemoProps {

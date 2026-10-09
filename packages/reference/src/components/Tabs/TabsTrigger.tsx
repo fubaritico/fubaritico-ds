@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useEffect, useLayoutEffect, useRef } from 'react'
 
-import { tabsTriggerVariants } from '@fubaritico-ds/variants'
+import { tabsTriggerVariants } from '@fubaritico/variants'
 
 import { useMergedRef } from '../../hooks'
 import { toReactAttributes } from '../../utils'

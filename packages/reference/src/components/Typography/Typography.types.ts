@@ -1,7 +1,7 @@
 import type {
   TypographyAlign,
   TypographyVariant,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 import type { ComponentProps, ElementType } from 'react'
 
 /**

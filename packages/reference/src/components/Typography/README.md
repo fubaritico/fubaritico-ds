@@ -18,7 +18,7 @@ inherited from the parent).
 ## Import
 
 ```tsx
-import { Typography } from '@fubaritico-ds/reference/Typography'
+import { Typography } from '@fubaritico/react/Typography'
 ```
 
 ## Basic usage

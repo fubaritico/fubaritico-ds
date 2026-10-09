@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
-import { renderWithRouter } from '@fubaritico-ds/shared/test-utils'
+import { renderWithRouter } from '@fubaritico/shared/test-utils'
 
 import { LinkButton } from './LinkButton'
 

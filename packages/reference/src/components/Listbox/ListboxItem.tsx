@@ -1,8 +1,8 @@
 import clsx from 'clsx'
 
-import { listboxItemVariants } from '@fubaritico-ds/variants'
+import { listboxItemVariants } from '@fubaritico/variants'
 
-import type { ListboxItemState, ListboxVariant } from '@fubaritico-ds/variants'
+import type { ListboxItemState, ListboxVariant } from '@fubaritico/variants'
 import type { ComponentProps, ReactNode } from 'react'
 
 /** Props for the visual listbox item. */

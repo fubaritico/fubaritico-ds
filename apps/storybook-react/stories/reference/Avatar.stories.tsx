@@ -1,8 +1,8 @@
 // Import from the per-component subpath (CSS-free), NOT the package barrel
-// (`@fubaritico-ds/reference`) whose `import './styles.css'` side-effect pulls Tailwind preflight
+// (`@fubaritico/react`) whose `import './styles.css'` side-effect pulls Tailwind preflight
 // into the skin-based Storybook and strips the skin's box-model. See the /story skill.
-import { Avatar } from '@fubaritico-ds/reference/Avatar'
-import { Spinner } from '@fubaritico-ds/reference/Spinner'
+import { Avatar } from '@fubaritico/react/Avatar'
+import { Spinner } from '@fubaritico/react/Spinner'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
@@ -11,7 +11,7 @@ const BROKEN_SRC = 'https://invalid.example/nope.jpg'
 
 /**
  * Avatar — compound, headless-style media slot migrated to the native BEM skin
- * (`@fubaritico-ds/styles`). Declare ordered candidates inside `Avatar.Fallback`; the resolution
+ * (`@fubaritico/styles`). Declare ordered candidates inside `Avatar.Fallback`; the resolution
  * resolver renders the first viable one (image → initials → icon), blocking on a loading image.
  */
 const meta = {

@@ -7,34 +7,56 @@ what ships, what does not, and the rules that are not guessable from the types.
 
 Five packages. Four carry code, one is pure CSS.
 
-| Package                    | What it is                                                   | Why you need it                                                                                                   |
-| -------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| `@fubaritico-ds/tokens`    | Design tokens → CSS custom properties, plus JS/TS objects    | Every value the skin reads. **Required.**                                                                         |
-| `@fubaritico-ds/styles`    | The native BEM skin: plain CSS in `@layer`, no framework     | How the components look. **Required.**                                                                            |
-| `@fubaritico-ds/variants`  | Framework-agnostic CVA resolvers (pure TS, no React, no DOM) | Pulled in by `reference`; install directly only if you render the BEM classes yourself                            |
-| `@fubaritico-ds/behaviors` | Component behaviour services (pure TS, no React, no DOM)     | Pulled in by `reference`; use directly to drive a component from outside, or to build another framework's adapter |
-| `@fubaritico-ds/reference` | The React components                                         | **Required** for React.                                                                                           |
+| Package                 | What it is                                                   | Why you need it                                                                                                   |
+| ----------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `@fubaritico/tokens`    | Design tokens → CSS custom properties, plus JS/TS objects    | Every value the skin reads. **Required.**                                                                         |
+| `@fubaritico/styles`    | The native BEM skin: plain CSS in `@layer`, no framework     | How the components look. **Required.**                                                                            |
+| `@fubaritico/variants`  | Framework-agnostic CVA resolvers (pure TS, no React, no DOM) | Pulled in by `reference`; install directly only if you render the BEM classes yourself                            |
+| `@fubaritico/behaviors` | Component behaviour services (pure TS, no React, no DOM)     | Pulled in by `reference`; use directly to drive a component from outside, or to build another framework's adapter |
+| `@fubaritico/react`     | The React components                                         | **Required** for React.                                                                                           |
 
 There is **no Tailwind anywhere** in these packages, and none is required of you.
+
+## Installing from GitHub Packages
+
+The packages live on **GitHub Packages** under the `@fubaritico` scope (no tarballs, no overrides).
+GitHub requires a token **even to install public packages**, so two things on the consumer side:
+
+```ini
+# .npmrc at the consumer's root (committed)
+@fubaritico:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+```
+
+- **Locally**: a GitHub personal access token (classic) with `read:packages`, exported as
+  `NODE_AUTH_TOKEN` (or put in your user `~/.npmrc` — never commit it).
+- **In CI** (GitHub Actions): `NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}` works once the package
+  settings grant the consuming repository read access; otherwise use a PAT secret.
+
+```bash
+pnpm add @fubaritico/tokens @fubaritico/styles @fubaritico/react
+```
+
+Every package carries the **same version** (they are released together): upgrade them together.
 
 ## Wiring it up
 
 Load the CSS once, at your application entry, in this order:
 
 ```ts
-import '@fubaritico-ds/tokens/css' // 1. the variables the skin reads
-import '@fubaritico-ds/styles' // 2. the skin itself
+import '@fubaritico/tokens/css' // 1. the variables the skin reads
+import '@fubaritico/styles' // 2. the skin itself
 ```
 
 Order matters: the skin resolves `var(--color-*)`, `var(--spacing-*)` and friends from the tokens
 sheet. Then import components by their own subpath:
 
 ```tsx
-import { Button } from '@fubaritico-ds/reference/Button'
-import { Drawer } from '@fubaritico-ds/reference/Drawer'
+import { Button } from '@fubaritico/react/Button'
+import { Drawer } from '@fubaritico/react/Drawer'
 ```
 
-The package barrel (`@fubaritico-ds/reference`) works too and re-exports everything, but the
+The package barrel (`@fubaritico/react`) works too and re-exports everything, but the
 subpath keeps your bundle honest.
 
 > **The components import no CSS of their own.** Nothing styles itself by side effect: forget step
@@ -128,7 +150,7 @@ wins**, with no specificity war and no `!important`:
 Every shipped component carries its own README **inside the package**:
 
 ```
-node_modules/@fubaritico-ds/reference/dist/components/<Name>/README.md
+node_modules/@fubaritico/react/dist/components/<Name>/README.md
 ```
 
 Each one follows the same plan — identity, capabilities, import, basic usage, variants, edge cases,

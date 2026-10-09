@@ -12,7 +12,7 @@ icon-fitting shape. `Button` itself is never modified.
 - **Sizes** — `sm`, `md`, `lg` → a square 32 / 40 / 48 px button; the icon size tracks it automatically
   (reuses Button's icon-size map: 16 / 20 / 24 px).
 - **Circular icon-fitting shape** — square box, `border-radius: full`, zero padding, centered glyph,
-  added via `@fubaritico-ds/variants` (`.ui-icon-button`) **mixed onto** `.ui-button`.
+  added via `@fubaritico/variants` (`.ui-icon-button`) **mixed onto** `.ui-button`.
 - **Native button behaviour** — forwards every `<button>` attribute (`type`, `disabled`, `onClick`,
   `form`, `ref`, …). `disabled` and `:focus-visible` are styled by the reused Button skin.
 - **Required accessible name** — `aria-label` is mandatory (the icon is decorative / `aria-hidden`).
@@ -20,7 +20,7 @@ icon-fitting shape. `Button` itself is never modified.
 ## Import
 
 ```tsx
-import { IconButton } from '@fubaritico-ds/reference/IconButton'
+import { IconButton } from '@fubaritico/react/IconButton'
 ```
 
 ## Basic usage

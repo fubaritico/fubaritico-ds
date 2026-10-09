@@ -1,5 +1,5 @@
 {
-  "name": "@fubaritico-ds/storybook-react",
+  "name": "@fubaritico/storybook-react",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -10,10 +10,10 @@
     "lint": "eslint .storybook stories"
   },
   "dependencies": {
-    "@fubaritico-ds/reference": "workspace:*",
-    "@fubaritico-ds/shared": "workspace:*",
-    "@fubaritico-ds/styles": "workspace:*",
-    "@fubaritico-ds/tokens": "workspace:*"
+    "@fubaritico/react": "workspace:*",
+    "@fubaritico/shared": "workspace:*",
+    "@fubaritico/styles": "workspace:*",
+    "@fubaritico/tokens": "workspace:*"
   },
   "devDependencies": {
     "@storybook/addon-docs": "catalog:",

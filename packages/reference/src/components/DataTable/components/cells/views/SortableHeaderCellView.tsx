@@ -3,7 +3,7 @@ import {
   UI_DATA_TABLE_HEAD_LABEL_CLASS,
   UI_DATA_TABLE_SEPARATOR_CLASS,
   UI_DATA_TABLE_SORT_TOGGLE_CLASS,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { useIsTextTruncated } from '../../../hooks'
 import { SORT_DIRECTION_TO_ARIA } from '../../../utils'

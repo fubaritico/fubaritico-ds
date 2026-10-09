@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { SORT_ARROWS_CLASS, sortArrowVariants } from '@fubaritico-ds/variants'
+import { SORT_ARROWS_CLASS, sortArrowVariants } from '@fubaritico/variants'
 
 import { Icon } from '../../../../Icon'
 import { SORT_DIRECTION_TO_ARIA } from '../../../utils'

@@ -13,7 +13,7 @@ wiring and keyboard handling belong to the composer (`Menu`, `Typeahead`).
   `isActive` wins over `isSelected`; a `disabled` item shows neither highlight, only the dimming.
 - **Colour schemes** — `variant="light"` (default) and `variant="dark"`, for menus on light or dark
   surfaces.
-- **Headless skin** — states resolve to BEM classes via `@fubaritico-ds/variants`; colours/paddings
+- **Headless skin** — states resolve to BEM classes via `@fubaritico/variants`; colours/paddings
   come from the overridable `--ui-listbox-*` component variables. States are **neutral greys** (dark
   text on progressively stronger greys), never colour-only.
 - **Composable, ARIA-agnostic** — both forward every native attribute (`id`, `aria-*`, `ref`, event
@@ -22,7 +22,7 @@ wiring and keyboard handling belong to the composer (`Menu`, `Typeahead`).
 ## Import
 
 ```tsx
-import { ListboxList, ListboxItem } from '@fubaritico-ds/reference/Listbox'
+import { ListboxList, ListboxItem } from '@fubaritico/react/Listbox'
 ```
 
 ## Basic usage

@@ -1,7 +1,7 @@
-# @fubaritico-ds/stencil
+# @fubaritico/stencil
 
 Sandbox **Stencil** : socle d'un **design system** en Web Components, stylé en **BEM** avec des
-styles **overridables** (light DOM + variables CSS), alimenté par `@fubaritico-ds/tokens`.
+styles **overridables** (light DOM + variables CSS), alimenté par `@fubaritico/tokens`.
 On y porte quelques composants de `packages/reference` (React/Tailwind) pour les **comparer** au code
 généré, et pour découvrir comment Stencil compile et génère des wrappers **React** et **Angular**
 à partir d'un seul projet.
@@ -239,7 +239,7 @@ framework → on écrit **son propre** custom output target. C'est exactement ç
 
 ```jsonc
 {
-  "name": "@fubaritico-ds/stencil", // nom workspace, cohérent avec les autres packages
+  "name": "@fubaritico/stencil", // nom workspace, cohérent avec les autres packages
   "version": "0.0.0", // aligné sur le monorepo (Lerna)
   "private": true, // sandbox : on ne publie pas sur npm
   "type": "module", // ESM, comme packages/reference
@@ -265,7 +265,7 @@ framework → on écrit **son propre** custom output target. C'est exactement ç
     "react-dom": "catalog:", // peer du target React 1.x (génération typée)
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@fubaritico-ds/tokens": "workspace:*", // niveau 1 des CSS variables (tokens)
+    "@fubaritico/tokens": "workspace:*", // niveau 1 des CSS variables (tokens)
     "vitest": "^3.1.2", // aligné sur le vitest racine
   },
 }
@@ -368,7 +368,7 @@ export const config: Config = {
 
     // 4) wrapper Angular généré (standalone, s'appuie sur dist-custom-elements)
     angularOutputTarget({
-      componentCorePackage: '@fubaritico-ds/stencil', // doit = "name" du package.json
+      componentCorePackage: '@fubaritico/stencil', // doit = "name" du package.json
       outputType: 'standalone',
       directivesProxyFile: './dist/angular/components.ts',
       directivesArrayFile: './dist/angular/index.ts',

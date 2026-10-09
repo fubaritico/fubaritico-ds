@@ -6,9 +6,9 @@ import {
   cardFooterVariants,
   CARD_HEADER_CLASS,
   cardVariants,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
-import type { CardFooterAlign, CardVariant } from '@fubaritico-ds/variants'
+import type { CardFooterAlign, CardVariant } from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
 export type { CardVariant }

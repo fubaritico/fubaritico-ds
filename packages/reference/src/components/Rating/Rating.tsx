@@ -1,14 +1,14 @@
 import clsx from 'clsx'
 
-import { ratingVariants } from '@fubaritico-ds/variants'
+import { ratingVariants } from '@fubaritico/variants'
 
 import CircleRating from './CircleRating'
 import StarsRating from './StarsRating'
 
-import type { RatingSize, RatingVariant } from '@fubaritico-ds/variants'
+import type { RatingSize, RatingVariant } from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
-export type { RatingSize, RatingVariant } from '@fubaritico-ds/variants'
+export type { RatingSize, RatingVariant } from '@fubaritico/variants'
 
 export interface RatingProps extends Omit<ComponentProps<'div'>, 'role'> {
   /** Rating value (0–10 by default, or 0–100 when `max` is 100). Clamped to `[0, max]`. */

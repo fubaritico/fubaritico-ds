@@ -18,7 +18,7 @@ import {
   DROPDOWN_TRIGGER_CONTENT_CLASS,
   dropdownCaretVariants,
   dropdownMenuVariants,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { Button } from '../Button'
 import { Icon } from '../Icon'

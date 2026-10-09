@@ -18,7 +18,7 @@ export type ButtonIconPosition = 'left' | 'right'
 
 /**
  * Resolves Button variant/size/icon-position props into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-button`, `.ui-button--secondary`, …).
+ * (`@fubaritico/styles` → `.ui-button`, `.ui-button--secondary`, …).
  *
  * Pure string output (framework-agnostic): consumed by the React reference and the
  * Stencil / Angular / Vue packages alike, none of which it couples to a framework.

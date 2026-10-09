@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { MODAL_CLASS } from '@fubaritico-ds/variants'
+import { MODAL_CLASS } from '@fubaritico/variants'
 
 import { useNativeDialog } from '../../hooks'
 

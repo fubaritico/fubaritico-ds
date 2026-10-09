@@ -543,26 +543,26 @@ Initials}`, resolution **resolver** (Model A: first viable wins; a pending image
 
 ### 2026-06-08/09 — White-label native-CSS pivot + Badge spike
 
-- **New `packages/styles`** (`@fubaritico-ds/styles`, CSS-only): portable native **BEM skin** in `@layer ui.components`, **component-scoped `--ui-*` variables** for override, PostCSS bundle (import+nested+autoprefixer+minify) → `dist/styles.css`. peerDep on tokens.
+- **New `packages/styles`** (`@fubaritico/styles`, CSS-only): portable native **BEM skin** in `@layer ui.components`, **component-scoped `--ui-*` variables** for override, PostCSS bundle (import+nested+autoprefixer+minify) → `dist/styles.css`. peerDep on tokens.
 - **tokens**: primary amber → **Material UI blue** (`#1976d2`, new `blue` primitive) — white-label proof.
 - **Badge migrated off Tailwind** to BEM + **CVA** (`badgeVariants`), `extends ComponentProps<'span'>`; tests rewritten in BEM (5-level); static demo harness (`packages/styles/demo/index.html`).
 - **`/review` hardened**: added 7th subagent **`review-styles`** (CSS/BEM rules) + `*.css` scope; it immediately caught real CSS issues the TS-only review had missed (tokenized paddings, line-height var, md emits no class).
 - Added BEM skills (`bem-structure`, ` audit-style`); cleaned `settings.local.json` (removed obsolete RN/Expo skills + context7); refined `CLAUDE.md` rules (plans in `files/plans/`, challenge-by-default, push allowed).
 - All green: `type-check && lint && test && build:packages`. Plan: `files/plans/badge-spike-native-css.md`.
-- **Decision locked**: `packages/reference` is a **guide/sandbox, NOT a deliverable** (may be deleted at the end). Real deliverables = framework packages consuming `@fubaritico-ds/{tokens,styles}`.
+- **Decision locked**: `packages/reference` is a **guide/sandbox, NOT a deliverable** (may be deleted at the end). Real deliverables = framework packages consuming `@fubaritico/{tokens,styles}`.
 
-### 2026-06-09 — CVA resolver package `@fubaritico-ds/variants` + import group
+### 2026-06-09 — CVA resolver package `@fubaritico/variants` + import group
 
-- **New package `packages/variants`** (`@fubaritico-ds/variants`): framework-agnostic CVA resolvers
+- **New package `packages/variants`** (`@fubaritico/variants`): framework-agnostic CVA resolvers
   (pure TS, no React/DOM, dep `class-variance-authority` only) emitting the skin's BEM classes.
   Home for variant→class logic — **decided over `shared`** (React grab-bag) **and over a `styles`
   JS-entry** (keeps `styles` CSS-only), after challenging the dev twice. Rationale: variants are
   reused across React/WC/Angular/Vue and must stay React-free. tsconfig (type-check) + tsconfig.build
   (emit, excludes tests) + vitest (node) + scoped eslint override. Commit `b487b4c`.
-- **Badge migrated** off `reference`-local `Badge.variants.ts` onto `@fubaritico-ds/variants`
+- **Badge migrated** off `reference`-local `Badge.variants.ts` onto `@fubaritico/variants`
   (`badgeVariants` + `BADGE_ICON_CLASS`); `class-variance-authority` dropped from `reference` deps.
   13 resolver tests (5-level). `architecture.md` documents 6 packages + `variants → reference` order.
-- **eslint `@fubaritico-ds/*` import group** (commit `01e6b63`): `import/order` pathGroup
+- **eslint `@fubaritico/*` import group** (commit `01e6b63`): `import/order` pathGroup
   (`group: internal`, `pathGroupsExcludedImportTypes: ['builtin','type']` keeps `import type` last);
   6 reference files auto-reordered. Makes the documented import convention actually enforced.
 - **Plan**: `files/plans/native-css-migration.md`. **Memory**: `native-css-migration-backlog`.

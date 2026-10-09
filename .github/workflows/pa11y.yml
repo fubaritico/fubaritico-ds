@@ -16,11 +16,11 @@ jobs:
       - uses: ./.github/actions/setup
 
       # - name: Build Storybook
-      #   run: pnpm --filter @fubaritico-ds/storybook-web-component build
+      #   run: pnpm --filter @fubaritico/storybook-web-component build
       #
       # - name: Serve Storybook & run pa11y
       #   run: |
-      #     pnpm --filter @fubaritico-ds/storybook-web-component exec \
+      #     pnpm --filter @fubaritico/storybook-web-component exec \
       #       http-server storybook-static -p 6006 &
       #     pnpm exec wait-on http://localhost:6006
       #     pnpm a11y

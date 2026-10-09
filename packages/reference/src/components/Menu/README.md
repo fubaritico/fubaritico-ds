@@ -23,7 +23,7 @@ A keyboard-navigable popup list. `Menu` owns the ARIA and keyboard model; the lo
 ## Import
 
 ```tsx
-import { Menu } from '@fubaritico-ds/reference/Menu'
+import { Menu } from '@fubaritico/react/Menu'
 ```
 
 ## Basic usage

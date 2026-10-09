@@ -27,7 +27,7 @@ genuinely modal.
 ## Import
 
 ```tsx
-import { Drawer } from '@fubaritico-ds/reference/Drawer'
+import { Drawer } from '@fubaritico/react/Drawer'
 ```
 
 ## Basic usage

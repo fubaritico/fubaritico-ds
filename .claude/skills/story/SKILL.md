@@ -24,21 +24,21 @@ Reference: @.claude/rules/patterns-ui.md
 Stories live **IN the app**, NOT co-located:
 `apps/storybook-react/stories/reference/<Component>.stories.tsx`. Group under **`Reference/*`** (the
 Stencil-generated React wrappers go under `Generated/*` later). `layout: 'centered'` AND the native skin
-(tokens + `@fubaritico-ds/styles`) are set **globally** in `.storybook/preview.ts` — do NOT repeat
+(tokens + `@fubaritico/styles`) are set **globally** in `.storybook/preview.ts` — do NOT repeat
 `layout` per meta, and do NOT use Tailwind.
 
-**CRITICAL — import from the CSS-free subpath, NOT the barrel.** `@fubaritico-ds/reference` (barrel) runs
+**CRITICAL — import from the CSS-free subpath, NOT the barrel.** `@fubaritico/react` (barrel) runs
 `import './styles.css'` (= `@import "tailwindcss"`), which injects Tailwind **preflight** (a global
 `* { padding:0; margin:0 }` reset) into the skin-based Storybook and **strips the skin's box-model**
 (layers ignore specificity → the reset wins). Import the per-component subpath
-`@fubaritico-ds/reference/<Component>` → `dist/<Component>` (CSS-free, no Tailwind). Only story-ize
+`@fubaritico/react/<Component>` → `dist/<Component>` (CSS-free, no Tailwind). Only story-ize
 components already migrated to the skin.
 
 Three stories per component: **Playground** (controls) + **Doc** (autodocs, automatic) + **Showcase**
 (ALL cases in one render, controls disabled). The Showcase replaces per-variant/per-size stories.
 
 ```typescript jsx
-import { ComponentName } from '@fubaritico-ds/reference/ComponentName'
+import { ComponentName } from '@fubaritico/react/ComponentName'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
@@ -94,7 +94,7 @@ export const Showcase: Story = {
 - NO Tailwind classes in stories (the React Storybook loads only tokens + the native skin) — use inline
   styles or the component's own BEM classes for showcase layout.
 - `Playground` (controls) + `Showcase` (ALL cases, controls disabled). `Doc` is autodocs (automatic).
-- Import from `@fubaritico-ds/reference/<Component>` (CSS-free subpath) — NEVER the barrel (Tailwind leak).
+- Import from `@fubaritico/react/<Component>` (CSS-free subpath) — NEVER the barrel (Tailwind leak).
 - No mocks, no router — DS components are presentational. Only story-ize components already migrated to the skin.
 
 ---
@@ -134,7 +134,7 @@ export const Playground: Story = {
 
 For the **react** Storybook, put generated-wrapper stories in
 `apps/storybook-react/stories/generated/<Component>.stories.tsx`, group `Generated/*`, importing the
-wrapper from `@fubaritico-ds/stencil/dist/react` and types from `@storybook/react-vite` — same pattern
+wrapper from `@fubaritico/stencil/dist/react` and types from `@storybook/react-vite` — same pattern
 as the Design System section above. (Angular/Vue/web-component get their own per-framework apps.)
 
 **Rules**:

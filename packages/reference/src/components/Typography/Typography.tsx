@@ -1,10 +1,10 @@
 import clsx from 'clsx'
 import { createElement } from 'react'
 
-import { typographyVariants } from '@fubaritico-ds/variants'
+import { typographyVariants } from '@fubaritico/variants'
 
 import type { TypographyProps } from './Typography.types'
-import type { TypographyVariant } from '@fubaritico-ds/variants'
+import type { TypographyVariant } from '@fubaritico/variants'
 import type { ElementType } from 'react'
 
 /** Default variant → semantic element mapping (overridable per-instance via `variantMapping`). */

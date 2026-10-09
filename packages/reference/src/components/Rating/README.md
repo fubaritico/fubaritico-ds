@@ -20,7 +20,7 @@ progress ring or a row of stars — no interaction, no state.
 ## Import
 
 ```tsx
-import { Rating } from '@fubaritico-ds/reference/Rating'
+import { Rating } from '@fubaritico/react/Rating'
 ```
 
 ## Basic usage

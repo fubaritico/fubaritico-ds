@@ -4,17 +4,17 @@
 
 Project to generate multi UI framework base on a stencilJS architecture. The project will be a tool to produce design system packages targeted for native web components, React, Angular and Vue. The component will visible in their respective storybook application.
 
-- `apps/storybook-react` - **set up** (`@fubaritico-ds/storybook-react`, Storybook 10 + React-Vite). Showcases the migrated `reference` components under `Reference/*`; stories live IN the app at `stories/reference/*.stories.tsx` (NOT co-located); preview loads tokens + the native skin. Run via root `pnpm storybook:ref`. The Stencil-generated React wrappers will go under `Generated/*` later.
+- `apps/storybook-react` - **set up** (`@fubaritico/storybook-react`, Storybook 10 + React-Vite). Showcases the migrated `reference` components under `Reference/*`; stories live IN the app at `stories/reference/*.stories.tsx` (NOT co-located); preview loads tokens + the native skin. Run via root `pnpm storybook:ref`. The Stencil-generated React wrappers will go under `Generated/*` later.
 - `apps/storybook-web-component` - [scaffold, no `package.json` yet] Storybook showcasing the generated native Web Components
 - `apps/storybook-angular` - [scaffold, no `package.json` yet] Storybook showcasing the generated Angular wrappers
 - `apps/storybook-vuejs` - [scaffold, no `package.json` yet] Storybook showcasing the generated Vue wrappers
-- `packages/behaviors` - `@fubaritico-ds/behaviors` — **framework-agnostic behaviour services** (pure TS, no React/DOM, zero deps): one service per component — state, keyboard, focus, ARIA (`TabsService` first; plan `files/plans/behaviors-service-pattern.md`). Framework parts are thin adapters. Tested in Node.
-- `packages/reference` - React/Tailwind design-system components used as a **reference / guide only — NOT a deliverable**. It exists to give ready-made example components that help build the real DS (like the sibling example repos). It is a sandbox to port from / validate approaches in; it may be **deleted once the work is finished**, or kept. Never treat it as a shipped package (e.g. don't permanently wire skin re-export, CI deploy, or public API guarantees around it).
-- `packages/shared` - shared utils, test-utils, browser mocks, Tailwind theme + fonts, vite plugins (React-flavored)
+- `packages/behaviors` - `@fubaritico/behaviors` — **framework-agnostic behaviour services** (pure TS, no React/DOM, zero deps): one service per component — state, keyboard, focus, ARIA (`TabsService` first; plan `files/plans/behaviors-service-pattern.md`). Framework parts are thin adapters. Tested in Node.
+- `packages/reference` - **`@fubaritico/react` — the React deliverable** (decided 2026-10-09; it was a sandbox before, and europe-map already consumed it). BEM skin + resolvers + behaviour services; the Tailwind leftovers (Carousel, `next/*`) stay out of the published build. Published to **GitHub Packages** (scope `@fubaritico`, lockstep versions via Lerna fixed mode, `release.yml`). The Stencil-generated React wrappers may one day replace its internals **under the same name** — only if the component API stays identical.
+- `packages/shared` - **private** (not published) — shared utils, test-utils, browser mocks, Tailwind theme + fonts, vite plugins (React-flavored)
 - `packages/stencil` - the **Stencil sandbox**: one Web Component project producing native WC + generated React/Angular wrappers (see its `README.md` + `PLAN.md`)
-- `packages/styles` - `@fubaritico-ds/styles` — portable native **BEM skin** (CSS-only, `@layer` + `--ui-*` component vars), fed by tokens. The shipped skin.
+- `packages/styles` - `@fubaritico/styles` — portable native **BEM skin** (CSS-only, `@layer` + `--ui-*` component vars), fed by tokens. The shipped skin.
 - `packages/tokens` - design tokens (Style Dictionary, OKLCH, DTCG) → generated CSS/JS/TS/Tailwind
-- `packages/variants` - `@fubaritico-ds/variants` — **framework-agnostic CVA resolvers** (pure TS, no React/DOM; dep `class-variance-authority` only) emitting the skin's BEM class names. Reused by reference + Stencil/Angular/Vue. **The home for variant→class logic** (decided over `shared`/`styles`).
+- `packages/variants` - `@fubaritico/variants` — **framework-agnostic CVA resolvers** (pure TS, no React/DOM; dep `class-variance-authority` only) emitting the skin's BEM class names. Reused by reference + Stencil/Angular/Vue. **The home for variant→class logic** (decided over `shared`/`styles`).
 
 These **7 packages** exist today. `apps/storybook-react` is set up and wired; the other three
 (`storybook-web-component`, `storybook-angular`, `storybook-vuejs`) are still empty scaffolds.
@@ -40,8 +40,8 @@ something, do NOT just agree. Push back, doubt out loud, and stress-test the ide
 A component's value IS its **capabilities — what it can DO**: behaviour, states, interactions,
 keyboard navigation, focus management, a11y, composition/slots, and its variant/size API. This is the
 **headless mindset** (Radix / Headless UI / Ariakit): the **behaviour + accessibility are the asset**;
-styling is a swappable **skin** (`@fubaritico-ds/styles`), theming is **tokens**, and the variant→class
-mapping is the **resolver** (`@fubaritico-ds/variants`). Routing/data are thin **adapters**, never the
+styling is a swappable **skin** (`@fubaritico/styles`), theming is **tokens**, and the variant→class
+mapping is the **resolver** (`@fubaritico/variants`). Routing/data are thin **adapters**, never the
 subject. Organize, name and reason about components by their **capability/presentational identity**, NOT
 by the infrastructure they happen to be wired to (routing lib, data source, framework). Concretely:
 
@@ -122,7 +122,7 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
 ### React
 
 - Functional components: `export function Name ({ ... }: NameProps)  { ... }`
-- Import order: external → @fubaritico-ds/\* → relative → `import type` (newlines between groups)
+- Import order: external → @fubaritico/\* → relative → `import type` (newlines between groups)
 - `clsx` for conditional classes
 
 ### Web components

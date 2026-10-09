@@ -1,13 +1,13 @@
 // Import from the per-component subpath (CSS-free), NOT the package barrel
-// (`@fubaritico-ds/reference`) whose `import './styles.css'` side-effect pulls Tailwind preflight
+// (`@fubaritico/react`) whose `import './styles.css'` side-effect pulls Tailwind preflight
 // into the skin-based Storybook and strips the skin's box-model. See the /story skill.
-import { Skeleton } from '@fubaritico-ds/reference/Skeleton'
+import { Skeleton } from '@fubaritico/react/Skeleton'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 /**
- * Skeleton — loading placeholder migrated to the native BEM skin (`@fubaritico-ds/styles`); the shape
- * resolves to a BEM class via `@fubaritico-ds/variants`. It has no intrinsic size — give it a
+ * Skeleton — loading placeholder migrated to the native BEM skin (`@fubaritico/styles`); the shape
+ * resolves to a BEM class via `@fubaritico/variants`. It has no intrinsic size — give it a
  * `width`/`height` (or an `aspectRatio` with one dimension) to make the block visible.
  */
 const meta = {

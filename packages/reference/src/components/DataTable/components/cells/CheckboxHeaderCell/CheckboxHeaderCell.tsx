@@ -4,7 +4,7 @@ import {
   UI_DATA_TABLE_HEAD_INNER_CLASS,
   UI_DATA_TABLE_HEAD_STRONG_MODIFIER,
   UI_DATA_TABLE_SEPARATOR_CLASS,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { Checkbox } from '../../../../Checkbox'
 import { TableHead } from '../../primitives/TableHead'

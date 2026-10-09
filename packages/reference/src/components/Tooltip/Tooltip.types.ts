@@ -1,4 +1,4 @@
-import type { TooltipVariant } from '@fubaritico-ds/variants'
+import type { TooltipVariant } from '@fubaritico/variants'
 import type { ComponentProps, ReactNode, RefObject } from 'react'
 
 /** Supported tooltip placement relative to the target. */

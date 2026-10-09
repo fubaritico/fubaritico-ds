@@ -1,13 +1,13 @@
 // Import from the per-component subpath (CSS-free), NOT the package barrel
-// (`@fubaritico-ds/reference`) whose `import './styles.css'` side-effect pulls Tailwind preflight
+// (`@fubaritico/react`) whose `import './styles.css'` side-effect pulls Tailwind preflight
 // into the skin-based Storybook and strips the skin's box-model. See the /story skill.
-import { Spinner } from '@fubaritico-ds/reference/Spinner'
+import { Spinner } from '@fubaritico/react/Spinner'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 /**
- * Spinner — headless loading indicator migrated to the native BEM skin (`@fubaritico-ds/styles`);
- * the size resolves to a BEM class via `@fubaritico-ds/variants`. The ring inherits `currentColor`,
+ * Spinner — headless loading indicator migrated to the native BEM skin (`@fubaritico/styles`);
+ * the size resolves to a BEM class via `@fubaritico/variants`. The ring inherits `currentColor`,
  * so it adopts the surrounding text colour.
  */
 const meta = {

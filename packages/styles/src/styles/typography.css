@@ -3,7 +3,7 @@
  *
  * Headless/presentational: sets ONLY type structure (family, size, weight, line-height, alignment),
  * NEVER `color` — colour is inherited from the parent (`currentColor`). Per-variant size/weight/
- * line-height come from the semantic `--typography-*` tokens (@fubaritico-ds/tokens), so the whole
+ * line-height come from the semantic `--typography-*` tokens (@fubaritico/tokens), so the whole
  * type scale is themeable in one place. Headings are fluid (token `clamp()`); body/roles are fixed.
  * Self-sufficient (own `margin: 0` + `box-sizing`) since the DS ships no global reset.
  */

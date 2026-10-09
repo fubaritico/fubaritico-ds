@@ -1,13 +1,13 @@
 import clsx from 'clsx'
 
-import { buttonVariants } from '@fubaritico-ds/variants'
+import { buttonVariants } from '@fubaritico/variants'
 
 import type { IconName } from '../Icon'
 import type {
   ButtonIconPosition,
   ButtonSize,
   ButtonVariant,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 /** Presentational props shared by every Button-family component (plain, link, next-link). */
 export interface ButtonVisualProps {

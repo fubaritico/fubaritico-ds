@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { BOTTOM_SHEET_BODY_CLASS } from '@fubaritico-ds/variants'
+import { BOTTOM_SHEET_BODY_CLASS } from '@fubaritico/variants'
 
 import type { ComponentProps } from 'react'
 

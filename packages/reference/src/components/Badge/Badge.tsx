@@ -4,12 +4,12 @@ import {
   BADGE_ICON_CLASS,
   BADGE_LABEL_CLASS,
   badgeVariants,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { Icon } from '../Icon'
 
 import type { IconName } from '../Icon'
-import type { BadgeSize, BadgeVariant } from '@fubaritico-ds/variants'
+import type { BadgeSize, BadgeVariant } from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
 export type { BadgeSize, BadgeVariant }
@@ -33,7 +33,7 @@ export interface BadgeProps extends ComponentProps<'span'> {
 }
 
 /**
- * Badge — native BEM skin (`@fubaritico-ds/styles`). Variant/size resolve to BEM classes via
+ * Badge — native BEM skin (`@fubaritico/styles`). Variant/size resolve to BEM classes via
  * {@link badgeVariants}; colours and paddings are driven by the overridable `--ui-badge-*`
  * component variables. Forwards any extra `span` attributes (`id`, `aria-*`, `onClick`, …).
  *

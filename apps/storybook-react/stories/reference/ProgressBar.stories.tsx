@@ -1,4 +1,4 @@
-import { ProgressBar } from '@fubaritico-ds/reference/ProgressBar'
+import { ProgressBar } from '@fubaritico/react/ProgressBar'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 

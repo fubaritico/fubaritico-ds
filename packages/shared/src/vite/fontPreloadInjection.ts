@@ -37,7 +37,7 @@ export interface FontPreloadInjectionOptions {
  *
  * ```typescript
  * // In host's vite.config.ts
- * import { fontPreloadInjection } from '@fubaritico-ds/shared/vite'
+ * import { fontPreloadInjection } from '@fubaritico/shared/vite'
  *
  * export default defineConfig({
  *   plugins: [

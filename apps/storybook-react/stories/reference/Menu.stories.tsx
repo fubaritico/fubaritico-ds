@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Menu } from '@fubaritico-ds/reference/Menu'
+import { Menu } from '@fubaritico/react/Menu'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 

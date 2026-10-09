@@ -1,4 +1,4 @@
-# @fubaritico-ds/styles
+# @fubaritico/styles
 
 The portable native skin of the fubaritico design system: **plain CSS**, no framework, no build
 step on your side.
@@ -6,20 +6,20 @@ step on your side.
 ## Install
 
 ```bash
-pnpm add @fubaritico-ds/styles @fubaritico-ds/tokens
+pnpm add @fubaritico/styles @fubaritico/tokens
 ```
 
-`@fubaritico-ds/tokens` is a peer: this sheet reads its custom properties and renders unstyled
+`@fubaritico/tokens` is a peer: this sheet reads its custom properties and renders unstyled
 without it.
 
 ## Use
 
 ```ts
-import '@fubaritico-ds/tokens/css' // first: the variables
-import '@fubaritico-ds/styles' // then: the skin
+import '@fubaritico/tokens/css' // first: the variables
+import '@fubaritico/styles' // then: the skin
 ```
 
-That is the whole integration. The React components in `@fubaritico-ds/reference` emit the class
+That is the whole integration. The React components in `@fubaritico/react` emit the class
 names this sheet defines; they import no CSS of their own, so loading it is your explicit choice.
 
 ## How it is built
@@ -33,7 +33,7 @@ names this sheet defines; they import no CSS of their own, so loading it is your
 - **Logical properties** — `inline-size`, `inset-inline-start`, `padding-block`… so every component
   works in right-to-left without a second stylesheet.
 - **Tokens only** — no hard-coded colour or dimension; everything resolves through
-  `@fubaritico-ds/tokens`.
+  `@fubaritico/tokens`.
 
 ## Overriding, from narrowest to broadest
 

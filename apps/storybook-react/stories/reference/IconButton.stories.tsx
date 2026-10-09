@@ -1,5 +1,5 @@
 // Icon-only button — CSS-free subpath (no Tailwind leak in Storybook).
-import { IconButton } from '@fubaritico-ds/reference/IconButton'
+import { IconButton } from '@fubaritico/react/IconButton'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
@@ -8,7 +8,7 @@ const DARK_SURFACE_BG = '#171717'
 
 /**
  * IconButton — a circular, icon-only extension of `Button` (Open/Closed). It reuses Button's
- * variants/skin and layers on the icon-fitting shape (`@fubaritico-ds/variants` → `.ui-icon-button`).
+ * variants/skin and layers on the icon-fitting shape (`@fubaritico/variants` → `.ui-icon-button`).
  * The on-dark `ghost-dark` variant is IconButton-only and is meant for dark surfaces (e.g. a dark drawer header).
  */
 const meta = {

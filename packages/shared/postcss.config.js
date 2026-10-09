@@ -11,9 +11,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
  * @type {Record<string, string>}
  */
 const exportMap = {
-  '@fubaritico-ds/tokens/tailwind': resolve(
+  '@fubaritico/tokens/tailwind': resolve(
     __dirname,
-    'node_modules/@fubaritico-ds/tokens/dist/tailwind/theme.css',
+    'node_modules/@fubaritico/tokens/dist/tailwind/theme.css',
   ),
 }
 

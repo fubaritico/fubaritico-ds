@@ -1,7 +1,7 @@
 import { createContext, use, useSyncExternalStore } from 'react'
 
-import type { TabsService, TabsSnapshot } from '@fubaritico-ds/behaviors'
-import type { TabsVariant } from '@fubaritico-ds/variants'
+import type { TabsService, TabsSnapshot } from '@fubaritico/behaviors'
+import type { TabsVariant } from '@fubaritico/variants'
 
 /** What `<Tabs>` hands down to its parts. */
 interface TabsContextValue {

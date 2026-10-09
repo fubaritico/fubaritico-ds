@@ -33,7 +33,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
-import { renderWithReactQuery } from '@fubaritico-ds/shared/test-utils'
+import { renderWithReactQuery } from '@fubaritico/shared/test-utils'
 
 import ComponentName from './ComponentName'
 
@@ -64,7 +64,7 @@ describe('ComponentName', () => {
 
 ### React Components (`packages/reference`)
 
-- Render with helpers from `@fubaritico-ds/shared/test-utils` (or plain `render` for pure atoms)
+- Render with helpers from `@fubaritico/shared/test-utils` (or plain `render` for pure atoms)
 - Check: renders, each variant/size, disabled/loading states, accessibility roles/labels
 - L4 is usually N/A (no async) — add the comment
 
@@ -87,7 +87,7 @@ describe('ComponentName', () => {
 - **Mock only external boundaries** — never mock the unit under test.
 - **One behavior per `it()`** — the name describes behavior, not implementation
 - **Accessibility-first queries** — `getByRole('button', { name: '...' })` over `getByTestId`
-- **Browser mocks** via `setupBrowserMocks()` from `@fubaritico-ds/shared/mocks`
+- **Browser mocks** via `setupBrowserMocks()` from `@fubaritico/shared/mocks`
 
 ## File Naming
 

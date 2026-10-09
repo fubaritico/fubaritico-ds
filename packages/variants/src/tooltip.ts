@@ -10,7 +10,7 @@ export type TooltipArrowAxis = 'top' | 'bottom' | 'left' | 'right'
 
 /**
  * Resolves the Tooltip bubble's variant into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-tooltip`, `.ui-tooltip--light`).
+ * (`@fubaritico/styles` → `.ui-tooltip`, `.ui-tooltip--light`).
  *
  * Pure string output (framework-agnostic): consumed by the React reference and the
  * Stencil / Angular / Vue packages alike. `dark` is the base — its modifier is never emitted.
@@ -36,7 +36,7 @@ export type TooltipVariantProps = VariantProps<typeof tooltipVariants>
 
 /**
  * Resolves the tooltip arrow's primary axis into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-tooltip__arrow`, `.ui-tooltip__arrow--top`, …). The axis sets which
+ * (`@fubaritico/styles` → `.ui-tooltip__arrow`, `.ui-tooltip__arrow--top`, …). The axis sets which
  * border edge carries the bubble colour so the CSS triangle points back at the target.
  *
  * @param props - Arrow options.

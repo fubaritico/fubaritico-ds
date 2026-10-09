@@ -17,7 +17,7 @@ the surrounding text colour wherever you drop it. Presentational only, no state 
 ## Import
 
 ```tsx
-import { Spinner } from '@fubaritico-ds/reference/Spinner'
+import { Spinner } from '@fubaritico/react/Spinner'
 ```
 
 ## Basic usage

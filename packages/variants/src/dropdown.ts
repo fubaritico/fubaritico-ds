@@ -4,7 +4,7 @@ import type { VariantProps } from 'class-variance-authority'
 
 /**
  * Resolves the Dropdown floating-menu wrapper's placement into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-dropdown__menu`, `--flipped`, `--right`).
+ * (`@fubaritico/styles` → `.ui-dropdown__menu`, `--flipped`, `--right`).
  *
  * Only used in the NON-portalled mode (the menu is absolutely positioned relative to the trigger). In
  * portalled mode the consumer applies computed fixed coordinates inline instead.
@@ -36,7 +36,7 @@ export type DropdownMenuVariantProps = VariantProps<typeof dropdownMenuVariants>
 
 /**
  * Resolves the trigger caret's open state into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-dropdown__caret`, `--open` rotates it 180°).
+ * (`@fubaritico/styles` → `.ui-dropdown__caret`, `--open` rotates it 180°).
  *
  * @param props - Caret options.
  * @param props.open - Whether the dropdown is open.

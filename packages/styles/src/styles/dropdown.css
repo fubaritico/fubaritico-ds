@@ -15,7 +15,7 @@
  *   2. Redefine a global token → re-skins everything that uses it.
  *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
  *
- * Values come from @fubaritico-ds/tokens.
+ * Values come from @fubaritico/tokens.
  */
 @layer ui.components {
   .ui-dropdown {

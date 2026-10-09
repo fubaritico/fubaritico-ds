@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import {
   UI_DATA_TABLE_TRUNCATE_CLASS,
   UI_DATA_TABLE_TRUNCATE_WRAP_CLASS,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { useIsTextTruncated } from '../../../hooks'
 

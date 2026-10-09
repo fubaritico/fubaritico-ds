@@ -1,4 +1,4 @@
-import type { DomAttributes } from '@fubaritico-ds/behaviors'
+import type { DomAttributes } from '@fubaritico/behaviors'
 
 /** Attributes ready to spread on a React element. */
 export type ReactAttributes = Record<string, string | number | boolean>
@@ -17,7 +17,7 @@ const BOOLEAN_ATTRIBUTES = new Set([
 ])
 
 /**
- * Turns the DOM-spelled attributes a `@fubaritico-ds/behaviors` service produces into React props.
+ * Turns the DOM-spelled attributes a `@fubaritico/behaviors` service produces into React props.
  *
  * Services speak the DOM with presence semantics (`''` = on, `undefined` = omit) so every framework
  * applies them as-is. React is the exception on two counts, both handled here: it wants `tabIndex`,

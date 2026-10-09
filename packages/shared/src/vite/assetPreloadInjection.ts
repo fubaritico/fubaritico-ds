@@ -40,7 +40,7 @@ export interface AssetPreloadInjectionOptions {
  *
  * ```typescript
  * // In host's vite.config.ts
- * import { assetPreloadInjection } from '@fubaritico-ds/shared/vite'
+ * import { assetPreloadInjection } from '@fubaritico/shared/vite'
  *
  * export default defineConfig({
  *   plugins: [

@@ -5,9 +5,9 @@ import {
   RATING_TRACK_CLASS,
   RATING_VALUE_CENTERED_CLASS,
   RATING_VALUE_CLASS,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
-import type { RatingSize } from '@fubaritico-ds/variants'
+import type { RatingSize } from '@fubaritico/variants'
 
 /**
  * Per-size SVG geometry (pixels). Geometry is NOT a skin concern (the skin only owns colour/motion),

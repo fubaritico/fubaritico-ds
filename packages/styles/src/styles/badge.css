@@ -7,7 +7,7 @@
  *   3. Write any plain selector (e.g. `.ui-badge { ... }`): being unlayered, it beats this
  *      layered skin with no specificity war.
  *
- * Values come from @fubaritico-ds/tokens. Per-size paddings are component vars (concrete recipe).
+ * Values come from @fubaritico/tokens. Per-size paddings are component vars (concrete recipe).
  */
 @layer ui.components {
   .ui-badge {

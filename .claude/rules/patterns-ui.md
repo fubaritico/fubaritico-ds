@@ -5,12 +5,12 @@
 ```typescript
 import clsx from 'clsx'
 
-import { componentNameVariants } from '@fubaritico-ds/variants'
+import { componentNameVariants } from '@fubaritico/variants'
 
-import type { ComponentNameSize, ComponentNameVariant } from '@fubaritico-ds/variants'
+import type { ComponentNameSize, ComponentNameVariant } from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
-export type { ComponentNameSize, ComponentNameVariant } from '@fubaritico-ds/variants'
+export type { ComponentNameSize, ComponentNameVariant } from '@fubaritico/variants'
 
 export interface ComponentNameProps extends ComponentProps<'div'> {
   /** What this prop controls. */
@@ -79,8 +79,8 @@ packages/reference/src/components/ComponentName/
 Rules:
 
 - **Styling = the native BEM skin, NOT Tailwind.** A new component consumes a CVA resolver from
-  `@fubaritico-ds/variants` (emitting `.ui-<block>` classes) backed by a `<component>.css` in
-  `@fubaritico-ds/styles`. The `ui:` Tailwind prefix only survives in the components still queued for
+  `@fubaritico/variants` (emitting `.ui-<block>` classes) backed by a `<component>.css` in
+  `@fubaritico/styles`. The `ui:` Tailwind prefix only survives in the components still queued for
   migration (Tabs, Drawer, Carousel, Typeahead, `next/Image`) — **never write new `ui:` classes**.
 - **GÉNÉREUX en variables de surcharge — mieux trop que pas assez.** Chaque propriété cosmétique
   mérite sa `--ui-<bloc>-*`. Une var inutilisée coûte une ligne ; une var manquante force le
@@ -125,7 +125,7 @@ It also works uniformly for intrinsic elements (`'div'`, `'input'`) and custom c
 import clsx from 'clsx'
 
 // 2. Internal packages
-import { Section } from '@fubaritico-ds/shared'
+import { Section } from '@fubaritico/shared'
 
 // 3. Relative
 import type { ComponentNameProps } from './ComponentName.types'

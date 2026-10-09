@@ -19,7 +19,7 @@ low-level presentational positioning primitive, not a self-managing hover wrappe
 ## Import
 
 ```tsx
-import { Tooltip } from '@fubaritico-ds/reference/Tooltip'
+import { Tooltip } from '@fubaritico/react/Tooltip'
 ```
 
 ## Basic usage

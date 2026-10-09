@@ -10,9 +10,9 @@ Tailwind `ui:` classes, which blocked the Tailwind-free v1 package.
 
 **To revive it**, it needs the same treatment every shipped component got: drop the TMDB-specific
 props for a neutral presentational API, migrate the Tailwind classes onto a BEM block in
-`@fubaritico-ds/styles` with a resolver in `@fubaritico-ds/variants`, then add 5-level tests, a
+`@fubaritico/styles` with a resolver in `@fubaritico/variants`, then add 5-level tests, a
 story and a README. At that point it may well turn out to be a variant of `Image` rather than its
 own component — worth deciding before rewriting it.
 
-It also imports `getOptimizedImageUrl` from `@fubaritico-ds/shared`, which the published
+It also imports `getOptimizedImageUrl` from `@fubaritico/shared`, which the published
 `reference` package no longer depends on.

@@ -71,7 +71,7 @@ If a finding depends on library/API behavior you are not 100% sure about, set `"
 
 ### QUAL-006: Unsorted or unused imports
 
-- **Check**: import order = external → `@fubaritico-ds/*` → relative → `import type` (blank line between
+- **Check**: import order = external → `@fubaritico/*` → relative → `import type` (blank line between
   groups, alphabetical); no unused imports/vars
 
 ## Medium Violations

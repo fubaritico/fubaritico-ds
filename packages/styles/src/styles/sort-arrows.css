@@ -10,7 +10,7 @@
  *   2. Redefine a global token → re-skins everything that uses it.
  *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
  *
- * Values come from @fubaritico-ds/tokens. The skin is self-sufficient (own box-sizing).
+ * Values come from @fubaritico/tokens. The skin is self-sufficient (own box-sizing).
  */
 @layer ui.components {
   .ui-sort-arrows {

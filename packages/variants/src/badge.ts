@@ -10,7 +10,7 @@ export type BadgeSize = 'sm' | 'md' | 'lg'
 
 /**
  * Resolves Badge variant/size props into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-badge`, `.ui-badge--secondary`, …).
+ * (`@fubaritico/styles` → `.ui-badge`, `.ui-badge--secondary`, …).
  *
  * Pure string output (framework-agnostic): consumed by the React reference and the
  * Stencil / Angular / Vue packages alike, none of which it couples to a framework.

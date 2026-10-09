@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { TABS_PANEL_CLASS } from '@fubaritico-ds/variants'
+import { TABS_PANEL_CLASS } from '@fubaritico/variants'
 
 import { toReactAttributes } from '../../utils'
 import { useTabsContext, useTabsSelector } from './TabsContext'

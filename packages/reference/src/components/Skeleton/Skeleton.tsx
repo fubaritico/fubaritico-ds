@@ -1,8 +1,8 @@
 import clsx from 'clsx'
 
-import { skeletonVariants } from '@fubaritico-ds/variants'
+import { skeletonVariants } from '@fubaritico/variants'
 
-import type { SkeletonShape } from '@fubaritico-ds/variants'
+import type { SkeletonShape } from '@fubaritico/variants'
 import type { CSSProperties, ComponentProps } from 'react'
 
 export type { SkeletonShape }
@@ -21,7 +21,7 @@ export interface SkeletonProps extends ComponentProps<'div'> {
 }
 
 /**
- * Skeleton — native BEM skin (`@fubaritico-ds/styles`). A loading placeholder: a tinted block
+ * Skeleton — native BEM skin (`@fubaritico/styles`). A loading placeholder: a tinted block
  * with a shimmer sweep. The shape resolves to BEM classes via {@link skeletonVariants}; the look
  * (background, radius, shimmer) is driven by the overridable `--ui-skeleton-*` component variables.
  * Dimensions (`width`/`height`/`aspectRatio`) are per-instance inline styles, not skin concerns.

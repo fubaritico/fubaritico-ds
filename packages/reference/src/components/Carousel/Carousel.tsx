@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react'
 
-import { useIsMobile } from '@fubaritico-ds/shared'
+import { useIsMobile } from '@fubaritico/shared'
 
 import CarouselCounter from './CarouselCounter'
 import CarouselError from './CarouselError'

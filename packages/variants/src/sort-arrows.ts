@@ -4,7 +4,7 @@ import type { VariantProps } from 'class-variance-authority'
 
 /**
  * Resolves a sort-arrow chevron's state into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-sort-arrows__icon`, `--dimmed`).
+ * (`@fubaritico/styles` → `.ui-sort-arrows__icon`, `--dimmed`).
  *
  * Pure string output (framework-agnostic). The dimmed chevron is the one pointing the OPPOSITE way to
  * the current sort direction (e.g. when sorted ascending, the down chevron is dimmed).

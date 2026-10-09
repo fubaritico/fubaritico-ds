@@ -12,13 +12,13 @@ primitive** (zero routing/data coupling). For navigation, use the separate `Link
   handled by the skin, not by reordering the DOM.
 - **Native button behaviour** — forwards every `<button>` attribute (`type`, `disabled`, `onClick`,
   `form`, `aria-*`, `ref`, …). `disabled` and `:focus-visible` are styled by the skin.
-- **Headless skin** — variant/size resolve to BEM classes via `@fubaritico-ds/variants`; colours are
+- **Headless skin** — variant/size resolve to BEM classes via `@fubaritico/variants`; colours are
   driven by the overridable `--ui-button-*` component variables.
 
 ## Import
 
 ```tsx
-import { Button } from '@fubaritico-ds/reference/Button'
+import { Button } from '@fubaritico/react/Button'
 ```
 
 ## Basic usage

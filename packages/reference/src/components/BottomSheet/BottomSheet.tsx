@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 
-import { BOTTOM_SHEET_OVERLAY_CLASS, bottomSheetVariants } from '@fubaritico-ds/variants'
+import { BOTTOM_SHEET_OVERLAY_CLASS, bottomSheetVariants } from '@fubaritico/variants'
 
 import { Portal } from '../Portal'
 
@@ -9,7 +9,7 @@ import { BottomSheetBody } from './BottomSheetBody'
 import { BottomSheetContext } from './BottomSheetContext'
 import { BottomSheetHeader } from './BottomSheetHeader'
 
-import type { BottomSheetVariant } from '@fubaritico-ds/variants'
+import type { BottomSheetVariant } from '@fubaritico/variants'
 import type { ComponentProps, ReactNode } from 'react'
 
 /** Props for the BottomSheet root component */

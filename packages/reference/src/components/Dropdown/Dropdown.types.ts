@@ -1,5 +1,5 @@
 import type { IconName } from '../Icon'
-import type { ButtonSize, ButtonVariant } from '@fubaritico-ds/variants'
+import type { ButtonSize, ButtonVariant } from '@fubaritico/variants'
 import type { ReactNode } from 'react'
 
 /** A single option in the dropdown. */

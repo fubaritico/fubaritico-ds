@@ -1,11 +1,11 @@
-import { AVATAR_ICON_CLASS } from '@fubaritico-ds/variants'
+import { AVATAR_ICON_CLASS } from '@fubaritico/variants'
 
 import { Icon } from '../Icon'
 
 import { useAvatarConfig, useResolverCandidate } from './AvatarContext'
 
 import type { IconName, IconSize } from '../Icon'
-import type { AvatarSize } from '@fubaritico-ds/variants'
+import type { AvatarSize } from '@fubaritico/variants'
 
 export interface AvatarIconProps {
   /** Icon name (typed → autocompletion; cannot be mistyped). Defaults to `'User'`. */

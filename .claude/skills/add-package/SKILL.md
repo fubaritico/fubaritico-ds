@@ -52,7 +52,7 @@ cp packages/variants/{tsconfig.json,tsconfig.build.json,vitest.config.ts} packag
 
 ```json
 {
-  "name": "@fubaritico-ds/$name",
+  "name": "@fubaritico/$name",
   "version": "0.1.0",
   "type": "module",
   "sideEffects": false,
@@ -106,12 +106,12 @@ cp packages/variants/{tsconfig.json,tsconfig.build.json,vitest.config.ts} packag
 3. **Docs** — add the package to `CLAUDE.md` (Project list + package count) and to
    `rules/architecture.md` (structure tree + dependency order).
 4. `pnpm install`, then add to consumers:
-   `pnpm --filter [consumer] add @fubaritico-ds/$name@workspace:^`.
+   `pnpm --filter [consumer] add @fubaritico/$name@workspace:^`.
 
 ### 5. Verify
 
 ```bash
-pnpm --filter @fubaritico-ds/$name build   # dist emitted, README examples runnable against it
+pnpm --filter @fubaritico/$name build   # dist emitted, README examples runnable against it
 pnpm type-check && pnpm lint && pnpm test  # from root
 ```
 

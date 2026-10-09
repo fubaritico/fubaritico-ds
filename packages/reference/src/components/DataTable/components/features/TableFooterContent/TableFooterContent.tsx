@@ -3,7 +3,7 @@ import {
   UI_DATA_TABLE_FOOTER_GROUP_CLASS,
   UI_DATA_TABLE_FOOTER_LABEL_CLASS,
   UI_DATA_TABLE_PAGE_INPUT_CLASS,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { Dropdown } from '../../../../Dropdown'
 import { Input } from '../../../../Input'

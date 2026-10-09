@@ -1,10 +1,8 @@
 {
-  "name": "@fubaritico-ds/shared",
+  "name": "@fubaritico/shared",
   "version": "0.1.0",
+  "private": true,
   "type": "module",
-  "publishConfig": {
-    "access": "public"
-  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -62,7 +60,7 @@
     "release:major": "pnpm build && ./publish.sh major"
   },
   "dependencies": {
-    "@fubaritico-ds/tokens": "workspace:*",
+    "@fubaritico/tokens": "workspace:*",
     "svg-to-jsx": "^1.0.4",
     "svgr": "^2.0.0"
   },

@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { DRAWER_FOOTER_CLASS } from '@fubaritico-ds/variants'
+import { DRAWER_FOOTER_CLASS } from '@fubaritico/variants'
 
 import type { ComponentProps } from 'react'
 

@@ -7,7 +7,7 @@ export type CardVariant = 'default' | 'outline' | 'elevated' | 'ghost'
 
 /**
  * Resolves the Card's surface variant into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-card`, `.ui-card--outline`, …).
+ * (`@fubaritico/styles` → `.ui-card`, `.ui-card--outline`, …).
  *
  * Pure string output (framework-agnostic): consumed by the React reference and the
  * Stencil / Angular / Vue packages alike, none of which it couples to a framework.

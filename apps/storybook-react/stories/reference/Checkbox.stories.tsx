@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 // Checkbox — CSS-free subpath (no Tailwind leak in Storybook).
-import { Checkbox } from '@fubaritico-ds/reference/Checkbox'
+import { Checkbox } from '@fubaritico/react/Checkbox'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { ComponentProps } from 'react'
@@ -10,7 +10,7 @@ import type { ComponentProps } from 'react'
  * Checkbox — an accessible checkbox primitive built on a visually-hidden native
  * `<input type="checkbox">`. The painted box mirrors the input's checked / indeterminate / disabled /
  * focus state purely via the skin (`:has(.ui-checkbox__input:…)`), so it works controlled or
- * uncontrolled. Skin classes come from `@fubaritico-ds/variants` → `.ui-checkbox` (+ the reused
+ * uncontrolled. Skin classes come from `@fubaritico/variants` → `.ui-checkbox` (+ the reused
  * `.ui-field__message--error`).
  */
 const meta = {

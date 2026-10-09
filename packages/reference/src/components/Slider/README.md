@@ -27,7 +27,7 @@ A value along a track. The visible parts are painted by the skin; the control un
 ## Import
 
 ```tsx
-import { Slider } from '@fubaritico-ds/reference/Slider'
+import { Slider } from '@fubaritico/react/Slider'
 ```
 
 ## Basic usage

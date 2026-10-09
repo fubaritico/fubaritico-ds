@@ -19,7 +19,7 @@ A select-like control: a trigger button that opens a floating menu of options. C
 ## Import
 
 ```tsx
-import { Dropdown } from '@fubaritico-ds/reference/Dropdown'
+import { Dropdown } from '@fubaritico/react/Dropdown'
 ```
 
 ## Basic usage

@@ -1,8 +1,6 @@
 import { Profiler } from 'react'
 
-import DataTableExample, {
-  makeJobs,
-} from '@fubaritico-ds/reference/DataTableExample'
+import DataTableExample, { makeJobs } from '@fubaritico/react/DataTableExample'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { ProfilerOnRenderCallback } from 'react'
@@ -83,7 +81,7 @@ const meta = {
           '**DataTable** — the virtualized `DataTableVirtualized` and paginated `DataTable`, both',
           'rendered through the `DataTableExample` container (the DI seam: the TanStack table instance',
           'is built in the container and injected into the presentational table). Wears the native BEM',
-          'skin (`@fubaritico-ds/styles`, the `ui-data-table` namespace).',
+          'skin (`@fubaritico/styles`, the `ui-data-table` namespace).',
           '',
           '**How to benchmark:** scroll the body (only visible rows mount), toggle one row, then',
           'use the header checkbox to **select-all / deselect-all** all 150 000 rows. Compare',

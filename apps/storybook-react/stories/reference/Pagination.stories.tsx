@@ -1,14 +1,14 @@
 import { useState } from 'react'
 
 // Pagination — CSS-free subpath (no Tailwind leak in Storybook).
-import { Pagination } from '@fubaritico-ds/reference/Pagination'
+import { Pagination } from '@fubaritico/react/Pagination'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 /**
  * Pagination — a presentational, fully-controlled page navigator (first/previous arrows, a sliding
  * window of page buttons, next/last arrows). All state is lifted to the parent. Skin classes come
- * from `@fubaritico-ds/variants` → `.ui-pagination`.
+ * from `@fubaritico/variants` → `.ui-pagination`.
  */
 const meta = {
   title: 'Reference/Pagination',

@@ -17,15 +17,15 @@ not props, is how you build richer cards (the Open/Closed principle).
   `<img>` + `Card.Body`; a clickable card is a _separate_ component composing this surface.
 - **Block element** — renders a `<div>` and forwards every `<div>` attribute (`id`, `aria-*`, `onClick`,
   `ref`, `className`, …); same for each slot.
-- **Headless skin** — the variant resolves to a BEM class via `@fubaritico-ds/variants`; colours,
+- **Headless skin** — the variant resolves to a BEM class via `@fubaritico/variants`; colours,
   paddings and radii come from the overridable `--ui-card-*` component variables.
 
 ## Import
 
 ```tsx
-import { Card } from '@fubaritico-ds/reference/Card'
+import { Card } from '@fubaritico/react/Card'
 // Compose with the DS text primitive for the content (otherwise text falls back to the browser serif):
-import { Typography } from '@fubaritico-ds/reference/Typography'
+import { Typography } from '@fubaritico/react/Typography'
 ```
 
 ## Basic usage

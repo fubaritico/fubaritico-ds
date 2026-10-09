@@ -24,7 +24,7 @@ picture fading in on decode, and a fallback when the source fails.
 ## Import
 
 ```tsx
-import { Image } from '@fubaritico-ds/reference/Image'
+import { Image } from '@fubaritico/react/Image'
 ```
 
 ## Basic usage

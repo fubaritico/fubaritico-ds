@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { typeaheadEmptyVariants } from '@fubaritico-ds/variants'
+import { typeaheadEmptyVariants } from '@fubaritico/variants'
 
 import { useTypeaheadContext } from './TypeaheadContext'
 

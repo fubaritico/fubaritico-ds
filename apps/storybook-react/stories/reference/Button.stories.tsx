@@ -1,11 +1,11 @@
 // Plain Button — CSS-free + router-free subpath (no Tailwind, no react-router-dom in Storybook).
-import { Button } from '@fubaritico-ds/reference/Button'
+import { Button } from '@fubaritico/react/Button'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 /**
- * Button — the design-system plain button on the native BEM skin (`@fubaritico-ds/styles`),
- * variant/size/icon-position resolved by `@fubaritico-ds/variants`.
+ * Button — the design-system plain button on the native BEM skin (`@fubaritico/styles`),
+ * variant/size/icon-position resolved by `@fubaritico/variants`.
  */
 const meta = {
   title: 'Reference/Button',

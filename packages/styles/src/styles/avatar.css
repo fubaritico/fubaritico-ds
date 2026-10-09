@@ -11,7 +11,7 @@
  *   3. Write any plain selector (e.g. `.ui-avatar { ... }`): being unlayered, it beats this
  *      layered skin with no specificity war.
  *
- * Sizes come from @fubaritico-ds/tokens spacing scale; each size modifier sets `--ui-avatar-size`
+ * Sizes come from @fubaritico/tokens spacing scale; each size modifier sets `--ui-avatar-size`
  * (the square footprint) and `--ui-avatar-font-size` (the initials scale). `md` is the base — the
  * CVA resolver emits no modifier for it. The fallback icon's pixel size is NOT a skin concern (the
  * Icon takes a numeric prop) and is resolved in the React component.

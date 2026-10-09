@@ -1,4 +1,4 @@
-# Plan — `@fubaritico-ds/stencil`
+# Plan — `@fubaritico/stencil`
 
 > Source de vérité du travail à faire sur le package Stencil. Le pas-à-pas détaillé de chaque
 > fichier vit dans `README.md` (journal de mise en place) ; ce fichier liste **les étapes** et
@@ -76,12 +76,12 @@ pas), `reactOutputTarget`, `angularOutputTarget` (standalone), `docs-readme`. _(
 - [ ] Compléter le champ `exports` de `package.json` (`.`, `./dist/*`, `./components/*`, `./loader`) — sinon erreurs de résolution d'import sur les wrappers (skill golden rule #6).
 - [ ] Ajouter un script `type-check` (`tsc --noEmit -p tsconfig.json`) au `package.json` du package.
 - [ ] **Brancher stencil dans les vérifs racine** : `type-check`, `test` (`stencil test --spec`) et
-      `build` doivent inclure `@fubaritico-ds/stencil`. _(L'orchestration `dev`/`dev:apps` des apps
-      héritées reste à recâbler dans une passe dédiée — refs périmées `@fubaritico-ds/ui` / `@fubar-it-co/tmdb-client`.)_
+      `build` doivent inclure `@fubaritico/stencil`. _(L'orchestration `dev`/`dev:apps` des apps
+      héritées reste à recâbler dans une passe dédiée — refs périmées `@fubaritico/ui` / `@fubar-it-co/tmdb-client`.)_
 
 ### ⬜ Étape 5 — Style global (`globalStyle` pointe vers un fichier manquant → build casse aujourd'hui)
 
-- [ ] Créer `src/global/ui-stencil.css` : import des tokens (`@fubaritico-ds/tokens`), variables d'accent, reset minimal.
+- [ ] Créer `src/global/ui-stencil.css` : import des tokens (`@fubaritico/tokens`), variables d'accent, reset minimal.
 - [ ] `stencil build` → **doit passer au vert** (validation de la chaîne avant tout composant).
 
 ### ⬜ Étape 6 — Port `ui-badge` (atome, CSS simple) — valide la chaîne complète

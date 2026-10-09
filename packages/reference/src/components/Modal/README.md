@@ -22,7 +22,7 @@ the visible panel is yours to compose inside.
 ## Import
 
 ```tsx
-import { Modal } from '@fubaritico-ds/reference/Modal'
+import { Modal } from '@fubaritico/react/Modal'
 ```
 
 ## Basic usage

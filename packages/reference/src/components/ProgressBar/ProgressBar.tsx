@@ -8,18 +8,18 @@ import {
   PROGRESS_BAR_TRACK_CLASS,
   PROGRESS_BAR_VALUE_VAR,
   progressBarVariants,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import type {
   ProgressBarSize,
   ProgressBarVariant,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 import type { CSSProperties, ComponentProps, ReactNode } from 'react'
 
 export type {
   ProgressBarSize,
   ProgressBarVariant,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 /** Props of the {@link ProgressBar}. */
 export interface ProgressBarProps

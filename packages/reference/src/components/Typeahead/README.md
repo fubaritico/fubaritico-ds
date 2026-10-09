@@ -27,7 +27,7 @@ own the data; `Typeahead` owns the interaction.
 ## Import
 
 ```tsx
-import { Typeahead } from '@fubaritico-ds/reference/Typeahead'
+import { Typeahead } from '@fubaritico/react/Typeahead'
 ```
 
 ## Basic usage

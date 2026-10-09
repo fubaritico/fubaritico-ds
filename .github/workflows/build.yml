@@ -11,7 +11,7 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      # Excludes @fubaritico-ds/stencil: `stencil build` fails until PLAN step 5
+      # Excludes @fubaritico/stencil: `stencil build` fails until PLAN step 5
       # (src/global/ui-stencil.css) is done. Add stencil to the build once it's green.
       - name: Build packages
         run: pnpm build:packages
@@ -33,7 +33,7 @@ jobs:
   #     - uses: actions/checkout@v6
   #     - uses: ./.github/actions/setup
   #     - name: Build Storybook (web-component)
-  #       run: pnpm --filter @fubaritico-ds/storybook-web-component build
+  #       run: pnpm --filter @fubaritico/storybook-web-component build
   #     - name: Upload storybook static
   #       uses: actions/upload-artifact@v6
   #       with:

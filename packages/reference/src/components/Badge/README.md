@@ -13,13 +13,13 @@ skin. Presentational only: it conveys meaning through its text, never through co
   one line (the icon stays visible). For tight layouts such as a fixed-width table column.
 - **Inline element** — renders a `<span>`, so it flows inside text and forwards every `<span>`
   attribute (`id`, `aria-*`, `onClick`, `ref`, `className`, …).
-- **Headless skin** — variant/size resolve to BEM classes via `@fubaritico-ds/variants`; colours and
+- **Headless skin** — variant/size resolve to BEM classes via `@fubaritico/variants`; colours and
   paddings come from the overridable `--ui-badge-*` component variables.
 
 ## Import
 
 ```tsx
-import { Badge } from '@fubaritico-ds/reference/Badge'
+import { Badge } from '@fubaritico/react/Badge'
 ```
 
 ## Basic usage

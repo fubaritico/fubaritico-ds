@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { TYPEAHEAD_MARK_CLASS } from '@fubaritico-ds/variants'
+import { TYPEAHEAD_MARK_CLASS } from '@fubaritico/variants'
 
 import { useTypeaheadContext } from './TypeaheadContext'
 

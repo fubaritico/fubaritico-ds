@@ -1,4 +1,4 @@
-import { Image } from '@fubaritico-ds/reference/Image'
+import { Image } from '@fubaritico/react/Image'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 

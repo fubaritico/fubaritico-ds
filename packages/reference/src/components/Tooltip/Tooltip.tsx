@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { tooltipArrowVariants, tooltipVariants } from '@fubaritico-ds/variants'
+import { tooltipArrowVariants, tooltipVariants } from '@fubaritico/variants'
 
 import { Portal } from '../Portal'
 

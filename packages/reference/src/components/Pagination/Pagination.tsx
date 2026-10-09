@@ -7,7 +7,7 @@ import {
   PAGINATION_NAV_CLASS,
   PAGINATION_PAGES_CLASS,
   paginationPageVariants,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { Icon } from '../Icon'
 

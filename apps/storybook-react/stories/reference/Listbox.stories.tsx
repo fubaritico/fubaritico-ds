@@ -1,4 +1,4 @@
-import { ListboxItem, ListboxList } from '@fubaritico-ds/reference/Listbox'
+import { ListboxItem, ListboxList } from '@fubaritico/react/Listbox'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 

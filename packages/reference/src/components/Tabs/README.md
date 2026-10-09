@@ -1,7 +1,7 @@
 # Tabs
 
 Switches between sibling panels, following the ARIA tabs pattern. Controlled or uncontrolled. A thin
-React adapter over `TabsService` from `@fubaritico-ds/behaviors`, which owns the behaviour.
+React adapter over `TabsService` from `@fubaritico/behaviors`, which owns the behaviour.
 
 ## Capabilities
 
@@ -32,7 +32,7 @@ React adapter over `TabsService` from `@fubaritico-ds/behaviors`, which owns the
 ## Import
 
 ```tsx
-import { Tabs } from '@fubaritico-ds/reference/Tabs'
+import { Tabs } from '@fubaritico/react/Tabs'
 ```
 
 ## Basic usage
@@ -104,7 +104,7 @@ Predictable ids (`tab-popular-a`, `tabpanel-popular-a`), e.g. for deep links or 
 Driving the tabs from outside the tree — inject the service:
 
 ```tsx
-import { createTabsService } from '@fubaritico-ds/behaviors'
+import { createTabsService } from '@fubaritico/behaviors'
 
 const settingsTabs = createTabsService({ uid: 'settings', defaultActiveId: 'profile' })
 
@@ -123,7 +123,7 @@ A panel whose content starts with a link, button or field — drop its own tab s
 Driving the tabs from a sibling component inside `<Tabs>`:
 
 ```tsx
-import { useTabsController } from '@fubaritico-ds/reference/Tabs'
+import { useTabsController } from '@fubaritico/react/Tabs'
 
 function NextButton() {
   const { service } = useTabsController()

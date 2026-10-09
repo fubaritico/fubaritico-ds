@@ -196,16 +196,16 @@ importers:
 
   apps/storybook-react:
     dependencies:
-      '@fubaritico-ds/reference':
+      '@fubaritico/react':
         specifier: workspace:*
         version: link:../../packages/reference
-      '@fubaritico-ds/shared':
+      '@fubaritico/shared':
         specifier: workspace:*
         version: link:../../packages/shared
-      '@fubaritico-ds/styles':
+      '@fubaritico/styles':
         specifier: workspace:*
         version: link:../../packages/styles
-      '@fubaritico-ds/tokens':
+      '@fubaritico/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
     devDependencies:
@@ -254,10 +254,10 @@ importers:
 
   packages/reference:
     dependencies:
-      '@fubaritico-ds/behaviors':
+      '@fubaritico/behaviors':
         specifier: workspace:*
         version: link:../behaviors
-      '@fubaritico-ds/variants':
+      '@fubaritico/variants':
         specifier: workspace:*
         version: link:../variants
       '@heroicons/react':
@@ -282,7 +282,7 @@ importers:
         specifier: '>=19'
         version: 19.2.4(react@19.2.4)
     devDependencies:
-      '@fubaritico-ds/shared':
+      '@fubaritico/shared':
         specifier: workspace:*
         version: link:../shared
       '@testing-library/jest-dom':
@@ -330,7 +330,7 @@ importers:
 
   packages/shared:
     dependencies:
-      '@fubaritico-ds/tokens':
+      '@fubaritico/tokens':
         specifier: workspace:*
         version: link:../tokens
       clsx:
@@ -419,7 +419,7 @@ importers:
         specifier: ^4.43.5
         version: 4.43.5
     devDependencies:
-      '@fubaritico-ds/tokens':
+      '@fubaritico/tokens':
         specifier: workspace:*
         version: link:../tokens
       '@stencil/angular-output-target':
@@ -452,7 +452,7 @@ importers:
 
   packages/styles:
     dependencies:
-      '@fubaritico-ds/tokens':
+      '@fubaritico/tokens':
         specifier: workspace:*
         version: link:../tokens
     devDependencies:

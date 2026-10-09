@@ -56,7 +56,7 @@ If a finding depends on Stencil compiler/output-target behavior you are not 100%
 
 - **Files**: `packages/stencil/src/**`
 - **Check**: no Tailwind `ui:` utility classes inside WC; style with **BEM + overridable CSS variables**
-  (fed by `@fubaritico-ds/tokens`) so styles survive across output targets
+  (fed by `@fubaritico/tokens`) so styles survive across output targets
 
 ### PLAT-004: Event shape that breaks generated wrappers
 

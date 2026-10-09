@@ -1,4 +1,4 @@
-# @fubaritico-ds/shared
+# @fubaritico/shared
 
 Shared utilities and plugins for the vite-mf-monorepo project.
 
@@ -11,7 +11,7 @@ Shared utilities and plugins for the vite-mf-monorepo project.
 Generic retry utility that executes a function with automatic retries and exponential backoff.
 
 ```typescript
-import { retry } from '@fubaritico-ds/shared'
+import { retry } from '@fubaritico/shared'
 
 const result = await retry(
   async () => {
@@ -35,7 +35,7 @@ const result = await retry(
 Checks if a remote Module Federation app is available before loading it.
 
 ```typescript
-import { checkRemoteHealth } from '@fubaritico-ds/shared'
+import { checkRemoteHealth } from '@fubaritico/shared'
 
 const isAvailable = await checkRemoteHealth(
   'http://localhost:3001/remoteEntry.js',
@@ -58,7 +58,7 @@ if (isAvailable) {
 Tailwind CSS v4 theme configuration using the `@theme` directive. Defines color tokens based on shadcn/ui Neutral palette in OKLCH format.
 
 ```css
-@import '@fubaritico-ds/shared/src/tailwind/theme.css';
+@import '@fubaritico/shared/src/tailwind/theme.css';
 ```
 
 **Available tokens**:
@@ -82,10 +82,10 @@ See the [HMR Sync Plugin](#hmr-sync-plugin) section below for details.
 
 ```typescript
 // In vite.config.ts
-import { notifyHostOnHmr } from '@fubaritico-ds/shared'
+import { notifyHostOnHmr } from '@fubaritico/shared'
 
 // In application code
-import { checkRemoteHealth, retry } from '@fubaritico-ds/shared'
+import { checkRemoteHealth, retry } from '@fubaritico/shared'
 ```
 
 ## Build
@@ -93,7 +93,7 @@ import { checkRemoteHealth, retry } from '@fubaritico-ds/shared'
 This package must be compiled before use:
 
 ```bash
-pnpm --filter @fubaritico-ds/shared build
+pnpm --filter @fubaritico/shared build
 ```
 
 The compiled files are output to `./dist`.
@@ -143,7 +143,7 @@ This file is a build cache created when `composite: true` is set. It speeds up i
 
 ```bash
 rm -rf packages/shared/dist packages/shared/tsconfig.tsbuildinfo
-pnpm --filter @fubaritico-ds/shared build
+pnpm --filter @fubaritico/shared build
 ```
 
 ## HMR Sync Plugin

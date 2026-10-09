@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
-import { BottomSheet } from '@fubaritico-ds/reference/BottomSheet'
-import { Button } from '@fubaritico-ds/reference/Button'
-import { Typography } from '@fubaritico-ds/reference/Typography'
+import { BottomSheet } from '@fubaritico/react/BottomSheet'
+import { Button } from '@fubaritico/react/Button'
+import { Typography } from '@fubaritico/react/Typography'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 

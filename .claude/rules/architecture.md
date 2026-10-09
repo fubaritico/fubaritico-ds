@@ -32,25 +32,25 @@ apps/
 └── storybook-vuejs/         # empty scaffold — no package.json yet
 
 packages/
-├── behaviors/    @fubaritico-ds/behaviors — behaviour services, one per component (state/keyboard/focus/ARIA)
+├── behaviors/    @fubaritico/behaviors — behaviour services, one per component (state/keyboard/focus/ARIA)
 │   └── src/<domain>/ → dist (tsc); no React/DOM; zero dependencies
-├── reference/    @fubaritico-ds/reference — React DS components (the port source)
+├── reference/    @fubaritico/react — React DS components (the port source)
 │   ├── src/components/<Component>/ → Component.tsx, .types.ts, .test.tsx, README.md, index.ts
 │   ├── src/index.ts (root barrel), src/styles.css (Tailwind entry, legacy components only)
 │   ├── vitest.config.ts, vitest.setup.ts, tsconfig.json, tsconfig.build.json
-│   └── styling: BEM skin (`@fubaritico-ds/styles`) + resolvers (`@fubaritico-ds/variants`).
+│   └── styling: BEM skin (`@fubaritico/styles`) + resolvers (`@fubaritico/variants`).
 │       The `ui:` Tailwind prefix is LEGACY — only the not-yet-migrated components still use it.
-├── shared/       @fubaritico-ds/shared — utils, test-utils, browser mocks, theme, fonts, vite plugins
+├── shared/       @fubaritico/shared — utils, test-utils, browser mocks, theme, fonts, vite plugins
 │   └── src/{utils,hooks,tailwind,fonts,test-utils,mocks/browser,vite}/
-├── stencil/      @fubaritico-ds/stencil — the Stencil sandbox (SUBJECT of the project)
+├── stencil/      @fubaritico/stencil — the Stencil sandbox (SUBJECT of the project)
 │   ├── stencil.config.ts (5 output targets), tsconfig.json (jsx:react + h), tsconfig.eslint.json
 │   ├── vitest.config.ts (minimal now; full @stencil/vitest at step 6 — see PLAN.md)
 │   ├── src/global/ui-stencil.css, src/components/ui-*/   → tag prefix `ui-`
 │   └── dist/{components,react,angular} — generated artefacts to compare (not installable yet)
-├── styles/       @fubaritico-ds/styles — portable native BEM skin (CSS-only, @layer + --ui-* vars)
+├── styles/       @fubaritico/styles — portable native BEM skin (CSS-only, @layer + --ui-* vars)
 │   └── src/native-styles.css + src/styles/<component>.css → dist/styles.css (PostCSS)
-├── tokens/       @fubaritico-ds/tokens — Style Dictionary → dist/{css,js,ts,tailwind}
-└── variants/     @fubaritico-ds/variants — framework-agnostic CVA resolvers (pure BEM class
+├── tokens/       @fubaritico/tokens — Style Dictionary → dist/{css,js,ts,tailwind}
+└── variants/     @fubaritico/variants — framework-agnostic CVA resolvers (pure BEM class
     └── src/<component>.ts → dist (tsc); no React/DOM; dep: class-variance-authority only
 ```
 
@@ -104,11 +104,11 @@ pnpm dev          # lerna run --parallel --stream dev
 ## CSS / Styling
 
 - Tailwind v4, CSS-first (no `tailwind.config.js`).
-- `packages/reference`: migrated components use the native BEM skin (`@fubaritico-ds/styles`) with
-  classes from `@fubaritico-ds/variants`. The `ui:` Tailwind prefix is legacy, kept only by the
+- `packages/reference`: migrated components use the native BEM skin (`@fubaritico/styles`) with
+  classes from `@fubaritico/variants`. The `ui:` Tailwind prefix is legacy, kept only by the
   components still queued for migration (Tabs, Drawer, Carousel, Typeahead, `next/Image`).
 - `packages/stencil`: BEM + overridable CSS variables (light DOM), global sheet `src/global/ui-stencil.css`,
-  fed by `@fubaritico-ds/tokens`; component tags prefixed `ui-`.
+  fed by `@fubaritico/tokens`; component tags prefixed `ui-`.
 - New package/app: define a new prefix, never reuse an existing one.
 
 ## Git & Commits

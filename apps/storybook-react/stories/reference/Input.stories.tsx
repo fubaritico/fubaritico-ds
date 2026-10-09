@@ -1,5 +1,5 @@
 // Text input — CSS-free subpath (no Tailwind leak in Storybook).
-import { Input } from '@fubaritico-ds/reference/Input'
+import { Input } from '@fubaritico/react/Input'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
@@ -7,7 +7,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
  * Input — an accessible text-field primitive: an `<input>` control plus an optional label, a
  * decorative trailing icon and a helper/error message. Label and message are wired to the control
  * (`htmlFor` + `aria-describedby`); errors surface via `aria-invalid` + `role="alert"`. Skin classes
- * come from `@fubaritico-ds/variants` → `.ui-input` / `.ui-input-affix` / `.ui-field`.
+ * come from `@fubaritico/variants` → `.ui-input` / `.ui-input-affix` / `.ui-field`.
  */
 const meta = {
   title: 'Reference/Input',

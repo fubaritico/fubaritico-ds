@@ -53,7 +53,7 @@ stencil-library/
 
 ```jsonc
 {
-  "name": "@fubaritico-ds/stencil", // nom workspace, cohérent avec les autres packages
+  "name": "@fubaritico/stencil", // nom workspace, cohérent avec les autres packages
   "version": "0.0.0",                  // aligné monorepo (Lerna)
   "private": true,                     // sandbox : pas de publication npm
   "type": "module",                    // ESM
@@ -73,7 +73,7 @@ stencil-library/
     "@stencil/react-output-target": "^1.5.3",        // génère le wrapper React
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@fubaritico-ds/tokens": "workspace:*",       // tokens (CSS variables niveau 1)
+    "@fubaritico/tokens": "workspace:*",       // tokens (CSS variables niveau 1)
     "react": "catalog:",
     "react-dom": "catalog:"                          // peer du react-output-target 1.x
   }
@@ -159,7 +159,7 @@ export const config: Config = {
 
     // 4) wrapper Angular généré (standalone, s'appuie sur dist-custom-elements)
     angularOutputTarget({
-      componentCorePackage: '@fubaritico-ds/stencil', // doit = "name" du package.json
+      componentCorePackage: '@fubaritico/stencil', // doit = "name" du package.json
       outputType: 'standalone',
       directivesProxyFile: './dist/angular/components.ts',
       directivesArrayFile: './dist/angular/index.ts',

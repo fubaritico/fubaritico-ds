@@ -1,0 +1,41 @@
+name: Release
+
+# Publishes the design-system packages to GitHub Packages (npm.pkg.github.com, scope @fubaritico).
+# Manual on purpose: bump first with `pnpm exec lerna version <minor|patch> --conventional-commits`
+# (fixed mode — every package moves together), push the commit + tag, then run this workflow.
+# `pnpm publish -r` skips private packages and versions already on the registry, so a re-run is safe.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Pack and report what would be published, without publishing
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/setup
+
+      # Writes the .npmrc that maps @fubaritico to GitHub Packages and reads NODE_AUTH_TOKEN.
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: '@fubaritico'
+
+      - name: Build
+        run: pnpm build:packages
+
+      - name: Publish
+        run: pnpm -r --filter "./packages/*" publish --no-git-checks ${{ inputs.dry_run && '--dry-run' || '' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

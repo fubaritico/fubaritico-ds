@@ -4,7 +4,7 @@ import type { VariantProps } from 'class-variance-authority'
 
 /**
  * Resolves a Pagination page-number button's state into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-pagination__page`, `.ui-pagination__page--active`).
+ * (`@fubaritico/styles` → `.ui-pagination__page`, `.ui-pagination__page--active`).
  *
  * Pure string output (framework-agnostic): consumed by the React reference and the
  * Stencil / Angular / Vue packages alike.

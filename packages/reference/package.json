@@ -1,10 +1,16 @@
 {
-  "name": "@fubaritico-ds/reference",
+  "name": "@fubaritico/react",
   "version": "0.1.0",
-  "description": "React design-system components wearing the @fubaritico-ds/styles native BEM skin. Tailwind-free: the skin is plain CSS driven by design tokens.",
+  "description": "React design-system components wearing the @fubaritico/styles native BEM skin. Tailwind-free: the skin is plain CSS driven by design tokens.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fubaritico/fubaritico-ds.git",
+    "directory": "packages/reference"
+  },
   "type": "module",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -60,7 +66,7 @@
     }
   },
   "devDependencies": {
-    "@fubaritico-ds/shared": "workspace:*",
+    "@fubaritico/shared": "workspace:*",
     "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",
     "@testing-library/user-event": "catalog:",
@@ -77,8 +83,8 @@
     "vitest": "catalog:"
   },
   "dependencies": {
-    "@fubaritico-ds/behaviors": "workspace:*",
-    "@fubaritico-ds/variants": "workspace:*",
+    "@fubaritico/behaviors": "workspace:*",
+    "@fubaritico/variants": "workspace:*",
     "@heroicons/react": "^2.2.0",
     "@tanstack/react-table": "catalog:",
     "@tanstack/react-virtual": "catalog:",

@@ -4,7 +4,7 @@ import type { VariantProps } from 'class-variance-authority'
 
 /**
  * Resolves the DataTable row's opt-in hover state into the BEM class names of the native skin
- * (`@fubaritico-ds/styles` → `.ui-data-table__row`, `.ui-data-table__row--hoverable`).
+ * (`@fubaritico/styles` → `.ui-data-table__row`, `.ui-data-table__row--hoverable`).
  *
  * Pure string output (framework-agnostic): consumed by the React reference and the
  * Stencil / Angular / Vue packages alike, none of which it couples to a framework. The `selected`

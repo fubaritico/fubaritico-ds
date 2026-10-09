@@ -7,7 +7,7 @@ metadata:
 
 ## Overview
 
-This skill guides AI in writing CSS using the BEM (Block Element Modifier) methodology for creating maintainable, scalable, and reusable stylesheets with clear naming conventions and component structure, while exercising judgment about scope, risk, and architectural impact. It should use BEM in conjunction with **this project's design system** (the `@fubaritico-ds/tokens` variables and the shared skin in `packages/styles`), so that it is not recreating things that already exist. If there is already a token or a BEM block that fits the need, it should be used and/or overridden as necessary instead of creating a new one.
+This skill guides AI in writing CSS using the BEM (Block Element Modifier) methodology for creating maintainable, scalable, and reusable stylesheets with clear naming conventions and component structure, while exercising judgment about scope, risk, and architectural impact. It should use BEM in conjunction with **this project's design system** (the `@fubaritico/tokens` variables and the shared skin in `packages/styles`), so that it is not recreating things that already exist. If there is already a token or a BEM block that fits the need, it should be used and/or overridden as necessary instead of creating a new one.
 
 The agent should prioritize clarity, predictability, and minimal unintended side effects.
 

@@ -125,7 +125,7 @@ export default tseslint.config(
           'newlines-between': 'always',
           pathGroups: [
             {
-              pattern: '@fubaritico-ds/**',
+              pattern: '@fubaritico/**',
               group: 'internal',
               position: 'before',
             },

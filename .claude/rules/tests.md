@@ -104,9 +104,9 @@ Boundary conditions and unusual but possible scenarios.
 
 ## Test Utilities & Mocks
 
-- React render helpers in `@fubaritico-ds/shared/test-utils`
+- React render helpers in `@fubaritico/shared/test-utils`
   (`renderWithReactQuery`, `renderWithRouter`, …)
-- Generic browser mocks via `setupBrowserMocks()` from `@fubaritico-ds/shared/mocks`
+- Generic browser mocks via `setupBrowserMocks()` from `@fubaritico/shared/mocks`
 - ALWAYS `userEvent` (never `fireEvent`)
 - Mock modules at the top level with `vi.mock(...)`
 

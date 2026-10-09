@@ -1,8 +1,13 @@
 {
-  "name": "@fubaritico-ds/styles",
+  "name": "@fubaritico/styles",
   "version": "0.1.0",
   "type": "module",
-  "description": "Portable native BEM skin for the fubaritico design system \u2014 plain CSS in @layer, driven by @fubaritico-ds/tokens and overridable through component-scoped --ui-* variables.",
+  "description": "Portable native BEM skin for the fubaritico design system — plain CSS in @layer, driven by @fubaritico/tokens and overridable through component-scoped --ui-* variables.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fubaritico/fubaritico-ds.git",
+    "directory": "packages/styles"
+  },
   "exports": {
     ".": "./dist/styles.css",
     "./styles.css": "./dist/styles.css"
@@ -17,7 +22,7 @@
     "build": "pnpm clean && mkdir -p dist && postcss src/native-styles.css -o dist/styles.css"
   },
   "peerDependencies": {
-    "@fubaritico-ds/tokens": "workspace:*"
+    "@fubaritico/tokens": "workspace:*"
   },
   "devDependencies": {
     "autoprefixer": "catalog:",
@@ -28,6 +33,7 @@
     "postcss-nested": "^7.0.2"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
   }
 }

@@ -50,7 +50,7 @@ component (`reference`). Never start with the `.tsx`.
 
 ## Rules
 
-- **The native BEM skin, NOT Tailwind** — classes come from the `@fubaritico-ds/variants` resolver.
+- **The native BEM skin, NOT Tailwind** — classes come from the `@fubaritico/variants` resolver.
   Never write new `ui:` Tailwind classes (that prefix only survives in the not-yet-migrated components).
 - **GÉNÉREUX en variables de surcharge — mieux trop que pas assez.** Chaque propriété cosmétique
   mérite sa `--ui-<bloc>-*`. Une var inutilisée coûte une ligne ; une var manquante force le

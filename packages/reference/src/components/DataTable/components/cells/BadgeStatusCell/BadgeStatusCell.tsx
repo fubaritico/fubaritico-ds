@@ -2,7 +2,7 @@ import { Badge } from '../../../../Badge'
 import { TableCell } from '../../primitives/TableCell'
 
 import type { IconName } from '../../../../Icon'
-import type { BadgeVariant } from '@fubaritico-ds/variants'
+import type { BadgeVariant } from '@fubaritico/variants'
 import type { Row } from '@tanstack/react-table'
 
 /** Visual recipe (variant + optional leading icon) for a job status. */

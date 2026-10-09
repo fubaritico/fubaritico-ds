@@ -1,6 +1,6 @@
 import { createContext, use } from 'react'
 
-import type { ListboxVariant } from '@fubaritico-ds/variants'
+import type { ListboxVariant } from '@fubaritico/variants'
 
 /** Colour scheme of the Menu — mirrors the Listbox surface it composes. */
 export type MenuVariant = ListboxVariant

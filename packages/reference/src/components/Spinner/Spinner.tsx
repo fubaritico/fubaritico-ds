@@ -1,8 +1,8 @@
 import clsx from 'clsx'
 
-import { spinnerVariants } from '@fubaritico-ds/variants'
+import { spinnerVariants } from '@fubaritico/variants'
 
-import type { SpinnerSize } from '@fubaritico-ds/variants'
+import type { SpinnerSize } from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
 export type { SpinnerSize }
@@ -13,7 +13,7 @@ export interface SpinnerProps extends ComponentProps<'div'> {
 }
 
 /**
- * Spinner — native BEM skin (`@fubaritico-ds/styles`). A headless loading indicator: the ring
+ * Spinner — native BEM skin (`@fubaritico/styles`). A headless loading indicator: the ring
  * inherits `currentColor`, so it takes the surrounding text colour (override with `color` or the
  * `--ui-spinner-*` component variables). Size resolves to a BEM class via {@link spinnerVariants}.
  *

@@ -295,7 +295,7 @@ officiel, minuscule, et c'est elle qu'utilise Headless UI. Elle prend **en plus*
 **comparateur**, et **mémoïse** le résultat → pas de boucle, même pour une tranche dérivée :
 
 ```ts
-import { shallowEqual } from '@fubaritico-ds/behaviors' // ou la version de Headless UI
+import { shallowEqual } from '@fubaritico/behaviors' // ou la version de Headless UI
 
 let urgents = useSyncExternalStoreWithSelector(
   toastStore.subscribe,
@@ -386,7 +386,7 @@ exprès pour lire un état hors de React, sans incohérence d'affichage pendant 
 ```ts
 // proposition — packages/behaviors-react/src/use-machine.ts
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/with-selector'
-import type { Machine } from '@fubaritico-ds/behaviors'
+import type { Machine } from '@fubaritico/behaviors'
 
 export function useMachineSlice<S, E, Slice>(
   machine: Machine<S, E>,

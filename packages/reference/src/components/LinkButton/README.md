@@ -16,7 +16,7 @@ presentational core. Same visual API as `Button`, but it renders an anchor and n
 ## Import
 
 ```tsx
-import { LinkButton } from '@fubaritico-ds/reference/LinkButton'
+import { LinkButton } from '@fubaritico/react/LinkButton'
 ```
 
 ## Basic usage

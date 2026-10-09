@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-import { Slider } from '@fubaritico-ds/reference/Slider'
-import { Typography } from '@fubaritico-ds/reference/Typography'
+import { Slider } from '@fubaritico/react/Slider'
+import { Typography } from '@fubaritico/react/Typography'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { CSSProperties } from 'react'

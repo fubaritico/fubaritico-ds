@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
-import { TYPEAHEAD_CLASS } from '@fubaritico-ds/variants'
+import { TYPEAHEAD_CLASS } from '@fubaritico/variants'
 
 import { TypeaheadContext } from './TypeaheadContext'
 import { TypeaheadEmpty } from './TypeaheadEmpty'

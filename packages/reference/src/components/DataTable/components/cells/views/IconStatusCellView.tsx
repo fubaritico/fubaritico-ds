@@ -1,7 +1,7 @@
 import {
   UI_DATA_TABLE_CELL_CENTER_MODIFIER,
   UI_DATA_TABLE_VISUALLY_HIDDEN_CLASS,
-} from '@fubaritico-ds/variants'
+} from '@fubaritico/variants'
 
 import { Icon } from '../../../../Icon'
 import { TableCell } from '../../primitives/TableCell'

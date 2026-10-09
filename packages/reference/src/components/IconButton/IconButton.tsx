@@ -1,12 +1,12 @@
 import clsx from 'clsx'
 
-import { iconButtonVariants } from '@fubaritico-ds/variants'
+import { iconButtonVariants } from '@fubaritico/variants'
 
 import { Button } from '../Button'
 
 import type { ButtonProps } from '../Button'
 import type { IconName } from '../Icon'
-import type { ButtonVariant } from '@fubaritico-ds/variants'
+import type { ButtonVariant } from '@fubaritico/variants'
 
 /**
  * Props for {@link IconButton} — Button's props minus the label-oriented ones, with an icon
@@ -31,7 +31,7 @@ export interface IconButtonProps
 /**
  * IconButton — a circular, icon-only **extension of {@link Button}** (Open/Closed): it renders a
  * `Button` (reusing its variants, hover, focus, disabled and the icon-size map) and layers on the
- * icon-fitting shape via `@fubaritico-ds/variants` (`.ui-icon-button`). The IconButton-only
+ * icon-fitting shape via `@fubaritico/variants` (`.ui-icon-button`). The IconButton-only
  * `ghost-dark` on-dark variant redefines the reused `--ui-button-*` vars; Button is never modified.
  *
  * @param props - {@link IconButtonProps}

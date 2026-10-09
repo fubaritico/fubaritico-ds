@@ -21,7 +21,7 @@ trailing icon and a helper/error message — a presentational, framework-agnosti
 ## Import
 
 ```tsx
-import { Input } from '@fubaritico-ds/reference/Input'
+import { Input } from '@fubaritico/react/Input'
 ```
 
 ## Basic usage

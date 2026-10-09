@@ -10,7 +10,7 @@
  *   3. Write any plain selector (e.g. `.ui-spinner { ... }`): being unlayered, it beats this
  *      layered skin with no specificity war.
  *
- * Sizes come from @fubaritico-ds/tokens spacing scale; the ring thickness is derived from the size
+ * Sizes come from @fubaritico/tokens spacing scale; the ring thickness is derived from the size
  * (≈12.5% of the diameter) so it scales automatically — bigger spinner, thicker ring — and the size
  * modifiers only need to set `--ui-spinner-size`. `md` is the base — the CVA resolver emits no
  * modifier for it.

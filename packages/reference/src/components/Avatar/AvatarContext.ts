@@ -8,7 +8,7 @@ import {
   useState,
 } from 'react'
 
-import type { AvatarSize } from '@fubaritico-ds/variants'
+import type { AvatarSize } from '@fubaritico/variants'
 
 /** Public loading status of an {@link AvatarImage}, surfaced via `onLoadingStatusChange`. */
 export type AvatarImageStatus = 'idle' | 'loading' | 'loaded' | 'error'

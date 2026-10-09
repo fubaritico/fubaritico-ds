@@ -1,16 +1,16 @@
 import { useState } from 'react'
 
 // Dropdown — CSS-free subpath (no Tailwind leak in Storybook).
-import { Dropdown } from '@fubaritico-ds/reference/Dropdown'
+import { Dropdown } from '@fubaritico/react/Dropdown'
 
-import type { DropdownOption } from '@fubaritico-ds/reference/Dropdown'
+import type { DropdownOption } from '@fubaritico/react/Dropdown'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { ComponentProps } from 'react'
 
 /**
  * Dropdown — a select-like control: a trigger button opening a floating `Menu` of options (auto-flip,
  * optional Portal, outside-click/Escape to close). Composes the DS `Button` + `Menu`; the Dropdown
- * glue is skinned via `@fubaritico-ds/variants` → `.ui-dropdown`.
+ * glue is skinned via `@fubaritico/variants` → `.ui-dropdown`.
  */
 const meta = {
   title: 'Reference/Dropdown',

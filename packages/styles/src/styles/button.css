@@ -6,7 +6,7 @@
  *   2. Redefine a global token (e.g. `--color-primary`) → re-skins everything that uses it.
  *   3. Write any plain selector (`.ui-button { ... }`): being unlayered, it beats this layered skin.
  *
- * Values come from @fubaritico-ds/tokens. Hover uses the dedicated `--color-*-hover` palette tokens
+ * Values come from @fubaritico/tokens. Hover uses the dedicated `--color-*-hover` palette tokens
  * (deterministic, white-label) — NOT an opacity hack. The skin is self-sufficient (own box-sizing +
  * font-family) since the DS ships no global reset.
  */

@@ -23,7 +23,7 @@
 
 ### Cross-package types unresolved during `type-check`/`test`
 
-**Problem**: `reference` can't resolve `@fubaritico-ds/shared` because types come from `dist/*.d.ts` (no tsconfig `paths` to source) and `shared` wasn't built.
+**Problem**: `reference` can't resolve `@fubaritico/shared` because types come from `dist/*.d.ts` (no tsconfig `paths` to source) and `shared` wasn't built.
 **Solution**: `nx.json` `targetDefaults` with `dependsOn: ['^build']` on `type-check`/`test`/`build` — Nx builds dependencies first. Don't build manually.
 
 ### Husky hooks never run

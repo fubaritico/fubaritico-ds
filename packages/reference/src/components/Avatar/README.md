@@ -22,7 +22,7 @@ renders the first viable one — image when it loads, else initials, else the ic
 ## Import
 
 ```tsx
-import { Avatar } from '@fubaritico-ds/reference/Avatar'
+import { Avatar } from '@fubaritico/react/Avatar'
 ```
 
 ## Basic usage

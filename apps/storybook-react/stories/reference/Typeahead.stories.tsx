@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { Typeahead } from '@fubaritico-ds/reference/Typeahead'
+import { Typeahead } from '@fubaritico/react/Typeahead'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 

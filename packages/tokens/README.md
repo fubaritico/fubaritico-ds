@@ -1,4 +1,4 @@
-# @fubaritico-ds/tokens
+# @fubaritico/tokens
 
 The design decisions of the fubaritico design system — colour, spacing, radius, typography, motion
 — authored once in DTCG JSON and compiled by Style Dictionary into several outputs.
@@ -6,21 +6,21 @@ The design decisions of the fubaritico design system — colour, spacing, radius
 ## Install
 
 ```bash
-pnpm add @fubaritico-ds/tokens
+pnpm add @fubaritico/tokens
 ```
 
 ## Use
 
 ```ts
-import '@fubaritico-ds/tokens/css' // CSS custom properties on :root
+import '@fubaritico/tokens/css' // CSS custom properties on :root
 ```
 
-That is what `@fubaritico-ds/styles` reads, and it is the only import most projects need. Also
+That is what `@fubaritico/styles` reads, and it is the only import most projects need. Also
 available:
 
 ```ts
-import { color, spacing } from '@fubaritico-ds/tokens' // the same values as a typed JS object
-import '@fubaritico-ds/tokens/tailwind' // a Tailwind v4 @theme block, if your app uses Tailwind
+import { color, spacing } from '@fubaritico/tokens' // the same values as a typed JS object
+import '@fubaritico/tokens/tailwind' // a Tailwind v4 @theme block, if your app uses Tailwind
 ```
 
 The Tailwind output exists for **your** application; the design system itself uses none.

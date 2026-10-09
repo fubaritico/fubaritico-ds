@@ -1,15 +1,15 @@
 // Import from the per-component subpath (CSS-free), NOT the package barrel
-// (`@fubaritico-ds/reference`) whose `import './styles.css'` side-effect pulls Tailwind preflight
+// (`@fubaritico/react`) whose `import './styles.css'` side-effect pulls Tailwind preflight
 // into the skin-based Storybook and strips the skin's box-model. See the /story skill.
-import { Button } from '@fubaritico-ds/reference/Button'
-import { Card } from '@fubaritico-ds/reference/Card'
-import { Typography } from '@fubaritico-ds/reference/Typography'
+import { Button } from '@fubaritico/react/Button'
+import { Card } from '@fubaritico/react/Card'
+import { Typography } from '@fubaritico/react/Typography'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 /**
- * Card — a presentational surface container migrated onto the native BEM skin (`@fubaritico-ds/styles`);
- * the surface variant resolves to a BEM class via `@fubaritico-ds/variants`. It owns only the chrome;
+ * Card — a presentational surface container migrated onto the native BEM skin (`@fubaritico/styles`);
+ * the surface variant resolves to a BEM class via `@fubaritico/variants`. It owns only the chrome;
  * spacing lives in the `Card.Header` / `Card.Body` / `Card.Footer` slots (which throw outside `<Card>`).
  */
 const meta = {

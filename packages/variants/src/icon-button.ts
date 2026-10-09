@@ -7,7 +7,7 @@ export type IconButtonSize = 'sm' | 'md' | 'lg'
 
 /**
  * Resolves IconButton's **shape-extension** BEM classes for the native skin
- * (`@fubaritico-ds/styles` → `.ui-icon-button`, `.ui-icon-button--sm`, …).
+ * (`@fubaritico/styles` → `.ui-icon-button`, `.ui-icon-button--sm`, …).
  *
  * IconButton is Button **extended, not modified** (Open/Closed): the colour/variant classes come
  * from `buttonVariants`; this resolver only emits the icon-fitting shape layer mixed onto

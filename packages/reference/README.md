@@ -1,12 +1,12 @@
-# @fubaritico-ds/reference
+# @fubaritico/react
 
 The React components of the fubaritico design system. Tailwind-free: the look comes from
-`@fubaritico-ds/styles`, a plain-CSS BEM skin driven by design tokens.
+`@fubaritico/styles`, a plain-CSS BEM skin driven by design tokens.
 
 ## Install
 
 ```bash
-pnpm add @fubaritico-ds/reference @fubaritico-ds/styles @fubaritico-ds/tokens
+pnpm add @fubaritico/react @fubaritico/styles @fubaritico/tokens
 ```
 
 `react` and `react-dom` are peers. `react-router-dom` and `next` are **optional** peers, needed
@@ -16,12 +16,12 @@ only by `LinkButton` and `NextLinkButton` respectively.
 
 ```ts
 // once, at your application entry — the components import no CSS themselves
-import '@fubaritico-ds/tokens/css'
-import '@fubaritico-ds/styles'
+import '@fubaritico/tokens/css'
+import '@fubaritico/styles'
 ```
 
 ```tsx
-import { Button } from '@fubaritico-ds/reference/Button'
+import { Button } from '@fubaritico/react/Button'
 ```
 
 Import by subpath (`/Button`) or from the barrel — both work, the subpath keeps the bundle tighter.
