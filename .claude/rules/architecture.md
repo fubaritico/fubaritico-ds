@@ -32,6 +32,8 @@ apps/
 └── storybook-vuejs/         # empty scaffold — no package.json yet
 
 packages/
+├── behaviors/    @fubaritico-ds/behaviors — framework-agnostic behaviour (pure functions + state machines)
+│   └── src/<domain>/ → dist (tsc); no React/DOM; zero dependencies
 ├── reference/    @fubaritico-ds/reference — React DS components (the port source)
 │   ├── src/components/<Component>/ → Component.tsx, .types.ts, .test.tsx, README.md, index.ts
 │   ├── src/index.ts (root barrel), src/styles.css (Tailwind entry, legacy components only)
@@ -52,7 +54,7 @@ packages/
     └── src/<component>.ts → dist (tsc); no React/DOM; dep: class-variance-authority only
 ```
 
-These **6 packages** exist. `apps/storybook-react` is set up and wired (consumes
+These **7 packages** exist. `apps/storybook-react` is set up and wired (consumes
 `reference` + `styles` + `tokens`); the other three `apps/storybook-*` are still placeholders.
 
 ## Monorepo Orchestration (Lerna + Nx)
@@ -71,7 +73,7 @@ pnpm dev          # lerna run --parallel --stream dev
   are built first (cross-package types come from `dist/*.d.ts` — there are no tsconfig `paths` to source).
   `build` declares `outputs: ['{projectRoot}/dist']`.
 - Dependency order: **tokens → shared → reference**; **variants → reference** (variants depends on
-  no internal package — only `class-variance-authority`); **stencil** and **styles** (CSS-only) are independent.
+  no internal package — only `class-variance-authority`); **behaviors** depends on nothing; **stencil** and **styles** (CSS-only) are independent.
 - `lerna.json`: `version: independent`, `npmClient: pnpm`.
 - Nx cache lives in `.nx/` (gitignored).
 - **TODO (planned): migrate Lerna → Turbo.**
@@ -116,7 +118,7 @@ commitlint (body lines ≤ 100 chars). Husky is wired via the root `prepare: hus
 
 Allowed types: `build chore ci docs feat fix perf refactor revert style test`
 Format: `type(scope): subject` (lowercase, no trailing period, ≤ 100 chars).
-Scopes: `reference` (or `ui`), `shared`, `stencil`, `styles`, `tokens`, `variants`, `repo` (root/monorepo).
+Scopes: `reference` (or `ui`), `behaviors`, `shared`, `stencil`, `styles`, `tokens`, `variants`, `repo` (root/monorepo).
 
 ## Forbidden
 

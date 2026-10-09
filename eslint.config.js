@@ -197,6 +197,18 @@ export default tseslint.config(
     },
   },
 
+  // Behaviors package — framework-agnostic behaviour (pure TS, no React/JSX). Same TS18003 poison as
+  // variants: it sorts before `stencil` today, but scoping it keeps it immune to the glob order.
+  {
+    files: ['packages/behaviors/**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        project: ['./packages/behaviors/tsconfig.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+
   // Storybook React app — scoped project so the typed parser uses the app's own tsconfig instead of
   // iterating the (empty-src) stencil tsconfig matched by the base glob (same TS18003 poison as variants).
   {
