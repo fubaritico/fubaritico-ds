@@ -10,6 +10,7 @@
     "lint": "eslint .storybook stories"
   },
   "dependencies": {
+    "@fubaritico/behaviors": "workspace:*",
     "@fubaritico/react": "workspace:*",
     "@fubaritico/shared": "workspace:*",
     "@fubaritico/styles": "workspace:*",

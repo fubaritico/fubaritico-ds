@@ -33,6 +33,8 @@ export type {
 
 export { Checkbox } from './components/Checkbox'
 export type { CheckboxProps, CheckboxSize } from './components/Checkbox'
+export { ColorPicker, useColorPickerController } from './components/ColorPicker'
+export type { ColorPickerProps } from './components/ColorPicker'
 
 export {
   default as DataTable,

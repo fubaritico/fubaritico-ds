@@ -1,0 +1,242 @@
+/**
+ * ColorPicker — native BEM skin.
+ *
+ * `.ui-color-picker` is the panel; `__area` the 2D saturation × brightness surface and `__area-thumb`
+ * its handle; `__track` marks the hue / alpha `Slider`s; `__row` lines up the swatch, the hex field
+ * and the "automatic" toggle; `__swatch` (+ `--auto`) shows the current value; `__status` is the
+ * visually hidden live region. Behaviour lives in `ColorPickerService` (@fubaritico/behaviors);
+ * this file only paints.
+ *
+ * CHROME NEUTRAL, GRADIENT = DATA. A picker is chromatic by nature: the area's hue and every swatch
+ * come from the component as custom properties (`--ui-color-picker-hue`, `--ui-color-picker-color`).
+ * What stays neutral and themeable is the chrome — radius, borders, thumb ring, focus ring, gaps.
+ *
+ * The area's black and white gradients are NOT tokens: they ARE the HSV model (saturation fades to
+ * white, value fades to black). Theming them would draw a different colour space under the pointer
+ * than the one the service computes — the mechanics, not the look (the Rating / Skeleton rule).
+ *
+ * The thumb is positioned with LOGICAL insets from two fractions (`--ui-color-picker-x/-y`), and
+ * centred with logical negative margins, so it is correct in rtl with no direction code. The white
+ * gradient follows the inline direction (`:dir(rtl)`), matching the service's mirrored x axis.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-color-picker-*` vars on `.ui-color-picker`.
+ *   2. Redefine a global token → re-skins every ColorPicker.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico/tokens.
+ */
+@layer ui.components {
+  .ui-color-picker {
+    /* ---- override API: panel ---- */
+    --ui-color-picker-width: calc(var(--spacing-64) + var(--spacing-4));
+    --ui-color-picker-gap: var(--spacing-3);
+    --ui-color-picker-font-family: var(--font-inter);
+    --ui-color-picker-font-size: var(--font-size-sm);
+    --ui-color-picker-text-color: var(--color-foreground);
+
+    /* ---- override API: area ---- */
+    --ui-color-picker-area-aspect-ratio: 4 / 3;
+    --ui-color-picker-area-radius: var(--radius-sm);
+    --ui-color-picker-area-border-color: var(--color-border);
+    --ui-color-picker-area-cursor: crosshair;
+
+    /* ---- override API: area thumb ---- */
+    --ui-color-picker-thumb-size: var(--spacing-4);
+    --ui-color-picker-thumb-border-width: var(--spacing-0-5);
+    --ui-color-picker-thumb-border-color: var(--color-primitive-neutral-0);
+    --ui-color-picker-thumb-outline-color: var(--color-primitive-neutral-900);
+    --ui-color-picker-thumb-shadow: var(--shadow-sm);
+    --ui-color-picker-thumb-active-scale: 1.15;
+
+    /* ---- override API: swatch ---- */
+    --ui-color-picker-swatch-size: var(--spacing-8);
+    --ui-color-picker-swatch-radius: var(--radius-sm);
+    --ui-color-picker-swatch-border-color: var(--color-border);
+    --ui-color-picker-auto-stroke-color: var(--color-foreground-muted);
+    --ui-color-picker-auto-stroke-width: 2px;
+
+    /* ---- override API: checkerboard (under translucent colours) ---- */
+    --ui-color-picker-checker-size: var(--spacing-2);
+    --ui-color-picker-checker-light: var(--color-primitive-neutral-0);
+    --ui-color-picker-checker-dark: var(--color-primitive-neutral-200);
+    --ui-color-picker-checkerboard: repeating-conic-gradient(
+        var(--ui-color-picker-checker-dark) 0 25%,
+        var(--ui-color-picker-checker-light) 0 50%
+      )
+      0 0 / calc(var(--ui-color-picker-checker-size) * 2)
+      calc(var(--ui-color-picker-checker-size) * 2);
+
+    /* ---- override API: hex error ---- */
+    --ui-color-picker-error-color: var(--color-destructive-hover);
+    --ui-color-picker-error-font-size: var(--font-size-xs);
+
+    /* ---- override API: focus / states / motion ---- */
+    --ui-color-picker-ring-color: var(--color-ring);
+    --ui-color-picker-ring-width: 2px;
+    --ui-color-picker-ring-offset: var(--spacing-0-5);
+    --ui-color-picker-disabled-opacity: 0.5;
+    --ui-color-picker-transition-duration: var(--duration-fast);
+    --ui-color-picker-transition-easing: var(--easing-standard);
+
+    /* ---- data, set by the component ---- */
+    --ui-color-picker-hue: #ff0000;
+    --ui-color-picker-color: transparent;
+    --ui-color-picker-x: 1;
+    --ui-color-picker-y: 0;
+
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-color-picker-gap);
+    inline-size: var(--ui-color-picker-width);
+    max-inline-size: 100%;
+    font-family: var(--ui-color-picker-font-family);
+    font-size: var(--ui-color-picker-font-size);
+    color: var(--ui-color-picker-text-color);
+  }
+
+  .ui-color-picker--disabled {
+    opacity: var(--ui-color-picker-disabled-opacity);
+  }
+
+  /* ---- area ---- */
+
+  .ui-color-picker__area {
+    position: relative;
+    box-sizing: border-box;
+    inline-size: 100%;
+    aspect-ratio: var(--ui-color-picker-area-aspect-ratio);
+    border: 1px solid var(--ui-color-picker-area-border-color);
+    border-radius: var(--ui-color-picker-area-radius);
+    /* The HSV model itself — see the header: these two gradients are mechanics, not theme. */
+    background-color: var(--ui-color-picker-hue);
+    background-image:
+      linear-gradient(to top, #000000, transparent),
+      linear-gradient(to right, #ffffff, transparent);
+    cursor: var(--ui-color-picker-area-cursor);
+    /* The pointer drag owns the gesture: no scroll, no pinch while picking. */
+    touch-action: none;
+    user-select: none;
+  }
+
+  .ui-color-picker__area:dir(rtl) {
+    background-image:
+      linear-gradient(to top, #000000, transparent),
+      linear-gradient(to left, #ffffff, transparent);
+  }
+
+  .ui-color-picker--disabled .ui-color-picker__area {
+    cursor: not-allowed;
+  }
+
+  .ui-color-picker__area-thumb {
+    position: absolute;
+    box-sizing: border-box;
+    inset-inline-start: calc(var(--ui-color-picker-x) * 100%);
+    inset-block-start: calc(var(--ui-color-picker-y) * 100%);
+    inline-size: var(--ui-color-picker-thumb-size);
+    block-size: var(--ui-color-picker-thumb-size);
+    /* Centred on the point with logical margins — no translate, so no rtl sign to flip. */
+    margin-inline-start: calc(var(--ui-color-picker-thumb-size) / -2);
+    margin-block-start: calc(var(--ui-color-picker-thumb-size) / -2);
+    border: var(--ui-color-picker-thumb-border-width) solid
+      var(--ui-color-picker-thumb-border-color);
+    border-radius: var(--radius-full);
+    /* Two-tone ring: visible on any colour under it (WCAG 1.4.11). */
+    box-shadow:
+      0 0 0 1px var(--ui-color-picker-thumb-outline-color),
+      var(--ui-color-picker-thumb-shadow);
+    background-color: var(--ui-color-picker-color);
+    pointer-events: none;
+    transition: scale var(--ui-color-picker-transition-duration)
+      var(--ui-color-picker-transition-easing);
+  }
+
+  .ui-color-picker__area[data-dragging] .ui-color-picker__area-thumb {
+    scale: var(--ui-color-picker-thumb-active-scale);
+  }
+
+  .ui-color-picker__area:has(.ui-color-picker__area-input:focus-visible)
+    .ui-color-picker__area-thumb {
+    outline: var(--ui-color-picker-ring-width) solid
+      var(--ui-color-picker-ring-color);
+    outline-offset: var(--ui-color-picker-ring-offset);
+  }
+
+  /* sr-only: hidden visually, still in the accessibility tree and focusable. */
+  .ui-color-picker__area-input,
+  .ui-color-picker__status {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    white-space: nowrap;
+    border: 0;
+    clip-path: inset(50%);
+  }
+
+  /* ---- tracks: the hue / alpha Sliders keep their own skin; only the width is ours ---- */
+
+  .ui-color-picker__track {
+    inline-size: 100%;
+  }
+
+  /* ---- row: swatch + hex + automatic ---- */
+
+  .ui-color-picker__row {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-color-picker-gap);
+  }
+
+  .ui-color-picker__swatch {
+    box-sizing: border-box;
+    flex-shrink: 0;
+    inline-size: var(--ui-color-picker-swatch-size);
+    block-size: var(--ui-color-picker-swatch-size);
+    border: 1px solid var(--ui-color-picker-swatch-border-color);
+    border-radius: var(--ui-color-picker-swatch-radius);
+    /* The colour over a checkerboard, so translucency shows. */
+    background:
+      linear-gradient(
+        var(--ui-color-picker-color),
+        var(--ui-color-picker-color)
+      ),
+      var(--ui-color-picker-checkerboard);
+  }
+
+  /* "Automatic / no colour": an empty swatch struck through. */
+  .ui-color-picker__swatch--auto {
+    background:
+      linear-gradient(
+        to top right,
+        transparent calc(50% - var(--ui-color-picker-auto-stroke-width) / 2),
+        var(--ui-color-picker-auto-stroke-color) 0,
+        var(--ui-color-picker-auto-stroke-color)
+          calc(50% + var(--ui-color-picker-auto-stroke-width) / 2),
+        transparent 0
+      ),
+      var(--ui-color-picker-checker-light);
+  }
+
+  .ui-color-picker__hex {
+    flex: 1;
+    min-inline-size: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ui-color-picker__hex-error {
+    margin: 0;
+    font-size: var(--ui-color-picker-error-font-size);
+    color: var(--ui-color-picker-error-color);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-color-picker__area-thumb {
+      transition: none;
+    }
+  }
+}

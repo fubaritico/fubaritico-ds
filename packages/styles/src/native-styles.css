@@ -36,3 +36,6 @@
 @import './styles/tooltip.css';
 @import './styles/typeahead.css';
 @import './styles/typography.css';
+/* After slider.css and input.css: its __track / __hex rules sit on .ui-slider / .ui-input
+   elements and must win at equal specificity inside the layer (IconButton precedent). */
+@import './styles/color-picker.css';

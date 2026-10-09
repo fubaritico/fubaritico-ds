@@ -134,6 +134,46 @@ describe('ColorPickerService', () => {
       })
     })
 
+    describe('slider runs (complete: false + settle)', () => {
+      it('reports every step, then completes once on settle', () => {
+        const { service, onChange, onChangeComplete } = setup()
+        service.setChannel('h', 100, { complete: false })
+        service.setChannel('h', 120, { complete: false })
+        expect(onChange).toHaveBeenCalledTimes(2)
+        expect(onChangeComplete).not.toHaveBeenCalled()
+        expect(service.getState().announcement).toBe('')
+        service.settle()
+        expect(onChangeComplete).toHaveBeenCalledTimes(1)
+        expect(onChangeComplete).toHaveBeenCalledWith({ ...BLUE, h: 120 })
+        expect(service.getState().announcement).toBe(service.describe())
+      })
+
+      it('settles nothing when nothing is pending', () => {
+        const { service, onChangeComplete } = setup()
+        const listener = vi.fn()
+        service.subscribe(listener)
+        service.settle()
+        expect(onChangeComplete).not.toHaveBeenCalled()
+        expect(listener).not.toHaveBeenCalled()
+      })
+
+      it('completes nothing for a run that came back to its start', () => {
+        const { service, onChangeComplete } = setup()
+        service.setChannel('h', 100, { complete: false })
+        service.setChannel('h', 210, { complete: false })
+        service.settle()
+        expect(onChangeComplete).not.toHaveBeenCalled()
+      })
+
+      it('lets a settled change end the run (no double completion)', () => {
+        const { service, onChangeComplete } = setup()
+        service.setChannel('h', 100, { complete: false })
+        service.setChannel('h', 110)
+        service.settle()
+        expect(onChangeComplete).toHaveBeenCalledTimes(1)
+      })
+    })
+
     describe('keyboard', () => {
       it.each([
         ['ArrowRight', { s: 81 }],

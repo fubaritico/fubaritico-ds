@@ -74,7 +74,10 @@
 >
 > 1. **`ColorPickerService`** — fait (`4d897c4`) : état `null` (automatique), glisser, clavier, hex en
 >    brouillon, ARIA, annonces. `Store` commun extrait. Reste les adaptateurs ci-dessous.
-> 2. **`ColorArea`** — l'aire 2D, même mécanique de pouce que le Slider, deux axes.
+> 2. **`ColorPicker` composé (panneau inline)** — commité SANS README ni `/review` (arrêt voulu par le
+>    dev pour poser d'abord Vitest Browser Mode). Parties : Area, Hue, Alpha, HexField, Swatch,
+>    AutoToggle, Status. **À la reprise** : tests navigateur (glisser réel, `setPointerCapture`,
+>    géométrie, clavier natif des curseurs, RTL), README, `/review`, puis Popover.
 > 3. **`Popover`** — surface ancrée libre, **absente** du DS (`Dropdown` est un menu, pas ça).
 > 4. **`ColorPicker`** — l'assemblage.
 >

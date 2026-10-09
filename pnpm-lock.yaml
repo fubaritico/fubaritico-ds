@@ -196,6 +196,9 @@ importers:
 
   apps/storybook-react:
     dependencies:
+      '@fubaritico/behaviors':
+        specifier: workspace:*
+        version: link:../../packages/behaviors
       '@fubaritico/react':
         specifier: workspace:*
         version: link:../../packages/reference

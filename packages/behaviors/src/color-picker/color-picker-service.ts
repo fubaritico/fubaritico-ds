@@ -95,8 +95,11 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   private auto: boolean
 
   private dragging: ColorPickerTarget | null = null
-  /** The value when the drag started — what `endDrag` compares against and `cancelDrag` restores. */
-  private dragStart: ColorValue = null
+  /**
+   * The value before the current run of unsettled changes (a drag, a slider being dragged) — what
+   * `settle` compares against and `cancelDrag` restores. `undefined` when nothing is pending.
+   */
+  private baseline: ColorValue | undefined = undefined
   /** The working colour when the drag started — restored by `cancelDrag`, even from "automatic". */
   private dragStartWorking: HsvaColor | null = null
 
@@ -261,14 +264,26 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
    * @param value - The new channel value; clamped to its range.
    * @returns `false` when blocked.
    */
-  setChannel(channel: keyof HsvaColor, value: number): boolean {
+  setChannel(
+    channel: keyof HsvaColor,
+    value: number,
+    { complete = true }: { complete?: boolean } = {}
+  ): boolean {
     if (!Number.isFinite(value)) {
       this.opts.onWarn?.(
         `[color-picker:${this.opts.uid}] ignored a non-finite ${channel}`
       )
       return false
     }
-    return this.applyValue(this.withChannels({ [channel]: value }), true)
+    return this.applyValue(this.withChannels({ [channel]: value }), complete)
+  }
+
+  /**
+   * Settles a run of `complete: false` changes — what a slider reports when the pointer or key is
+   * released: `onChangeComplete` fires once, if the run changed the value.
+   */
+  settle(): void {
+    this.settlePending({ alwaysCommit: false })
   }
 
   /**
@@ -300,7 +315,7 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
     if (this.isTargetBlocked(target) || !this.isFinitePoint(point)) return false
     this.batch(() => {
       this.dragging = target
-      this.dragStart = this.currentValue()
+      this.baseline = this.currentValue()
       this.dragStartWorking = this.working
       this.applyValue(this.colorAt(target, point), false)
       this.commit()
@@ -323,22 +338,19 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
     if (this.dragging === null) return
     this.dragging = null
     this.dragStartWorking = null
-    const value = this.currentValue()
-    const changed = !sameValue(this.dragStart, value)
-    if (changed) this.announcement = this.describeValue(value)
-    this.commit()
-    if (changed) this.opts.onChangeComplete?.(value)
+    this.settlePending({ alwaysCommit: true })
   }
 
   /** Cancels the drag (Escape, pointer cancel): the value returns to where the drag started. */
   cancelDrag(): void {
     if (this.dragging === null) return
-    const start = this.dragStart
+    const start = this.baseline ?? null
     const startWorking = this.dragStartWorking
     this.batch(() => {
       this.dragging = null
       this.dragStartWorking = null
       this.applyValue(start, false)
+      this.baseline = undefined
       // From "automatic" the value returns to null — the thumbs must return too.
       if (!this.controlled && startWorking !== null) this.working = startWorking
       this.commit()
@@ -529,6 +541,23 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   // ---------- internals ----------
 
   /**
+   * Closes a run of unsettled changes: announces and reports the value once, if it moved.
+   *
+   * @param options - Settle options.
+   * @param options.alwaysCommit - Notify even when the value did not change (another field, such
+   *   as `dragging`, did).
+   */
+  private settlePending({ alwaysCommit }: { alwaysCommit: boolean }): void {
+    const baseline = this.baseline
+    this.baseline = undefined
+    const value = this.currentValue()
+    const changed = baseline !== undefined && !sameValue(baseline, value)
+    if (changed) this.announcement = this.describeValue(value)
+    if (changed || alwaysCommit) this.commit()
+    if (changed) this.opts.onChangeComplete?.(value)
+  }
+
+  /**
    * Whether a surface refuses input: the whole picker is disabled, or it is the alpha track of a
    * picker without alpha.
    *
@@ -709,7 +738,13 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
     }
     this.draft = null
     this.hexInvalid = false
-    if (complete) this.announcement = this.describeValue(next)
+    if (complete) {
+      this.announcement = this.describeValue(next)
+      this.baseline = undefined
+    } else if (this.baseline === undefined) {
+      // First change of an unsettled run: remember where it started.
+      this.baseline = previous
+    }
 
     this.commit()
     this.opts.onChange?.(next)
