@@ -51,7 +51,10 @@
 Un chantier ouvert laissé **non commité** dans le working tree (`ArrowUpDown` a été soldé le
 2026-10-08 par `742887e`). **Ne pas supprimer, ne pas commiter en l'état.**
 
-- **`components/WithTooltip/WithTooltip.tsx`** — **stub vide** (`prop: unknown`, `console.warn`,
+- **`components/WithTooltip/WithTooltip.tsx`** — **désormais TRACKÉ** (balayé par erreur dans
+  `30d557d`, puis parti dans le tarball 0.1.0 ; corrigé en `7aa569f` : exclu de `tsup` et de
+  l'émission des déclarations, en-tête explicatif dans le fichier). Il **ne peut plus atteindre un
+  consommateur**, et le garder tracké évite qu'un `git add -A` le reprenne. Toujours un **stub vide** (`prop: unknown`, `console.warn`,
   `return null`, non typé). C'était le démarrage de la feature **« Tooltip on truncated text »** :
   déclencher la `Tooltip` DS quand un texte est **tronqué** (ellipsis), pour remplacer les stopgaps
   `title`/`aria-label` partout où on tronque (cells DataTable, `TruncatedContent`, `DateCell`, Badge
