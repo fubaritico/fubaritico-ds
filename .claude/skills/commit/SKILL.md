@@ -16,6 +16,7 @@ Prepare and propose a conventional commit for the current changes.
 2. Run `git diff --staged` and `git diff` to analyze all changes
 3. Identify the scope based on changed files:
    - `packages/reference` → scope `reference` (or `ui`)
+   - `packages/behaviors` → scope `behaviors`
    - `packages/shared` → scope `shared`
    - `packages/stencil` → scope `stencil`
    - `packages/styles` → scope `styles`
