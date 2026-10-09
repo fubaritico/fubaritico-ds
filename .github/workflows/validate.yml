@@ -33,5 +33,9 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      # Browser Mode (packages/reference *.browser.test.tsx) runs in Chromium via Playwright.
+      - name: Install Chromium for browser tests
+        run: pnpm --filter @fubaritico/react exec playwright install --with-deps chromium
+
       - name: Run tests
         run: pnpm test

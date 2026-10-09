@@ -72,7 +72,7 @@ Put here the know issues to avoid cluttering the context window.
   Dictionary (OKLCH, DTCG) » de `rules/architecture.md` et de `CLAUDE.md` est fausse. À corriger —
   et à trancher séparément : passer réellement en OKLCH aurait du sens (dégradés perceptuellement
   uniformes, meilleur comportement d'une aire 2D de color picker).
-- **Le clavier d'un `<input type="range">` n'existe pas sous jsdom (2026-10-09)** — flèches, Home,
+- **[RÉSOLU 2026-10-09 : Vitest Browser Mode, `Slider.browser.test.tsx`]** **Le clavier d'un `<input type="range">` n'existe pas sous jsdom (2026-10-09)** — flèches, Home,
   End, PageUp/Down sont des comportements **navigateur**. `userEvent` ne peut donc pas piloter un
   `Slider` en test unitaire. Les tests du Slider couvrent le **câblage** (mapping valeur→pourcentage,
   quel callback part sur quel événement DOM) via `fireEvent`, **exception assumée** à la règle

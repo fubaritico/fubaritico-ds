@@ -54,3 +54,7 @@ opensrc/
 
 # Local packing output for consuming the DS from a sibling project
 dist-tarballs
+
+# Vitest Browser Mode: screenshots / attachments written on test failure
+**/__screenshots__/
+**/.vitest-attachments/

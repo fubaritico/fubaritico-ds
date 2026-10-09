@@ -90,6 +90,9 @@ catalog:
   # Testing
   vitest: 4.1.8
   '@vitest/coverage-v8': 4.1.8
+  # Browser Mode: the provider must match vitest exactly; playwright pinned to a settled release.
+  '@vitest/browser-playwright': 4.1.8
+  playwright: 1.63.0
   jsdom: 26.0.0
 
   # Storybook (shared across the per-framework storybook apps)

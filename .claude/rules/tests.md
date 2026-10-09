@@ -102,6 +102,19 @@ Boundary conditions and unusual but possible scenarios.
 - Error handling (L3–L4); cleanup on unmount (L5)
 - DOM-dependent files opt into jsdom via `// @vitest-environment jsdom`
 
+## Browser tests (Vitest Browser Mode, Chromium via Playwright)
+
+`packages/reference` runs two projects in one `vitest run`: **`unit`** (jsdom, the bulk) and
+**`browser`** (`src/**/*.browser.test.tsx`, real Chromium with the real tokens + skin loaded).
+Write a `*.browser.test.tsx` ONLY for what jsdom cannot do: native range keyboard, real `<dialog>`
+(top layer, focus trap, Escape, the `display` rule), layout / geometry / `getBoundingClientRect`,
+pointer capture and drags, `:has()` / `:dir()` / `:focus-visible`, RTL rendering.
+
+- Import `userEvent` from `vitest/browser` (real CDP input); `render` / `screen` from RTL.
+- Gestures `userEvent` cannot express (press → key → release) use the pointer commands of
+  `vitest.browser.commands.ts` (`commands.pointerDown/Move/Up`, from `vitest/browser`).
+- Never stub geometry or the platform there — if a browser test needs a mock, it belongs in `unit`.
+
 ## Test Utilities & Mocks
 
 - React render helpers in `@fubaritico/shared/test-utils`

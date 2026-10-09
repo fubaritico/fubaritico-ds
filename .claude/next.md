@@ -111,63 +111,12 @@ qu'une minorité de composants. `patterns-ui.md` garderait le template, la struc
 les règles de style et l'ordre des imports. Penser à repointer les références
 (`new-react-component` cite la section Compound).
 
-## PASSE À FAIRE — tests navigateur (Vitest Browser Mode + Playwright)
+## FAIT (2026-10-09) — tests navigateur (Vitest Browser Mode + Playwright)
 
-**Décidé le 2026-10-09.** Le besoin n'est pas théorique : il a bloqué **trois fois** dans la même
-session. jsdom ne simule pas le navigateur, et on écrit de plus en plus de composants dont le
-comportement EST celui de la plateforme.
-
-### Ce qu'on ne peut pas tester aujourd'hui
-
-| Cas | Pourquoi jsdom ne suffit pas |
-| --- | --- |
-| **Clavier du `Slider`** | flèches / Home / End / PageUp d'un `<input type="range">` : non implémentés |
-| **`<dialog>` réel** | `showModal()` et `close()` sont **mockés sur le prototype** dans les tests Modal et Drawer. Top layer, piège de focus, inertie, Escape, `::backdrop` : jamais exercés |
-| **Le bug `display` sur dialog fermé** | rencontré **deux fois**, couverture nulle — jsdom n'évalue pas la feuille de styles |
-| **Géométrie** | `getBoundingClientRect` renvoie des zéros ⇒ le hit-test du backdrop Drawer a dû stubber la box ; le positionnement portalé du Typeahead n'est pas testé |
-| **`IntersectionObserver`** | le lazy-loading de `Image` |
-| **Sélecteurs `:has()`** | états du Slider, colonne checkbox de la DataTable |
-| **RTL et propriétés logiques** | assertés **nulle part**, alors qu'on en pose partout |
-| **`:focus-visible`** | les anneaux de focus ne sont vérifiés qu'à l'œil |
-
-### La forme
-
-Vitest **4.1.8** est déjà en place et le Browser Mode y est **stable** (tag expérimental retiré en
-v4). Le provider est un paquet séparé :
-
-```bash
-pnpm add -D @vitest/browser-playwright
-```
-
-```ts
-import { playwright } from '@vitest/browser-playwright'
-
-test: {
-  browser: {
-    enabled: true,
-    provider: playwright(),
-    instances: [{ browser: 'chromium' }],
-  },
-}
-```
-
-Chaque `instance` devient un projet de test distinct partageant un seul serveur Vite.
-
-### Stratégie — ne PAS remplacer jsdom
-
-Un **second projet** à côté, pas une migration. jsdom reste pour les 690 tests existants : il est
-rapide et suffisant pour la logique, le câblage et l'ARIA statique. Le navigateur est réservé à un
-**petit lot** de fichiers `*.browser.test.tsx` qui testent ce que seule une vraie plateforme sait
-faire.
-
-À trancher au moment de le faire : un seul `chromium` (rapide) ou les trois moteurs (coûteux, mais
-c'est là qu'on attraperait les divergences `::backdrop` / `:dir()` / `writing-mode`) ; et si la CI
-les lance à chaque push ou seulement sur `main`.
-
-**Premiers candidats** : `Slider` (clavier), `Drawer`/`Modal` (dialog réel + la règle `display`),
-`Image` (IntersectionObserver), puis l'aire 2D du color picker. **Décision dev (2026-10-09) : APRÈS
-le color picker.** En attendant, le calcul pointeur→valeur vit dans le service `behaviors`
-(testable en Node), le composant ne garde que le câblage d'événements.
+> **En place** : projets `unit` (jsdom) + `browser` (Chromium, `*.browser.test.tsx`) dans
+> `packages/reference/vitest.config.ts`, skin réel chargé, commandes pointeur, CI installe Chromium.
+> Premier lot : `Slider` (clavier natif). **Restent** : ColorPicker (en cours), Drawer/Modal (`<dialog>`
+> réel + règle `display`), Image (IntersectionObserver). Cadrage d'origine : historique git de ce fichier.
 
 ## PASSE À FAIRE — border-radius & granularité de surcharge
 

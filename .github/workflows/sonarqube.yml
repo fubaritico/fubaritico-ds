@@ -21,6 +21,11 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: echo "has=$([ -n "$SONAR_TOKEN" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
+      # Browser Mode (packages/reference *.browser.test.tsx) runs in Chromium via Playwright.
+      - name: Install Chromium for browser tests
+        if: steps.check.outputs.has == 'true'
+        run: pnpm --filter @fubaritico/react exec playwright install --with-deps chromium
+
       - name: Generate coverage (lcov for Sonar)
         if: steps.check.outputs.has == 'true'
         run: pnpm coverage
