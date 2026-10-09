@@ -8,6 +8,7 @@ export default defineConfig((options) => ({
     '!src/**/*.test.*',
     '!src/components/Carousel/**',
     '!src/components/next/**',
+    '!src/components/WithTooltip/**',
   ],
   format: ['esm'],
   bundle: false,

@@ -18,6 +18,7 @@
     "vitest.setup.ts",
     "src/components/Carousel/**",
     "src/components/next/**",
-    "src/**/*.bak"
+    "src/**/*.bak",
+    "src/components/WithTooltip/**"
   ]
 }
