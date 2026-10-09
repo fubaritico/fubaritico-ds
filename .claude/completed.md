@@ -4,8 +4,10 @@ Put here the completed tasks and plans to avoid cluttering the context window.
 
 ### 2026-10-08/09 — Nuit longue : 8 composants, le trio dialog réparé, le DS livrable, le Slider
 
-Session étalée sur deux jours calendaires, **13 commits poussés**, repo vert à chaque étape
-(690 tests reference / 227 variants / 19 shared à la fin).
+**Une seule plage de 6 h 51** (19:29 → 02:21, à cheval sur minuit), 474 actions journalisées,
+**28 commits poussés**, repo vert à chaque étape (690 tests reference / 227 variants / 19 shared
+à la fin). Fichiers les plus retouchés : les stories et les skins du trio `Drawer` / `Modal` /
+`BottomSheet` — c'est là qu'ont été les allers-retours.
 
 - **Dette doc soldée** (`199e99d`) — le chemin `src/<Component>/` corrigé partout, mais surtout deux
   périmés plus graves : `patterns-ui.md` et `new-react-component` prescrivaient encore **Tailwind
