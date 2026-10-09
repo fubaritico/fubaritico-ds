@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.3.0...v0.4.0) (2026-10-09)
+
+### Features
+
+- **reference:** add a compact density to the color picker and color field ([1afd42b](https://github.com/fubaritico/fubaritico-ds/commit/1afd42bfc76882d3fcdcfdcbe16781d701940652))
+- **reference:** add popover and color field, usable inside a modal dialog ([38f99ae](https://github.com/fubaritico/fubaritico-ds/commit/38f99ae3b15b9d5422aa316072f39a0b3762f49b))
+
 # [0.3.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.2.1...v0.3.0) (2026-10-09)
 
 ### Bug Fixes
