@@ -89,6 +89,17 @@ store mechanics — listeners / cache / commit / batch — are the expected firs
   arrows when `dir === 'rtl'` (the adapter reads the closest `[dir]`); reset roving focus when focus
   leaves the composite (`resetFocus`) so Tab re-enters on the selected item.
 - **ES2020 lib**: no `.at()`, no `replaceAll` in `packages/behaviors`.
+- **Key lookups through a `Map`**, never `key in {…}` / `obj[key]`: `'toString' in {}` is `true`, so
+  a key named after an inherited property would yield a function as a value (caught in review).
+- **Guard every numeric entry point** (`setChannel`, pointer points) against `NaN` / `Infinity` with
+  `onWarn` + ignore: a `NaN` channel only crashes later, in a conversion far from its cause.
+- **`value` in input attrs is a DOM property** — document it; adapters bind it as a property.
+- **Announce settled changes only**: keep an `announcement` in the snapshot for a polite live
+  region, updated on release / key / commit, never during a drag.
+- **Second service ⇒ extract the store**: done — `src/internal/store.ts` (`Store<S>` implements the
+  public `ExternalStore<S>` from `common/types.ts`). Extend it; don't re-write listeners / cache.
+- **Pure parts in sibling modules** (`keyboard.ts`, `attrs.ts`): testable without the service; the
+  class owns state and delegates.
 - **Sliced selectors return primitives**: a derived object is a new reference per read → infinite
   re-render (`useSyncExternalStore`).
 - **A whole-snapshot subscription is fine for a handful of children** (Tabs) but O(N) re-renders
