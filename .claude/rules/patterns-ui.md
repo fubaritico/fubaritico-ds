@@ -82,6 +82,13 @@ Rules:
   `@fubaritico-ds/variants` (emitting `.ui-<block>` classes) backed by a `<component>.css` in
   `@fubaritico-ds/styles`. The `ui:` Tailwind prefix only survives in the components still queued for
   migration (Tabs, Drawer, Carousel, Typeahead, `next/Image`) — **never write new `ui:` classes**.
+- **Soyez GÉNÉREUX en variables de surcharge — mieux vaut trop que pas assez.** Chaque propriété
+  cosmétique d'un bloc mérite sa `--ui-<bloc>-*` : couleurs, géométrie, états, focus, mouvement.
+  Une variable inutilisée ne coûte qu'une ligne ; une variable manquante oblige le consommateur à
+  écrire une règle qui court-circuite le skin, et c'est là qu'un thème se met à diverger. Référence
+  de densité : `Slider` expose **20** variables. La seule limite est la **mécanique** — ce qui fait
+  fonctionner le composant (centrage, zone de clic, calculs de position) n'est PAS surchargeable,
+  car l'exposer n'offre que des façons de le casser.
 - No domain logic
 - Extend with `ComponentProps` (see below), never `HTMLAttributes`
 - Export the props interface as a named export, the component as default; re-export both from `index.ts`
