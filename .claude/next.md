@@ -26,7 +26,7 @@
 > `@fubaritico/next`) ; mode « curseurs par canal » du picker (même `Slider`, autre `track-image`) ;
 > bande « Recent Colors » ; EyeDropper en amélioration progressive (Chromium seul).
 >
-> **Dette doc** : `completed.md` dépassait 570 lignes → entrées du 2026-07-16 et antérieures archivées
+> **Dette doc** : `completed.md` dépassait 570 lignes → entrées du 2026-09-16 et antérieures archivées
 > dans `completed-archive.md` (non chargé). `patterns-ui.md` toujours au-dessus du plafond (ci-dessous).
 
 ## EN SUSPENS — à finir proprement, PAS abandonné
