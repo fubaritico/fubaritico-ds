@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "type": "module",
   "sideEffects": false,
-  "description": "Framework-agnostic component behaviour: pure functions and state machines. Pure TypeScript: no React, no DOM.",
+  "description": "Framework-agnostic component behaviour: one service per component (state, keyboard, focus, ARIA). Pure TypeScript: no React, no DOM.",
   "publishConfig": {
     "access": "public"
   },
