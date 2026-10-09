@@ -35,8 +35,8 @@
     "README.md"
   ],
   "scripts": {
-    "build:js": "tsup && tsc -p tsconfig.build.json",
-    "build": "pnpm build:js && pnpm build:docs",
+    "build:js": "tsup && tsc -p tsconfig.build.json && node script/fix-esm-extensions.mjs",
+    "build": "pnpm build:js && pnpm build:docs && pnpm verify:esm",
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -49,7 +49,8 @@
     "release:patch": "./publish.sh patch",
     "release:minor": "./publish.sh minor",
     "release:major": "./publish.sh major",
-    "build:docs": "node script/copy-docs.mjs"
+    "build:docs": "node script/copy-docs.mjs",
+    "verify:esm": "node script/verify-esm.mjs"
   },
   "peerDependencies": {
     "next": ">=14",

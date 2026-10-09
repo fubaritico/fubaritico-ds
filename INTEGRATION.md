@@ -37,6 +37,13 @@ GitHub requires a token **even to install public packages**, so two things on th
 pnpm add @fubaritico/tokens @fubaritico/styles @fubaritico/react
 ```
 
+> **Warning** — `@fubaritico/react` declares `next` and `react-router-dom` as **optional** peers
+> (only `NextLinkButton` and `LinkButton` use them), but **GitHub Packages drops
+> `peerDependenciesMeta` from the metadata it serves**, so pnpm sees two plain peers and
+> auto-installs them. If you use neither adapter, add `auto-install-peers=false` to your `.npmrc`:
+> pnpm then only warns about the missing peers. The tarball itself is correct — this is a registry
+> limitation, not fixable by republishing.
+
 Every package carries the **same version** (they are released together): upgrade them together.
 
 ## Wiring it up

@@ -1,6 +1,7 @@
 'use client'
 
-import NextLink from 'next/link'
+// `.js`: `next` has no `exports` map, so Node (Vitest, SSR outside Next) only resolves the file path.
+import NextLink from 'next/link.js'
 
 import { Icon } from '../Icon'
 

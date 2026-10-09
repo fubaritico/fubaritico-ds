@@ -7,7 +7,7 @@ import type { PropsWithChildren } from 'react'
 
 import '@testing-library/jest-dom'
 
-vi.mock('next/link', () => ({
+vi.mock('next/link.js', () => ({
   default: ({
     children,
     ...props
