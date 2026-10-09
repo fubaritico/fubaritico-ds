@@ -8,7 +8,7 @@ Project to generate multi UI framework base on a stencilJS architecture. The pro
 - `apps/storybook-web-component` - [scaffold, no `package.json` yet] Storybook showcasing the generated native Web Components
 - `apps/storybook-angular` - [scaffold, no `package.json` yet] Storybook showcasing the generated Angular wrappers
 - `apps/storybook-vuejs` - [scaffold, no `package.json` yet] Storybook showcasing the generated Vue wrappers
-- `packages/behaviors` - `@fubaritico-ds/behaviors` — **framework-agnostic behaviour** (pure TS, no React/DOM, zero deps): pure functions + state machines (colour conversions first, then the `ColorPickerMachine`). Tested without rendering.
+- `packages/behaviors` - `@fubaritico-ds/behaviors` — **framework-agnostic behaviour services** (pure TS, no React/DOM, zero deps): one service per component — state, keyboard, focus, ARIA (`TabsService` first; plan `files/plans/behaviors-service-pattern.md`). Framework parts are thin adapters. Tested in Node.
 - `packages/reference` - React/Tailwind design-system components used as a **reference / guide only — NOT a deliverable**. It exists to give ready-made example components that help build the real DS (like the sibling example repos). It is a sandbox to port from / validate approaches in; it may be **deleted once the work is finished**, or kept. Never treat it as a shipped package (e.g. don't permanently wire skin re-export, CI deploy, or public API guarantees around it).
 - `packages/shared` - shared utils, test-utils, browser mocks, Tailwind theme + fonts, vite plugins (React-flavored)
 - `packages/stencil` - the **Stencil sandbox**: one Web Component project producing native WC + generated React/Angular wrappers (see its `README.md` + `PLAN.md`)

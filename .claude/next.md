@@ -3,7 +3,14 @@
 > Loaded at session start (CLAUDE.md `### Next` → `@next.md`). Single source for "what's next".
 > North-star program: **`files/plans/roadmap.md`** (phases A→F).
 
-> ## ▶ PROCHAINE SESSION — LE COLOR PICKER, PAR LE SOCLE
+> ## ▶ EN COURS (2026-10-09) — `behaviors` = « state as a service »
+>
+> Paquet `packages/behaviors` posé (`f9d5948`, conversions de couleur). **Modèle cible validé** :
+> un service TS par composant + adaptateurs par framework — plan **`files/plans/behaviors-service-pattern.md`**
+> (source indicative : `files/tabs-state-service (1).md`, 7 corrections relevées). Structure du paquet
+> **provisoire** : par composant, le commun émerge en codant. `src/color/` descendra dans `src/color-picker/`.
+
+> ## ▶ PUIS — LE COLOR PICKER, PAR LE SOCLE
 >
 > Cadrage fait le 2026-10-09, **`Slider` livré** (`dfe58e5`). Le reste est à construire.
 >
@@ -38,8 +45,7 @@
 >
 > **Ordre :**
 >
-> 1. **`packages/behaviors`** (TS pur, zéro React) — le paquet manque de toute façon pour le Toast.
->    Y poser les conversions de couleur + la `ColorPickerMachine`, testables sans rendu.
+> 1. **`packages/behaviors`** — fait (`f9d5948`). Reste le `ColorPickerService` (cf. plan behaviors).
 > 2. **`ColorArea`** — l'aire 2D, même mécanique de pouce que le Slider, deux axes.
 > 3. **`Popover`** — surface ancrée libre, **absente** du DS (`Dropdown` est un menu, pas ça).
 > 4. **`ColorPicker`** — l'assemblage.
@@ -128,8 +134,9 @@ c'est là qu'on attraperait les divergences `::backdrop` / `:dir()` / `writing-m
 les lance à chaque push ou seulement sur `main`.
 
 **Premiers candidats** : `Slider` (clavier), `Drawer`/`Modal` (dialog réel + la règle `display`),
-`Image` (IntersectionObserver). Et à faire **avant** le color picker, dont l'aire 2D sera du
-pointer-drag pur — intestable autrement.
+`Image` (IntersectionObserver), puis l'aire 2D du color picker. **Décision dev (2026-10-09) : APRÈS
+le color picker.** En attendant, le calcul pointeur→valeur vit dans le service `behaviors`
+(testable en Node), le composant ne garde que le câblage d'événements.
 
 ## PASSE À FAIRE — border-radius & granularité de surcharge
 
@@ -158,87 +165,7 @@ Voir [[theming-strategy]].
 Adoption « agent-ready » (étude Astryx) — plans dans `files/plans/agent-ready/`, commencer par
 **P1 doc-as-data** (Button cobaye). Voir [[astryx-agent-ready-study]].
 
-## North-star (roadmap.md)
+## Fils longs
 
-White-label, multi-framework, **industrial-grade** DS — DataTable aiming at **AG-Grid parity**.
-Foundation = **`@tanstack/table-core`** (no headless rewrite). Logic must be **agnostic / pluggable /
-pure-TS** (TS is the real support, not React). **Perf rule: delegate a heavy op ONLY when necessary**
-(150k / ~2M acceptable; Web Workers à la Handsontable for millions). Memory:
-`data-table-industrial-multi-framework-goal-external-selection-store-decision`.
-
-Phases: **A** DataTable skin (React) → **B** finish reference DS → **C** maximise DataTable features
-(≈AG Grid) → **D** Stencil generation (WC/Angular/Vue/React, no DataTable) → **E** DataTable on
-`table-core` (agnostic) → **F** DataTable in Stencil (multi-framework). Plans C/E/F = to write.
-
-## ACTIVE — DataTable (milestone EN COURS, PAS finie)
-
-**Objectif : ZÉRO bug.** Le skin BEM est largement fait mais la milestone table **n'est pas terminée** —
-le dev pilote et donnera les prochaines tâches au fil de l'eau. Ne pas considérer la table comme « done ».
-
-**Skin de-Tailwind DONE ✅** (session 2026-07-10, 8 commits `bd33847`..`5ad66f5`, cf. `completed.md`) :
-cells + features + chrome skinnés, namespace **`ui-data-table`** ; **block `.ui-data-table` sur la Card**
-(porte les vars, toolbar/footer héritent) ; `<table>` = `.ui-data-table__table` ; `Readonly<Props>`
-partout ; a11y cells (aria-sort, texte masqué statut, noms accessibles) ; `DateCell` prop `truncate`.
-Constantes dans `variants/src/table.ts`, tests de parité dans `table.test.ts`.
-
-**Résolu cette session (2026-07-16)** : scroll paginé (`overflow: auto`) ; **quickfilter réparé**
-(`getFilteredRowModel`) ; **footer = chrome sibling, PAS `<tfoot>`** (tranché — `<tfoot>` réservé aux
-lignes de synthèse) ; **Tooltip-texte-tronqué = PROCHAINE SESSION** (voir bandeau haut) ; README draft.
-Détails : [[datatable-behavior-decisions]].
-
-**Loose ends restants (à traiter quand le dev le dira)** :
-
-- **a11y root** : le `role="button"` sur `<tr>` (ligne cliquable) **casse la sémantique table** (finding
-  A11Y-003 ouvert) ; `<caption>` / `aria-busy` sur le `<table>` ; label de région scrollable.
-- **`DropdownFilter`** : gardé (biblio composable, PAS mort), non câblé — décision à venir.
-- **Nettoyage tokens** : la direction est tranchée (rôle→value-scale, drop des alias shadcn — voir
-  [[token-neutral-scale-role-vars]]) ; reste à repointer le skin DataTable (utilise encore les alias).
-
-Perf (`data-table-review-backlog-deferred-findings`) : select-all 150k ≈ **207 ms (OFF, prod)**, coût =
-bookkeeping TanStack O(N), pas le paint ; `startTransition` = pansement, pas par défaut. Le skin doit
-survivre au swap `react-table`→`table-core` (Phase E) : classes sur les primitives sémantiques, pas sur
-l'API TanStack. Plan/checklist : `files/plans/datatable-migration.md`.
-
-## THREAD — white-label native-CSS DS (Phase B)
-
-Plan : `files/plans/native-css-migration.md`. Memory : `native-css-migration-backlog`, `white-label-native-css`.
-
-**MIGRATION QUASI TERMINÉE.** 28 composants portent un README et un skin BEM. Ajouts du 2026-10-08/09
-au-delà du backlog initial : **Menu, Modal, Typeahead, Image, Drawer, Tabs** migrés ; **Alert**,
-**ProgressBar**, **Slider** écrits ; **BottomSheet** (ex-Drawer, renommé) ; **Drawer** réécrit sur
-`<dialog>` natif.
-
-**RESTE SUR TAILWIND — exclu du paquet publié, pas supprimé** : `Carousel` (138 classes) et
-`next/*` (50). Ils vivent au dépôt, hors build. `HeroImage` est **parqué en `.bak`** (voir son
-`PARKED.md`), `TrailerCard` supprimé — tous deux couplés au domaine TMDB.
-
-**Icon, Portal, ConditionalWrapper** : zéro Tailwind, donc déjà compatibles ; il leur manque
-seulement un README.
-
-## LIVRÉ — paquets consommables par le monorepo voisin
-
-`01be734`. Quatre paquets publics en **0.1.0**, tarballs dans `dist-tarballs/` (gitignoré) avec un
-`INSTALL.md`. Doc d'intégration à la racine : **`INTEGRATION.md`**.
-
-Cinq blocages levés : `styles` n'était pas publiable ; le barrel injectait Tailwind + preflight ;
-l'export `./styles.css` pointait le mauvais fichier ; `msw` était livré en dépendance (désormais
-peer optionnelle) ; **les 27 README de composants ne partaient pas** (`files: ['dist']`) — un script
-les copie maintenant dans `dist`, ce qui compte surtout pour une IA intégratrice.
-
-`getBlurDataUrl` est internalisé ⇒ `reference` ne dépend plus de `shared` à l'exécution.
-
-⚠️ `reference` reste officiellement un **bac à sable, pas un livrable** (cf. `CLAUDE.md`). On le
-consomme comme **v1 temporaire**, décision assumée du dev ; les chemins pourront bouger.
-
-## Décisions verrouillées
-
-Lerna + Nx (no Turbo) ; `reference` = sandbox **NON livrable** ; skin = `@fubaritico-ds/styles` ; CVA
-resolvers in `@fubaritico-ds/variants` (pur TS, React/DOM-free) ; web-only. Stateful/compound → skill
-`/state-storage`. Phase 2 (dev) = 9 composants neufs + package `icons`. Phase 3 = finir Stencil → wire `build:packages`.
-
-## Artefacts d'analyse (ce soir, persistés)
-
-`files/analysis/storage-port-design.md` (StoragePort seam/sink, observable, même-écran, commenté ligne à ligne).
-Notes Basic Memory : `scope-object-builder-latency-analysis-odaseva`,
-`data-table-industrial-multi-framework-goal-external-selection-store-decision`,
-`data-table-review-backlog-deferred-findings` (résultats benchmark ajoutés).
+North-star, DataTable (milestone en cours), thread white-label, livraison 0.1.0, décisions
+verrouillées, artefacts d'analyse : **`.claude/next-threads.md`** (à lire quand on y touche).

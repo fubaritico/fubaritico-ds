@@ -32,7 +32,7 @@ apps/
 └── storybook-vuejs/         # empty scaffold — no package.json yet
 
 packages/
-├── behaviors/    @fubaritico-ds/behaviors — framework-agnostic behaviour (pure functions + state machines)
+├── behaviors/    @fubaritico-ds/behaviors — behaviour services, one per component (state/keyboard/focus/ARIA)
 │   └── src/<domain>/ → dist (tsc); no React/DOM; zero dependencies
 ├── reference/    @fubaritico-ds/reference — React DS components (the port source)
 │   ├── src/components/<Component>/ → Component.tsx, .types.ts, .test.tsx, README.md, index.ts
