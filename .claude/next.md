@@ -74,10 +74,9 @@
 >
 > 1. **`ColorPickerService`** — fait (`4d897c4`) : état `null` (automatique), glisser, clavier, hex en
 >    brouillon, ARIA, annonces. `Store` commun extrait. Reste les adaptateurs ci-dessous.
-> 2. **`ColorPicker` composé (panneau inline)** — commité SANS README ni `/review` (arrêt voulu par le
->    dev pour poser d'abord Vitest Browser Mode). Parties : Area, Hue, Alpha, HexField, Swatch,
->    AutoToggle, Status. **À la reprise** : tests navigateur (glisser réel, `setPointerCapture`,
->    géométrie, clavier natif des curseurs, RTL), README, `/review`, puis Popover.
+> 2. **`ColorPicker` composé (panneau inline)** — FAIT (`6cb5c5d`, review `d79c753`) : README,
+>    `/review` 5 agents appliquée, 20 tests navigateur. **0.3.0 à publier (feu vert dev)** — europe-map
+>    l'attend (handoff déposé à sa racine).
 > 3. **`Popover`** — surface ancrée libre, **absente** du DS (`Dropdown` est un menu, pas ça).
 > 4. **`ColorPicker`** — l'assemblage.
 >
