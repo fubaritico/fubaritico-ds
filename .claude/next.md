@@ -12,7 +12,12 @@
 
 > ## ▶ PUBLICATION GitHub Packages — **0.2.0 PUBLIÉE le 2026-10-09** (run `37938876637`)
 >
-> Étapes 1–3 faites (dry-run, `lerna version` → `v0.2.0`, publication). Reste 3b (accès europe-map) et 4.
+> Étapes 1–3 faites (dry-run, `lerna version` → `v0.2.0`, publication). 3b et 4 faits.
+>
+> **0.2.1** (`1460cc7`, run `37957327629`) : `react` seul — imports ESM complétés (636), test de
+> fumée Node dans le build, `next/link.js`. `peerDependenciesMeta` perdu par GitHub Packages →
+> documenté (`auto-install-peers=false`). Piste : sortir `LinkButton` / `NextLinkButton` en paquets
+> d'adaptateurs (`@fubaritico/react-router`, `@fubaritico/next`).
 >
 > _Historique du plan :_
 >
