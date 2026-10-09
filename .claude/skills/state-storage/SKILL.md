@@ -62,16 +62,23 @@ simplicity. (Background analysis, if present locally: `files/analysis/headlessui
 | Switch / Checkbox / Input    | 1 local                         | `useControllable` + `useId`                                |
 | Tooltip                      | 1 local                         | `useId`, disposables (delay)                               |
 | Modal / Drawer / BottomSheet | 2 `createStore` (scroll-lock)   | + `useEscape`, focus-trap, `useId`                         |
-| Menu / Dropdown / Tabs       | 1 local (or Tier 4 if it grows) | keyboard + `useOutsideClick`                               |
+| Tabs                         | **service** (`behaviors`) ✅    | `TabsService` — the reference service, see `/behavior-service` |
+| Menu / Dropdown              | 1 local (or service if it grows) | keyboard + `useOutsideClick`                               |
 | Listbox                      | 4 Machine                       | `useMachineSlice`, keyboard, `useOutsideClick`             |
 | Typeahead (Combobox)         | 4 Machine                       | + `on`/stacking later; `useControllable`, `useLatestValue` |
 | Toaster / notifications      | 3 Zustand                       | global imperative `toast()`                                |
 
 ## Scaffolding (where the code goes)
 
-Framework-agnostic cores (no React/DOM) → a future **`packages/behaviors`** (pure TS, mirrors the
-`@fubaritico-ds/variants` decision). React glue (`useMachineSlice`, hooks) → a React-flavored package or
-co-located. **Do not put React in the agnostic core.** Tier-1 stays inside the component.
+Framework-agnostic cores → **`packages/behaviors`** (exists): **one service per component** — state,
+registry, keyboard, focus, ARIA. **To write one, invoke `/behavior-service`** (contract, React adapter,
+verified gotchas; template = `TabsService`). React glue stays co-located in the component.
+Tier-1 stays inside the component.
+
+**Multi-framework override**: this DS ships to React, Stencil, Angular and Vue. A behaviour that is
+**non-trivial** (children registering, a keyboard model, roving focus, ARIA wiring) goes to a service
+even when the render volume alone would say Tier 1 — otherwise every framework re-implements it and
+they drift. A trivial behaviour (a boolean toggle) stays local in each adapter.
 
 For the actual code of each tier (the `createStore` factory, the Zustand store, the **simplified
 `Machine` class** + `useMachineSlice` glue + a `ListboxMachine` example, plus the dependency-free

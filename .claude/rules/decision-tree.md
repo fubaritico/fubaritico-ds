@@ -12,6 +12,7 @@
 | Write a Storybook story                           | `/story`               |
 | Write tests                                       | `/test`                |
 | Decide where a component's state lives            | `/state-storage`       |
+| Write a component's behaviour service (behaviors) | `/behavior-service`    |
 | Review code (after a set of changes)              | `/review`              |
 | Commit                                            | `/commit`              |
 | Propose a commit message only                     | `/message-commit`      |

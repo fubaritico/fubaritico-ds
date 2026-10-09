@@ -4,7 +4,7 @@ description: Create a new agent skill following the agentskills.io specification
 allowed-tools: Read Write Bash(mkdir:*)
 argument-hint: "[skill-name]"
 metadata:
-  author: financial-app
+  author: fubaritico-ds
   version: "1.0"
 ---
 
@@ -47,7 +47,7 @@ allowed-tools: [space-separated tool list]
 paths:
   - [glob patterns if scoped]
 metadata:
-  author: financial-app
+  author: fubaritico-ds
   version: "1.0"
 ---
 
