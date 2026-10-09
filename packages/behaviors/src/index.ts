@@ -4,4 +4,5 @@
 // without rendering.
 export * from './color-picker/index.js'
 export * from './common/index.js'
+export * from './popover/index.js'
 export * from './tabs/index.js'

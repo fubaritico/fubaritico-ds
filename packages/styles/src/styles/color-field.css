@@ -1,0 +1,71 @@
+/**
+ * ColorField — native BEM skin.
+ *
+ * A colour form field. `.ui-color-field` is MIXED onto the ColorPicker root
+ * (`.ui-color-picker.ui-color-field`): it keeps the picker's variables and turns the panel into a
+ * compact field — `__label`, then `__control` (the `__trigger` swatch button + the hex input). The
+ * picker itself (`__panel`) opens in a `.ui-popover`, in the top layer; it still inherits every
+ * `--ui-color-picker-*` variable from this root, the top layer following the DOM for inheritance.
+ *
+ * Imported AFTER color-picker.css: `.ui-color-field` overrides `.ui-color-picker` rules on the same
+ * element at equal specificity inside the layer (IconButton precedent).
+ *
+ * Override surface: `--ui-color-field-*` here, plus every `--ui-color-picker-*` and `--ui-popover-*`.
+ */
+@layer ui.components {
+  .ui-color-field {
+    /* ---- override API ---- */
+    --ui-color-field-width: calc(var(--spacing-48) + var(--spacing-4));
+    --ui-color-field-gap: var(--spacing-1-5);
+    --ui-color-field-label-font-size: var(--font-size-sm);
+    --ui-color-field-label-font-weight: var(--font-weight-medium);
+    --ui-color-field-label-color: var(--color-foreground);
+    --ui-color-field-trigger-size: var(--spacing-8);
+    --ui-color-field-trigger-radius: var(--radius-sm);
+    --ui-color-field-trigger-ring-color: var(--color-ring);
+    --ui-color-field-panel-width: calc(var(--spacing-64) + var(--spacing-4));
+
+    gap: var(--ui-color-field-gap);
+    inline-size: var(--ui-color-field-width);
+  }
+
+  .ui-color-field__label {
+    font-size: var(--ui-color-field-label-font-size);
+    font-weight: var(--ui-color-field-label-font-weight);
+    color: var(--ui-color-field-label-color);
+  }
+
+  .ui-color-field__control {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-color-picker-gap);
+  }
+
+  /* The swatch button: a bare frame around the swatch, the swatch IS its face. */
+  .ui-color-field__trigger {
+    flex-shrink: 0;
+    display: inline-flex;
+    padding: 0;
+    border: 0;
+    border-radius: var(--ui-color-field-trigger-radius);
+    background: none;
+    cursor: pointer;
+    --ui-color-picker-swatch-size: var(--ui-color-field-trigger-size);
+  }
+
+  .ui-color-field__trigger:focus-visible {
+    outline: 2px solid var(--ui-color-field-trigger-ring-color);
+    outline-offset: 2px;
+  }
+
+  .ui-color-field__trigger:disabled {
+    cursor: not-allowed;
+  }
+
+  .ui-color-field__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-color-picker-gap);
+    inline-size: var(--ui-color-field-panel-width);
+  }
+}

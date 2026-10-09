@@ -27,6 +27,7 @@ const REACT_NAMES: ReadonlyMap<string, string> = new Map([
   ['autocapitalize', 'autoCapitalize'],
   ['autocomplete', 'autoComplete'],
   ['readonly', 'readOnly'],
+  ['popovertarget', 'popoverTarget'],
 ])
 
 /**

@@ -35,6 +35,10 @@ describe('toReactAttributes', () => {
       ).toEqual({ maxLength: 9, spellCheck: 'false', autoCapitalize: 'off', autoComplete: 'off' })
     })
 
+    it('maps popovertarget to popoverTarget', () => {
+      expect(toReactAttributes({ popovertarget: 'p' })).toEqual({ popoverTarget: 'p' })
+    })
+
     it('renames AND turns on a boolean attribute (readonly → readOnly: true)', () => {
       expect(toReactAttributes({ readonly: '' })).toEqual({ readOnly: true })
     })

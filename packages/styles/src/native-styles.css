@@ -25,6 +25,7 @@
 @import './styles/listbox.css';
 @import './styles/modal.css';
 @import './styles/pagination.css';
+@import './styles/popover.css';
 @import './styles/progress-bar.css';
 @import './styles/rating.css';
 @import './styles/skeleton.css';
@@ -39,3 +40,5 @@
 /* After slider.css and input.css: its __track / __hex rules sit on .ui-slider / .ui-input
    elements and must win at equal specificity inside the layer (IconButton precedent). */
 @import './styles/color-picker.css';
+/* After color-picker.css: .ui-color-field is mixed onto the picker root and overrides it. */
+@import './styles/color-field.css';

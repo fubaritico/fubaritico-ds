@@ -1,0 +1,107 @@
+/**
+ * Popover — native BEM skin.
+ *
+ * `.ui-popover` is the surface: an element with the `popover` attribute, which the browser renders
+ * in the TOP LAYER — above every z-index and outside every `overflow: hidden`, with no portal and no
+ * z-index arms race. `.ui-popover-trigger` is the element it is anchored to (a sibling block).
+ *
+ * Positioning is CSS anchor positioning (Baseline 2026): the trigger declares `anchor-name`, the
+ * surface `position-anchor`, both from `--ui-popover-anchor` (unique per instance, set by the
+ * component). The surface opens below its trigger, start-aligned, and flips above / to the other
+ * side when it would overflow. Where anchor positioning is unsupported, the UA default stays: the
+ * surface is centred in the viewport — still on top of everything, still usable.
+ *
+ * NEVER give the base a `display` value: the UA hides a closed popover with `display: none`, and an
+ * author `display` would override it and leave the popover visible while closed (the `<dialog>`
+ * trap, met twice). Layout goes on `:popover-open` only.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-popover-*` vars on `.ui-popover`.
+ *   2. Redefine a global token → re-skins every popover.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico/tokens.
+ */
+@layer ui.components {
+  .ui-popover-trigger {
+    anchor-name: var(--ui-popover-anchor);
+  }
+
+  .ui-popover {
+    /* ---- override API ---- */
+    --ui-popover-bg: var(--color-background);
+    --ui-popover-fg: var(--color-foreground);
+    --ui-popover-border-width: 1px;
+    --ui-popover-border-color: var(--color-border);
+    --ui-popover-radius: var(--radius-sm);
+    --ui-popover-shadow: var(--shadow-lg);
+    --ui-popover-padding: var(--spacing-3);
+    --ui-popover-offset: var(--spacing-1);
+    --ui-popover-font-family: var(--font-inter);
+    --ui-popover-ring-color: var(--color-ring);
+    --ui-popover-ring-width: 2px;
+    --ui-popover-ring-offset: 2px;
+    --ui-popover-max-block-size: calc(100dvh - var(--spacing-8));
+    --ui-popover-transition-duration: var(--duration-fast);
+    --ui-popover-transition-easing: var(--easing-standard);
+
+    box-sizing: border-box;
+    max-block-size: var(--ui-popover-max-block-size);
+    padding: var(--ui-popover-padding);
+    border: var(--ui-popover-border-width) solid var(--ui-popover-border-color);
+    border-radius: var(--ui-popover-radius);
+    background-color: var(--ui-popover-bg);
+    color: var(--ui-popover-fg);
+    box-shadow: var(--ui-popover-shadow);
+    font-family: var(--ui-popover-font-family);
+    overflow: auto;
+  }
+
+  .ui-popover:focus-visible {
+    outline: var(--ui-popover-ring-width) solid var(--ui-popover-ring-color);
+    outline-offset: var(--ui-popover-ring-offset);
+  }
+
+  /* Anchored to the trigger only where the platform can: otherwise the UA centring stays. */
+  @supports (position-anchor: --ui-popover) {
+    .ui-popover {
+      position-anchor: var(--ui-popover-anchor);
+      inset: auto;
+      margin: 0;
+      margin-block-start: var(--ui-popover-offset);
+      position-area: block-end span-inline-end;
+      /* On a short viewport, open on the side with the most room rather than overflowing. */
+      position-try-order: most-block-size;
+      position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
+    }
+  }
+
+  /* A short fade in and out; `display` / `overlay` are discrete, so they must allow it. */
+  .ui-popover:popover-open {
+    opacity: 1;
+  }
+
+  @starting-style {
+    .ui-popover:popover-open {
+      opacity: 0;
+    }
+  }
+
+  .ui-popover {
+    opacity: 0;
+    transition:
+      opacity var(--ui-popover-transition-duration)
+        var(--ui-popover-transition-easing),
+      display var(--ui-popover-transition-duration) allow-discrete,
+      overlay var(--ui-popover-transition-duration) allow-discrete;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-popover {
+      transition: none;
+    }
+  }
+}

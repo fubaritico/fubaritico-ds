@@ -176,6 +176,8 @@ export function hexInputAttrs(ctx: AttrsContext): DomAttributes {
     type: 'text',
     value: ctx.hexDraft,
     'aria-label': ctx.labels.hex,
+    // An empty field reads as "missing"; in the automatic state it says why it is empty.
+    placeholder: ctx.isAuto ? ctx.labels.automatic : undefined,
     'aria-invalid': ctx.hexInvalid ? 'true' : undefined,
     'aria-describedby': ctx.hexInvalid ? hexErrorId(ctx.uid) : undefined,
     autocomplete: 'off',

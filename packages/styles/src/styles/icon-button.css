@@ -47,5 +47,11 @@
     --ui-button-fg: var(--color-primitive-neutral-400);
     --ui-button-bg-hover: var(--color-primitive-neutral-800);
     --ui-button-fg-hover: var(--color-primitive-neutral-0);
+    /* pressed on a dark surface: the light end of the scale */
+    --ui-button-pressed-bg: var(--color-primitive-neutral-0);
+    --ui-button-pressed-fg: var(--color-primitive-neutral-900);
+    --ui-button-pressed-border-color: var(--color-primitive-neutral-0);
+    --ui-button-pressed-ring-width: 0px;
+    --ui-button-pressed-bg-hover: var(--color-primitive-neutral-200);
   }
 }

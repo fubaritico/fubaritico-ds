@@ -33,6 +33,8 @@ export type {
 
 export { Checkbox } from './components/Checkbox'
 export type { CheckboxProps, CheckboxSize } from './components/Checkbox'
+export { ColorField } from './components/ColorField'
+export type { ColorFieldProps } from './components/ColorField'
 export { ColorPicker, useColorPickerController } from './components/ColorPicker'
 export type {
   ColorPickerAreaProps,
@@ -109,6 +111,12 @@ export type { ModalProps } from './components/Modal'
 
 export { Pagination } from './components/Pagination'
 export type { PaginationProps } from './components/Pagination'
+export { Popover } from './components/Popover'
+export type {
+  PopoverContentProps,
+  PopoverProps,
+  PopoverTriggerProps,
+} from './components/Popover'
 
 export { ProgressBar } from './components/ProgressBar'
 export type {

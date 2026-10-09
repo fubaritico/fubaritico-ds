@@ -367,6 +367,7 @@ describe('ColorPickerService', () => {
           hexDraft: '',
           color: BLUE,
         })
+        expect(service.hexInputAttrs().placeholder).toBe('Automatic')
         expect(service.describe()).toBe('Automatic, no color selected')
         expect(service.swatchAttrs()).toEqual({
           role: 'img',
