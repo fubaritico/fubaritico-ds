@@ -72,7 +72,8 @@
 >
 > **Ordre :**
 >
-> 1. **`packages/behaviors`** — fait (`f9d5948`). Reste le `ColorPickerService` (cf. plan behaviors).
+> 1. **`ColorPickerService`** — fait (`4d897c4`) : état `null` (automatique), glisser, clavier, hex en
+>    brouillon, ARIA, annonces. `Store` commun extrait. Reste les adaptateurs ci-dessous.
 > 2. **`ColorArea`** — l'aire 2D, même mécanique de pouce que le Slider, deux axes.
 > 3. **`Popover`** — surface ancrée libre, **absente** du DS (`Dropdown` est un menu, pas ça).
 > 4. **`ColorPicker`** — l'assemblage.
