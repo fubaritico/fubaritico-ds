@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  DROPDOWN_ANCHOR_VAR,
   DROPDOWN_CLASS,
   DROPDOWN_CONTROL_CLASS,
   DROPDOWN_DIVIDER_CLASS,
@@ -14,27 +15,15 @@ import {
 
 describe('dropdownMenuVariants', () => {
   describe('happy path', () => {
-    it('emits the base menu class with default placement', () => {
+    it('emits the base menu class with the default alignment', () => {
       expect(dropdownMenuVariants()).toBe('ui-dropdown__menu')
     })
   })
 
   describe('variants', () => {
-    it('emits the flipped modifier', () => {
-      expect(dropdownMenuVariants({ flipped: true })).toBe(
-        'ui-dropdown__menu ui-dropdown__menu--flipped'
-      )
-    })
-
     it('emits the right-align modifier', () => {
       expect(dropdownMenuVariants({ align: 'right' })).toBe(
         'ui-dropdown__menu ui-dropdown__menu--right'
-      )
-    })
-
-    it('combines flipped and right-align', () => {
-      expect(dropdownMenuVariants({ flipped: true, align: 'right' })).toBe(
-        'ui-dropdown__menu ui-dropdown__menu--flipped ui-dropdown__menu--right'
       )
     })
 
@@ -54,7 +43,9 @@ describe('dropdownMenuVariants', () => {
   describe('edge cases', () => {
     it('always prefixes the base menu class', () => {
       expect(
-        dropdownMenuVariants({ flipped: true }).startsWith('ui-dropdown__menu ')
+        dropdownMenuVariants({ align: 'right' }).startsWith(
+          'ui-dropdown__menu '
+        )
       ).toBe(true)
     })
   })
@@ -87,6 +78,7 @@ describe('dropdownCaretVariants', () => {
     it('exposes stable BEM element class constants', () => {
       expect(DROPDOWN_CLASS).toBe('ui-dropdown')
       expect(DROPDOWN_CONTROL_CLASS).toBe('ui-dropdown__control')
+      expect(DROPDOWN_ANCHOR_VAR).toBe('--ui-dropdown-anchor')
       expect(DROPDOWN_TRIGGER_CONTENT_CLASS).toBe(
         'ui-dropdown__trigger-content'
       )

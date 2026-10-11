@@ -126,13 +126,14 @@ Closing on Escape:
 
 ### `Menu`
 
-| Name            | Type                      | Default   | Description                                          |
-| --------------- | ------------------------- | --------- | ---------------------------------------------------- |
-| `selectedValue` | `string`                  | —         | Value of the persistently selected item.             |
-| `variant`       | `'light' \| 'dark'`       | `'light'` | Colour scheme, forwarded to the list and every item. |
-| `onSelect`      | `(value: string) => void` | —         | Called on click or Enter / Space.                    |
-| `onClose`       | `() => void`              | —         | Called when Escape is pressed.                       |
-| …`ListboxList`  | —                         | —         | Everything else lands on the `<ul>`.                 |
+| Name                 | Type                      | Default   | Description                                                                 |
+| -------------------- | ------------------------- | --------- | --------------------------------------------------------------------------- |
+| `selectedValue`      | `string`                  | —         | Value of the persistently selected item.                                    |
+| `variant`            | `'light' \| 'dark'`       | `'light'` | Colour scheme, forwarded to the list and every item.                        |
+| `onSelect`           | `(value: string) => void` | —         | Called on click or Enter / Space.                                           |
+| `onClose`            | `() => void`              | —         | Called when Escape is pressed (always consumed, even with no enabled item). |
+| `defaultActiveIndex` | `number`                  | `-1`      | Item index the keyboard cursor starts on; read at mount.                    |
+| …`ListboxList`       | —                         | —         | Everything else lands on the `<ul>`.                                        |
 
 ### `Menu.Item`
 

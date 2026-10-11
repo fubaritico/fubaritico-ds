@@ -43,6 +43,61 @@ describe('Dropdown', () => {
       expect(screen.getByText('Beta')).toBeInTheDocument()
     })
 
+    it('moves focus into the menu on open, and back to the trigger on Escape', async () => {
+      const user = userEvent.setup()
+      render(
+        <Dropdown options={OPTIONS} selectedValue="a" onSelect={vi.fn()} />
+      )
+      const trigger = screen.getByRole('button')
+      await user.click(trigger)
+      expect(screen.getByRole('listbox')).toHaveFocus()
+      await user.keyboard('{Escape}')
+      expect(screen.queryByRole('listbox')).toBeNull()
+      expect(trigger).toHaveFocus()
+    })
+
+    it('opens with Arrow Down on the trigger, the cursor on the selected option', async () => {
+      const user = userEvent.setup()
+      const onSelect = vi.fn()
+      render(
+        <Dropdown options={OPTIONS} selectedValue="b" onSelect={onSelect} />
+      )
+      screen.getByRole('button').focus()
+      await user.keyboard('{ArrowDown}')
+      const listbox = screen.getByRole('listbox')
+      expect(listbox).toHaveFocus()
+      const active = listbox.getAttribute('aria-activedescendant')
+      expect(active && document.getElementById(active)).toHaveTextContent(
+        'Beta'
+      )
+      await user.keyboard('{Enter}')
+      expect(onSelect).toHaveBeenCalledWith('b')
+    })
+
+    it('names the listbox after the trigger unless menuAriaLabel is given', async () => {
+      const user = userEvent.setup()
+      const { rerender } = render(
+        <Dropdown
+          label="Sort by"
+          options={OPTIONS}
+          selectedValue="a"
+          onSelect={vi.fn()}
+        />
+      )
+      await user.click(screen.getByRole('button'))
+      expect(screen.getByRole('listbox')).toHaveAccessibleName(TRIGGER_NAME)
+      rerender(
+        <Dropdown
+          label="Sort by"
+          menuAriaLabel="Orders"
+          options={OPTIONS}
+          selectedValue="a"
+          onSelect={vi.fn()}
+        />
+      )
+      expect(screen.getByRole('listbox')).toHaveAccessibleName('Orders')
+    })
+
     it('calls onSelect with the value when an option is clicked', async () => {
       const user = userEvent.setup()
       const onSelect = vi.fn()
@@ -63,8 +118,13 @@ describe('Dropdown', () => {
       )
       const trigger = screen.getByRole('button')
       expect(trigger).toHaveAttribute('aria-expanded', 'false')
+      expect(trigger).not.toHaveAttribute('aria-controls')
       await user.click(trigger)
       expect(trigger).toHaveAttribute('aria-expanded', 'true')
+      expect(trigger).toHaveAttribute(
+        'aria-controls',
+        screen.getByRole('listbox').id
+      )
     })
 
     it('exposes a listbox popup on the trigger', () => {
@@ -89,6 +149,28 @@ describe('Dropdown', () => {
       expect(
         container.ownerDocument.querySelector('.ui-dropdown__dot')
       ).not.toBeNull()
+    })
+
+    it('ties the menu to its control with one anchor name per instance', async () => {
+      const user = userEvent.setup()
+      const { container } = render(
+        <>
+          <Dropdown options={OPTIONS} selectedValue="a" onSelect={vi.fn()} />
+          <Dropdown options={OPTIONS} selectedValue="b" onSelect={vi.fn()} />
+        </>
+      )
+      const roots = container.querySelectorAll<HTMLElement>('.ui-dropdown')
+      const anchors = [...roots].map((root) =>
+        root.style.getPropertyValue('--ui-dropdown-anchor')
+      )
+      expect(anchors[0]).toMatch(/^--ui-dropdown-[\w-]+$/)
+      expect(anchors[0]).not.toBe(anchors[1])
+      await user.click(screen.getByRole('button', { name: 'Select: Alpha' }))
+      const menu = container.querySelector<HTMLElement>('.ui-dropdown__menu')
+      expect(menu).toHaveAttribute('popover', 'manual')
+      expect(menu?.style.getPropertyValue('--ui-dropdown-anchor')).toBe(
+        anchors[0]
+      )
     })
 
     it('renders the menu in a portal when withPortal is set', async () => {
@@ -125,6 +207,32 @@ describe('Dropdown', () => {
         <Dropdown options={OPTIONS} selectedValue="a" onSelect={vi.fn()} />
       )
       expect(screen.queryByText('Beta')).toBeNull()
+    })
+
+    it('closes the menu when focus leaves it, without pulling focus back', async () => {
+      const user = userEvent.setup()
+      render(
+        <div>
+          <Dropdown options={OPTIONS} selectedValue="a" onSelect={vi.fn()} />
+          <button type="button">after</button>
+        </div>
+      )
+      await user.click(screen.getByRole('button', { name: 'Select: Alpha' }))
+      await user.tab()
+      expect(screen.queryByRole('listbox')).toBeNull()
+      expect(screen.getByRole('button', { name: 'after' })).toHaveFocus()
+    })
+
+    it('closes the menu and refocuses the trigger when the trigger is clicked again', async () => {
+      const user = userEvent.setup()
+      render(
+        <Dropdown options={OPTIONS} selectedValue="a" onSelect={vi.fn()} />
+      )
+      const trigger = screen.getByRole('button')
+      await user.click(trigger)
+      await user.click(trigger)
+      expect(screen.queryByRole('listbox')).toBeNull()
+      expect(trigger).toHaveFocus()
     })
 
     it('closes the menu on outside click', async () => {

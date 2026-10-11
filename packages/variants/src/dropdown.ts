@@ -3,30 +3,27 @@ import { cva } from 'class-variance-authority'
 import type { VariantProps } from 'class-variance-authority'
 
 /**
- * Resolves the Dropdown floating-menu wrapper's placement into the BEM class names of the native skin
- * (`@fubaritico/styles` → `.ui-dropdown__menu`, `--flipped`, `--right`).
+ * Resolves the Dropdown floating menu's alignment into the BEM class names of the native skin
+ * (`@fubaritico/styles` → `.ui-dropdown__menu`, `--right`).
  *
- * Only used in the NON-portalled mode (the menu is absolutely positioned relative to the trigger). In
- * portalled mode the consumer applies computed fixed coordinates inline instead.
+ * The menu is a top-layer popover anchored to the control in CSS (anchor positioning): the browser
+ * flips it above the trigger when there is no room below, so there is no placement state to resolve
+ * beyond the edge it aligns to.
  *
- * @param props - Placement options (all optional — CVA defaults apply).
- * @param props.flipped - Whether the menu opens above the trigger (not enough room below).
- * @param props.align - Horizontal edge alignment with the trigger; defaults to `'left'`.
- * @returns The space-separated BEM class string for the resolved placement.
+ * @param props - Alignment options (all optional — CVA defaults apply).
+ * @param props.align - Edge of the trigger the menu aligns to; defaults to `'left'` (inline start),
+ *   which emits the base class only. `'right'` takes effect where CSS anchor positioning is
+ *   supported; elsewhere the menu is centred in the viewport and alignment does not apply.
+ * @returns The space-separated BEM class string for the resolved alignment.
  */
 export const dropdownMenuVariants = cva('ui-dropdown__menu', {
   variants: {
-    flipped: {
-      true: 'ui-dropdown__menu--flipped',
-      false: '',
-    },
     align: {
       left: '',
       right: 'ui-dropdown__menu--right',
     },
   },
   defaultVariants: {
-    flipped: false,
     align: 'left',
   },
 })
@@ -64,6 +61,12 @@ export const DROPDOWN_CLASS = 'ui-dropdown'
 
 /** BEM element class for the positioning wrapper around the trigger (`.ui-dropdown__control`). */
 export const DROPDOWN_CONTROL_CLASS = 'ui-dropdown__control'
+
+/**
+ * Custom property carrying the CSS anchor name that ties the menu to its control
+ * (`anchor-name` / `position-anchor`). The component sets it, unique per instance, on the root.
+ */
+export const DROPDOWN_ANCHOR_VAR = '--ui-dropdown-anchor'
 
 /** BEM element class for the trigger's inner content row (`.ui-dropdown__trigger-content`). */
 export const DROPDOWN_TRIGGER_CONTENT_CLASS = 'ui-dropdown__trigger-content'

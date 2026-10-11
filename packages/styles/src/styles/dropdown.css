@@ -2,13 +2,17 @@
  * Dropdown — native BEM skin.
  *
  * `.ui-dropdown` is the inline row (optional label + the control). `.ui-dropdown__control` is the
- * relative anchor for the floating menu; `.ui-dropdown__menu` is the absolutely-positioned wrapper
- * around the composed `Menu` (with `--flipped` / `--right` placement modifiers). The trigger and the
- * menu themselves are composed primitives (`Button`, `Menu`) — this skin only owns the Dropdown-
- * specific glue: layout, caret rotation, the colour dot and item divider.
+ * CSS anchor of the floating menu; `.ui-dropdown__menu` is the wrapper around the composed `Menu`.
+ * The trigger and the menu themselves are composed primitives (`Button`, `Menu`) — this skin only
+ * owns the Dropdown-specific glue: layout, the menu's placement, caret rotation, the colour dot and
+ * the item divider.
  *
- * In portalled mode the consumer applies computed fixed coordinates inline (overriding the absolute
- * base); the placement modifiers are then not used.
+ * The menu is a `popover="manual"` element, which the browser renders in the TOP LAYER: above every
+ * z-index, outside every `overflow: hidden`, and still inside a `Modal` it is opened from (a portal
+ * would land in the inert part of the page). It stays a DOM child of `.ui-dropdown`, so it inherits
+ * the `--ui-dropdown-*` vars. Placement is CSS anchor positioning (Baseline 2026): below the
+ * control, flipped above when there is no room. Where anchor positioning is unsupported the UA
+ * default stays — the menu is centred in the viewport, still on top and usable.
  *
  * Override surface (white-label), by precedence:
  *   1. Redefine the component-scoped `--ui-dropdown-*` vars (surgical re-skin).
@@ -26,10 +30,15 @@
     --ui-dropdown-dot-size: var(--spacing-3); /* 12px */
     /* A dot is round by nature: `full`, never a corner token a theme may zero. */
     --ui-dropdown-dot-radius: var(--radius-full);
-    --ui-dropdown-z: 50;
     --ui-dropdown-font-family: var(--font-roboto);
     --ui-dropdown-transition-duration: var(--duration-fast);
     --ui-dropdown-transition-easing: var(--easing-standard);
+    --ui-dropdown-destructive-color: var(--color-destructive);
+    --ui-dropdown-divider-size: 1px;
+    --ui-dropdown-divider-color: var(--color-border);
+    --ui-dropdown-divider-margin: var(--spacing-1);
+    /* NOT an override: `--ui-dropdown-anchor` is set inline by the component, unique per instance,
+       to tie the menu to its control (`anchor-name` / `position-anchor`). */
 
     box-sizing: border-box;
     display: inline-flex;
@@ -39,7 +48,7 @@
   }
 
   .ui-dropdown__control {
-    position: relative;
+    anchor-name: var(--ui-dropdown-anchor);
     inline-size: 100%;
   }
 
@@ -59,26 +68,36 @@
     transform: rotate(180deg);
   }
 
-  /* ---- floating menu wrapper (non-portalled) ---- */
+  /* ---- floating menu (top layer) ---- */
+  /* Undo the user-agent popover box: centred with `inset: 0; margin: auto`, drawn with a border,
+     padding and Canvas colours. The composed Menu draws the surface itself. */
   .ui-dropdown__menu {
-    position: absolute;
-    z-index: var(--ui-dropdown-z);
-    min-inline-size: 100%;
-    inset-block-start: 100%;
-    inset-inline-start: 0;
-    margin-block-start: var(--ui-dropdown-menu-gap);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    overflow: visible;
   }
 
-  .ui-dropdown__menu--flipped {
-    inset-block-start: auto;
-    inset-block-end: 100%;
-    margin-block-start: 0;
-    margin-block-end: var(--ui-dropdown-menu-gap);
-  }
+  @supports (position-anchor: --ui-dropdown) {
+    .ui-dropdown__menu {
+      /* Anchored only where the platform can: otherwise the UA centring stays. */
+      inset: auto;
+      margin: 0;
+      position-anchor: var(--ui-dropdown-anchor);
+      position-area: block-end span-inline-end;
+      /* At least as wide as the control; wider when an option needs it. */
+      min-inline-size: anchor-size(inline);
+      margin-block-start: var(--ui-dropdown-menu-gap);
+      /* No room below: open above. Flipping swaps the margin to the other side as well. */
+      position-try-fallbacks: flip-block;
+      /* On a short viewport, open on the side with the most room (the listbox scrolls inside). */
+      position-try-order: most-block-size;
+    }
 
-  .ui-dropdown__menu--right {
-    inset-inline-start: auto;
-    inset-inline-end: 0;
+    .ui-dropdown__menu--right {
+      position-area: block-end span-inline-start;
+    }
   }
 
   /* ---- menu item content (dot + icon + label) ---- */
@@ -89,7 +108,7 @@
   }
 
   .ui-dropdown__item--destructive {
-    color: var(--color-destructive);
+    color: var(--ui-dropdown-destructive-color);
   }
 
   .ui-dropdown__dot {
@@ -101,10 +120,10 @@
   }
 
   .ui-dropdown__divider {
-    block-size: 1px;
-    margin-block: var(--spacing-1);
+    block-size: var(--ui-dropdown-divider-size);
+    margin-block: var(--ui-dropdown-divider-margin);
     border: 0;
-    background-color: var(--color-border);
+    background-color: var(--ui-dropdown-divider-color);
     list-style: none;
   }
 

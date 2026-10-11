@@ -34,7 +34,12 @@ export interface DropdownProps {
   'aria-label'?: string
   /** Accessible label for the floating menu. */
   menuAriaLabel?: string
-  /** Render the menu inside a Portal — escapes `overflow:hidden` ancestors. */
+  /**
+   * Mount the menu at the end of `document.body` instead of in place. Rarely needed: the menu is in
+   * the top layer either way, so no `overflow` or `z-index` clips it. Avoid it inside a `Modal` or a
+   * `Popover`: a menu on `body` leaves their subtree — the dialog makes it inert, and a click in it
+   * light-dismisses the popover.
+   */
   withPortal?: boolean
   /** Custom trigger content — replaces the default label + caret inside the button. */
   trigger?: (props: { isOpen: boolean; selectedLabel: string }) => ReactNode

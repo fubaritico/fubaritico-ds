@@ -18,6 +18,11 @@ export interface MenuProps
   onSelect?: (value: string) => void
   /** Called when Escape is pressed */
   onClose?: () => void
+  /**
+   * Item `index` the keyboard cursor starts on — the selected option, so a listbox focused on open
+   * announces it and Enter confirms it. Read at mount; defaults to none (`-1`).
+   */
+  defaultActiveIndex?: number
 }
 
 /** One entry of the keyboard-navigation registry. */
@@ -43,6 +48,7 @@ interface ItemEntry {
  * @param props.variant - Colour scheme; forwarded to the list AND to every item.
  * @param props.onSelect - Called with the item value on click or Enter/Space.
  * @param props.onClose - Called when Escape is pressed.
+ * @param props.defaultActiveIndex - Item index the keyboard cursor starts on; read at mount.
  * @returns The rendered menu.
  */
 
@@ -51,11 +57,12 @@ export function Menu({
   variant = 'light',
   onSelect,
   onClose,
+  defaultActiveIndex = -1,
   className,
   children,
   ...rest
 }: Readonly<MenuProps>) {
-  const [activeIndex, setActiveIndex] = useState(-1)
+  const [activeIndex, setActiveIndex] = useState(defaultActiveIndex)
   const itemsRef = useRef<Map<number, ItemEntry>>(new Map())
   const menuId = useId()
 
@@ -96,6 +103,14 @@ export function Menu({
 
   /** Handles Arrow, Home, End, Enter, Space, Escape keys */
   const handleKeyDown = (e: KeyboardEvent<HTMLUListElement>) => {
+    // Escape first: a menu with nothing enabled must still close — and consume the key, or it
+    // reaches a surrounding dialog and closes that instead.
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      onClose?.()
+      return
+    }
+
     const enabled = getEnabledIndices()
     if (enabled.length === 0) return
 
@@ -133,11 +148,6 @@ export function Menu({
           const entry = itemsRef.current.get(activeIndex)
           if (entry && !entry.disabled) handleSelect(entry.value)
         }
-        break
-      }
-      case 'Escape': {
-        e.preventDefault()
-        onClose?.()
         break
       }
     }

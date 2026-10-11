@@ -7,8 +7,10 @@ import {
   useRef,
   useState,
 } from 'react'
+import { createPortal } from 'react-dom'
 
 import {
+  DROPDOWN_ANCHOR_VAR,
   DROPDOWN_CLASS,
   DROPDOWN_CONTROL_CLASS,
   DROPDOWN_DIVIDER_CLASS,
@@ -23,19 +25,12 @@ import {
 import { Button } from '../Button'
 import { Icon } from '../Icon'
 import { Menu } from '../Menu'
-import { Portal } from '../Portal'
 import { Typography } from '../Typography'
 
 import type { DropdownProps } from './Dropdown.types'
-import type { CSSProperties, ReactNode } from 'react'
+import type { CSSProperties, FocusEvent, KeyboardEvent, ReactNode } from 'react'
 
 export type { DropdownProps, DropdownOption } from './Dropdown.types'
-
-/** Gap in px between the trigger and the floating menu (used for flip math). */
-const MENU_GAP = 8
-
-/** z-index that lifts the portalled menu above page content (mirrors `--ui-dropdown-z` in the skin). */
-const MENU_Z_INDEX = 50
 
 /** Pixel size of the leading icon / caret glyphs. */
 const GLYPH_SIZE = 16
@@ -44,10 +39,13 @@ const GLYPH_SIZE = 16
  * Dropdown — a select-like control: a trigger button that opens a floating {@link Menu} of options.
  *
  * Web-only floating menu (the mobile bottom-sheet branch of the source component was dropped). The menu
- * auto-flips above the trigger when there isn't room below, can render in a `Portal` to escape
- * `overflow:hidden` ancestors, closes on outside-click / `Escape`, and returns focus to the trigger.
- * Keyboard navigation (Arrow keys / Enter / Escape) comes from the composed `Menu`. The skin owns the
- * Dropdown-specific glue (`.ui-dropdown`); the trigger and menu are composed primitives.
+ * is a `popover="manual"` element in the browser's TOP LAYER, rendered in place: above every
+ * `z-index`, unclipped by any `overflow`, and — unlike a portal — still usable inside a `Modal` it is
+ * opened from. The skin anchors it to the control in CSS and flips it above when there is no room.
+ * Opening moves focus into the menu; it closes on selection, outside-click, `Escape` (the menu's,
+ * never the surrounding dialog's) and when focus leaves it. Keyboard navigation (Arrow keys / Enter /
+ * Escape) comes from the composed `Menu`. The skin owns the Dropdown-specific glue (`.ui-dropdown`);
+ * the trigger and menu are composed primitives.
  *
  * @param props - {@link DropdownProps}.
  * @returns The rendered dropdown (label + trigger + floating menu).
@@ -69,28 +67,78 @@ export function Dropdown({
   renderItem,
 }: Readonly<DropdownProps>) {
   const [isOpen, setIsOpen] = useState(false)
-  const [flipped, setFlipped] = useState(false)
-  const [portalStyle, setPortalStyle] = useState<CSSProperties>({})
   const containerRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const menuWrapperRef = useRef<HTMLDivElement>(null)
+  const menuListRef = useRef<HTMLUListElement>(null)
   const menuId = useId()
+  const triggerId = useId()
+  // A dashed ident unique per instance: `useId` yields `«r1»`-like strings, not valid in an ident.
+  const anchorStyle = useMemo(
+    () =>
+      ({
+        [DROPDOWN_ANCHOR_VAR]: `--ui-dropdown-${menuId.replace(/[^\w-]/g, '')}`,
+      }) as CSSProperties,
+    [menuId]
+  )
 
   const selectedOption = useMemo(
     () => options.find((o) => o.value === selectedValue),
     [options, selectedValue]
   )
   const selectedLabel = selectedOption?.label ?? selectedValue
+  // The keyboard cursor opens on the selected option, or the first one that can be chosen.
+  const defaultActiveIndex = useMemo(() => {
+    const selected = options.findIndex(
+      (o) => o.value === selectedValue && !o.disabled
+    )
+    return selected >= 0 ? selected : options.findIndex((o) => !o.disabled)
+  }, [options, selectedValue])
   const fullWidth = buttonFullWidth ?? !trigger
-
-  const handleToggle = useCallback(() => {
-    setIsOpen((prev) => !prev)
-  }, [])
 
   const handleClose = useCallback(() => {
     setIsOpen(false)
     triggerRef.current?.focus()
   }, [])
+
+  // Closing from the trigger goes through `handleClose`: focus is in the menu, which unmounts, and
+  // a click does not focus a button in every browser (Safari) — focus would fall to `<body>`.
+  const handleToggle = useCallback(() => {
+    if (isOpen) handleClose()
+    else setIsOpen(true)
+  }, [isOpen, handleClose])
+
+  /**
+   * Opens the menu from the keyboard with Arrow Down / Up, as a native select does — or sends focus
+   * back into a menu already open (after Shift+Tab onto the trigger).
+   *
+   * @param event - The trigger's keydown event.
+   */
+  const handleTriggerKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLButtonElement>) => {
+      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+      event.preventDefault()
+      if (isOpen) menuListRef.current?.focus()
+      else setIsOpen(true)
+    },
+    [isOpen]
+  )
+
+  /**
+   * While open, Escape closes the menu wherever focus sits in the Dropdown (the trigger after
+   * Shift+Tab included) and is consumed — it never reaches a surrounding `Modal`. The Menu consumes
+   * its own Escape first; a prevented event is left alone.
+   *
+   * @param event - A keydown event bubbled to the root.
+   */
+  const handleRootKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      if (!isOpen || event.key !== 'Escape' || event.defaultPrevented) return
+      event.preventDefault()
+      handleClose()
+    },
+    [isOpen, handleClose]
+  )
 
   const handleSelect = useCallback(
     (value: string) => {
@@ -116,67 +164,38 @@ export function Dropdown({
     }
   }, [isOpen, handleClose])
 
-  /** Computes the flip direction (and the fixed portal coordinates when portalled). */
-  const updatePlacement = useCallback(() => {
-    const triggerEl = triggerRef.current
-    const wrapper = menuWrapperRef.current
-    if (!triggerEl || !wrapper) return
-
-    const triggerRect = triggerEl.getBoundingClientRect()
-    const menuHeight = wrapper.offsetHeight
-    const spaceBelow = window.innerHeight - triggerRect.bottom - MENU_GAP
-    const spaceAbove = triggerRect.top - MENU_GAP
-    const shouldFlip = menuHeight > spaceBelow && spaceAbove > spaceBelow
-    setFlipped(shouldFlip)
-
-    if (withPortal) {
-      const top = shouldFlip
-        ? triggerRect.top - menuHeight - MENU_GAP
-        : triggerRect.bottom + MENU_GAP
-      const horizontal =
-        position === 'right'
-          ? { right: window.innerWidth - triggerRect.right }
-          : { left: triggerRect.left }
-      setPortalStyle({
-        position: 'fixed',
-        top,
-        ...horizontal,
-        zIndex: MENU_Z_INDEX,
-        ...(position === 'right'
-          ? { minWidth: triggerRect.width }
-          : { width: triggerRect.width }),
-      })
-    }
-  }, [withPortal, position])
-
+  // Opening moves focus into the menu, so its keyboard model (arrows, Enter, Escape) is live at once.
+  // Escape then reaches the menu, which consumes it — instead of the trigger, where it would close a
+  // surrounding `Modal`.
   useLayoutEffect(() => {
-    if (!isOpen) {
-      setFlipped(false)
-      return
-    }
-    updatePlacement()
-  }, [isOpen, updatePlacement])
+    if (isOpen) menuListRef.current?.focus()
+  }, [isOpen])
 
-  // After portal mount, recompute; close on external scroll (stale positioning).
-  useEffect(() => {
-    if (!isOpen || !withPortal) return
+  /**
+   * Attaches the menu wrapper and lifts it into the top layer. An environment without the Popover
+   * API (an old browser, jsdom) only renders the markup.
+   *
+   * @param node - The wrapper element, or `null` when it unmounts.
+   */
+  const attachMenu = useCallback((node: HTMLDivElement | null) => {
+    menuWrapperRef.current = node
+    if (!node || typeof node.showPopover !== 'function') return
+    if (!node.matches(':popover-open')) node.showPopover()
+  }, [])
 
-    const raf = requestAnimationFrame(updatePlacement)
-    const handleScroll = (e: Event) => {
-      if (
-        e.target instanceof Node &&
-        menuWrapperRef.current?.contains(e.target)
-      ) {
-        return
-      }
-      handleClose()
-    }
-    window.addEventListener('scroll', handleScroll, true)
-    return () => {
-      cancelAnimationFrame(raf)
-      window.removeEventListener('scroll', handleScroll, true)
-    }
-  }, [isOpen, withPortal, updatePlacement, handleClose])
+  /**
+   * Closes the menu when focus moves outside both the control and the menu (Tab away), without
+   * pulling focus back — the user is going somewhere else.
+   *
+   * @param event - The blur event, bubbled to the root through the React tree — portalled menu included.
+   */
+  const handleBlur = useCallback((event: FocusEvent<HTMLDivElement>) => {
+    const next = event.relatedTarget
+    if (!(next instanceof Node)) return
+    if (containerRef.current?.contains(next)) return
+    if (menuWrapperRef.current?.contains(next)) return
+    setIsOpen(false)
+  }, [])
 
   const menuItems = options.flatMap((option, index) => {
     const nodes: ReactNode[] = []
@@ -224,21 +243,28 @@ export function Dropdown({
 
   const floatingMenu = (
     <div
-      ref={menuWrapperRef}
-      style={withPortal ? portalStyle : undefined}
-      className={
-        withPortal
-          ? undefined
-          : dropdownMenuVariants({ flipped, align: position })
-      }
+      ref={attachMenu}
+      popover="manual"
+      // With `withPortal` the menu leaves the root's subtree and would not inherit the anchor name.
+      style={anchorStyle}
+      className={dropdownMenuVariants({ align: position })}
+      // A press on the menu's own chrome (padding, a divider, a disabled option) must not take focus
+      // off the listbox — its keyboard model, Escape included, would go dead. Clicks still select.
+      onMouseDown={(event) => {
+        event.preventDefault()
+      }}
     >
       <Menu
+        ref={menuListRef}
         id={menuId}
         selectedValue={selectedValue}
         variant="light"
         onSelect={handleSelect}
         onClose={handleClose}
+        defaultActiveIndex={defaultActiveIndex}
         aria-label={menuAriaLabel}
+        // Unnamed otherwise: the listbox takes the trigger's name ("Sort by: Newest").
+        aria-labelledby={menuAriaLabel ? undefined : triggerId}
       >
         {menuItems}
       </Menu>
@@ -246,7 +272,13 @@ export function Dropdown({
   )
 
   return (
-    <div className={DROPDOWN_CLASS} ref={containerRef}>
+    <div
+      className={DROPDOWN_CLASS}
+      ref={containerRef}
+      style={anchorStyle}
+      onBlur={handleBlur}
+      onKeyDown={handleRootKeyDown}
+    >
       {label ? (
         <Typography as="span" variant="body2">
           {label}
@@ -255,13 +287,15 @@ export function Dropdown({
       <div className={DROPDOWN_CONTROL_CLASS}>
         <Button
           ref={triggerRef}
+          id={triggerId}
           type="button"
           variant={buttonVariant}
           size={buttonSize}
           onClick={handleToggle}
+          onKeyDown={handleTriggerKeyDown}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
-          aria-controls={menuId}
+          aria-controls={isOpen ? menuId : undefined}
           aria-label={ariaLabel ?? `${label ?? 'Select'}: ${selectedLabel}`}
           className={buttonClassName}
           style={fullWidth ? { width: '100%' } : undefined}
@@ -297,7 +331,7 @@ export function Dropdown({
         {isOpen && !withPortal ? floatingMenu : null}
       </div>
 
-      {isOpen && withPortal ? <Portal>{floatingMenu}</Portal> : null}
+      {isOpen && withPortal ? createPortal(floatingMenu, document.body) : null}
     </div>
   )
 }
