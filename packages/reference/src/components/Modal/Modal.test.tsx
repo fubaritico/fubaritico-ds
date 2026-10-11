@@ -7,11 +7,13 @@ import { Modal } from './Modal'
 // jsdom does not implement <dialog> methods — mock them with an `open` attribute side-effect so
 // Testing Library treats the dialog as accessible (visible).
 // Stored in variables to avoid @typescript-eslint/unbound-method on prototype access.
-const showModalMock = vi.fn(() => {
-  screen.getByRole('dialog', { hidden: true }).setAttribute('open', '')
+// They act on `this` (the dialog called), not on a `screen` lookup: the hook also closes on
+// unmount, when the dialog is already out of the document.
+const showModalMock = vi.fn(function (this: HTMLDialogElement) {
+  this.setAttribute('open', '')
 })
-const closeMock = vi.fn(() => {
-  screen.getByRole('dialog', { hidden: true }).removeAttribute('open')
+const closeMock = vi.fn(function (this: HTMLDialogElement) {
+  this.removeAttribute('open')
 })
 HTMLDialogElement.prototype.showModal = showModalMock
 HTMLDialogElement.prototype.close = closeMock
@@ -59,14 +61,30 @@ describe('Modal', () => {
   })
 
   describe('variants', () => {
-    it('closes the native dialog when isOpen is false', () => {
+    it('closes the native dialog when isOpen turns false', () => {
+      const { rerender } = render(
+        <Modal isOpen onClose={vi.fn()} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+      rerender(
+        <Modal isOpen={false} onClose={vi.fn()} aria-label="Dialog">
+          <p>Content</p>
+        </Modal>
+      )
+
+      expect(closeMock).toHaveBeenCalledOnce()
+    })
+
+    it('leaves a dialog that was never opened alone', () => {
       render(
         <Modal isOpen={false} onClose={vi.fn()} aria-label="Dialog">
           <p>Content</p>
         </Modal>
       )
 
-      expect(closeMock).toHaveBeenCalled()
+      expect(closeMock).not.toHaveBeenCalled()
+      expect(showModalMock).not.toHaveBeenCalled()
     })
 
     it('locks body scroll while open', () => {

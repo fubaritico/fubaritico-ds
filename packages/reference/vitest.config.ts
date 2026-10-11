@@ -39,7 +39,10 @@ export default defineConfig({
           browser: {
             enabled: true,
             headless: true,
-            provider: playwright(),
+            // Motion off, through the skin's OWN `prefers-reduced-motion` branches rather than a
+            // test-only stylesheet: no test waits on a slide or a fade, geometry is read at rest,
+            // and a component that forgets its reduced-motion rule shows up here first.
+            provider: playwright({ contextOptions: { reducedMotion: 'reduce' } }),
             instances: [{ browser: 'chromium' }],
             commands: { pointerDown, pointerMove, pointerUp },
           },

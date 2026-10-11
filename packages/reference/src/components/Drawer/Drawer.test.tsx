@@ -9,11 +9,13 @@ import { DrawerHeader } from './DrawerHeader'
 // jsdom implements neither showModal() nor close(); mock them with an `open` attribute
 // side-effect so Testing Library sees the dialog as visible.
 // Stored in variables to avoid @typescript-eslint/unbound-method on prototype access.
-const showModalMock = vi.fn(() => {
-  screen.getByRole('dialog', { hidden: true }).setAttribute('open', '')
+// They act on `this` (the dialog called), not on a `screen` lookup: the hook also closes on
+// unmount, when the dialog is already out of the document.
+const showModalMock = vi.fn(function (this: HTMLDialogElement) {
+  this.setAttribute('open', '')
 })
-const closeMock = vi.fn(() => {
-  screen.getByRole('dialog', { hidden: true }).removeAttribute('open')
+const closeMock = vi.fn(function (this: HTMLDialogElement) {
+  this.removeAttribute('open')
 })
 HTMLDialogElement.prototype.showModal = showModalMock
 HTMLDialogElement.prototype.close = closeMock
@@ -107,9 +109,14 @@ describe('Drawer', () => {
     })
 
     it('closes the native dialog when open turns false', () => {
-      renderDrawer({ open: false })
+      const { rerender } = renderDrawer()
+      rerender(
+        <Drawer open={false} onClose={vi.fn()} aria-label="Filters">
+          <Drawer.Header>Filters</Drawer.Header>
+        </Drawer>
+      )
 
-      expect(closeMock).toHaveBeenCalled()
+      expect(closeMock).toHaveBeenCalledOnce()
     })
 
     it('locks body scroll while open', () => {

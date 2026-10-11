@@ -87,7 +87,12 @@ export { IconButton } from './components/IconButton'
 export type { IconButtonProps } from './components/IconButton'
 
 export { Image } from './components/Image'
-export type { AspectRatio, ImageProps, ImageState } from './components/Image'
+export type {
+  AspectRatio,
+  ImageLoading,
+  ImageProps,
+  ImageState,
+} from './components/Image'
 
 export { Input } from './components/Input'
 export type {

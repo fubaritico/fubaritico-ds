@@ -80,22 +80,37 @@ export function useNativeDialog({
   // Feeds the internal ref AND the consumer's, so neither displaces the other.
   const ref = useMergedRef(internalRef, forwardedRef)
 
-  // Open or close the real dialog, and lock the page while it is up.
+  // Set right before every close() this hook performs, consumed by the native `close` event: it
+  // tells a close the hook did (the prop went `false`, an unmount, StrictMode's simulated unmount)
+  // from one the browser did (Escape). Inferring it from the current prop would race: `close` is
+  // dispatched as a queued task, by which time a re-run may have reopened the dialog.
+  const closedByHookRef = useRef(false)
+
+  // Open or close the real dialog, and lock the page while — and only while — it is up.
   useEffect(() => {
     const dialog = internalRef.current
     if (!dialog) return
 
-    const previousOverflow = document.body.style.overflow
-
-    if (open) {
-      dialog.showModal()
-      document.body.style.overflow = 'hidden'
-    } else {
+    /** Closes the dialog, flagging the resulting `close` event as the hook's own. */
+    const closeFromHook = () => {
+      if (!dialog.open) return
+      closedByHookRef.current = true
       dialog.close()
-      document.body.style.overflow = previousOverflow
     }
 
+    if (!open) {
+      closeFromHook()
+      return
+    }
+
+    // Captured at opening, restored at closing or unmount. A closed dialog never touches the
+    // page: it would otherwise write back a stale value over whatever the host set meanwhile.
+    const previousOverflow = document.body.style.overflow
+    dialog.showModal()
+    document.body.style.overflow = 'hidden'
+
     return () => {
+      closeFromHook()
       document.body.style.overflow = previousOverflow
     }
   }, [open])
@@ -128,8 +143,22 @@ export function useNativeDialog({
     ;(onOverlayClick ?? onClose)()
   }
 
-  /** Mirrors the browser's own close event (Escape) back into the consumer's state. */
+  /**
+   * Mirrors a close the BROWSER started (Escape) back into the consumer's state.
+   *
+   * `close` also fires when this hook closes the dialog itself — the prop went `false` after a
+   * backdrop click, the close button or the consumer's own state change, or the component
+   * unmounted. Reporting those would call `onClose` for a close the consumer already knows about.
+   *
+   * The browser closes the dialog BEFORE this runs, so the consumer must set its state to `false`
+   * here; `cancel` is deliberately not intercepted — Chromium lets a page veto Escape only after a
+   * user activation, and a second Escape always goes through.
+   */
   const handleClose = () => {
+    if (closedByHookRef.current) {
+      closedByHookRef.current = false
+      return
+    }
     onClose()
   }
 

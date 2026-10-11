@@ -144,5 +144,15 @@ Re-skinning the backdrop on one instance:
 > `open` attribute (it is omitted from the props for that reason). The `open` attribute alone gives
 > no top layer, no focus trap and no backdrop.
 
-> **Note** — the scroll lock reads and restores `document.body.style.overflow`. Two Modals open at
-> once would have the inner one restore the outer one's value on close; stack dialogs with care.
+> **Note** — `onClose` fires **once** per close the user starts (Escape, a backdrop click, the
+> close button). Closing it yourself by setting `isOpen={false}` does not call it back, so a side
+> effect in `onClose` (saving, analytics) never runs twice.
+
+> **Warning** — on Escape the browser has **already** closed the dialog when `onClose` runs, and it
+> cannot be vetoed reliably (Chromium honours a veto only after a user gesture, and a second Escape
+> always goes through). Always set `isOpen` to `false` in `onClose`; ignoring it leaves your state
+> saying "open", with the page still scroll-locked, over a closed dialog.
+
+> **Note** — the scroll lock reads and restores `document.body.style.overflow`, and only while
+> open: a closed one never touches it. Two Modals open at once would have the inner one restore
+> the outer one's value on close; stack dialogs with care.

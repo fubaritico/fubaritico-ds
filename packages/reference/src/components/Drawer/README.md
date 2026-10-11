@@ -180,5 +180,15 @@ Resizing one instance beyond the scale:
 > dead end for touch-only users, who have no Escape key. If you opt out of backdrop-closing, render
 > a close affordance — a header, or your own button wired to `onClose`.
 
-> **Note** — the scroll lock reads and restores `document.body.style.overflow`. Two stacked
-> drawers would have the inner one restore the outer one's value on close; stack with care.
+> **Note** — `onClose` fires **once** per close the user starts (Escape, a backdrop click, the
+> close button). Closing it yourself by setting `open={false}` does not call it back, so a side
+> effect in `onClose` (saving, analytics) never runs twice.
+
+> **Warning** — on Escape the browser has **already** closed the dialog when `onClose` runs, and it
+> cannot be vetoed reliably (Chromium honours a veto only after a user gesture, and a second Escape
+> always goes through). Always set `open` to `false` in `onClose`; ignoring it leaves your state
+> saying "open", with the page still scroll-locked, over a closed dialog.
+
+> **Note** — the scroll lock reads and restores `document.body.style.overflow`, and only while
+> open: a closed one never touches it. Two stacked drawers would have the inner one restore the
+> outer one's value on close; stack with care.

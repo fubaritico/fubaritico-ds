@@ -68,6 +68,10 @@ describe('Image', () => {
     fireEvent.error(img)
     const svg = document.querySelector('svg')
     expect(svg).toBeInTheDocument()
+    // The fallback takes over the picture's accessible name.
+    expect(screen.getByRole('img', { name: 'Test image' })).toHaveClass(
+      'ui-image__fallback'
+    )
   })
 
   it('shows custom fallback on error', () => {

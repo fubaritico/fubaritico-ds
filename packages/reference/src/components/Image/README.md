@@ -137,8 +137,9 @@ Reacting to the lifecycle:
 - `alt` is **required**. For a decorative image pass `alt=""`, which removes it from the
   accessibility tree — that is correct, whereas omitting `alt` entirely is not.
 - The blur placeholder is `aria-hidden` with an empty `alt`: it is never announced.
-- The default error fallback is a decorative glyph, also `aria-hidden`. If the image carried
-  meaning, supply a `fallback` containing real text — a missing picture should not become silence.
+- The default error fallback takes over the picture's name: `role="img"` with `alt` as its
+  `aria-label` (the glyph inside stays `aria-hidden`), so a missing picture never becomes silence.
+  With `alt=""` it stays out of the accessibility tree. A custom `fallback` is yours to label.
 - The fade-in is removed under `prefers-reduced-motion` (WCAG 2.3.3).
 
 ## Notes
