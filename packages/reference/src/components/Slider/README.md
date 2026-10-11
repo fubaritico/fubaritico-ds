@@ -152,6 +152,9 @@ the control.
   background — a hue ramp, a photograph — where a single-colour handle would vanish. The two-tone
   ring keeps it visible, which is WCAG 1.4.11 as much as taste.
 - The focus ring is `:focus-visible` and lands on the visible thumb, not on the transparent input.
+- **The hit area is at least 24px tall (WCAG 2.5.8), whatever the thumb size.** The transparent
+  input overflows the control vertically, so a smaller `--ui-slider-thumb-size` (or `size="sm"`)
+  changes the look and the layout, never how easy the slider is to grab.
 - The hover growth is dropped under `prefers-reduced-motion`.
 
 ## Notes

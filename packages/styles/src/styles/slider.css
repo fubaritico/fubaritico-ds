@@ -129,12 +129,16 @@
 
   /* ---- the real control ---- */
   /* A transparent native range covering the whole box: it owns the interaction and the semantics,
-     the painted parts are decoration. Its own thumb is hidden per engine, since ours is a sibling. */
+     the painted parts are decoration. Its own thumb is hidden per engine, since ours is a sibling.
+     The HIT AREA is at least 24px tall (WCAG 2.5.8) whatever the box: a box shorter than that has
+     its input overflow it vertically (a percentage inset is relative to the box's height), so a
+     small thumb changes the look and the layout, never the target. A box of 24px or more needs no
+     overflow. Stacked sliders closer than 24px centre to centre would overlap: their container
+     must reserve the room (the color picker's compact density does). Mechanics, not an override. */
   .ui-slider__input {
     position: absolute;
-    inset: 0;
-    inline-size: 100%;
-    block-size: 100%;
+    inset-inline: 0;
+    inset-block: min(0px, calc((100% - var(--spacing-6)) / 2));
     margin: 0;
     opacity: 0;
     cursor: pointer;

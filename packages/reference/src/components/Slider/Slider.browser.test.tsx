@@ -64,6 +64,25 @@ describe('Slider (browser)', () => {
   // L4: N/A — the value comes from the native control, which cannot produce a malformed number.
 
   describe('edge cases', () => {
+    it('keeps a 24px tall hit area under a small thumb, without growing the layout', async () => {
+      const onChange = vi.fn()
+      render(
+        <Slider aria-label="Volume" size="sm" defaultValue={0} onChange={onChange} />
+      )
+      const input = screen.getByRole('slider', { name: 'Volume' })
+      const box = input.closest('.ui-slider')?.getBoundingClientRect()
+      if (!box) throw new Error('slider not rendered')
+
+      expect(box.height).toBeCloseTo(12, 0)
+      expect(input.getBoundingClientRect().height).toBeCloseTo(24, 0)
+      // 10px below the 12px box, mid-track: still the slider.
+      await userEvent.click(input, {
+        position: { x: input.getBoundingClientRect().width / 2, y: 22 },
+      })
+      expect(onChange).toHaveBeenCalled()
+    })
+
+
     it('reverses the horizontal arrows under dir="rtl" (the platform does it)', async () => {
       render(
         <div dir="rtl">
