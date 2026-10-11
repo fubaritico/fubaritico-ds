@@ -29,10 +29,19 @@
     --ui-tooltip-max-width: 280px; /* layout geometry — no max-width token; override to re-skin */
     --ui-tooltip-z: 50;
     --ui-tooltip-shadow: var(--shadow-lg);
+    --ui-tooltip-font-weight: var(--font-weight-normal);
+    --ui-tooltip-line-height: var(--font-line-height-normal);
+    --ui-tooltip-text-align: start;
 
     box-sizing: border-box;
     position: fixed;
     z-index: var(--ui-tooltip-z);
+    /* The bubble is a `popover="manual"` (top layer): undo the user-agent popover box — it is
+       centred with `inset: 0; margin: auto` and drawn with a border, padding and Canvas colours.
+       Its top / left are set inline by the component. */
+    inset: auto;
+    margin: 0;
+    border: 0;
     max-inline-size: var(--ui-tooltip-max-width);
     padding-block: var(--ui-tooltip-padding-block);
     padding-inline: var(--ui-tooltip-padding-inline);
@@ -44,6 +53,18 @@
     color: var(--ui-tooltip-fg);
     font-family: var(--ui-tooltip-font-family);
     font-size: var(--ui-tooltip-font-size);
+    /* Rendered in place, the bubble is a DOM child of whatever holds its trigger — a truncated
+       cell (`nowrap`, `ellipsis`), a right-aligned column, an uppercase label — and text properties
+       inherit through the top layer. Reset every one it would otherwise pick up. */
+    font-weight: var(--ui-tooltip-font-weight);
+    line-height: var(--ui-tooltip-line-height);
+    text-align: var(--ui-tooltip-text-align);
+    white-space: normal;
+    overflow-wrap: break-word;
+    text-overflow: clip;
+    text-transform: none;
+    letter-spacing: normal;
+    font-style: normal;
     box-shadow: var(--ui-tooltip-shadow);
     /* the bubble is decorative-positioned and must not eat pointer events from the target */
     pointer-events: none;

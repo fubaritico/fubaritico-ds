@@ -1,6 +1,6 @@
 # Tooltip
 
-A controlled, portalled floating bubble that anchors to a target (or explicit coordinates) — a
+A controlled floating bubble in the browser's top layer that anchors to a target (or explicit coordinates) — a
 low-level presentational positioning primitive, not a self-managing hover wrapper.
 
 ## Capabilities
@@ -12,8 +12,11 @@ low-level presentational positioning primitive, not a self-managing hover wrappe
 - **12 placements** — `top` / `bottom` / `left` / `right`, each with optional alignment suffix
   (`-left` / `-right` / `-top` / `-bottom`); a CSS-triangle arrow points back at the target.
 - **Reposition on scroll/resize** — listens while visible and recomputes.
-- **Portalled** — renders into a `Portal` so it escapes `overflow`/stacking contexts; the bubble is
-  `pointer-events: none` so it never blocks the target.
+- **Top layer, no portal** — a `popover="manual"` element rendered in place: above every `z-index`,
+  unclipped by any `overflow`, and still inside the `Modal` / `Drawer` it is opened from (a portal
+  to `body` would put it under the dialog, in the inert part of the page). `portalContainer` mounts
+  it elsewhere if you really need to. The bubble is `pointer-events: none` so it never blocks the
+  target.
 - **Variants** — `dark` (default) / `light`. The arrow colour tracks the bubble background.
 
 ## Import
@@ -112,6 +115,7 @@ const [open, setOpen] = useState(false)
 | `targetRef`  | `RefObject<HTMLElement \| null>` | —          | Anchor element (required for `mode="target"`). |
 | `position`   | `{ top: number; left: number }`  | —          | Coordinates (required for `mode="manual"`).    |
 | `width`      | `number`                         | —          | Fixed bubble width (px); content wraps.        |
+| `portalContainer` | `HTMLElement \| null` | — | Mount the bubble there instead of in place. Not inside a `Modal` / `Drawer`. |
 | `aria-label` | `string`                         | —          | Accessible label for the bubble.               |
 | `className`  | `string`                         | —          | Extra classes on the bubble.                   |
 
@@ -122,6 +126,15 @@ const [open, setOpen] = useState(false)
 - The bubble is `pointer-events: none` so it never steals interaction from the target.
 
 ## Notes
+
+> **Warning** — render the Tooltip as a **sibling** of its trigger, never inside a `<button>`, a link
+> or a `<p>`: a `role="tooltip"` `<div>` is invalid there, and inside a control its text would join
+> the control's accessible name. Its typography is reset (it does not inherit `nowrap`, alignment or
+> case from where it sits), so a truncated cell or a right-aligned column is a fine place to be next to.
+
+> **Note** — the top layer stacks in **opening order**: a tooltip opened from inside a `Modal` paints
+> over it, but a tooltip already visible when a `Modal` / `Drawer` / `Popover` opens ends up under it.
+> Hide tooltips before opening a dialog from the same trigger.
 
 > **Note** — This Tooltip is **controlled and low-level**: it does not manage its own hover/focus or
 > `aria-describedby`. Own the `visible` state and wire the trigger + ARIA on the target yourself.

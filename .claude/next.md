@@ -59,6 +59,14 @@ Détails : `known-issues.md`. **Suite = le chantier des THÈMES** (dev, 2026-10-
 thèmes par défaut, pour montrer qu'à partir des seuls tokens on obtient ce qu'on veut — dont un
 « coins carrés » (tokens `sm`/`md`/`lg` à 0) et au moins un arrondi. Voir [[theming-strategy]].
 
+## À FAIRE — les autres portals sur `body` (relevé 2026-10-11)
+
+La Tooltip est passée dans le top layer (prouvé : un portal sur `body` ouvert depuis une Modal
+finit SOUS le `<dialog>`, dans la partie inerte). **Même défaut** chez `Dropdown`, `Typeahead`
+(menu), `BottomSheet`, `DataTable/DropdownFilter` et `TableFooterContent` : ils portalisent via
+`components/Portal`. Décision dev (2026-10-11) : top layer sur place par défaut, portal en
+option. À traiter composant par composant, chacun avec son test navigateur « ouvert dans une Modal ».
+
 ## Thread parallèle
 
 Adoption « agent-ready » (étude Astryx) — plans dans `files/plans/agent-ready/`, commencer par

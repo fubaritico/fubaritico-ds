@@ -139,7 +139,7 @@ describe('Tooltip', () => {
           position={{ top: 0, left: 0 }}
         />
       )
-      // the arrow lives in the portal, not the render container; query the document
+      // query the document, not the render container: the bubble may be mounted elsewhere (portalContainer)
       expect(document.querySelector('.ui-tooltip__arrow')).toBeNull()
       expect(container).toBeTruthy()
     })

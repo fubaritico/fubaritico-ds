@@ -79,4 +79,11 @@ export interface TooltipProps
   position?: TooltipManualPosition
   /** Fixed width in pixels for the bubble. When set, text wraps to multiple lines. */
   width?: number
+  /**
+   * Mount the bubble into this element instead of next to its target. Optional: the bubble is in
+   * the browser's top layer anyway (above every `z-index`, unclipped by any `overflow`), so the
+   * default needs no portal. **Not inside a `Modal` or `Drawer`**: a portal moves the bubble out of
+   * the `<dialog>`, where the open dialog makes the rest of the page inert.
+   */
+  portalContainer?: HTMLElement | null
 }
