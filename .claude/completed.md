@@ -2,6 +2,30 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-10-11 — releases 0.4.1 / 0.5.0, coins, Tooltip → TruncatedText, portals → top layer
+
+**Une plage** (13:30 → 21:18, 7h48, 405 actions), 5e plage du chantier ouvert le 08/10 (20h34
+cumulées). **~18 commits** poussés, deux publications.
+
+- **Releases** 0.4.1 et 0.5.0 + handoffs Atlas. Procédure écrite (`README.md` « Publishing a
+  release ») et skill **`/release`** en mode pédagogique (le dev veut rester autonome). Pièges :
+  un fix commité en `test(...)` → changelog « Version bump only » (le skill audite les types) ;
+  une minor en 0.x bouge TOUS les paquets (mode fixe).
+- **ColorPicker** : aperçu hex en direct (Entrée valide, Échap revient), compact réduit en hauteur,
+  thumbs plus petits avec zone de clic 24px conservée.
+- **Garde `display`** (`1b52c09`) : `state-guards.css` en `@layer ui.reset`, `!important` inversé
+  par les couches — seule garde du skin.
+- **API des coins** (`7fb6342`) sur 21 skins, formes rondes sur `--radius-full`, test de parité.
+- **Tooltip → top layer** (`4041311`, prouvé invisible dans une Modal avant), **`TooltipService` +
+  `useTooltip`** (`6b6cce3`, WCAG 1.4.13), **`TruncatedText`** (`c5dd012`), `WithTooltip` supprimé.
+- **Portals → top layer** : **Dropdown** (`49faf4b` — en Modal, Échap fermait toute la modale et la
+  Card rognait le menu ; focus dans le menu, curseur sur l'option sélectionnée), **Typeahead**
+  (`3218422`), **BottomSheet** (`3f55d36` — `<dialog>` natif : `showModal()` avec `overlay`,
+  `popover="manual"` sans ; il annonçait `aria-modal` sans piéger le focus).
+- **Deux bugs de `useNativeDialog`** trouvés en route (Modal/Drawer concernés) : un `close` imbriqué
+  propagé par React fermait le dialog parent ; un dialog remonté à chaque ouverture avalait le
+  premier Échap après une fermeture par la prop.
+
 ### 2026-10-09 — behaviors, publication GitHub Packages, ColorPicker → Popover → ColorField, 0.4.0
 
 **Deux plages le même jour** (12:42 → 16:13, 3h31 ; 18:00 → 20:19, 2h19), suite directe de la nuit

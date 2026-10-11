@@ -115,6 +115,18 @@ Put here the know issues to avoid cluttering the context window.
   `--ui-dropdown-dot-radius`. `progress-bar.css` `border-radius: inherit` : légitime, ne pas toucher.
   **Valeur par défaut** : les valeurs actuelles (4–6px) restent ; le « zéro » ira dans un thème,
   chantier des thèmes à venir (voir `next.md`).
+- **Recette top layer (2026-10-11, Tooltip / Dropdown / Typeahead / BottomSheet)** : `popover="manual"`
+  rendu EN PLACE (jamais de portal par défaut — sur `body` il finit inerte sous une Modal),
+  `showPopover()` dans un callback ref, ancre CSS par instance `--ui-<bloc>-anchor` (posée sur la
+  racine ET sur la surface), placement `@supports (position-anchor: …)`, test navigateur « ouvert
+  dans une Modal ». Un menu portalisé perd les vars du bloc → `.ui-x, body > .ui-x__menu { vars }`.
+- **React propage `close` à travers l'arbre React** (l'événement DOM ne bulle pas) : un `<dialog>`
+  imbriqué fermait son parent. `useNativeDialog.handleClose` ignore `target !== currentTarget` —
+  tout nouveau dialog passe par ce hook.
+- **Un popover a aussi un `::backdrop`** : le voile d'un dialog qui peut être popover va sur
+  `:modal::backdrop`, sinon la surface non modale assombrit la page.
+- **Chromium rend une liste qui défile atteignable au Tab** : dans une combobox (focus dans le
+  champ), `tabIndex={-1}` sur la liste, sinon Tab y entre au lieu de quitter le composant.
 - **Chevron atténué d'`ArrowUpDown` : exception WCAG 1.4.11 ASSUMÉE (2026-10-08)** :
   `--ui-sort-arrows-dimmed-opacity: 0.5` ramène `--color-foreground-muted` (neutral.500) à ~2,05:1 sur
   blanc, sous le plancher de 3:1 des objets graphiques. **Accepté, ce n'est pas un trou** : la direction

@@ -3,31 +3,26 @@
 > Loaded at session start (CLAUDE.md `### Next` → `@next.md`). Single source for "what's next".
 > North-star program: **`files/plans/roadmap.md`** (phases A→F).
 
-> ## ▶ ÉTAT AU 2026-10-09 SOIR — **0.4.0 PUBLIÉE** (run `37972322360`, tag `v0.4.0`)
+> ## ▶ ÉTAT AU 2026-10-11 SOIR — **0.5.0 PUBLIÉE**, 8 commits poussés NON publiés
 >
-> Les 5 paquets `@fubaritico/*` en 0.4.0 sur GitHub Packages. Handoff déposé chez europe-map
-> (`~/Desktop/WebstormProjects/europe-map/HANDOFF-from-fubaritico-ds.md`) : bump `^0.4.0`,
-> `ColorField` dans le dialogue des polities, `density="compact"`.
+> Depuis `v0.5.0` : garde `display`, API des coins, Tooltip top layer, `TooltipService`/`useTooltip`,
+> `TruncatedText`, Dropdown / Typeahead / BottomSheet dans le top layer (voir `completed.md`).
 >
-> **Livré** : `behaviors` (« state as a service » — `TabsService`, `ColorPickerService`,
-> `PopoverService`, `Store` commun ; skill `/behavior-service`), `ColorPicker` (panneau inline),
-> `Popover` (top layer natif, **pas de portal** — c'est ce qui le rend utilisable DANS une Modal),
-> `ColorField` (label + pastille + hex + picker en popover), densité `compact`, état pressé du
-> Button par variante. Vitest Browser Mode en place (Chromium).
+> **Suite immédiate, dans l'ordre** :
+> 1. **DropdownFilter** puis **TableFooterContent** → top layer (même recette, test « dans une Modal »).
+> 2. **Release 0.6.0** (`/release`, minor : il y a des `feat` et des retraits d'API) + **handoff Atlas** :
+>    Échap dans leur modale ne ferme plus que le menu du Dropdown ; leur contournement
+>    `.polity-form .ui-card { overflow: visible }` devient inutile ; retraits : axe `flipped` de
+>    `dropdownMenuVariants`, `--ui-dropdown-z`, `typeaheadMenuVariants`, `--ui-typeahead-menu-z-index`,
+>    `BOTTOM_SHEET_OVERLAY_CLASS`, `--ui-bottom-sheet-z-index` ; `aria-label` requis sur BottomSheet.
+> 3. Étape 4 de TruncatedText (section ci-dessous), puis le chantier des **thèmes**.
 >
-> **Procédure de release** : `README.md` → « Publishing a release », skill **`/release`** (2026-10-11). Résumé (rodée 4 fois) : `pnpm exec lerna version minor --yes` → vérifier que le
-> lockfile n'a pas été reformaté → `gh workflow run release.yml -f dry_run=false` →
-> `gh run watch <id> --exit-status` → chercher `+ @fubaritico/*@x.y.z` dans le log. Feu vert du dev
-> à chaque publication.
+> **Procédure de release** : `README.md` → « Publishing a release », skill **`/release`**. Feu vert
+> du dev à chaque publication. Pistes ColorPicker (curseurs par canal, Recent Colors, EyeDropper)
+> reportées par le dev — ce qu'Atlas a suffit.
 >
-> **Prochaine étape probable** : attendre le retour d'europe-map (intégration du ColorField dans
-> leur modale) ; sinon reprendre un des chantiers ci-dessous. Pistes ouvertes : sortir
-> `LinkButton` / `NextLinkButton` en paquets d'adaptateurs (`@fubaritico/react-router`,
-> `@fubaritico/next`) ; mode « curseurs par canal » du picker (même `Slider`, autre `track-image`) ;
-> bande « Recent Colors » ; EyeDropper en amélioration progressive (Chromium seul).
->
-> **Dette doc** : `completed.md` dépassait 570 lignes → entrées du 2026-09-16 et antérieures archivées
-> dans `completed-archive.md` (non chargé). `patterns-ui.md` scindé le 2026-10-11 (section Compound → `rules/patterns-compound.md`).
+> **Dette doc** : `completed.md` archivé au 2026-09-16 (`completed-archive.md`) ; `patterns-ui.md`
+> scindé (`rules/patterns-compound.md`).
 
 ## FAIT (2026-10-11) — « Tooltip on truncated text » → `TruncatedText`
 
@@ -59,6 +54,8 @@ finit SOUS le `<dialog>`, dans la partie inerte). **Même défaut** chez `Dropdo
 (menu), `BottomSheet`, `DataTable/DropdownFilter` et `TableFooterContent` : ils portalisent via
 `components/Portal`. Décision dev (2026-10-11) : top layer sur place par défaut, portal en
 option. À traiter composant par composant, chacun avec son test navigateur « ouvert dans une Modal ».
+**Dropdown FAIT** (`49faf4b`) : popover manuel ancré en CSS, focus dans le menu, Escape consommé.
+**Typeahead FAIT** (`3218422`). **BottomSheet FAIT** (`3f55d36`, `<dialog>` natif modal / popover). Restent DropdownFilter, TableFooterContent.
 
 ## Thread parallèle
 
