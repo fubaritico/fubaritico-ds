@@ -6,9 +6,31 @@ import BottomSheet from './BottomSheet'
 
 import type { ComponentProps } from 'react'
 
-const renderBottomSheet = (props: Partial<ComponentProps<typeof BottomSheet>> = {}) =>
+// jsdom implements `showModal` but not the Popover API: the non-modal sheet's `showPopover` is
+// mocked with an `open` attribute side-effect, so the dialog is shown (and queryable) as in a
+// browser. The top layer itself is covered by the browser suite.
+const showPopoverMock = vi.fn(function (this: HTMLElement) {
+  this.setAttribute('open', '')
+})
+const hidePopoverMock = vi.fn(function (this: HTMLElement) {
+  this.removeAttribute('open')
+})
+HTMLElement.prototype.showPopover = showPopoverMock
+HTMLElement.prototype.hidePopover = hidePopoverMock
+// The modal sheet: same side-effect, as in the Modal suite.
+const showModalMock = vi.fn(function (this: HTMLDialogElement) {
+  this.setAttribute('open', '')
+})
+HTMLDialogElement.prototype.showModal = showModalMock
+HTMLDialogElement.prototype.close = vi.fn(function (this: HTMLDialogElement) {
+  this.removeAttribute('open')
+})
+
+const renderBottomSheet = (
+  props: Partial<ComponentProps<typeof BottomSheet>> = {}
+) =>
   render(
-    <BottomSheet open onClose={vi.fn()} {...props}>
+    <BottomSheet open onClose={vi.fn()} aria-label="Filters" {...props}>
       <BottomSheet.Header>Title</BottomSheet.Header>
       <BottomSheet.Body>Content</BottomSheet.Body>
     </BottomSheet>
@@ -49,30 +71,24 @@ describe('BottomSheet', () => {
     expect(onClose).toHaveBeenCalledOnce()
   })
 
-  it('should render overlay when overlay prop is true', () => {
+  it('should open as a modal dialog when overlay is set', () => {
+    showModalMock.mockClear()
     renderBottomSheet({ overlay: true })
 
-    expect(screen.getByRole('dialog').getAttribute('aria-modal')).toBe('true')
+    const dialog = screen.getByRole('dialog')
+    expect(dialog.getAttribute('aria-modal')).toBe('true')
+    expect(dialog).not.toHaveAttribute('popover')
+    expect(showModalMock).toHaveBeenCalledOnce()
   })
 
-  it('should not render overlay by default', () => {
+  it('should open as a non-modal manual popover by default', () => {
+    showPopoverMock.mockClear()
     renderBottomSheet()
 
-    expect(screen.getByRole('dialog').getAttribute('aria-modal')).toBe('false')
-  })
-
-  it('should call onClose when overlay is clicked', async () => {
-    const user = userEvent.setup()
-    const onClose = vi.fn()
-    renderBottomSheet({ onClose, overlay: true })
-
-    const overlay = document.querySelector('[aria-hidden="true"]')
-    expect(overlay).toBeInTheDocument()
-
-    if (!overlay) throw new Error('Overlay not found')
-    await user.click(overlay)
-
-    expect(onClose).toHaveBeenCalledOnce()
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).not.toHaveAttribute('aria-modal')
+    expect(dialog).toHaveAttribute('popover', 'manual')
+    expect(showPopoverMock).toHaveBeenCalledOnce()
   })
 
   it('should apply dark variant classes', () => {
@@ -90,6 +106,16 @@ describe('BottomSheet', () => {
     expect(dialog.className).toContain('ui-bottom-sheet')
   })
 
+  it('should chain a consumer onClick before its own handling', async () => {
+    const user = userEvent.setup()
+    const onClick = vi.fn()
+    renderBottomSheet({ onClick })
+
+    await user.click(screen.getByText('Content'))
+
+    expect(onClick).toHaveBeenCalledOnce()
+  })
+
   it('should animate on first open', () => {
     renderBottomSheet()
 
@@ -97,12 +123,12 @@ describe('BottomSheet', () => {
     expect(dialog.className).toContain('ui-bottom-sheet--animated')
   })
 
-  it('should render in a portal', () => {
-    renderBottomSheet()
+  it('should render in place, not in a portal', () => {
+    const { container } = renderBottomSheet()
 
-    const portalRoot = document.getElementById('portal')
-    expect(portalRoot).toBeInTheDocument()
-    expect(portalRoot?.querySelector('[role="dialog"]')).toBeInTheDocument()
+    expect(container.querySelector('dialog.ui-bottom-sheet')).toBe(
+      screen.getByRole('dialog')
+    )
   })
 
   it('should render children in Header', () => {
@@ -168,18 +194,14 @@ describe('BottomSheet', () => {
       expect(onClose).not.toHaveBeenCalled()
     })
 
-    it('leaves the outside click to the scrim when an overlay is shown', async () => {
+    it('leaves the outside click to the backdrop when the sheet is modal', async () => {
       const onClose = vi.fn()
       const user = userEvent.setup()
-      const { container } = render(
+      render(
         <BottomSheet open overlay onClose={onClose} aria-label="Filters">
           <BottomSheet.Body>Content</BottomSheet.Body>
         </BottomSheet>
       )
-
-      expect(
-        container.ownerDocument.querySelector('.ui-bottom-sheet__overlay')
-      ).not.toBeNull()
 
       await user.click(document.body)
 

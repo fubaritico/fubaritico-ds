@@ -1,26 +1,26 @@
 # BottomSheet
 
-A bottom sheet, portalled above the page. Slides up on first open, then holds still while its
-content changes.
+A bottom sheet: a native `<dialog>` pinned to the bottom edge, in the browser's top layer. Slides up
+on first open, then holds still while its content changes.
 
 ## Capabilities
 
-- **Portalled** — rendered outside the subtree, so no ancestor's `overflow` or `transform` can clip
-  or mis-stack it.
+- **Top layer** — rendered in place but drawn above everything: no ancestor's `overflow`,
+  `transform` or `z-index` can clip or mis-stack it, and it stays usable when opened from a `Modal`
+  (a portal would land in the part of the page the dialog makes inert).
 - **Three ways to close** — the built-in close button, Escape, and a click outside the sheet
-  (the scrim when `overlay` is on; a plain click-outside when it is not, so an overlay-less sheet
-  is never dismissable by keyboard alone).
+  (the backdrop when `overlay` is on; a plain click-outside when it is not, so an overlay-less sheet
+  is never dismissable by keyboard alone). Opened from a `Modal`, Escape closes the sheet only.
 - **Entrance only** — the slide plays on the first open; updating the content of an open sheet does
   not replay it.
-- **Optional scrim** — `overlay` dims the page and makes the sheet modal (`aria-modal`).
+- **Modal or not** — with `overlay` the sheet is a real modal (`showModal()`): a dimmed
+  `::backdrop`, focus trapped inside, the rest of the page inert. Without it the page stays usable
+  behind the sheet.
 - **Two colour schemes** — `variant="light"` (default) or `"dark"`; the close button follows.
 - **Two regions** — `BottomSheet.Header` (fixed title bar) and `BottomSheet.Body` (scrolls on overflow).
 - **Height-capped** — never grows past 60vh, so the page stays reachable behind it.
 - **Motion-aware** — the slide is dropped under `prefers-reduced-motion`.
 - **Composition guard** — the regions throw outside a `<BottomSheet>`.
-
-> **N/A — focus trapping.** The sheet does **not** trap focus, even with `overlay`. See the warning
-> in Notes before using it for a true modal flow.
 
 ## Import
 
@@ -33,7 +33,7 @@ import { BottomSheet } from '@fubaritico/react/BottomSheet'
 ```tsx
 const [isOpen, setIsOpen] = useState(false)
 
-<BottomSheet open={isOpen} onClose={() => setIsOpen(false)}>
+<BottomSheet aria-label="Filters" open={isOpen} onClose={() => setIsOpen(false)}>
   <BottomSheet.Header>
     <Typography variant="h6">Filters</Typography>
   </BottomSheet.Header>
@@ -45,10 +45,10 @@ const [isOpen, setIsOpen] = useState(false)
 
 ## Variants & options
 
-With a scrim, which also marks the sheet modal:
+Modal, with a dimmed backdrop — focus is trapped and the page is inert until it closes:
 
 ```tsx
-<BottomSheet open={isOpen} onClose={close} overlay>
+<BottomSheet aria-label="Filters" open={isOpen} onClose={close} overlay>
   <BottomSheet.Header>Results</BottomSheet.Header>
   <BottomSheet.Body>{results}</BottomSheet.Body>
 </BottomSheet>
@@ -57,7 +57,7 @@ With a scrim, which also marks the sheet modal:
 Dark surface — the close button switches to its on-dark variant automatically:
 
 ```tsx
-<BottomSheet open={isOpen} onClose={close} variant="dark">
+<BottomSheet aria-label="Filters" open={isOpen} onClose={close} variant="dark">
   <BottomSheet.Header>Playback settings</BottomSheet.Header>
   <BottomSheet.Body>{settings}</BottomSheet.Body>
 </BottomSheet>
@@ -66,7 +66,7 @@ Dark surface — the close button switches to its on-dark variant automatically:
 Header without a close affordance of your own — one is always provided:
 
 ```tsx
-<BottomSheet open={isOpen} onClose={close}>
+<BottomSheet aria-label="Filters" open={isOpen} onClose={close}>
   <BottomSheet.Header /> {/* empty title, close button still rendered */}
   <BottomSheet.Body>{content}</BottomSheet.Body>
 </BottomSheet>
@@ -76,6 +76,7 @@ Raising the height cap for one instance:
 
 ```tsx
 <BottomSheet
+  aria-label="Filters"
   open={isOpen}
   onClose={close}
   style={{ '--ui-bottom-sheet-max-block-size': '85vh' } as CSSProperties}
@@ -90,14 +91,14 @@ Raising the height cap for one instance:
 {
   /* Closed renders nothing at all — not a hidden node */
 }
-;<BottomSheet open={false} onClose={close}>
+;<BottomSheet aria-label="Filters" open={false} onClose={close}>
   …
 </BottomSheet>
 
 {
   /* Body-only: the header is optional */
 }
-;<BottomSheet open onClose={close}>
+;<BottomSheet aria-label="Filters" open onClose={close}>
   <BottomSheet.Body>{content}</BottomSheet.Body>
 </BottomSheet>
 
@@ -110,35 +111,46 @@ Raising the height cap for one instance:
 
 ### `BottomSheet`
 
-| Name                     | Type                | Default   | Description                                                       |
-| ------------------------ | ------------------- | --------- | ----------------------------------------------------------------- |
-| `open`                   | `boolean`           | —         | Whether the sheet is mounted. **Required.**                       |
-| `onClose`                | `() => void`        | —         | Called by the close button, Escape and the overlay. **Required.** |
-| `variant`                | `'light' \| 'dark'` | `'light'` | Colour scheme.                                                    |
-| `overlay`                | `boolean`           | `false`   | Dim the page behind and set `aria-modal`.                         |
-| `children`               | `ReactNode`         | —         | `BottomSheet.Header` and / or `BottomSheet.Body`.                           |
-| …`ComponentProps<'div'>` | —                   | —         | Everything else lands on the panel.                               |
+| Name                        | Type                | Default   | Description                                                           |
+| --------------------------- | ------------------- | --------- | --------------------------------------------------------------------- |
+| `open`                      | `boolean`           | —         | Whether the sheet is mounted. **Required.**                           |
+| `onClose`                   | `() => void`        | —         | Called by the close button, Escape and a click outside. **Required.** |
+| `variant`                   | `'light' \| 'dark'` | `'light'` | Colour scheme.                                                        |
+| `overlay`                   | `boolean`           | `false`   | Make the sheet modal, with a dimmed backdrop.                         |
+| `children`                  | `ReactNode`         | —         | `BottomSheet.Header` and / or `BottomSheet.Body`.                     |
+| …`ComponentProps<'dialog'>` | —                   | —         | Everything else lands on the `<dialog>` (`ref` included).             |
 
 `BottomSheet.Header` and `BottomSheet.Body` both take plain `<div>` props.
 
 ## Accessibility
 
-- The panel is `role="dialog"`, with `aria-modal` reflecting `overlay` — it claims modality only
-  when a scrim actually blocks the page.
-- **Give the sheet an accessible name** — pass `aria-label`, or `aria-labelledby` pointing at your
-  header title. Nothing is inferred from the header's content.
+- The panel is a `<dialog>`. With `overlay` it is opened with `showModal()`: focus moves into it,
+  stays trapped there, and returns to where it was on close; the page behind is inert. Without
+  `overlay` it is non-modal — focus is not moved, and the page stays reachable.
+- **`aria-label` is required** — a `<dialog>` has no name of its own, and nothing is inferred from
+  the header's content.
 - The close button ships a built-in `aria-label="Close"`.
-- The overlay is `aria-hidden`: it is a pointer affordance, which is why Escape stays available.
 - The entrance slide is removed under `prefers-reduced-motion` (WCAG 2.3.3).
 
 ## Notes
 
-> **Warning** — the BottomSheet does **not** trap focus and does not make the page inert, even with
-> `overlay`. A keyboard or screen-reader user can Tab straight out into the content behind it. For a
-> flow that genuinely must be modal, use `Modal`, which gets trapping and inertness from the native
-> `<dialog>`.
+> **Note** — the scrim is the dialog's `::backdrop`: re-skin it with
+> `--ui-bottom-sheet-backdrop-color` / `--ui-bottom-sheet-backdrop-opacity` on the sheet. The former
+> `.ui-bottom-sheet__overlay` element and `--ui-bottom-sheet-z-index` are gone (the top layer
+> ignores `z-index`).
 
-> **Warning** — `onClose` is yours to honour. Escape and the overlay only _call_ it; the sheet does
+> **Warning** — without `overlay`, a press outside the sheet closes it — the sheet's own trigger
+> included. Make the trigger **open** the sheet (`setOpen(true)`), not toggle it, or the press closes
+> it and the click reopens it. Presses and Escape inside another layer opened above the sheet (a
+> `Modal`, a menu) are left to that layer.
+
+> **Note** — without `overlay`, opening does not move focus: the page stays usable and the sheet is
+> reached with Tab. Use `overlay` when the user must deal with the sheet first.
+
+> **Warning** — never set `display` on the sheet (class or `style`): the browser hides a closed
+> dialog with `display: none`, and your value would override it.
+
+> **Warning** — `onClose` is yours to honour. Escape and a click outside only _call_ it; the sheet does
 > not close itself, so ignoring the callback leaves it open.
 
 > **Note** — `open={false}` unmounts the content entirely. State held inside the sheet is lost on

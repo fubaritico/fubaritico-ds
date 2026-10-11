@@ -1,9 +1,14 @@
 /**
  * BottomSheet — native BEM skin.
  *
- * A bottom sheet rendered in a portal: `.ui-bottom-sheet` is the panel pinned to the bottom edge,
- * `.ui-bottom-sheet__overlay` is the optional scrim behind it, and `__header` / `__body` are its two
- * regions (a fixed title bar and a scrollable content area).
+ * `.ui-bottom-sheet` is a native `<dialog>` pinned to the bottom edge, in the browser's TOP LAYER:
+ * opened with `showModal()` when modal (its `::backdrop` is the scrim), or as a `popover="manual"`
+ * when not. `__header` / `__body` are its two regions (a fixed title bar and a scrollable content
+ * area). Rendered in place, never portalled: a sheet opened from a `Modal` stays usable.
+ *
+ * NEVER give the base a `display` value: the UA hides a closed dialog / popover with
+ * `display: none`, and an author `display` would override it (the `<dialog>` trap, met twice). The
+ * layout goes on `[open]` (modal) and `:popover-open` (non-modal) only.
  *
  * ON-DARK COLOURS — this resolves the `TODO(tokens)` left in `icon-button.css`. No
  * `--color-on-dark-*` semantic family is minted: the `--dark` modifier re-points the same role vars
@@ -27,28 +32,44 @@
     --ui-bottom-sheet-bg: var(--color-primitive-neutral-0);
     --ui-bottom-sheet-fg: var(--color-foreground);
     --ui-bottom-sheet-border-color: var(--color-border);
+    --ui-bottom-sheet-border-width: var(--spacing-px);
     --ui-bottom-sheet-radius: var(--radius-lg);
     --ui-bottom-sheet-shadow: var(--shadow-2xl);
-    --ui-bottom-sheet-max-block-size: 60vh;
+    --ui-bottom-sheet-max-block-size: 60dvh; /* dynamic: mobile toolbars come and go */
     --ui-bottom-sheet-font-family: var(--font-inter);
     --ui-bottom-sheet-content-gap: var(--spacing-2);
     --ui-bottom-sheet-padding-inline: var(--spacing-4);
     --ui-bottom-sheet-padding-block: var(--spacing-3);
-    --ui-bottom-sheet-z-index: 50;
+    --ui-bottom-sheet-backdrop-color: var(--color-primitive-neutral-950);
+    --ui-bottom-sheet-backdrop-opacity: 0.5;
     --ui-bottom-sheet-transition-duration: var(--duration-slow);
     --ui-bottom-sheet-transition-easing: var(--easing-standard);
 
     /* ---- base (light surface) ---- */
     box-sizing: border-box;
     position: fixed;
+    /* Undo the user-agent dialog / popover box: centred (`inset: 0; margin: auto`), sized to its
+       content, capped at `100% - 2em - 6px`, drawn with a border, padding and Canvas colours. */
     inset-inline: 0;
+    inset-block-start: auto;
     inset-block-end: 0;
-    z-index: var(--ui-bottom-sheet-z-index);
-    display: flex;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    inline-size: auto;
+    max-inline-size: none;
+    block-size: auto;
     flex-direction: column;
     max-block-size: var(--ui-bottom-sheet-max-block-size);
-    border-start-start-radius: var(--ui-bottom-sheet-radius-start-start, var(--ui-bottom-sheet-radius));
-    border-start-end-radius: var(--ui-bottom-sheet-radius-start-end, var(--ui-bottom-sheet-radius));
+    overflow: hidden;
+    border-start-start-radius: var(
+      --ui-bottom-sheet-radius-start-start,
+      var(--ui-bottom-sheet-radius)
+    );
+    border-start-end-radius: var(
+      --ui-bottom-sheet-radius-start-end,
+      var(--ui-bottom-sheet-radius)
+    );
     background-color: var(--ui-bottom-sheet-bg);
     color: var(--ui-bottom-sheet-fg);
     /* The DS ships no global reset, so loose text inside the sheet would otherwise fall back to
@@ -56,6 +77,23 @@
        this only covers raw text. */
     font-family: var(--ui-bottom-sheet-font-family);
     box-shadow: var(--ui-bottom-sheet-shadow);
+  }
+
+  /* Layout only while shown — two rules, not one list: a browser that does not know
+     `:popover-open` drops the whole list it appears in. */
+  .ui-bottom-sheet[open] {
+    display: flex;
+  }
+
+  .ui-bottom-sheet:popover-open {
+    display: flex;
+  }
+
+  /* The scrim of the MODAL sheet: the dialog's own backdrop, in the top layer right under it.
+     `:modal` only — a popover has a `::backdrop` too, and the non-modal sheet must not dim the page. */
+  .ui-bottom-sheet:modal::backdrop {
+    background-color: var(--ui-bottom-sheet-backdrop-color);
+    opacity: var(--ui-bottom-sheet-backdrop-opacity);
   }
 
   /* Dark surface — re-points the role vars at the dark end of the neutral value scale, mirroring
@@ -69,7 +107,8 @@
   /* Entrance only — applied on first open, so a content update inside an already-open sheet does
      not replay the slide. */
   .ui-bottom-sheet--animated {
-    animation: ui-bottom-sheet-slide-in var(--ui-bottom-sheet-transition-duration)
+    animation: ui-bottom-sheet-slide-in
+      var(--ui-bottom-sheet-transition-duration)
       var(--ui-bottom-sheet-transition-easing);
   }
 
@@ -82,18 +121,6 @@
     }
   }
 
-  /* ---- overlay (scrim) ---- */
-  .ui-bottom-sheet__overlay {
-    --ui-bottom-sheet-overlay-color: var(--color-primitive-neutral-950);
-    --ui-bottom-sheet-overlay-opacity: 0.5;
-
-    position: fixed;
-    inset: 0;
-    z-index: var(--ui-bottom-sheet-z-index, 50);
-    background-color: var(--ui-bottom-sheet-overlay-color);
-    opacity: var(--ui-bottom-sheet-overlay-opacity);
-  }
-
   /* ---- header ---- */
   .ui-bottom-sheet__header {
     display: flex;
@@ -102,7 +129,8 @@
     gap: var(--ui-bottom-sheet-padding-block);
     padding-inline: var(--ui-bottom-sheet-padding-inline);
     padding-block: var(--ui-bottom-sheet-padding-block);
-    border-block-end: var(--spacing-px) solid var(--ui-bottom-sheet-border-color);
+    border-block-end: var(--ui-bottom-sheet-border-width) solid
+      var(--ui-bottom-sheet-border-color);
   }
 
   /* Takes the free space so the close button stays pinned to the inline-end edge. */

@@ -1,6 +1,9 @@
 import clsx from 'clsx'
 
-import { BOTTOM_SHEET_HEADER_CLASS, BOTTOM_SHEET_TITLE_CLASS } from '@fubaritico/variants'
+import {
+  BOTTOM_SHEET_HEADER_CLASS,
+  BOTTOM_SHEET_TITLE_CLASS,
+} from '@fubaritico/variants'
 
 import { IconButton } from '../IconButton'
 

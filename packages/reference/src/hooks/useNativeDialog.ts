@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 import { useMergedRef } from './useMergedRef'
 
-import type { MouseEvent, Ref } from 'react'
+import type { MouseEvent, Ref, RefObject, SyntheticEvent } from 'react'
 
 /** Options of {@link useNativeDialog}. */
 export interface UseNativeDialogOptions {
@@ -26,20 +26,32 @@ export interface UseNativeDialogOptions {
    * Defaults to `'self'`.
    */
   backdropArea?: 'self' | 'outside'
+  /**
+   * Whether the dialog is modal; defaults to `true`.
+   *
+   * - `true` — `showModal()`: top layer, focus trap, the rest of the page inert, `::backdrop`,
+   *   Escape handled by the browser, page scroll locked.
+   * - `false` — the element must carry `popover="manual"`: `showPopover()` puts it in the top layer
+   *   WITHOUT making it modal — the page stays usable, no backdrop, no scroll lock. Escape and
+   *   click-outside are then the component's to handle (a manual popover has neither).
+   */
+  modal?: boolean
 }
 
 /** What {@link useNativeDialog} hands back to the component. */
 export interface UseNativeDialogResult {
   /** Ref callback for the `<dialog>`; feeds both the internal ref and the consumer's. */
   ref: (node: HTMLDialogElement | null) => void
+  /** The `<dialog>` node, for a component that must test a target against it. */
+  dialogRef: RefObject<HTMLDialogElement | null>
   /** `onClick` handler closing the dialog when the click lands on the backdrop. */
   handleClick: (e: MouseEvent<HTMLDialogElement>) => void
   /** `onClose` handler mirroring the browser's own close event back to the consumer. */
-  handleClose: () => void
+  handleClose: (e: SyntheticEvent<HTMLDialogElement>) => void
 }
 
 /**
- * Drives a native `<dialog>` as a true modal.
+ * Drives a native `<dialog>` in the top layer — as a true modal, or as a non-modal surface.
  *
  * Shared by every dialog-based component (`Modal`, `Drawer`) so the lifecycle exists ONCE: an
  * edge case fixed here is fixed for all of them, instead of being fixed in one and left broken in
@@ -64,7 +76,8 @@ export interface UseNativeDialogResult {
  * @param options.onOverlayClick - Overrides the backdrop-click behaviour.
  * @param options.forwardedRef - A consumer-supplied ref to keep working.
  * @param options.backdropArea - Where the backdrop sits relative to the dialog's box.
- * @returns {@link UseNativeDialogResult} — the ref callback and the two handlers.
+ * @param options.modal - `showModal()` (default) or a non-modal `showPopover()`.
+ * @returns {@link UseNativeDialogResult} — the ref callback, the node and the two handlers.
  */
 export function useNativeDialog({
   open,
@@ -72,19 +85,36 @@ export function useNativeDialog({
   onOverlayClick,
   forwardedRef,
   backdropArea = 'self',
+  modal = true,
 }: UseNativeDialogOptions): UseNativeDialogResult {
   // Imperative handle on the <dialog> node: drives showModal()/close() and identifies backdrop
   // clicks by comparing against the event target.
   const internalRef = useRef<HTMLDialogElement>(null)
 
   // Feeds the internal ref AND the consumer's, so neither displaces the other.
-  const ref = useMergedRef(internalRef, forwardedRef)
+  const mergedRef = useMergedRef(internalRef, forwardedRef)
 
   // Set right before every close() this hook performs, consumed by the native `close` event: it
   // tells a close the hook did (the prop went `false`, an unmount, StrictMode's simulated unmount)
   // from one the browser did (Escape). Inferring it from the current prop would race: `close` is
   // dispatched as a queued task, by which time a re-run may have reopened the dialog.
   const closedByHookRef = useRef(false)
+
+  // The last node seen. A component that remounts its dialog on every opening (BottomSheet) closes
+  // the old node as it is detached: that `close` event never reaches React, and the flag above
+  // would stay set and swallow the next Escape. A NEW node therefore starts with a clean flag;
+  // StrictMode re-attaches the SAME node, so its queued close is still recognised.
+  const lastNodeRef = useRef<HTMLDialogElement | null>(null)
+  const ref = useCallback(
+    (node: HTMLDialogElement | null) => {
+      if (node && node !== lastNodeRef.current) {
+        lastNodeRef.current = node
+        closedByHookRef.current = false
+      }
+      mergedRef(node)
+    },
+    [mergedRef]
+  )
 
   // Open or close the real dialog, and lock the page while — and only while — it is up.
   useEffect(() => {
@@ -103,6 +133,17 @@ export function useNativeDialog({
       return
     }
 
+    // Non-modal: the top layer only. A popover fires no `close` event, so there is nothing to flag;
+    // every show is paired with its cleanup's hide, StrictMode's re-run included. An environment
+    // without the Popover API (an old browser, jsdom) only renders the markup.
+    if (!modal) {
+      if (typeof dialog.showPopover !== 'function') return
+      dialog.showPopover()
+      return () => {
+        dialog.hidePopover()
+      }
+    }
+
     // Captured at opening, restored at closing or unmount. A closed dialog never touches the
     // page: it would otherwise write back a stale value over whatever the host set meanwhile.
     const previousOverflow = document.body.style.overflow
@@ -113,7 +154,7 @@ export function useNativeDialog({
       closeFromHook()
       document.body.style.overflow = previousOverflow
     }
-  }, [open])
+  }, [open, modal])
 
   /**
    * Closes when the click landed on the backdrop rather than on the panel.
@@ -153,8 +194,13 @@ export function useNativeDialog({
    * The browser closes the dialog BEFORE this runs, so the consumer must set its state to `false`
    * here; `cancel` is deliberately not intercepted — Chromium lets a page veto Escape only after a
    * user activation, and a second Escape always goes through.
+   *
+   * @param e - The `close` event; ignored unless this dialog is its target.
    */
-  const handleClose = () => {
+  const handleClose = (e: SyntheticEvent<HTMLDialogElement>) => {
+    // React propagates `close` through the React tree although the DOM event does not bubble: a
+    // dialog nested in this one (a sheet opened from a Modal) would otherwise close this one too.
+    if (e.target !== e.currentTarget) return
     if (closedByHookRef.current) {
       closedByHookRef.current = false
       return
@@ -162,5 +208,5 @@ export function useNativeDialog({
     onClose()
   }
 
-  return { ref, handleClick, handleClose }
+  return { ref, dialogRef: internalRef, handleClick, handleClose }
 }

@@ -14,7 +14,7 @@
  * example). It is not a specificity hack: it protects ONE invariant, the closed state, and nothing
  * cosmetic. Every look, the open layout included, stays overridable as usual.
  *
- * Scope: only this design system's blocks, never the consumer's own dialogs and popovers.
+ * Blocks: Modal, Drawer, Popover, BottomSheet. Scope: only this design system's blocks, never the consumer's own dialogs and popovers.
  * Transitions sit above important declarations in the cascade, so the popover's exit fade
  * (`display … allow-discrete`) still runs to its end. The only remaining escape is an inline
  * `style="display: … !important"`, which React cannot even write.
@@ -28,6 +28,16 @@
   }
 
   .ui-popover:not(:popover-open) {
+    display: none !important;
+  }
+
+  /* The bottom sheet is a modal dialog OR a popover: each closed state guarded on its own, so the
+     open popover (which has no `open` attribute) is never hidden. */
+  .ui-bottom-sheet:not([open]):not([popover]) {
+    display: none !important;
+  }
+
+  .ui-bottom-sheet[popover]:not(:popover-open) {
     display: none !important;
   }
 }

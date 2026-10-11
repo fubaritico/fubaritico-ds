@@ -6,4 +6,7 @@ export { useBottomSheetContext } from './BottomSheetContext'
 export type { BottomSheetProps } from './BottomSheet'
 export type { BottomSheetHeaderProps } from './BottomSheetHeader'
 export type { BottomSheetBodyProps } from './BottomSheetBody'
-export type { BottomSheetContextValue, BottomSheetVariant } from './BottomSheetContext'
+export type {
+  BottomSheetContextValue,
+  BottomSheetVariant,
+} from './BottomSheetContext'

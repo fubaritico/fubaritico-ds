@@ -12,7 +12,9 @@ export interface BottomSheetContextValue {
   onClose: () => void
 }
 
-export const BottomSheetContext = createContext<BottomSheetContextValue | null>(null)
+export const BottomSheetContext = createContext<BottomSheetContextValue | null>(
+  null
+)
 
 /**
  * Reads the BottomSheet context, guarding the composition contract.
@@ -25,7 +27,8 @@ export const BottomSheetContext = createContext<BottomSheetContextValue | null>(
  */
 export function useBottomSheetContext(): BottomSheetContextValue {
   const context = use(BottomSheetContext)
-  if (!context) throw new Error('BottomSheet.* must be used within <BottomSheet>')
+  if (!context)
+    throw new Error('BottomSheet.* must be used within <BottomSheet>')
 
   return context
 }

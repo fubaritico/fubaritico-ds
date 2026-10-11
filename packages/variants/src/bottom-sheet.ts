@@ -41,9 +41,6 @@ export const bottomSheetVariants = cva('ui-bottom-sheet', {
 /** Variant props inferred from {@link bottomSheetVariants}. */
 export type BottomSheetVariantProps = VariantProps<typeof bottomSheetVariants>
 
-/** BEM element class for the optional scrim behind the sheet (`.ui-bottom-sheet__overlay`). */
-export const BOTTOM_SHEET_OVERLAY_CLASS = 'ui-bottom-sheet__overlay'
-
 /** BEM element class for the header bar (`.ui-bottom-sheet__header`). */
 export const BOTTOM_SHEET_HEADER_CLASS = 'ui-bottom-sheet__header'
 

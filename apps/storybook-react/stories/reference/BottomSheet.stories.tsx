@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { BottomSheet } from '@fubaritico/react/BottomSheet'
 import { Button } from '@fubaritico/react/Button'
+import { Modal } from '@fubaritico/react/Modal'
 import { Typography } from '@fubaritico/react/Typography'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
@@ -142,6 +143,7 @@ const meta = {
   args: {
     variant: 'light',
     overlay: false,
+    'aria-label': 'Filters',
     open: false,
     onClose: () => undefined,
     children: null,
@@ -173,7 +175,7 @@ export const Showcase: Story = {
         <strong>Surfaces and the scrim</strong>
         <p style={{ fontSize: '0.8125rem', margin: 0 }}>
           Without an overlay the page stays interactive, and a click outside the
-          sheet dismisses it.
+          sheet dismisses it. With one, the sheet is modal: Tab stays inside it.
         </p>
         <BottomSheetGroup
           demos={[
@@ -211,4 +213,65 @@ export const Showcase: Story = {
       </section>
     </div>
   ),
+}
+
+/**
+ * A sheet opened from inside a Modal: in the top layer, above the dialog and usable; Escape closes
+ * the sheet first, the Modal on a second press.
+ *
+ * @returns The modal demo.
+ */
+function InModalDemo() {
+  const [modalOpen, setModalOpen] = useState(false)
+  const [sheetOpen, setSheetOpen] = useState(false)
+  return (
+    <>
+      <Button
+        onClick={() => {
+          setModalOpen(true)
+        }}
+      >
+        Open the modal
+      </Button>
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => {
+          setModalOpen(false)
+        }}
+        aria-label="Sheet in a modal"
+      >
+        <div style={{ padding: '2rem', background: 'white' }}>
+          <Button
+            onClick={() => {
+              setSheetOpen(true)
+            }}
+          >
+            Open the sheet
+          </Button>
+          <BottomSheet
+            open={sheetOpen}
+            onClose={() => {
+              setSheetOpen(false)
+            }}
+            aria-label="Filters"
+          >
+            <BottomSheet.Header>
+              <Typography variant="h6">Filters</Typography>
+            </BottomSheet.Header>
+            <BottomSheet.Body>
+              <Typography variant="body2">
+                Above the modal, and usable.
+              </Typography>
+            </BottomSheet.Body>
+          </BottomSheet>
+        </div>
+      </Modal>
+    </>
+  )
+}
+
+/** A BottomSheet opened from inside a Modal. */
+export const InsideAModal: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => <InModalDemo />,
 }
