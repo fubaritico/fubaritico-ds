@@ -5,3 +5,5 @@ export type {
   TooltipManualPosition,
   TooltipPosition,
 } from './Tooltip.types'
+export { useTooltip } from './useTooltip'
+export type { UseTooltipOptions, UseTooltipResult } from './useTooltip'

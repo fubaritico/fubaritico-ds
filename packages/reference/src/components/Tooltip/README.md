@@ -1,12 +1,17 @@
 # Tooltip
 
-A controlled floating bubble in the browser's top layer that anchors to a target (or explicit coordinates) — a
-low-level presentational positioning primitive, not a self-managing hover wrapper.
+A floating bubble in the browser's top layer that anchors to a target — a presentational
+positioning primitive (`Tooltip`) plus the trigger behaviour that drives it (`useTooltip`).
 
 ## Capabilities
 
-- **Controlled visibility** — the parent owns `visible`; the Tooltip renders nothing when hidden. You
-  decide when to show it (hover, focus, click) and wire the trigger.
+- **Trigger behaviour, written once (`useTooltip`)** — opens on hover after a short delay and at once
+  on keyboard focus; closes on leave (after a grace delay) and on blur; **Escape** dismisses it
+  without moving focus (and without closing a surrounding Modal); the pointer can **rest on the
+  bubble** without it closing. That is WCAG 1.4.13 (dismissible, hoverable, persistent). It also
+  links the trigger with `aria-describedby`. The logic is the framework-agnostic `TooltipService`.
+- **Controlled visibility** — the Tooltip itself renders what `visible` says and nothing when hidden,
+  so you can also drive it yourself (a click, a validation message).
 - **Positioning** — `mode="target"` anchors to a `targetRef` and **auto-flips** to the opposite side
   when there isn't enough room in the viewport; `mode="manual"` places it at explicit `{ top, left }`.
 - **12 placements** — `top` / `bottom` / `left` / `right`, each with optional alignment suffix
@@ -22,27 +27,24 @@ low-level presentational positioning primitive, not a self-managing hover wrappe
 ## Import
 
 ```tsx
-import { Tooltip } from '@fubaritico/react/Tooltip'
+import { Tooltip, useTooltip } from '@fubaritico/react/Tooltip'
 ```
 
 ## Basic usage
 
 ```tsx
 const ref = useRef<HTMLButtonElement>(null)
-const [open, setOpen] = useState(false)
+const { open, triggerProps, bubbleProps } = useTooltip()
 
-<button
-  ref={ref}
-  aria-describedby="save-tip"
-  onMouseEnter={() => setOpen(true)}
-  onMouseLeave={() => setOpen(false)}
-  onFocus={() => setOpen(true)}
-  onBlur={() => setOpen(false)}
->
+<button ref={ref} type="button" {...triggerProps}>
   Save
 </button>
-<Tooltip id="save-tip" content="Save your changes" visible={open} targetRef={ref} placement="top" />
+<Tooltip content="Save your changes" visible={open} targetRef={ref} placement="top" {...bubbleProps} />
 ```
+
+`useTooltip` takes the service's options: `openDelay` (300 ms), `closeDelay` (150 ms), `disabled`,
+`describe` (`false` when the bubble only repeats text assistive technology already reads — it is then
+`aria-hidden`), a controlled `open` + `onOpenChange`, or an injected `service`.
 
 ## Variants & options
 
@@ -121,9 +123,12 @@ const [open, setOpen] = useState(false)
 
 ## Accessibility
 
-- The bubble has `role="tooltip"`. Link it to its target with `aria-describedby` (use a stable `id`).
-- Show on **both** hover and keyboard focus; hide on blur/leave/`Escape`.
-- The bubble is `pointer-events: none` so it never steals interaction from the target.
+- The bubble has `role="tooltip"`; `useTooltip` links it to its trigger with `aria-describedby`
+  while it is shown, and gives it a stable id.
+- Shown on **both** hover and keyboard focus — so the trigger must be focusable (a button, a link,
+  or `tabIndex={0}`); hidden on blur, leave and `Escape` (WCAG 1.4.13).
+- A bubble wired by `useTooltip` is hoverable (`data-hoverable` gives it pointer events); a bare
+  bubble is `pointer-events: none` so it never steals interaction from the target.
 
 ## Notes
 
@@ -136,8 +141,8 @@ const [open, setOpen] = useState(false)
 > over it, but a tooltip already visible when a `Modal` / `Drawer` / `Popover` opens ends up under it.
 > Hide tooltips before opening a dialog from the same trigger.
 
-> **Note** — This Tooltip is **controlled and low-level**: it does not manage its own hover/focus or
-> `aria-describedby`. Own the `visible` state and wire the trigger + ARIA on the target yourself.
+> **Note** — wiring the trigger by hand (your own `onMouseEnter` / `onFocus`) still works, but you
+> then own the delays, Escape, hoverability and `aria-describedby`. Prefer `useTooltip`.
 
 > **Note** — In `mode="manual"` no arrow is rendered (there's no measured target to point at).
 

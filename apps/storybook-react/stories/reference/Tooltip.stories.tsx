@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react'
 
 // Tooltip — CSS-free subpath (no Tailwind leak in Storybook).
-import { Tooltip } from '@fubaritico/react/Tooltip'
+import { Button } from '@fubaritico/react/Button'
+import { Modal } from '@fubaritico/react/Modal'
+import { Tooltip, useTooltip } from '@fubaritico/react/Tooltip'
 
 import type { TooltipPlacement, TooltipProps } from '@fubaritico/react/Tooltip'
 import type { Meta, StoryObj } from '@storybook/react-vite'
@@ -57,30 +59,19 @@ function TooltipDemo({
   ...args
 }: Omit<TooltipProps, 'visible' | 'targetRef'>) {
   const ref = useRef<HTMLButtonElement>(null)
-  const [open, setOpen] = useState(false)
+  const { open, triggerProps, bubbleProps } = useTooltip()
   return (
     <>
-      <button
-        ref={ref}
-        type="button"
-        aria-describedby="demo-tip"
-        className="ui-button"
-        onMouseEnter={() => {
-          setOpen(true)
-        }}
-        onMouseLeave={() => {
-          setOpen(false)
-        }}
-        onFocus={() => {
-          setOpen(true)
-        }}
-        onBlur={() => {
-          setOpen(false)
-        }}
-      >
+      <button ref={ref} type="button" className="ui-button" {...triggerProps}>
         Hover or focus me
       </button>
-      <Tooltip {...args} content={content} visible={open} targetRef={ref} />
+      <Tooltip
+        {...args}
+        {...bubbleProps}
+        content={content}
+        visible={open}
+        targetRef={ref}
+      />
     </>
   )
 }
@@ -121,4 +112,42 @@ export const Showcase: Story = {
       />
     </div>
   ),
+}
+
+/**
+ * Opened from inside a Modal: the bubble stays in the dialog and paints over it (top layer, no
+ * portal), and Escape closes the tooltip first, the Modal on a second press.
+ *
+ * @returns The modal demo.
+ */
+function InModalDemo() {
+  const [isOpen, setIsOpen] = useState(false)
+  return (
+    <>
+      <Button
+        onClick={() => {
+          setIsOpen(true)
+        }}
+      >
+        Open the modal
+      </Button>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false)
+        }}
+        aria-label="Tooltip in a modal"
+      >
+        <div style={{ padding: '2rem', background: 'white' }}>
+          <TooltipDemo content="I am above the modal" placement="top" />
+        </div>
+      </Modal>
+    </>
+  )
+}
+
+/** A tooltip opened from inside a Modal. */
+export const InsideAModal: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => <InModalDemo />,
 }

@@ -142,12 +142,14 @@ export type {
 export { Tabs } from './components/Tabs'
 export type { TabsProps, TabsVariant } from './components/Tabs'
 
-export { Tooltip } from './components/Tooltip'
+export { Tooltip, useTooltip } from './components/Tooltip'
 export type {
   TooltipProps,
   TooltipPlacement,
   TooltipManualPosition,
   TooltipPosition,
+  UseTooltipOptions,
+  UseTooltipResult,
 } from './components/Tooltip'
 
 export { Skeleton } from './components/Skeleton'

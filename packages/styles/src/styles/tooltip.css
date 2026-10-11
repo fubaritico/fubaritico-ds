@@ -72,6 +72,12 @@
     overflow: visible;
   }
 
+  /* A bubble wired by useTooltip is hoverable (WCAG 1.4.13): the pointer may rest on it to read or
+     select it, so it takes pointer events. A bare bubble stays transparent to the pointer. */
+  .ui-tooltip[data-hoverable] {
+    pointer-events: auto;
+  }
+
   .ui-tooltip--light {
     --ui-tooltip-bg: var(--color-background);
     --ui-tooltip-fg: var(--color-foreground);
