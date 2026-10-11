@@ -63,7 +63,10 @@ pnpm exec lerna version <patch|minor> --yes
 
 Narrate: packages changed since the last tag → new shared version (fixed mode) → `package.json` +
 `lerna.json` → CHANGELOGs from the commits → commit `chore(release): vX.Y.Z` + tag → push.
-Unchanged packages are NOT bumped. That is expected, not a failure.
+Which packages move depends on the bump: a **patch** moves only the changed ones; a **minor in
+`0.x`** counts as breaking in fixed mode and moves **all** of them ("Version bump only" on the
+unchanged ones is then expected, not a missing changelog). Tell the developer which case it is.
+In the handoff, remember that a consumer's `^0.x.y` range does NOT accept the next minor.
 
 Verify, and show the developer what you check:
 

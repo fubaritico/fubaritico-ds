@@ -38,9 +38,11 @@ is ever published from a laptop.
 
 In one command, Lerna:
 
-1. finds the packages **changed since the last tag** (`v0.4.0`). Unchanged packages are not
-   republished. Lerna runs in **fixed mode** (`lerna.json`), so every package that moves gets the
-   same number;
+1. finds the packages **changed since the last tag** (`v0.4.0`). Lerna runs in **fixed mode**
+   (`lerna.json`), so every package that moves gets the same number. Which ones move depends on
+   the bump: a **patch** moves only the changed packages (0.4.1 moved `react` alone), but a
+   **minor while in `0.x`** counts as breaking and moves **all** of them (0.5.0 moved all five,
+   unchanged `tokens` and `variants` included, with "Version bump only");
 2. writes the new version into their `package.json` and into `lerna.json`;
 3. generates the `CHANGELOG.md` files from the commit messages;
 4. commits `chore(release): vX.Y.Z`, tags `vX.Y.Z` and **pushes both**.
