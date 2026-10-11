@@ -17,7 +17,6 @@ import {
 
 import DataTable from '../DataTable/DataTable'
 import DataTableVirtualized from '../DataTable/DataTableVirtualized'
-import { toEpochMs } from '../DataTable/utils'
 
 import JobRowSkeleton from './JobRowSkeleton'
 import useColumnsDefinition from './useColumnsDefinition'
@@ -156,13 +155,6 @@ const DataTableExample: FC<DataTableExampleProps> = ({
       getRowId: (row) => row.id,
       onRowSelectionChange: handleRowSelectionChange,
       onSortingChange: setSorting,
-      sortingFns: {
-        sortByDate: (rowA, rowB, columnId): number =>
-          toEpochMs(rowA.getValue<number>(columnId)) <
-          toEpochMs(rowB.getValue<number>(columnId))
-            ? 1
-            : -1,
-      },
       onGlobalFilterChange: setGlobalFilter,
       state: {
         sorting,

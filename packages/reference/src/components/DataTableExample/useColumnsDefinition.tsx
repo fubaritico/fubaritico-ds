@@ -9,18 +9,29 @@ import {
   SortableHeaderCell,
   TruncableLinkCell,
 } from '../DataTable'
+import { toEpochMs } from '../DataTable/utils'
 
 import type { JobItem } from './jobFactory'
 import type { ColumnDef, SortingFn } from '@tanstack/react-table'
 
 /**
- * Registers the custom `sortByDate` sorting function on TanStack's `SortingFns` map so columns can
- * reference it by name (the implementation is provided in the table options of the consumer).
+ * Sorts two rows on a date column (Unix seconds or milliseconds, normalised by {@link toEpochMs}).
+ * Passed to the columns as a function, not registered by name on TanStack's `SortingFns`: a module
+ * augmentation would make `sortingFns` required on every table of every consumer. Same direction
+ * convention as `sortNumbers` (`DataTable/sorting`); equal dates return `0` so the sort stays stable.
+ *
+ * @param rowA - First row whose value will be compared.
+ * @param rowB - Second row whose value will be compared.
+ * @param columnId - Column id (property name) to sort on.
+ * @returns A negative number, `0`, or a positive number, per the comparator contract.
  */
-declare module '@tanstack/react-table' {
-  interface SortingFns {
-    sortByDate: SortingFn<unknown>
-  }
+const sortByDate: SortingFn<JobItem> = (rowA, rowB, columnId) => {
+  const dateA = toEpochMs(rowA.getValue<number>(columnId))
+  const dateB = toEpochMs(rowB.getValue<number>(columnId))
+
+  if (dateA === dateB) return 0
+
+  return dateA < dateB ? 1 : -1
 }
 
 /** Time zone used to format the date columns (was a user setting; constant for the demo). */
@@ -59,7 +70,7 @@ export default function useColumnsDefinition(
       },
       {
         accessorKey: 'systemModStamp',
-        sortingFn: 'sortByDate',
+        sortingFn: sortByDate,
         header: SortableHeaderCell(
           'systemModStamp',
           'system mod stamp',
@@ -70,7 +81,7 @@ export default function useColumnsDefinition(
       },
       {
         accessorKey: 'lastModifiedDate',
-        sortingFn: 'sortByDate',
+        sortingFn: sortByDate,
         header: SortableHeaderCell(
           'lastModifiedDate',
           'last modified date',
@@ -81,7 +92,7 @@ export default function useColumnsDefinition(
       },
       {
         accessorKey: 'createdDate',
-        sortingFn: 'sortByDate',
+        sortingFn: sortByDate,
         header: SortableHeaderCell('createdDate', 'created date', true, 'date'),
         cell: DateCell('createdDate', locale, TIMEZONE, true),
       },

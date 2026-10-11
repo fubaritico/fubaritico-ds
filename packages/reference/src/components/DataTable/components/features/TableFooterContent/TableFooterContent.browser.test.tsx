@@ -31,8 +31,6 @@ function InModal() {
     columns: COLUMNS,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    // Required by the `SortingFns` augmentation of `DataTableExample`, unused here.
-    sortingFns: { sortByDate: () => 0 },
   })
   return (
     <Modal
