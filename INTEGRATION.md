@@ -134,10 +134,11 @@ wins**, with no specificity war and no `!important`:
 }
 ```
 
-> **Never set `display` on `Modal` or `Drawer`.** They are native `<dialog>` elements; the browser
-> hides a closed one with `dialog:not([open]) { display: none }`, and any author `display`
-> overrides it, leaving the panel permanently on screen. Position their content with
-> `--ui-modal-place-items` or a rule on a child.
+> **`display` on `Modal`, `Drawer` or `Popover` does nothing while they are closed.** A closed
+> native `<dialog>` / `[popover]` is hidden by a browser rule that any author `display` would
+> override, leaving it on screen. The skin guards that state in its first layer (`ui.reset`, with
+> `!important`), so your class or `style` cannot break it. It does apply once open, but that layout
+> belongs to the skin: position their content with `--ui-modal-place-items` or a rule on a child.
 
 ## Conventions worth knowing before you write code
 

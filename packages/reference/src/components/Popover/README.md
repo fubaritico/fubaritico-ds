@@ -161,8 +161,8 @@ The root renders no element.
 > the dialog inert, so a surface moved to `<body>` could not be clicked. Left in place, it opens
 > above the dialog (opened later, higher in the top layer) and Escape closes it before the dialog.
 
-> **Warning** — never set `display` on `.ui-popover` from your own CSS or `style`: it would override
-> the browser rule that hides a closed popover, and leave it visible while closed.
+> **Note** — a `display` set on `.ui-popover` from your own CSS or `style` is ignored while it is
+> closed (the skin guards that state), so it can never stay visible closed. Its exit fade still runs.
 
 > **Note** — anchor positioning needs Chrome 125, Safari 26 or Firefox 147. In an older browser the
 > surface is centred in the viewport instead of next to its trigger — still on top and usable.

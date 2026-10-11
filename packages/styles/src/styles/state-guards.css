@@ -1,0 +1,33 @@
+/**
+ * State guards — the closed state of the top-layer blocks, made non-negotiable.
+ *
+ * A closed `<dialog>` and a closed `[popover]` are hidden by user-agent rules
+ * (`dialog:not([open])` and `[popover]:not(:popover-open)` → `display: none`). ANY author `display`
+ * overrides them — a consumer's class, an inline `style`, a story — and the "closed" component stays
+ * on screen: drawers all open at start-up, a modal shell covering the page, a popover that never
+ * leaves. The trap was hit twice (Drawer skin, Modal story) before this file existed.
+ *
+ * WHY `!important`, and why HERE. Within cascade layers, important declarations reverse the layer
+ * order: the FIRST declared layer wins, and it beats unlayered `!important` and normal inline styles
+ * too (CSS Cascade 5 §6.1). That is the mechanism for a lower layer to insist that a few
+ * declarations are essential (Miriam Suzanne's `@layer reset { [hidden] { display: none !important } }`
+ * example). It is not a specificity hack: it protects ONE invariant, the closed state, and nothing
+ * cosmetic. Every look, the open layout included, stays overridable as usual.
+ *
+ * Scope: only this design system's blocks, never the consumer's own dialogs and popovers.
+ * Transitions sit above important declarations in the cascade, so the popover's exit fade
+ * (`display … allow-discrete`) still runs to its end. The only remaining escape is an inline
+ * `style="display: … !important"`, which React cannot even write.
+ */
+@layer ui.reset {
+  /* Two rules, not one list: a browser that does not know `:popover-open` drops the whole list it
+     appears in, and the dialog guard must not depend on popover support. */
+  .ui-modal:not([open]),
+  .ui-drawer:not([open]) {
+    display: none !important;
+  }
+
+  .ui-popover:not(:popover-open) {
+    display: none !important;
+  }
+}

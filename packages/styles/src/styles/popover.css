@@ -13,7 +13,8 @@
  *
  * NEVER give the base a `display` value: the UA hides a closed popover with `display: none`, and an
  * author `display` would override it and leave the popover visible while closed (the `<dialog>`
- * trap, met twice). Layout goes on `:popover-open` only.
+ * trap, met twice). Layout goes on `:popover-open` only. `state-guards.css` enforces the closed state
+ * against consumers (in `ui.reset`, with `!important`); this rule keeps the skin itself honest.
  *
  * Override surface (white-label), by precedence:
  *   1. Redefine the component-scoped `--ui-popover-*` vars on `.ui-popover`.

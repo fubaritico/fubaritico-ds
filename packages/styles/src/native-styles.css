@@ -6,8 +6,13 @@
  *
  * Layer order matters: the skin lives in `ui.components`, so any UNLAYERED consumer rule
  * (e.g. `.ui-badge { ... }`) wins over the skin without specificity wars or !important.
+ * The ONE `!important` of the skin is the closed-state guard in `ui.reset` (state-guards.css):
+ * it protects an invariant (a closed dialog / popover stays hidden), never a look.
  */
 @layer ui.reset, ui.base, ui.components;
+
+/* ui.reset: the closed state of the top-layer blocks, which no consumer rule can undo. */
+@import './styles/state-guards.css';
 
 @import './styles/alert.css';
 @import './styles/avatar.css';

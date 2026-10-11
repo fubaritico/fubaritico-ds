@@ -60,6 +60,9 @@ const isModal = () => dialog().matches(':modal')
 const display = () => getComputedStyle(dialog()).display
 const openButton = () => screen.getByRole('button', { name: 'Open' })
 
+/** An unlayered consumer rule forcing a layout — it beats any layered skin rule. */
+const FORCE_DISPLAY = '.force-display { display: grid; }'
+
 afterEach(() => {
   document.body.style.overflow = ''
 })
@@ -194,6 +197,24 @@ describe('Modal (browser)', () => {
   })
 
   describe('unmanaged errors', () => {
+    it('stays hidden while closed even when the consumer forces a display', () => {
+      render(
+        <>
+          <style>{FORCE_DISPLAY}</style>
+          <Fixture className="force-display" />
+        </>
+      )
+      expect(display()).toBe('none')
+    })
+
+    it('stays hidden while closed even with an inline display', async () => {
+      render(<Fixture style={{ display: 'grid' }} />)
+      expect(display()).toBe('none')
+      // …and the forced layout applies once open, the guard only covers the closed state.
+      await userEvent.click(openButton())
+      expect(display()).toBe('grid')
+    })
+
     it('still opens when the consumer passes its own ref', async () => {
       const ref = createRef<HTMLDialogElement>()
       render(<Fixture ref={ref} />)

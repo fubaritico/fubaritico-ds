@@ -39,7 +39,8 @@
        `calc(100% - 6px - 2em)`, which would clip a full-bleed layout.
        `display` is deliberately NOT set here: the UA hides a closed dialog with
        `dialog:not([open]) { display: none }`, and any author `display` overrides it — leaving the
-       shell permanently in the page. The layout therefore lives on `[open]` below. */
+       shell permanently in the page. The layout therefore lives on `[open]` below.
+       `state-guards.css` enforces the closed state against consumers; this keeps the skin honest. */
     box-sizing: border-box;
     margin: 0;
     padding: var(--ui-modal-padding);

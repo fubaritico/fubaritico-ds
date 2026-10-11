@@ -135,10 +135,10 @@ Re-skinning the backdrop on one instance:
 > **Note** — the dialog is a transparent full-viewport shell on purpose. If your panel looks
 > unstyled, you forgot to compose something inside it — the Modal itself draws only the backdrop.
 
-> **Warning** — never set `display` on the Modal through `style` or `className`. The browser hides
-> a closed dialog with `dialog:not([open]) { display: none }`, and any author `display` overrides
-> it, leaving the shell in the page and the dialog unable to behave. Position the panel with
-> `--ui-modal-place-items`, or with your own rule on a child.
+> **Note** — a `display` you set through `style` or `className` is ignored while the Modal is
+> closed: the skin guards the closed state, so the shell can never stay in the page. Once open it
+> would replace the skin's centring grid, so position the panel with `--ui-modal-place-items`, or
+> with your own rule on a child, rather than on the dialog.
 
 > **Note** — `isOpen` drives `showModal()` / `close()` imperatively; do not also set the native
 > `open` attribute (it is omitted from the props for that reason). The `open` attribute alone gives

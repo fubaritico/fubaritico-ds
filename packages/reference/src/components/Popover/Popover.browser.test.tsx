@@ -178,6 +178,43 @@ describe('Popover (browser)', () => {
       expect(surface().contains(hit)).toBe(true)
     })
 
+    it('stays hidden while closed even when the consumer forces a display', () => {
+      render(
+        <>
+          <style>{'.force-display { display: grid; }'}</style>
+          <Popover label="Settings">
+            <Popover.Trigger>Open</Popover.Trigger>
+            <Popover.Content className="force-display" style={{ display: 'grid' }}>
+              Body
+            </Popover.Content>
+          </Popover>
+        </>
+      )
+      expect(getComputedStyle(surface()).display).toBe('none')
+    })
+
+    it('keeps its exit fade: the guard does not cut the closing transition short', async () => {
+      // The project runs with reduced motion; an unlayered rule turns the fade back on here.
+      render(
+        <>
+          <style>
+            {
+              '.ui-popover { transition: opacity 400ms, display 400ms allow-discrete, overlay 400ms allow-discrete; }'
+            }
+          </style>
+          <Fixture />
+        </>
+      )
+      await userEvent.click(trigger())
+      await new Promise((resolve) => setTimeout(resolve, 450))
+      await userEvent.keyboard('{Escape}')
+      expect(isOpen()).toBe(false)
+      // Mid-fade: closed, yet still rendered.
+      expect(getComputedStyle(surface()).display).not.toBe('none')
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      expect(getComputedStyle(surface()).display).toBe('none')
+    })
+
     it('stays hidden while closed (no author display leaks the UA rule)', () => {
       render(<Fixture />)
       expect(getComputedStyle(surface()).display).toBe('none')

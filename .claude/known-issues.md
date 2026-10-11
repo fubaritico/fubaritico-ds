@@ -90,8 +90,13 @@ Put here the know issues to avoid cluttering the context window.
   jamais) ; côté Modal, la story injectait `style={{ display: 'grid' }}` pour centrer et cassait tout
   l'état fermé. **Règle** : le layout d'un dialog va sur `.ui-<bloc>[open]`, jamais sur la base, et
   **jamais** via `style`/`className` côté consommateur. Pour repositionner, exposer une var
-  (`--ui-modal-place-items`). Concerne `.ui-modal` et `.ui-drawer`. Non couvert par les tests : jsdom
-  n'évalue pas la feuille de styles, et `packages/styles` n'a pas de test runner.
+  (`--ui-modal-place-items`). Concerne `.ui-modal`, `.ui-drawer` et `.ui-popover`.
+  **[GARDÉ 2026-10-11]** `styles/state-guards.css` (`@layer ui.reset`, `display: none !important` sur
+  les trois blocs fermés) : en couches, l'important s'inverse, la première couche gagne et bat même
+  le `style` inline normal. Le piège ne peut plus venir d'un consommateur. Couvert par les tests
+  navigateur Modal/Drawer/Popover (classe non layered + `style` inline), sortie en fondu du Popover
+  comprise (les transitions passent avant l'important). La règle « pas de `display` sur la base »
+  reste valable pour le skin lui-même.
 - **Le backdrop d'un `<dialog>` se déclare LUI-MÊME comme cible du clic (2026-10-08)** — donc
   `e.target === dialog` ne distingue PAS un clic sur le backdrop d'un clic sur le fond propre du
   panneau. Ça ne marche que si le dialog couvre le viewport et que le panneau est un enfant (cas

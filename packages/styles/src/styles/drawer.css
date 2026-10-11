@@ -47,7 +47,8 @@
     /* Strip the UA dialog chrome; the modifiers then pin the panel to one edge.
        `display` is deliberately NOT set here: the UA hides a closed dialog with
        `dialog:not([open]) { display: none }`, and any author `display` would override it, leaving
-       every drawer permanently on screen. The layout therefore lives on `[open]` below. */
+       every drawer permanently on screen. The layout therefore lives on `[open]` below.
+       `state-guards.css` enforces the closed state against consumers; this keeps the skin honest. */
     box-sizing: border-box;
     margin: 0;
     padding: 0;
