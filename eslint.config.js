@@ -30,6 +30,9 @@ export default tseslint.config(
       '**/vitest.config.ts',
       '**/vitest.setup.ts',
       '**/tsup.config.ts',
+      // tsup bundles its config into a temp `tsup.config.bundled_<id>.mjs` and deletes it: a lint
+      // running alongside the package's build lists it, then fails with ENOENT (CI, 2026-10-11).
+      '**/*.bundled_*.mjs',
       '**/postcss.config.js',
       '**/openapi-ts.config.ts',
       '**/sd.config.js',
