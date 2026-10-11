@@ -10,7 +10,8 @@
  * these single-class rules win the geometry props they override on `.ui-button`.
  *
  * Override surface: redefine `--ui-icon-button-size` on `.ui-icon-button`, or any reused
- * `--ui-button-*` var. Values come from @fubaritico/tokens.
+ * `--ui-button-*` var. The corners are its OWN: `--ui-icon-button-radius(-<corner>)`, not
+ * `--ui-button-radius-*` (this rule wins the radius over Button's). Values come from @fubaritico/tokens.
  */
 @layer ui.components {
   .ui-icon-button {
@@ -22,7 +23,10 @@
     inline-size: var(--ui-icon-button-size);
     block-size: var(--ui-icon-button-size);
     padding: 0;
-    border-radius: var(--ui-icon-button-radius);
+    border-start-start-radius: var(--ui-icon-button-radius-start-start, var(--ui-icon-button-radius));
+    border-start-end-radius: var(--ui-icon-button-radius-start-end, var(--ui-icon-button-radius));
+    border-end-start-radius: var(--ui-icon-button-radius-end-start, var(--ui-icon-button-radius));
+    border-end-end-radius: var(--ui-icon-button-radius-end-end, var(--ui-icon-button-radius));
   }
 
   /* ---- size modifiers (only set the square size; the icon px is handled by Button's iconSizeMap) ---- */

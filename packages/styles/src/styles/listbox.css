@@ -49,7 +49,10 @@
     list-style: none;
     padding: var(--ui-listbox-padding);
     border: var(--ui-listbox-border-width) solid var(--ui-listbox-border-color);
-    border-radius: var(--ui-listbox-radius);
+    border-start-start-radius: var(--ui-listbox-radius-start-start, var(--ui-listbox-radius));
+    border-start-end-radius: var(--ui-listbox-radius-start-end, var(--ui-listbox-radius));
+    border-end-start-radius: var(--ui-listbox-radius-end-start, var(--ui-listbox-radius));
+    border-end-end-radius: var(--ui-listbox-radius-end-end, var(--ui-listbox-radius));
     background-color: var(--ui-listbox-bg);
     box-shadow: var(--ui-listbox-shadow);
     max-block-size: var(--ui-listbox-max-block-size);
@@ -95,7 +98,10 @@
     box-sizing: border-box;
     cursor: pointer;
     user-select: none;
-    border-radius: var(--ui-listbox-item-radius);
+    border-start-start-radius: var(--ui-listbox-item-radius-start-start, var(--ui-listbox-item-radius));
+    border-start-end-radius: var(--ui-listbox-item-radius-start-end, var(--ui-listbox-item-radius));
+    border-end-start-radius: var(--ui-listbox-item-radius-end-start, var(--ui-listbox-item-radius));
+    border-end-end-radius: var(--ui-listbox-item-radius-end-end, var(--ui-listbox-item-radius));
     padding-block: var(--ui-listbox-item-padding-block);
     padding-inline: var(--ui-listbox-item-padding-inline);
     font-family: var(--ui-listbox-item-font-family);

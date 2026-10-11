@@ -50,7 +50,10 @@
     max-block-size: var(--ui-popover-max-block-size);
     padding: var(--ui-popover-padding);
     border: var(--ui-popover-border-width) solid var(--ui-popover-border-color);
-    border-radius: var(--ui-popover-radius);
+    border-start-start-radius: var(--ui-popover-radius-start-start, var(--ui-popover-radius));
+    border-start-end-radius: var(--ui-popover-radius-start-end, var(--ui-popover-radius));
+    border-end-start-radius: var(--ui-popover-radius-end-start, var(--ui-popover-radius));
+    border-end-end-radius: var(--ui-popover-radius-end-end, var(--ui-popover-radius));
     background-color: var(--ui-popover-bg);
     color: var(--ui-popover-fg);
     box-shadow: var(--ui-popover-shadow);

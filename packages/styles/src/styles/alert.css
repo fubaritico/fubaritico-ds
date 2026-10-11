@@ -47,7 +47,10 @@
     padding-inline: var(--ui-alert-padding-inline);
     padding-block: var(--ui-alert-padding-block);
     border: var(--ui-alert-border-width) solid var(--ui-alert-border-color);
-    border-radius: var(--ui-alert-radius);
+    border-start-start-radius: var(--ui-alert-radius-start-start, var(--ui-alert-radius));
+    border-start-end-radius: var(--ui-alert-radius-start-end, var(--ui-alert-radius));
+    border-end-start-radius: var(--ui-alert-radius-end-start, var(--ui-alert-radius));
+    border-end-end-radius: var(--ui-alert-radius-end-end, var(--ui-alert-radius));
     background-color: var(--ui-alert-bg);
     color: var(--ui-alert-fg);
     font-family: var(--ui-alert-font-family);

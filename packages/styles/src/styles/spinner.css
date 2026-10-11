@@ -49,6 +49,7 @@
     block-size: var(--ui-spinner-size);
     border: var(--ui-spinner-thickness) solid var(--ui-spinner-track);
     border-block-start-color: var(--ui-spinner-indicator);
+    /* A shape round by nature: one radius, no per-corner API (a lone corner would deform it). */
     border-radius: var(--ui-spinner-radius);
     animation: ui-spin var(--ui-spinner-duration) linear infinite;
   }

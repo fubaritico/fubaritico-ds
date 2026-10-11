@@ -48,7 +48,10 @@
     display: inline-flex;
     padding: 0;
     border: 0;
-    border-radius: var(--ui-color-field-trigger-radius);
+    border-start-start-radius: var(--ui-color-field-trigger-radius-start-start, var(--ui-color-field-trigger-radius));
+    border-start-end-radius: var(--ui-color-field-trigger-radius-start-end, var(--ui-color-field-trigger-radius));
+    border-end-start-radius: var(--ui-color-field-trigger-radius-end-start, var(--ui-color-field-trigger-radius));
+    border-end-end-radius: var(--ui-color-field-trigger-radius-end-end, var(--ui-color-field-trigger-radius));
     background: none;
     cursor: pointer;
     --ui-color-picker-swatch-size: var(--ui-color-field-trigger-size);

@@ -67,7 +67,10 @@
   .ui-tabs__list--pills {
     inline-size: fit-content;
     padding: var(--ui-tabs-track-padding);
-    border-radius: var(--ui-tabs-track-radius);
+    border-start-start-radius: var(--ui-tabs-track-radius-start-start, var(--ui-tabs-track-radius));
+    border-start-end-radius: var(--ui-tabs-track-radius-start-end, var(--ui-tabs-track-radius));
+    border-end-start-radius: var(--ui-tabs-track-radius-end-start, var(--ui-tabs-track-radius));
+    border-end-end-radius: var(--ui-tabs-track-radius-end-end, var(--ui-tabs-track-radius));
     background-color: var(--ui-tabs-track-bg);
   }
 
@@ -119,7 +122,10 @@
 
   /* -- pills look -- */
   .ui-tabs__trigger--pills {
-    border-radius: var(--ui-tabs-trigger-radius);
+    border-start-start-radius: var(--ui-tabs-trigger-radius-start-start, var(--ui-tabs-trigger-radius));
+    border-start-end-radius: var(--ui-tabs-trigger-radius-start-end, var(--ui-tabs-trigger-radius));
+    border-end-start-radius: var(--ui-tabs-trigger-radius-end-start, var(--ui-tabs-trigger-radius));
+    border-end-end-radius: var(--ui-tabs-trigger-radius-end-end, var(--ui-tabs-trigger-radius));
   }
 
   /* Background AND foreground flip together — see the contrast note in the header. */

@@ -77,7 +77,10 @@
     position: relative;
     inline-size: 100%;
     block-size: var(--ui-slider-track-thickness);
-    border-radius: var(--ui-slider-track-radius);
+    border-start-start-radius: var(--ui-slider-track-radius-start-start, var(--ui-slider-track-radius));
+    border-start-end-radius: var(--ui-slider-track-radius-start-end, var(--ui-slider-track-radius));
+    border-end-start-radius: var(--ui-slider-track-radius-end-start, var(--ui-slider-track-radius));
+    border-end-end-radius: var(--ui-slider-track-radius-end-end, var(--ui-slider-track-radius));
     background-color: var(--ui-slider-track-color);
     background-image: var(--ui-slider-track-image);
     background-size: var(--ui-slider-track-size);
@@ -110,6 +113,7 @@
     block-size: var(--ui-slider-thumb-size);
     border: var(--ui-slider-thumb-border-width) solid
       var(--ui-slider-thumb-border-color);
+    /* A shape round by nature: one radius, no per-corner API (a lone corner would deform it). */
     border-radius: var(--ui-slider-thumb-radius);
     background-color: var(--ui-slider-thumb-color);
     box-shadow: var(--ui-slider-thumb-shadow);

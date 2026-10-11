@@ -44,6 +44,8 @@
 
     /* ---- override API: area thumb ---- */
     --ui-color-picker-thumb-size: var(--spacing-4);
+    /* Round by nature: `full`, never a corner token a theme may zero. */
+    --ui-color-picker-thumb-radius: var(--radius-full);
     --ui-color-picker-thumb-border-width: var(--spacing-0-5);
     --ui-color-picker-thumb-border-color: var(--color-primitive-neutral-0);
     --ui-color-picker-thumb-outline-color: var(--color-primitive-neutral-900);
@@ -134,7 +136,10 @@
     aspect-ratio: var(--ui-color-picker-area-aspect-ratio);
     border: var(--ui-color-picker-area-border-width) solid
       var(--ui-color-picker-area-border-color);
-    border-radius: var(--ui-color-picker-area-radius);
+    border-start-start-radius: var(--ui-color-picker-area-radius-start-start, var(--ui-color-picker-area-radius));
+    border-start-end-radius: var(--ui-color-picker-area-radius-start-end, var(--ui-color-picker-area-radius));
+    border-end-start-radius: var(--ui-color-picker-area-radius-end-start, var(--ui-color-picker-area-radius));
+    border-end-end-radius: var(--ui-color-picker-area-radius-end-end, var(--ui-color-picker-area-radius));
     /* The HSV model itself — see the header: these two gradients are mechanics, not theme. */
     background-color: var(--ui-color-picker-hue);
     background-image:
@@ -166,7 +171,8 @@
     margin-block-start: calc(var(--ui-color-picker-thumb-size) / -2);
     border: var(--ui-color-picker-thumb-border-width) solid
       var(--ui-color-picker-thumb-border-color);
-    border-radius: var(--radius-full);
+    /* A shape round by nature: one radius, no per-corner API (a lone corner would deform it). */
+    border-radius: var(--ui-color-picker-thumb-radius);
     /* Two-tone ring: visible on any colour under it (WCAG 1.4.11). */
     box-shadow:
       0 0 0 1px var(--ui-color-picker-thumb-outline-color),
@@ -276,7 +282,10 @@
     block-size: var(--ui-color-picker-swatch-size);
     border: var(--ui-color-picker-swatch-border-width) solid
       var(--ui-color-picker-swatch-border-color);
-    border-radius: var(--ui-color-picker-swatch-radius);
+    border-start-start-radius: var(--ui-color-picker-swatch-radius-start-start, var(--ui-color-picker-swatch-radius));
+    border-start-end-radius: var(--ui-color-picker-swatch-radius-start-end, var(--ui-color-picker-swatch-radius));
+    border-end-start-radius: var(--ui-color-picker-swatch-radius-end-start, var(--ui-color-picker-swatch-radius));
+    border-end-end-radius: var(--ui-color-picker-swatch-radius-end-end, var(--ui-color-picker-swatch-radius));
     /* The colour over a checkerboard, so translucency shows. */
     background-image:
       linear-gradient(

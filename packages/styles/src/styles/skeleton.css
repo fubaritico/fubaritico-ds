@@ -37,7 +37,10 @@
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
-    border-radius: var(--ui-skeleton-radius);
+    border-start-start-radius: var(--ui-skeleton-radius-start-start, var(--ui-skeleton-radius));
+    border-start-end-radius: var(--ui-skeleton-radius-start-end, var(--ui-skeleton-radius));
+    border-end-start-radius: var(--ui-skeleton-radius-end-start, var(--ui-skeleton-radius));
+    border-end-end-radius: var(--ui-skeleton-radius-end-end, var(--ui-skeleton-radius));
     background-color: var(--ui-skeleton-bg);
   }
 

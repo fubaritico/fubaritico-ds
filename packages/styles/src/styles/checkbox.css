@@ -78,7 +78,10 @@
     inline-size: var(--ui-checkbox-size);
     block-size: var(--ui-checkbox-size);
     border: 2px solid var(--ui-checkbox-border-color);
-    border-radius: var(--ui-checkbox-radius);
+    border-start-start-radius: var(--ui-checkbox-radius-start-start, var(--ui-checkbox-radius));
+    border-start-end-radius: var(--ui-checkbox-radius-start-end, var(--ui-checkbox-radius));
+    border-end-start-radius: var(--ui-checkbox-radius-end-start, var(--ui-checkbox-radius));
+    border-end-end-radius: var(--ui-checkbox-radius-end-end, var(--ui-checkbox-radius));
     background-color: var(--ui-checkbox-bg);
     transition:
       border-color var(--ui-checkbox-transition-duration)

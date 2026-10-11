@@ -24,6 +24,8 @@
     --ui-dropdown-menu-gap: var(--spacing-2);
     --ui-dropdown-item-gap: var(--spacing-2);
     --ui-dropdown-dot-size: var(--spacing-3); /* 12px */
+    /* A dot is round by nature: `full`, never a corner token a theme may zero. */
+    --ui-dropdown-dot-radius: var(--radius-full);
     --ui-dropdown-z: 50;
     --ui-dropdown-font-family: var(--font-roboto);
     --ui-dropdown-transition-duration: var(--duration-fast);
@@ -93,7 +95,8 @@
   .ui-dropdown__dot {
     inline-size: var(--ui-dropdown-dot-size);
     block-size: var(--ui-dropdown-dot-size);
-    border-radius: 9999px;
+    /* A shape round by nature: one radius, no per-corner API (a lone corner would deform it). */
+    border-radius: var(--ui-dropdown-dot-radius);
     flex-shrink: 0;
   }
 

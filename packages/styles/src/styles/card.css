@@ -39,7 +39,10 @@
        outset box-shadow is NOT clipped (it renders outside the border-box). */
     overflow: hidden;
     border: var(--ui-card-border-width) solid var(--ui-card-border-color);
-    border-radius: var(--ui-card-radius);
+    border-start-start-radius: var(--ui-card-radius-start-start, var(--ui-card-radius));
+    border-start-end-radius: var(--ui-card-radius-start-end, var(--ui-card-radius));
+    border-end-start-radius: var(--ui-card-radius-end-start, var(--ui-card-radius));
+    border-end-end-radius: var(--ui-card-radius-end-end, var(--ui-card-radius));
     background-color: var(--ui-card-bg);
     color: var(--ui-card-fg);
     box-shadow: var(--ui-card-shadow);

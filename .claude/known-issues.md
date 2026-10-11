@@ -103,27 +103,18 @@ Put here the know issues to avoid cluttering the context window.
   `Modal`). Quand le dialog **EST** le panneau (cas `Drawer`), il faut un test géométrique contre sa
   bounding box. D'où l'option `backdropArea: 'self' | 'outside'` de `useNativeDialog`. En test, jsdom
   mesure tout à zéro : stubber `getBoundingClientRect` et cliquer via `user.pointer({ coords })`.
-- **Surcharge des border-radius : granularité par COIN non prévue — passe dédiée à faire (relevé
-  2026-10-08)** — audit du skin : **14 composants** exposent bien une var radius unique
-  (`--ui-<bloc>-radius` : avatar, badge, button, card, checkbox, icon-button, input, listbox,
-  listbox-item, pagination, progress-bar, skeleton, spinner, tooltip), mais **AUCUN n'expose de coin
-  individuel**. Impossible, via l'API de vars, d'arrondir un seul coin ou deux coins d'une forme
-  carrée/rectangulaire — or c'est un besoin explicite du système de surcharge (dev, 2026-10-08). Le
-  seul contournement actuel est une règle non-layered côté consommateur (elle bat le skin sans guerre
-  de spécificité), ce qui marche mais contourne l'API. **À traiter dans une passe border-radius
-  dédiée**, pas composant par composant — la forme à retenir (ex. `--ui-<bloc>-radius` + quatre
-  `--ui-<bloc>-radius-{start-start,start-end,end-start,end-end}` en propriétés logiques, chacune
-  retombant sur la var globale) doit être tranchée UNE fois puis appliquée partout, sinon les
-  composants divergeront. Voir [[theming-strategy]].
-- **Deux `border-radius` hors tokens dans le skin (relevé 2026-10-08)** — `dropdown.css:96` écrit
-  `border-radius: 9999px` en dur : **vraie violation**, à remplacer par `var(--radius-full)` ou une
-  var de composant (à faire dans la passe border-radius ci-dessus). `progress-bar.css:68` écrit
-  `border-radius: inherit` sur l'indicateur : **légitime**, l'indicateur épouse l'arrondi de la piste
-  — ne pas le « corriger ».
-- **`ProgressBar` : arrondi par défaut `--radius-full` (pilule) — divergence assumée temporairement
-  (2026-10-08)** — le dev a énoncé « zéro radius par défaut » pour le thème de base, mais a choisi de
-  laisser la barre en pilule pour l'instant. Surchargeable via `--ui-progress-bar-radius`. **À
-  repasser dans la passe border-radius**, ce n'est pas un oubli.
+- **API des coins (FAIT 2026-10-11)** — chaque radius du skin est `--ui-<bloc>-radius` + quatre
+  coins LOGIQUES optionnels, NON déclarés, qui retombent dessus :
+  `border-start-start-radius: var(--ui-<bloc>-radius-start-start, var(--ui-<bloc>-radius))`.
+  21 skins, testé en navigateur (Card : un coin, le bord du haut, RTL). Règle pour un nouveau bloc
+  dans `patterns-ui.md`. **Formes rondes par nature** (avatar, spinner, thumbs, points du dropdown) :
+  UNE var sur `--radius-full`, SANS coins (un coin isolé les déformerait ; relevé en review), jamais
+  `sm`/`md`/`lg`, pour qu'un thème « coins carrés » ne les équarrisse pas. Parité vérifiée par
+  `packages/styles/test/radius-api.test.ts` (82 déclarations de coin). **Pilules** (Badge, ProgressBar, piste du Slider, IconButton) : rondes pour
+  l'instant, surchargeables (choix dev). `dropdown.css` : le `9999px` en dur est devenu
+  `--ui-dropdown-dot-radius`. `progress-bar.css` `border-radius: inherit` : légitime, ne pas toucher.
+  **Valeur par défaut** : les valeurs actuelles (4–6px) restent ; le « zéro » ira dans un thème,
+  chantier des thèmes à venir (voir `next.md`).
 - **Chevron atténué d'`ArrowUpDown` : exception WCAG 1.4.11 ASSUMÉE (2026-10-08)** :
   `--ui-sort-arrows-dimmed-opacity: 0.5` ramène `--color-foreground-muted` (neutral.500) à ~2,05:1 sur
   blanc, sous le plancher de 3:1 des objets graphiques. **Accepté, ce n'est pas un trou** : la direction
@@ -152,7 +143,7 @@ Put here the know issues to avoid cluttering the context window.
   via `var()`), `2.5`→`--spacing-2-5`, etc. The **Tailwind** `@theme` output KEEPS the dots
   (`--spacing-0.5`) to match Tailwind's `p-0.5` utility convention → the two outputs diverge by design.
   Use `var(--spacing-0-5)` in the skin (badge/listbox do). Was previously worked around with rem literals.
-- **`packages/styles` has no lint/type-check/test scripts** (CSS-only) → `lerna run` and CI silently skip it. Acceptable for now; add `stylelint` later if we want CSS coverage in the quality gate.
+- **`packages/styles` has no lint/type-check scripts** (CSS-only) → `lerna run` and CI skip those. It HAS a `test` script since 2026-10-11 (Vitest, `test/` — source checks on the CSS, e.g. the radius API parity). Add `stylelint` later for real CSS linting.
 - **eslint typed-lint poison from empty-src `stencil/tsconfig.json`**: the base `project: ['./packages/*/tsconfig.json']` glob loads stencil's build tsconfig, which has no inputs (TS18003). Any package **alphabetically after `stencil`** that relies on the base glob (e.g. `variants`) crashes with "Unable to parse the specified tsconfig". Fix per package = a scoped eslint override pointing at its own tsconfig (see the `variants` override in `eslint.config.js`, mirroring the `stencil` one). Real fix later: migrate the root config to `projectService: true`, or give stencil a non-empty tsconfig.
 - **`color.semantic.badge.primary` token still references amber** (not blue) — unused by the migrated Badge default (which uses `--color-primary`), but inconsistent; arbitrate later (follow primary, or rename to a distinct accent).
 - **Harness "plan mode" green overlay can persist** in the prompt (cosmetic, harness-side). Exit with Shift+Tab / Esc. We don't use plan mode — plans live in `files/plans/`.

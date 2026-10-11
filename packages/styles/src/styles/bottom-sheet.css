@@ -47,8 +47,8 @@
     display: flex;
     flex-direction: column;
     max-block-size: var(--ui-bottom-sheet-max-block-size);
-    border-start-start-radius: var(--ui-bottom-sheet-radius);
-    border-start-end-radius: var(--ui-bottom-sheet-radius);
+    border-start-start-radius: var(--ui-bottom-sheet-radius-start-start, var(--ui-bottom-sheet-radius));
+    border-start-end-radius: var(--ui-bottom-sheet-radius-start-end, var(--ui-bottom-sheet-radius));
     background-color: var(--ui-bottom-sheet-bg);
     color: var(--ui-bottom-sheet-fg);
     /* The DS ships no global reset, so loose text inside the sheet would otherwise fall back to

@@ -36,7 +36,10 @@
     max-inline-size: var(--ui-tooltip-max-width);
     padding-block: var(--ui-tooltip-padding-block);
     padding-inline: var(--ui-tooltip-padding-inline);
-    border-radius: var(--ui-tooltip-radius);
+    border-start-start-radius: var(--ui-tooltip-radius-start-start, var(--ui-tooltip-radius));
+    border-start-end-radius: var(--ui-tooltip-radius-start-end, var(--ui-tooltip-radius));
+    border-end-start-radius: var(--ui-tooltip-radius-end-start, var(--ui-tooltip-radius));
+    border-end-end-radius: var(--ui-tooltip-radius-end-end, var(--ui-tooltip-radius));
     background-color: var(--ui-tooltip-bg);
     color: var(--ui-tooltip-fg);
     font-family: var(--ui-tooltip-font-family);

@@ -134,6 +134,23 @@ wins**, with no specificity war and no `!important`:
 }
 ```
 
+**Corners, one by one.** Every radius is `--ui-<block>-radius` (all four corners) plus four
+**optional, logical** corners that fall back to it: `-start-start`, `-start-end`, `-end-start`,
+`-end-end` (top-left, top-right, bottom-left, bottom-right in a left-to-right page; mirrored in
+right-to-left). Set only the ones you need:
+
+```css
+.my-tab-panel.ui-card {
+  --ui-card-radius: 0;
+  --ui-card-radius-start-start: 12px; /* round the top edge only */
+  --ui-card-radius-start-end: 12px;
+}
+```
+
+Corners read the `--radius-*` tokens, so a theme can square or round the whole system at once.
+Shapes that are round by nature (avatar, spinner, slider and color-picker thumbs, dots) have no
+corners to set: one radius on `--radius-full`, so a square-cornered theme never squares them.
+
 > **`display` on `Modal`, `Drawer` or `Popover` does nothing while they are closed.** A closed
 > native `<dialog>` / `[popover]` is hidden by a browser rule that any author `display` would
 > override, leaving it on screen. The skin guards that state in its first layer (`ui.reset`, with

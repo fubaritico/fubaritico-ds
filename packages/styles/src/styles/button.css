@@ -51,7 +51,10 @@
     height: var(--ui-button-height);
     padding-inline: var(--ui-button-padding-inline);
     border: 1px solid var(--ui-button-border-color);
-    border-radius: var(--ui-button-radius);
+    border-start-start-radius: var(--ui-button-radius-start-start, var(--ui-button-radius));
+    border-start-end-radius: var(--ui-button-radius-start-end, var(--ui-button-radius));
+    border-end-start-radius: var(--ui-button-radius-end-start, var(--ui-button-radius));
+    border-end-end-radius: var(--ui-button-radius-end-end, var(--ui-button-radius));
     font-family: var(--ui-button-font-family);
     font-weight: var(--ui-button-font-weight);
     font-size: var(--ui-button-font-size);

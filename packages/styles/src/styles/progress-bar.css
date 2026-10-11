@@ -56,7 +56,10 @@
     overflow: hidden;
     inline-size: 100%;
     block-size: var(--ui-progress-bar-thickness);
-    border-radius: var(--ui-progress-bar-radius);
+    border-start-start-radius: var(--ui-progress-bar-radius-start-start, var(--ui-progress-bar-radius));
+    border-start-end-radius: var(--ui-progress-bar-radius-start-end, var(--ui-progress-bar-radius));
+    border-end-start-radius: var(--ui-progress-bar-radius-end-start, var(--ui-progress-bar-radius));
+    border-end-end-radius: var(--ui-progress-bar-radius-end-end, var(--ui-progress-bar-radius));
     background-color: var(--ui-progress-bar-track-color);
   }
 

@@ -92,7 +92,10 @@
     inline-size: var(--ui-pagination-page-size);
     block-size: var(--ui-pagination-page-size);
     border: 1px solid transparent;
-    border-radius: var(--ui-pagination-radius);
+    border-start-start-radius: var(--ui-pagination-radius-start-start, var(--ui-pagination-radius));
+    border-start-end-radius: var(--ui-pagination-radius-start-end, var(--ui-pagination-radius));
+    border-end-start-radius: var(--ui-pagination-radius-end-start, var(--ui-pagination-radius));
+    border-end-end-radius: var(--ui-pagination-radius-end-end, var(--ui-pagination-radius));
     background: transparent;
     color: var(--ui-pagination-fg);
     font-family: inherit;

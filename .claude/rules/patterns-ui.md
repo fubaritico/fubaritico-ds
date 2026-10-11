@@ -87,6 +87,11 @@ Rules:
   consommateur à court-circuiter le skin, et c'est là qu'un thème diverge. Densité de référence :
   `Slider` en expose **20**. Seule limite, la **mécanique** (centrage, zone de clic, calculs) : la
   skin possède le look, pas la géométrie.
+- **Radius = the corner API.** A radius is `--ui-<bloc>-radius` plus four logical corners that
+  fall back to it: `border-start-start-radius: var(--ui-<bloc>-radius-start-start,
+  var(--ui-<bloc>-radius))`, and so on for the three others (corner vars NOT declared). A shape
+  round by nature keeps ONE `border-radius: var(--ui-<bloc>-radius)` set to `var(--radius-full)`,
+  with no corners (a lone corner would deform it). `packages/styles/test/radius-api.test.ts` checks it.
 - No domain logic
 - Extend with `ComponentProps` (see below), never `HTMLAttributes`
 - Export the props interface as a named export, the component as default; re-export both from `index.ts`

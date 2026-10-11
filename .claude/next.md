@@ -52,27 +52,12 @@ Un chantier ouvert laissé **non commité** dans le working tree (`ArrowUpDown` 
 > Premier lot : `Slider` (clavier natif). **Restent** : ColorPicker (en cours), Drawer/Modal (`<dialog>`
 > réel + règle `display`), Image (IntersectionObserver). Cadrage d'origine : historique git de ce fichier.
 
-## PASSE À FAIRE — border-radius & granularité de surcharge
+## FAIT (2026-10-11) — border-radius : l'API des coins
 
-**Décidé le 2026-10-08, pas encore planifié.** Une passe **transverse**, pas du composant par
-composant : la forme de l'API doit être tranchée UNE fois puis appliquée partout, sinon les 14
-composants divergeront.
-
-Trois choses à traiter ensemble :
-
-1. **Coins individuels** — aucun composant n'expose aujourd'hui de coin séparé. Besoin explicite du
-   dev : pouvoir arrondir **un coin, deux coins** d'une forme carrée/rectangulaire. Piste à valider :
-   `--ui-<bloc>-radius` (globale, existante) + quatre vars logiques
-   `--ui-<bloc>-radius-{start-start,start-end,end-start,end-end}` retombant chacune sur la globale.
-   Logique, pas physique — cohérent avec le reste du skin.
-2. **Valeur par défaut** — le dev a énoncé « **zéro par défaut** » pour le thème de base, puis a
-   constaté de petits arrondis un peu partout et préféré reporter. À trancher dans cette passe.
-   Cas connu : `ProgressBar` est en `--radius-full` (pilule), divergence assumée.
-3. **Deux littéraux à nettoyer** — `dropdown.css:96` (`9999px` en dur → token). Ne PAS toucher
-   `progress-bar.css:68` (`border-radius: inherit`, légitime).
-
-Objectif de fond : **le système de surcharge**, pas l'esthétique. Détails dans `known-issues.md`.
-Voir [[theming-strategy]].
+Coins logiques sur les 21 skins, formes rondes sur `--radius-full`, littéral du dropdown nettoyé.
+Détails : `known-issues.md`. **Suite = le chantier des THÈMES** (dev, 2026-10-11) : deux ou trois
+thèmes par défaut, pour montrer qu'à partir des seuls tokens on obtient ce qu'on veut — dont un
+« coins carrés » (tokens `sm`/`md`/`lg` à 0) et au moins un arrondi. Voir [[theming-strategy]].
 
 ## Thread parallèle
 
