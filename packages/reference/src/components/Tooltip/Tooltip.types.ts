@@ -86,4 +86,10 @@ export interface TooltipProps
    * the `<dialog>`, where the open dialog makes the rest of the page inert.
    */
   portalContainer?: HTMLElement | null
+  /**
+   * Element of the bubble (and its arrow): `'div'` by default, `'span'` when the Tooltip sits in a
+   * phrasing context — a `<p>`, a `<td>` holding text, a heading — where a `<div>` is invalid. The
+   * skin is the same either way.
+   */
+  as?: 'div' | 'span'
 }

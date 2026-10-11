@@ -1,0 +1,66 @@
+/**
+ * TruncatedText — native BEM skin.
+ *
+ * A single line of text cut with an ellipsis when it does not fit. The block only truncates: its
+ * font, size and colour INHERIT from where it sits (a cell, a heading, a badge), so it adapts to its
+ * context instead of imposing a typography.
+ *
+ * While the text is actually cut, the component makes it focusable (`tabindex="0"`) so a keyboard
+ * user can reveal the full text in a tooltip: the focus ring below is only ever seen then.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-truncated-text-*` vars on `.ui-truncated-text`.
+ *   2. Redefine a global token → re-skins every TruncatedText.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico/tokens.
+ */
+@layer ui.components {
+  .ui-truncated-text {
+    /* ---- override API (component-scoped) ---- */
+    /* `block` fills its container; `inline-block` sits in a line of text (still width-bounded). */
+    --ui-truncated-text-display: block;
+    --ui-truncated-text-max-inline-size: 100%;
+    /* What marks the cut — `ellipsis` by default; a string (e.g. "…more") is valid too. */
+    --ui-truncated-text-overflow: ellipsis;
+    --ui-truncated-text-cursor: inherit;
+    --ui-truncated-text-ring-color: var(--color-ring);
+    --ui-truncated-text-ring-width: 2px;
+    --ui-truncated-text-ring-offset: var(--spacing-0-5);
+    --ui-truncated-text-radius: var(--radius-sm);
+
+    /* ---- base ---- */
+    /* The three declarations that make the cut — mechanics, not look. */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: var(--ui-truncated-text-overflow);
+    display: var(--ui-truncated-text-display);
+    max-inline-size: var(--ui-truncated-text-max-inline-size);
+    min-inline-size: 0;
+    cursor: var(--ui-truncated-text-cursor);
+    /* The ring's corners, so it does not draw a hard rectangle around rounded surroundings. */
+    border-start-start-radius: var(
+      --ui-truncated-text-radius-start-start,
+      var(--ui-truncated-text-radius)
+    );
+    border-start-end-radius: var(
+      --ui-truncated-text-radius-start-end,
+      var(--ui-truncated-text-radius)
+    );
+    border-end-start-radius: var(
+      --ui-truncated-text-radius-end-start,
+      var(--ui-truncated-text-radius)
+    );
+    border-end-end-radius: var(
+      --ui-truncated-text-radius-end-end,
+      var(--ui-truncated-text-radius)
+    );
+  }
+
+  /* Only focusable while truncated; the ring shows for keyboard focus only. */
+  .ui-truncated-text:focus-visible {
+    outline: var(--ui-truncated-text-ring-width) solid
+      var(--ui-truncated-text-ring-color);
+    outline-offset: var(--ui-truncated-text-ring-offset);
+  }
+}

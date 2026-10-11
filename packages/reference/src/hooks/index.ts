@@ -1,3 +1,4 @@
+export { useIsTextTruncated } from './useIsTextTruncated'
 export { useMergedRef } from './useMergedRef'
 export { useNativeDialog } from './useNativeDialog'
 

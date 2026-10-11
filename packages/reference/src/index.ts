@@ -142,6 +142,9 @@ export type {
 export { Tabs } from './components/Tabs'
 export type { TabsProps, TabsVariant } from './components/Tabs'
 
+export { TruncatedText } from './components/TruncatedText'
+export type { TruncatedTextProps } from './components/TruncatedText'
+
 export { Tooltip, useTooltip } from './components/Tooltip'
 export type {
   TooltipProps,

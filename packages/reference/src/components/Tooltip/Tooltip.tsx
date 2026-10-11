@@ -41,6 +41,7 @@ export function Tooltip({
   position: manualPosition,
   width,
   portalContainer,
+  as = 'div',
   className,
   style,
   ...rest
@@ -121,8 +122,12 @@ export function Tooltip({
 
   if (!visible) return null
 
+  // `span` and `div` take the same attributes here, and the skin sets the box itself; typed as
+  // `'div'` so the props of `ComponentProps<'div'>` type-check on either.
+  const Element = as as 'div'
+
   const bubble = (
-    <div
+    <Element
       ref={attachBubble}
       popover="manual"
       role="tooltip"
@@ -138,14 +143,14 @@ export function Tooltip({
     >
       {content}
       {tooltipPos && mode === 'target' ? (
-        <div
+        <Element
           className={tooltipArrowVariants({
             axis: getPrimaryAxis(effectivePlacement),
           })}
           style={{ top: tooltipPos.arrow.top, left: tooltipPos.arrow.left }}
         />
       ) : null}
-    </div>
+    </Element>
   )
 
   return portalContainer ? createPortal(bubble, portalContainer) : bubble

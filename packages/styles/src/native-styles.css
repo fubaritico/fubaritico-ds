@@ -40,6 +40,7 @@
 @import './styles/table.css';
 @import './styles/tabs.css';
 @import './styles/tooltip.css';
+@import './styles/truncated-text.css';
 @import './styles/typeahead.css';
 @import './styles/typography.css';
 /* After slider.css and input.css: its __track / __hex rules sit on .ui-slider / .ui-input
