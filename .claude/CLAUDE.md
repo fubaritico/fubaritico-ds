@@ -159,6 +159,7 @@ Read @known-issues.md
 | `modular-architecture.md` | SOLID/pluggable/standalone rule — ANY component, DataTable |
 | `decision-tree.md`        | Skill triggers — check before coding                       |
 | `patterns-ui.md`          | UI component, design system story                          |
+| `patterns-compound.md`    | Compound / context component (React 19 idioms)             |
 | `tests.md`                | Writing tests — 5-level policy                             |
 | `troubleshooting.md`      | Debug, architectural decisions                             |
 

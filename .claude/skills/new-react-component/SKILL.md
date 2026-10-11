@@ -13,8 +13,8 @@ Create a new UI component in `packages/reference` following the project patterns
 
 Reference the component patterns: @.claude/rules/patterns-ui.md
 
-> For compound / context components, the **Compound Components Pattern (React 19)** section in
-> `patterns-ui.md` is mandatory: a dedicated access hook per context (encapsulated `use()` + guard —
+> For compound / context components, `.claude/rules/patterns-compound.md` is mandatory: a
+> dedicated access hook per context (encapsulated `use()` + guard —
 > throw if required, return null if standalone), `<Context value>` providers, `use()`, `ref`-as-prop,
 > `useEffectEvent`, and split-by-frequency contexts.
 
@@ -71,7 +71,7 @@ verify behaviour. Apply ALL of:
 
 - **Every custom hook** ships a JSDoc header: ONE sentence on _what it does_ + `@param` + `@returns`.
   Required even for one-line hooks (e.g. a context-access hook). The throw/return-null contract MUST
-  be stated (see the Compound Components Pattern in `patterns-ui.md`).
+  be stated (see `patterns-compound.md`).
 - **Every hook CALL inside a component/hook** gets a one-line comment saying _what it does and why_ —
   `useEffect`, `useMemo`, `useCallback`, `use`, `useLayoutEffect`, `useEffectEvent`, non-trivial
   `useState`. The reader must understand the effect's purpose without reverse-engineering the deps.

@@ -27,7 +27,7 @@
 > bande « Recent Colors » ; EyeDropper en amélioration progressive (Chromium seul).
 >
 > **Dette doc** : `completed.md` dépassait 570 lignes → entrées du 2026-09-16 et antérieures archivées
-> dans `completed-archive.md` (non chargé). `patterns-ui.md` toujours au-dessus du plafond (ci-dessous).
+> dans `completed-archive.md` (non chargé). `patterns-ui.md` scindé le 2026-10-11 (section Compound → `rules/patterns-compound.md`).
 
 ## EN SUSPENS — à finir proprement, PAS abandonné
 
@@ -44,18 +44,6 @@ Un chantier ouvert laissé **non commité** dans le working tree (`ArrowUpDown` 
   `canTruncate`, items Listbox…). Bases prêtes : `Tooltip` migrée + hook `useIsTextTruncated`
   (ResizeObserver). Idée notée : wrapper `TruncateWithTooltip` via `ConditionalWrapper`, qui n'affiche la
   Tooltip **que si** tronqué. ⚠️ Nom à trancher (`WithTooltip` vs `TruncateWithTooltip`).
-
-## Dette doc — `patterns-ui.md` dépasse le plafond
-
-**202 lignes pour un plafond de 200** (`CLAUDE.md`). Il était déjà à 197 avant l'ajout de la règle
-« généreux en variables de surcharge » du 2026-10-09 : il allait céder au prochain ajout, quel
-qu'il soit. Raboter encore la formulation serait contourner la règle, pas la respecter.
-
-**À scinder.** Découpe la plus naturelle : sortir la section **Compound Components (React 19)**
-dans son propre `rules/patterns-compound.md` — c'est un bloc autonome, long, et qui ne concerne
-qu'une minorité de composants. `patterns-ui.md` garderait le template, la structure de fichiers,
-les règles de style et l'ordre des imports. Penser à repointer les références
-(`new-react-component` cite la section Compound).
 
 ## FAIT (2026-10-09) — tests navigateur (Vitest Browser Mode + Playwright)
 

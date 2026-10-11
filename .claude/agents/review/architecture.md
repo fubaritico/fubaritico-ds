@@ -64,7 +64,7 @@ If a finding depends on library/API behavior you are not 100% sure about, set `"
 
 - **React (`packages/reference/src/components/<Name>/`)**: `Name.tsx`, `Name.types.ts` (only for discriminated unions), `Name.test.tsx`, `README.md`, `index.ts`
 - **Stencil (`packages/stencil/src/components/ui-x/`)**: `ui-x.tsx`, `ui-x.css`, `ui-x.spec.tsx`
-- See `.claude/rules/patterns-ui.md`
+- See `.claude/rules/patterns-ui.md` (compound / context components: `.claude/rules/patterns-compound.md`)
 
 ### ARCH-005: Component not exported from the package barrel
 

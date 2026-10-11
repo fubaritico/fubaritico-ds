@@ -77,5 +77,5 @@ The fubaritico DataTable is the proving ground for this rule:
   update at scale, with no app, no SDK, no hostage dependency.
 
 > Related rules: `architecture.md` (layers, dependency direction), `decision-tree.md`
-> (`solid-react-principles`, `composition-patterns`), `patterns-ui.md` (compound + DI seams),
+> (`solid-react-principles`, `composition-patterns`), `patterns-ui.md` + `patterns-compound.md` (compound + DI seams),
 > `state-storage` skill (lightest sufficient, injectable state tier).
