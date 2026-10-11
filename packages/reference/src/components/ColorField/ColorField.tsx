@@ -82,8 +82,8 @@ function ColorFieldControl({
  *
  * Pure composition: a `ColorPicker` (one `ColorPickerService` behind the hex input AND the panel,
  * so they always agree) arranged as a field, with its area / hue / alpha / automatic toggle inside a
- * `Popover`. Typing a hex applies on Enter or blur, without opening anything. Every ColorPicker
- * prop works the same (value, nullable, alpha, labels…).
+ * `Popover`. A complete typed hex is previewed live and settles on Enter or blur, without opening
+ * anything. Every ColorPicker prop works the same (value, nullable, alpha, labels…).
  *
  * @param props - {@link ColorFieldProps}.
  * @param props.label - Visible label.

@@ -52,6 +52,11 @@
     /* The thumb's current scale — the area redefines it while dragged. */
     --ui-color-picker-thumb-scale: 1;
 
+    /* ---- override API: hue / alpha tracks ---- */
+    /* The tracks' thumb, smaller than a standalone Slider's: three controls share a small panel.
+       Only the LOOK shrinks — the Slider keeps a 24px hit area whatever the thumb size. */
+    --ui-color-picker-track-thumb-size: var(--spacing-3);
+
     /* ---- override API: swatch ---- */
     --ui-color-picker-swatch-size: var(--spacing-8);
     --ui-color-picker-swatch-radius: var(--radius-sm);
@@ -200,26 +205,34 @@
     clip-path: inset(50%);
   }
 
-  /* ---- density: compact — a tighter panel for small surfaces (a popover, a toolbar). Only the
-     override vars move, so a theme that redefines them keeps working in both densities. ---- */
+  /* ---- density: compact — a shorter panel for small surfaces (a popover, a dialog). It saves
+     HEIGHT, not width: the panel keeps its width and the area flattens, since a narrower area is
+     also a less precise one. Only the override vars move, so a theme that redefines them keeps
+     working in both densities. ---- */
 
   .ui-color-picker--compact {
-    --ui-color-picker-width: calc(var(--spacing-48) + var(--spacing-4));
     --ui-color-picker-gap: var(--spacing-2);
-    --ui-color-picker-area-aspect-ratio: 2 / 1;
+    --ui-color-picker-area-aspect-ratio: 5 / 2;
     --ui-color-picker-thumb-size: var(--spacing-3);
+    --ui-color-picker-track-thumb-size: var(--spacing-2-5);
     --ui-color-picker-swatch-size: var(--spacing-6);
-    --ui-color-picker-compact-track-thumb-size: var(--spacing-3);
   }
 
-  /* The Sliders define their thumb size on themselves: re-set it on the track, not the panel. */
+  /* A 10px thumb with an 8px gap would put the hue and alpha tracks 18px apart, centre to centre:
+     their 24px hit areas (WCAG 2.5.8) would overlap and the lower one would steal the upper one's
+     clicks. Each track reserves its 24px in the layout instead — the limit of how compact the
+     tracks can get while staying easy to grab. */
   .ui-color-picker--compact .ui-color-picker__track {
-    --ui-slider-thumb-size: var(--ui-color-picker-compact-track-thumb-size);
+    block-size: var(--spacing-6);
   }
 
   /* ---- tracks: the hue / alpha Sliders keep their own skin; only the width is ours ---- */
 
+  /* The Sliders define their thumb size on themselves: it is re-set on the track, not the panel.
+     Same single-class specificity as `.ui-slider`: it wins because native-styles.css imports this
+     file AFTER slider.css — keep that order. */
   .ui-color-picker__track {
+    --ui-slider-thumb-size: var(--ui-color-picker-track-thumb-size);
     inline-size: 100%;
   }
 

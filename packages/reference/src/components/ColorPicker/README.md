@@ -16,8 +16,11 @@ field — with an optional explicit "automatic / no colour" state. A thin React 
   Shift for steps of 10; the hue and alpha tracks are native range inputs.
 - **Two callbacks** — `onChange` on every move, `onChangeComplete` once a change settles (release,
   key, hex commit, focus leaving a track): use the latter for anything expensive.
-- **Hex field** — typing never reformats it; the draft applies on Enter or blur. An invalid draft
-  shows a text error on Enter and is discarded on blur; Escape restores the current hex.
+- **Hex field** — typing never reformats it. A complete long form (`#1e90ff`, `#1e90ff80`) moves the
+  palette live (`onChange`); Enter or blur settles it (`onChangeComplete`) and also applies a short
+  form (`#19f`), which is not previewed since it is usually on its way to a long one. An invalid
+  draft shows a text error on Enter and is discarded on blur; Escape goes back to the colour from
+  before the typing.
 - **Announcements** — a polite live region speaks the colour ("dark blue") after each settled change,
   never during a drag.
 - **RTL** — the saturation axis and the tracks run from the inline-start, and follow a `dir` that
@@ -50,8 +53,9 @@ export function FillField({ onSave }: { onSave: (value: ColorValue) => void }) {
 
 ## Variants & options
 
-Compact density — narrower panel, wide 2:1 area, tighter gaps and smaller thumbs, for popovers
-and toolbars (the default density is unchanged):
+Compact density — a SHORTER panel: same width, a flat 5:2 area, tighter gaps and smaller thumbs,
+for popovers and dialogs (the default density is unchanged). It saves height, not width: a narrower
+area would also be a less precise one.
 
 ```tsx
 <ColorPicker defaultValue={{ h: 210, s: 80, v: 60, a: 1 }} density="compact" />

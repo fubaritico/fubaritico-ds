@@ -12,6 +12,8 @@ import type { ColorValue, HsvaColor } from './ColorPicker'
 
 const BLUE: HsvaColor = { h: 210, s: 80, v: 60, a: 1 }
 /** rgb(31, 92, 153) — worked out by hand in the service tests. */
+/** Pure red, as the service normalises it. */
+const RED = { h: 0, s: 100, v: 100, a: 1 }
 const BLUE_HEX = '#1f5c99'
 
 /** The area box jsdom cannot measure: 200 × 100 at (0, 0). */
@@ -165,17 +167,40 @@ describe('ColorPicker', () => {
       expect(onChange).toHaveBeenLastCalledWith({ ...BLUE, a: 0.25 })
     })
 
-    it('applies a typed hex on Enter, not while typing', async () => {
+    it('previews a complete typed hex live, and settles it on Enter', async () => {
       const user = userEvent.setup()
       const onChange = vi.fn()
-      render(<ColorPicker defaultValue={BLUE} onChange={onChange} />)
+      const onChangeComplete = vi.fn()
+      render(
+        <ColorPicker
+          defaultValue={BLUE}
+          onChange={onChange}
+          onChangeComplete={onChangeComplete}
+        />
+      )
+      await user.clear(hexField())
+      // `#ff0` and `#ff00` on the way are short forms: not previewed.
+      await user.type(hexField(), '#ff0000')
+      expect(onChange).toHaveBeenCalledExactlyOnceWith(RED)
+      expect(swatch()).toHaveAccessibleName('vivid red')
+      expect(hexField()).toHaveValue('#ff0000')
+      expect(onChangeComplete).not.toHaveBeenCalled()
+
+      await user.keyboard('{Enter}')
+      expect(onChangeComplete).toHaveBeenCalledExactlyOnceWith(RED)
+      expect(onChange).toHaveBeenCalledOnce()
+    })
+
+    it('goes back to the colour from before the typing on Escape', async () => {
+      const user = userEvent.setup()
+      render(<ColorPicker defaultValue={BLUE} />)
       await user.clear(hexField())
       await user.type(hexField(), '#ff0000')
-      expect(onChange).not.toHaveBeenCalled()
-      expect(hexField()).toHaveValue('#ff0000')
-      await user.keyboard('{Enter}')
-      expect(onChange).toHaveBeenCalledWith({ h: 0, s: 100, v: 100, a: 1 })
       expect(swatch()).toHaveAccessibleName('vivid red')
+
+      await user.keyboard('{Escape}')
+      expect(hexField()).toHaveValue(BLUE_HEX)
+      expect(swatch()).not.toHaveAccessibleName('vivid red')
     })
 
     it('toggles the automatic state, then back to the last colour', async () => {

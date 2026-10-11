@@ -6,8 +6,9 @@ colour picker in a popover, above everything on the page. A composition of `Colo
 
 ## Capabilities
 
-- **Type or pick** — the hex input applies on Enter or blur, without opening anything; the swatch
-  opens the picker (area, hue, alpha, automatic toggle) in a popover.
+- **Type or pick** — the hex input previews a complete hex live and settles on Enter or blur,
+  without opening anything; the swatch opens the picker (area, hue, alpha, automatic toggle) in a
+  popover.
 - **Everything the ColorPicker does** — HSVA value, the optional "automatic / no colour" state
   (`nullable`), alpha, two callbacks (`onChange` / `onChangeComplete`), localised labels.
 - **Popover** — top layer (no portal, no z-index), anchored below the field, Escape / click outside
@@ -33,7 +34,7 @@ Automatic state and alpha:
 <ColorField label="Stroke" nullable alpha defaultValue={null} />
 ```
 
-Compact density — a tighter popover:
+Compact density — a shorter popover (same width, flatter area):
 
 ```tsx
 <ColorField label="Fill" density="compact" />

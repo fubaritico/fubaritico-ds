@@ -55,26 +55,36 @@ describe('ColorField (browser)', () => {
   })
 
   describe('variants', () => {
-    it('opens a tighter panel in the compact density: narrower, with a 2:1 area', async () => {
+    it('opens a shorter panel in the compact density: same width, a 5:2 area, smaller thumbs', async () => {
       const measure = async (density: 'default' | 'compact') => {
         const { unmount } = render(
           <ColorField label="Fill" defaultValue={BLUE} density={density} />
         )
         await userEvent.click(trigger())
-        const panel = document.querySelector('.ui-popover')?.getBoundingClientRect()
+        const panel = document
+          .querySelector('.ui-popover')
+          ?.getBoundingClientRect()
         const area = document
           .querySelector('.ui-color-picker__area')
           ?.getBoundingClientRect()
+        const trackThumb = document
+          .querySelector('.ui-color-picker__track .ui-slider__thumb')
+          ?.getBoundingClientRect()
         unmount()
-        if (!panel || !area) throw new Error('panel not rendered')
-        return { panel, area }
+        if (!panel || !area || !trackThumb)
+          throw new Error('panel not rendered')
+        return { panel, area, trackThumb }
       }
       const normal = await measure('default')
       const compact = await measure('compact')
-      expect(compact.panel.width).toBeLessThan(normal.panel.width)
+      // It saves height, not width.
+      expect(compact.panel.width).toBeCloseTo(normal.panel.width, 0)
       expect(compact.panel.height).toBeLessThan(normal.panel.height * 0.75)
-      expect(compact.area.width / compact.area.height).toBeCloseTo(2, 1)
+      expect(compact.area.width / compact.area.height).toBeCloseTo(2.5, 1)
       expect(normal.area.width / normal.area.height).toBeCloseTo(4 / 3, 1)
+      // The tracks' thumbs: 12px, then 10px in compact — plus the 2px ring on each side.
+      expect(normal.trackThumb.width).toBeCloseTo(16, 0)
+      expect(compact.trackThumb.width).toBeCloseTo(14, 0)
     })
 
     it('applies a typed hex without opening anything', async () => {

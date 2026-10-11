@@ -474,6 +474,210 @@ describe('ColorPickerService', () => {
         expect(service.getState().hexDraft).toBe(service.getState().hex)
       })
 
+      it('previews a complete 6-digit hex live, without touching the typed text', () => {
+        const { service, onChange, onChangeComplete } = setup()
+        service.setHexDraft('FF0000')
+        expect(service.getState()).toMatchObject({
+          value: hsv(0, 100, 100),
+          hexDraft: 'FF0000',
+          hexInvalid: false,
+        })
+        expect(onChange).toHaveBeenCalledExactlyOnceWith(hsv(0, 100, 100))
+        expect(onChangeComplete).not.toHaveBeenCalled()
+      })
+
+      it('previews an 8-digit hex with alpha', () => {
+        const { service } = setup({ alpha: true })
+        service.setHexDraft('#ff000080')
+        expect(service.getState().value?.a).toBeCloseTo(128 / 255)
+      })
+
+      it('does not preview the short forms: "#abc" is on the way to "#abcdef"', () => {
+        const { service, onChange } = setup()
+        service.setHexDraft('#f00')
+        expect(service.getState().value).toEqual(BLUE)
+        expect(onChange).not.toHaveBeenCalled()
+        service.commitHexDraft()
+        expect(service.getState().hex).toBe('#ff0000')
+      })
+
+      it('settles a previewed colour on commit, once', () => {
+        const { service, onChange, onChangeComplete } = setup()
+        service.setHexDraft('#ff0000')
+        service.setHexDraft('#00ff00')
+        expect(onChange).toHaveBeenCalledTimes(2)
+
+        expect(service.commitHexDraft()).toBe(true)
+        expect(onChange).toHaveBeenCalledTimes(2)
+        expect(onChangeComplete).toHaveBeenCalledExactlyOnceWith(
+          hsv(120, 100, 100)
+        )
+      })
+
+      it('goes back to the colour from before the typing on Escape', () => {
+        const { service, onChange, onChangeComplete } = setup()
+        service.setHexDraft('#ff0000')
+        service.handleHexKeydown(key('Escape'))
+
+        expect(service.getState()).toMatchObject({
+          value: BLUE,
+          hexDraft: BLUE_HEX,
+        })
+        expect(onChange).toHaveBeenLastCalledWith(BLUE)
+        expect(onChangeComplete).not.toHaveBeenCalled()
+        // The preview stayed silent; the return is announced.
+        expect(service.getState().announcement).toBe(service.describe())
+      })
+
+      it('goes back to the colour from before the typing when blurred on an invalid draft', () => {
+        const { service } = setup()
+        service.setHexDraft('#ff0000')
+        service.setHexDraft('#ff00001')
+        service.commitHexDraft({ revertOnInvalid: true })
+        expect(service.getState()).toMatchObject({
+          value: BLUE,
+          hexDraft: BLUE_HEX,
+          hexInvalid: false,
+        })
+      })
+
+      it('keeps the last preview on Enter with an invalid draft, until Escape', () => {
+        const { service } = setup()
+        service.setHexDraft('#ff0000')
+        service.setHexDraft('#ff00001')
+        service.handleHexKeydown(key('Enter'))
+        expect(service.getState()).toMatchObject({
+          value: hsv(0, 100, 100),
+          hexInvalid: true,
+        })
+        service.handleHexKeydown(key('Escape'))
+        expect(service.getState().value).toEqual(BLUE)
+      })
+
+      it('returns to "automatic", thumbs included, when a preview is abandoned', () => {
+        const { service } = setup({ nullable: true })
+        service.setAuto()
+        const before = service.getState().color
+        service.setHexDraft('#ff0000')
+        expect(service.getState().isAuto).toBe(false)
+
+        service.cancelHexDraft()
+        expect(service.getState().isAuto).toBe(true)
+        expect(service.getState().color).toEqual(before)
+      })
+
+      it('settles a preview before a drag takes over, and the drag cancels to the preview', () => {
+        const { service, onChangeComplete } = setup()
+        service.setHexDraft('#ff0000')
+        service.startDrag('area', { x: 0.5, y: 0.5 })
+        expect(onChangeComplete).toHaveBeenCalledExactlyOnceWith(
+          hsv(0, 100, 100)
+        )
+        service.cancelDrag()
+        expect(service.getState().value).toEqual(hsv(0, 100, 100))
+      })
+
+      it('settles a preview when the picker gets disabled mid-edit', () => {
+        const { service, onChangeComplete } = setup()
+        service.setHexDraft('#ff0000')
+        service.setOptions({ disabled: true })
+        expect(onChangeComplete).toHaveBeenCalledExactlyOnceWith(
+          hsv(0, 100, 100)
+        )
+        expect(service.getState().hexDraft).toBe('#ff0000')
+        service.commitHexDraft({ revertOnInvalid: true })
+        expect(service.getState().value).toEqual(hsv(0, 100, 100))
+      })
+
+      it('settles nothing when the typing comes back to the colour it started from', () => {
+        const { service, onChangeComplete } = setup()
+        service.setHexDraft('#ff0000')
+        service.setHexDraft(BLUE_HEX)
+        // Exactly the starting colour back — not its hex-rounded twin.
+        expect(service.getState().value).toEqual(BLUE)
+        service.commitHexDraft()
+        expect(onChangeComplete).not.toHaveBeenCalled()
+      })
+
+      it('clears a pending hex error when a drag takes over', () => {
+        const { service } = setup()
+        service.setHexDraft('#ff0000')
+        service.setHexDraft('#ff00001')
+        service.handleHexKeydown(key('Enter'))
+        expect(service.getState().hexInvalid).toBe(true)
+        service.startDrag('hue', { x: 0, y: 0 })
+        expect(service.getState().hexInvalid).toBe(false)
+      })
+
+      it('gives a typed gray the hue the edit started from, not the previous preview’s', () => {
+        const { service } = setup()
+        service.setHexDraft('#ff0000')
+        service.setHexDraft('#808080')
+        service.commitHexDraft()
+        expect(service.getState().color.h).toBe(210)
+      })
+
+      it('consumes Escape (preventDefault) so a surrounding popover or dialog stays open', () => {
+        const { service } = setup()
+        service.setHexDraft('#ff0000')
+        const escape = key('Escape')
+        expect(service.handleHexKeydown(escape)).toBe(true)
+        expect(escape.preventDefault).toHaveBeenCalled()
+      })
+
+      describe('controlled', () => {
+        it('keeps the preview when the parent accepts it, and settles it on Enter', () => {
+          const { service, onChangeComplete } = setup({ value: BLUE })
+          service.setHexDraft('#ff0000')
+          service.setOptions({ value: hsv(0, 100, 100) })
+          service.handleHexKeydown(key('Enter'))
+          expect(onChangeComplete).toHaveBeenCalledExactlyOnceWith(
+            hsv(0, 100, 100)
+          )
+        })
+
+        it('keeps the preview through re-renders that still carry the unchanged value', () => {
+          // A parent updating its state on onChangeComplete only re-renders with the old value.
+          const { service, onChangeComplete } = setup({ value: BLUE })
+          service.setHexDraft('#ff0000')
+          service.setOptions({ value: BLUE })
+          expect(service.getState().hexDraft).toBe('#ff0000')
+
+          service.commitHexDraft()
+          expect(onChangeComplete).toHaveBeenCalledExactlyOnceWith(
+            hsv(0, 100, 100)
+          )
+        })
+
+        it('reports the preview as settled when disabled before the parent echoed it', () => {
+          const { service, onChangeComplete } = setup({ value: BLUE })
+          service.setHexDraft('#ff0000')
+          service.setOptions({ disabled: true })
+          expect(onChangeComplete).toHaveBeenCalledExactlyOnceWith(
+            hsv(0, 100, 100)
+          )
+        })
+
+        it('drops the preview when the parent holds another value, and Escape does not fight it', () => {
+          const { service, onChange } = setup({ value: BLUE })
+          service.setHexDraft('#ff0000')
+          const green = hsv(120, 100, 100)
+          service.setOptions({ value: green })
+          onChange.mockClear()
+
+          service.handleHexKeydown(key('Escape'))
+          expect(onChange).not.toHaveBeenCalled()
+          expect(service.getState().value).toEqual(green)
+        })
+      })
+
+      it('previews nothing while disabled', () => {
+        const { service, onChange } = setup({ disabled: true })
+        service.setHexDraft('#ff0000')
+        expect(service.getState().value).toEqual(BLUE)
+        expect(onChange).not.toHaveBeenCalled()
+      })
+
       it('leaves "automatic" when a valid hex is committed', () => {
         const { service } = setup({ nullable: true })
         service.setAuto()

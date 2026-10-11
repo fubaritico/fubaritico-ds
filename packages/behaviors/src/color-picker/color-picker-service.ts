@@ -26,6 +26,19 @@ import type {
 } from './types.js'
 import type { DomAttributes, KeyboardLike } from '../common/types.js'
 
+/**
+ * A value's hex, for comparing values the way the field shows them; `null` stays `null`.
+ *
+ * @param value - A colour, `null` (automatic) or `undefined` (uncontrolled).
+ * @returns Its hex, or the `null` / `undefined` itself.
+ */
+function hexOf(value: ColorValue | undefined): string | null | undefined {
+  return value === null || value === undefined ? value : hsvaToHex(value)
+}
+
+/** The hex forms previewed while typing: the complete long ones only (6 or 8 digits). */
+const LIVE_HEX_PATTERN = /^#?(?:[\da-f]{6}|[\da-f]{8})$/i
+
 /** Default accessible labels. */
 const DEFAULT_LABELS: ColorPickerLabels = {
   area: 'Color',
@@ -110,6 +123,14 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   /** The hex field's text while the user edits it; `null` when it simply mirrors the value. */
   private draft: string | null = null
   private hexInvalid = false
+  /** Whether the value currently shown is a live preview of the hex draft, not yet settled. */
+  private previewing = false
+  /** The working colour before the hex preview began — restored on abandon, even from "automatic". */
+  private hexStartWorking: HsvaColor | null = null
+  /** Hex of the previewed colour, to tell a parent echoing the preview from one overriding it. */
+  private previewedHex: string | null = null
+  /** The previewed colour itself — what a controlled settle reports before the parent echoed it. */
+  private previewedValue: HsvaColor | null = null
   /** The description at the last settled change, for the live region. */
   private announcement = ''
 
@@ -233,6 +254,7 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
       (patch.labels !== undefined &&
         JSON.stringify({ ...DEFAULT_LABELS, ...patch.labels }) !==
           JSON.stringify(this.opts.labels))
+    const previousValue = this.opts.value
     const resolved = this.resolve({ ...this.opts, ...patch })
     if (!resolved.alpha && this.opts.alpha)
       this.working = { ...this.working, a: 1 }
@@ -240,9 +262,21 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
 
     if ('value' in patch) {
       this.controlled = patch.value !== undefined
+      // A parent that CHANGED its value to something else than the preview has overridden it: the
+      // preview has nothing left to settle or to undo. A re-render carrying the same value as before
+      // is not an override — a parent updating on `onChangeComplete` only does exactly that.
+      if (
+        this.previewing &&
+        patch.value !== undefined &&
+        hexOf(patch.value) !== hexOf(previousValue) &&
+        hexOf(patch.value) !== this.previewedHex
+      )
+        this.dropPreview()
       if (patch.value !== undefined && patch.value !== null)
         this.adoptExternal(patch.value)
     }
+    // Disabled mid-edit: the preview the consumer already received becomes the settled value.
+    if (this.opts.disabled && this.previewing) this.endPreview()
     this.warnOnNullWithoutNullable()
 
     this.commitIfChanged(
@@ -375,6 +409,12 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   startDrag(target: ColorPickerTarget, point: ColorPoint): boolean {
     if (this.isTargetBlocked(target) || !this.isFinitePoint(point)) return false
     this.batch(() => {
+      // A pending hex preview is settled first: the drag starts from it, and cancels back to it.
+      if (this.previewing) {
+        this.draft = null
+        this.hexInvalid = false
+        this.endPreview()
+      }
       this.dragging = target
       this.baseline = this.currentValue()
       this.dragStartWorking = this.working
@@ -458,52 +498,81 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   // ---------- hex field ----------
 
   /**
-   * Records what the user types in the hex field. Nothing is applied until `commitHexDraft`, so the
-   * field never reformats under the cursor.
+   * Records what the user types in the hex field. The text is never reformatted under the cursor.
+   *
+   * A COMPLETE long form (6 or 8 digits) is previewed live, as an unsettled change — `onChange`
+   * fires, `onChangeComplete` waits for the commit, exactly as during a drag. The short forms (3 or
+   * 4 digits) are not previewed: `#abc` is usually on its way to `#abcdef`, a different colour.
    *
    * @param text - The field's content.
    */
   setHexDraft(text: string): void {
-    this.draft = text
-    this.hexInvalid = false
-    this.commit()
+    this.batch(() => {
+      this.hexInvalid = false
+      const parsed =
+        !this.opts.disabled && LIVE_HEX_PATTERN.test(text.trim())
+          ? this.hexToValue(text)
+          : null
+      // Typing back the colour the edit started from restores it EXACTLY, not its hex-rounded twin
+      // (a gray would lose its hue): the edit then nets out to no change at all.
+      const start = this.previewing ? this.baseline : undefined
+      const next =
+        parsed !== null &&
+        start !== undefined &&
+        start !== null &&
+        hsvaToHex(start) === hsvaToHex(parsed)
+          ? start
+          : parsed
+      if (next !== null && !this.matchesCurrentHex(next)) {
+        // The first preview of the edit remembers where the edit started.
+        const startWorking = this.previewing
+          ? this.hexStartWorking
+          : this.working
+        // `applyValue` clears the draft and the preview flag: both are set back below.
+        if (this.applyValue(next, false)) {
+          this.previewing = true
+          this.hexStartWorking = startWorking
+          this.previewedHex = hsvaToHex(next)
+          this.previewedValue = next
+        }
+      }
+      this.draft = text
+      this.commit()
+    })
   }
 
   /**
    * Applies the draft (Enter, blur). A gray or black typed in keeps the current hue (and the
    * saturation, for black): the hue slider does not jump. Without alpha, a typed alpha is dropped.
+   * A colour already previewed is settled (`onChangeComplete`), not applied a second time.
    *
    * @param options - Commit options.
-   * @param options.revertOnInvalid - Discard an invalid draft (blur) instead of flagging it (Enter).
+   * @param options.revertOnInvalid - Discard an invalid draft (blur) — and its preview — instead of
+   *   flagging it (Enter).
    * @returns `true` when the draft was a valid colour and was applied.
    */
   commitHexDraft({
     revertOnInvalid = false,
   }: { revertOnInvalid?: boolean } = {}): boolean {
     if (this.draft === null) return true
-    const rgba = hexToRgba(this.draft)
+    const next = this.opts.disabled ? null : this.hexToValue(this.draft)
 
-    if (rgba === null || this.opts.disabled) {
-      if (revertOnInvalid || this.opts.disabled) this.draft = null
-      else this.hexInvalid = true
-      this.commit()
+    if (next === null) {
+      if (revertOnInvalid || this.opts.disabled) this.abandonHexEdit()
+      else {
+        this.hexInvalid = true
+        this.commit()
+      }
       return false
     }
 
     this.draft = null
     this.hexInvalid = false
-    const parsed = rgbaToHsva(rgba)
-    // RGB carries no hue for grays and no saturation for black: keep the working ones.
-    const keepHue = parsed.s === 0 || parsed.v === 0
-    const next = this.normalize({
-      ...parsed,
-      h: keepHue ? this.working.h : parsed.h,
-      s: parsed.v === 0 ? this.working.s : parsed.s,
-    })
     // Hex rounds every channel: re-typing the current colour must not nudge the thumbs.
-    const current = this.currentValue()
-    const unchanged = current !== null && hsvaToHex(next) === hsvaToHex(current)
-    if (unchanged || !this.applyValue(next, true)) this.commit()
+    if (this.matchesCurrentHex(next)) {
+      if (this.previewing) this.endPreview()
+      else this.commit()
+    } else if (!this.applyValue(next, true)) this.commit()
     return true
   }
 
@@ -520,19 +589,25 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
       this.commitHexDraft()
       return true
     }
-    if (event.key === 'Escape' && (this.draft !== null || this.hexInvalid)) {
+    if (
+      event.key === 'Escape' &&
+      (this.draft !== null || this.hexInvalid || this.previewing)
+    ) {
+      // Consumed: a surrounding popover or dialog must not close on the same key.
+      event.preventDefault?.()
       this.cancelHexDraft()
       return true
     }
     return false
   }
 
-  /** Abandons the draft (Escape): the field shows the current hex again. */
+  /**
+   * Abandons the draft (Escape): the field shows the current hex again, and a previewed colour
+   * returns to the one from before the typing.
+   */
   cancelHexDraft(): void {
-    if (this.draft === null && !this.hexInvalid) return
-    this.draft = null
-    this.hexInvalid = false
-    this.commit()
+    if (this.draft === null && !this.hexInvalid && !this.previewing) return
+    this.abandonHexEdit()
   }
 
   // ---------- a11y attributes ----------
@@ -639,6 +714,101 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   // ---------- internals ----------
 
   /**
+   * Parses hex text into the value it would set. RGB carries no hue for grays and no saturation for
+   * black, so those keep the working ones.
+   *
+   * @param text - Hex text, with or without `#`, short or long form.
+   * @returns The value, or `null` when the text is not a hex colour.
+   */
+  private hexToValue(text: string): HsvaColor | null {
+    const rgba = hexToRgba(text)
+    if (rgba === null) return null
+    const parsed = rgbaToHsva(rgba)
+    const keepHue = parsed.s === 0 || parsed.v === 0
+    // During a preview, `working` is the previous preview: the hue to keep is the edit's start.
+    const reference =
+      this.previewing && this.hexStartWorking !== null
+        ? this.hexStartWorking
+        : this.working
+    return this.normalize({
+      ...parsed,
+      h: keepHue ? reference.h : parsed.h,
+      s: parsed.v === 0 ? reference.s : parsed.s,
+    })
+  }
+
+  /**
+   * Whether a colour reads as the current value once written in hex (hex rounds every channel).
+   *
+   * @param next - The candidate colour.
+   * @returns `true` when both format to the same hex.
+   */
+  private matchesCurrentHex(next: HsvaColor): boolean {
+    const current = this.currentValue()
+    return current !== null && hsvaToHex(next) === hsvaToHex(current)
+  }
+
+  /** Forgets a preview without touching the value (the parent decided otherwise). */
+  private dropPreview(): void {
+    this.previewing = false
+    this.hexStartWorking = null
+    this.previewedHex = null
+    this.previewedValue = null
+    this.baseline = undefined
+    this.draft = null
+    this.hexInvalid = false
+  }
+
+  /**
+   * Settles a previewed colour: announced and reported once, through `onChangeComplete`. In
+   * controlled mode the parent may not have echoed the preview yet, so the preview itself — not
+   * the prop — is what gets compared and reported.
+   */
+  private endPreview(): void {
+    const previewed = this.previewedValue
+    this.previewedHex = null
+    this.previewedValue = null
+    if (!this.controlled || previewed === null) {
+      this.settlePending({ alwaysCommit: true })
+      return
+    }
+    const baseline = this.baseline
+    this.baseline = undefined
+    this.previewing = false
+    this.hexStartWorking = null
+    const changed = baseline === undefined || !sameValue(baseline, previewed)
+    if (changed) this.announcement = this.describeValue(previewed)
+    this.commit()
+    if (changed) this.opts.onChangeComplete?.(previewed)
+  }
+
+  /**
+   * Drops the draft and, when a colour was previewed, returns to the value and the thumbs from
+   * before the typing (`onChange` fires; nothing was settled, so `onChangeComplete` does not).
+   */
+  private abandonHexEdit(): void {
+    const wasPreviewing = this.previewing && this.baseline !== undefined
+    const start = this.baseline ?? null
+    const startWorking = this.hexStartWorking
+    this.batch(() => {
+      if (wasPreviewing) {
+        this.applyValue(start, false)
+        this.baseline = undefined
+        // The preview was never announced; going back is, so a screen reader hears the colour
+        // return as clearly as a sighted user sees it.
+        this.announcement = this.describeValue(start)
+        if (!this.controlled && startWorking !== null)
+          this.working = startWorking
+      }
+      this.previewing = false
+      this.hexStartWorking = null
+      this.draft = null
+      this.hexInvalid = false
+      this.commit()
+    })
+  }
+
+  /**
    * Closes a run of unsettled changes: announces and reports the value once, if it moved.
    *
    * @param options - Settle options.
@@ -648,6 +818,9 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   private settlePending({ alwaysCommit }: { alwaysCommit: boolean }): void {
     const baseline = this.baseline
     this.baseline = undefined
+    // Whatever was pending — a preview included — is settled now: there is nothing to go back to.
+    this.previewing = false
+    this.hexStartWorking = null
     const value = this.currentValue()
     const changed = baseline !== undefined && !sameValue(baseline, value)
     if (changed) this.announcement = this.describeValue(value)
@@ -836,6 +1009,8 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
     }
     this.draft = null
     this.hexInvalid = false
+    this.previewing = false
+    this.hexStartWorking = null
     if (complete) {
       this.announcement = this.describeValue(next)
       this.baseline = undefined

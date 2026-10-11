@@ -39,9 +39,11 @@ export type ColorPickerHexFieldProps = Omit<
 >
 
 /**
- * The hex field. Typing never reformats it: the text is a draft, applied on Enter or blur. Enter on
- * an invalid draft keeps it and shows the error under the field (linked with `aria-describedby`);
- * blur discards it; Escape restores the current hex. The key policy is the service's.
+ * The hex field. Typing never reformats it. A complete long form (`#1e90ff`, `#1e90ff80`) is
+ * previewed live; Enter or blur settles it, and also applies a short form (`#19f`). Enter on an
+ * invalid draft keeps it and shows the error under the field (linked with `aria-describedby`);
+ * blur discards it; Escape goes back to the colour from before the typing. The key policy is the
+ * service's.
  *
  * It wears the Input skin (`.ui-input`) but is a plain `<input>`: the service owns its id and its
  * error reference, which the `Input` component would otherwise generate itself.

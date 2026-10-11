@@ -159,6 +159,28 @@ describe('ColorPicker (browser)', () => {
 
 
   describe('edge cases', () => {
+    it.each(['default', 'compact'] as const)(
+      'keeps 24px hit areas on the tracks that never overlap (%s density)',
+      (density) => {
+        render(
+          <ColorPicker
+            defaultValue={{ h: 210, s: 80, v: 60, a: 1 }}
+            alpha
+            density={density}
+          />
+        )
+        const hue = screen.getByRole('slider', { name: 'Hue' }).getBoundingClientRect()
+        const alpha = screen
+          .getByRole('slider', { name: 'Opacity' })
+          .getBoundingClientRect()
+
+        expect(hue.height).toBeGreaterThanOrEqual(24)
+        expect(alpha.height).toBeGreaterThanOrEqual(24)
+        // The lower track's target starts where the upper one's ends, or later.
+        expect(alpha.top).toBeGreaterThanOrEqual(hue.bottom - 0.5)
+      }
+    )
+
     it('puts the colour back when Escape is pressed mid-drag', async () => {
       const onChangeComplete = vi.fn()
       renderPicker({ onChangeComplete })
