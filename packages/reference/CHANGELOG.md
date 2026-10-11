@@ -5,7 +5,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [0.4.1](https://github.com/fubaritico/fubaritico-ds/compare/v0.4.0...v0.4.1) (2026-10-11)
 
-**Note:** Version bump only for package @fubaritico/react
+### Bug Fixes
+
+- **Modal, Drawer:** `onClose` ran twice on a backdrop click or the close button (once from the
+  handler, once from the native `close` event the component's own `close()` dispatched). It now
+  fires once per close the user starts, and never for a close the consumer made by setting
+  `isOpen` / `open` to `false`. ([15b8cfb](https://github.com/fubaritico/fubaritico-ds/commit/15b8cfb))
+- **Modal, Drawer:** a dialog that was never opened no longer writes a stale
+  `document.body.style.overflow` back when it unmounts; the scroll lock is taken and released only
+  while open. ([15b8cfb](https://github.com/fubaritico/fubaritico-ds/commit/15b8cfb))
+- **Image:** the default error fallback now carries `alt` as its accessible name (`role="img"`), so
+  an informative picture no longer fails into silence; `alt=""` keeps it out of the tree.
+  `ImageLoading` is exported from the root entry. ([15b8cfb](https://github.com/fubaritico/fubaritico-ds/commit/15b8cfb))
 
 # [0.4.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.3.0...v0.4.0) (2026-10-09)
 
