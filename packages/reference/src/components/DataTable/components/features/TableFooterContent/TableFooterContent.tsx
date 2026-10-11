@@ -54,7 +54,6 @@ export function TableFooterContent<TData>({
         <Dropdown
           aria-label="Select rows per page"
           buttonVariant="outline"
-          withPortal
           options={PAGE_SIZE_OPTIONS}
           selectedValue={tableStateManager
             .getState()

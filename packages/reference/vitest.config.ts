@@ -32,6 +32,9 @@ export default defineConfig({
       },
       {
         extends: true,
+        // Pre-bundled up front: discovered mid-run, a dependency makes Vite re-optimize and reload,
+        // and the reloaded copy runs against a second React (`Cannot read properties of null`).
+        optimizeDeps: { include: ['@tanstack/react-table'] },
         test: {
           name: 'browser',
           include: ['src/**/*.browser.test.{ts,tsx}'],

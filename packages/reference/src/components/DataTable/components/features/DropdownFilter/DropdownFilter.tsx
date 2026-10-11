@@ -2,7 +2,6 @@ import { Dropdown } from '../../../../Dropdown'
 
 import type { DropdownOption } from '../../../../Dropdown'
 import type { ColumnFiltersState } from '@tanstack/react-table'
-import type { FC } from 'react'
 
 /** Props of {@link DropdownFilter}. */
 export interface DropdownFilterProps {
@@ -50,19 +49,20 @@ const combineColumnFilters = (
 
 /**
  * Column filter built on the DS {@link Dropdown} (replacing the original `DropdownMenu` + `SimpleButton`).
- * Selecting an option sets the column filter; re-selecting the default label clears it.
+ * Selecting an option sets the column filter; re-selecting the default label clears it. The menu opens
+ * in the top layer, so the filter also works inside a `Modal` or a clipping container.
  *
  * @param props - {@link DropdownFilterProps}.
  * @returns The filter dropdown.
  */
-const DropdownFilter: FC<DropdownFilterProps> = ({
+export function DropdownFilter({
   items = [],
   buttonLabel,
   filters,
   filterId,
   onFiltersChange,
   width,
-}) => {
+}: Readonly<DropdownFilterProps>) {
   const currentValue =
     (filters.find((filter) => filter.id === filterId)?.value as
       | string
@@ -72,7 +72,6 @@ const DropdownFilter: FC<DropdownFilterProps> = ({
     <div style={width ? { width } : undefined}>
       <Dropdown
         aria-label={buttonLabel}
-        withPortal
         options={items}
         selectedValue={currentValue}
         onSelect={(value) => {
