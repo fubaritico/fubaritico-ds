@@ -1,8 +1,10 @@
 name: Release
 
 # Publishes the design-system packages to GitHub Packages (npm.pkg.github.com, scope @fubaritico).
-# Manual on purpose: bump first with `pnpm exec lerna version <minor|patch> --conventional-commits`
-# (fixed mode — every package moves together), push the commit + tag, then run this workflow.
+# Manual on purpose: bump first with `pnpm exec lerna version <minor|patch> --yes` (fixed mode —
+# the packages changed since the last tag move to one shared version; lerna pushes the commit + tag),
+# then run this workflow. It builds and publishes only: the tests ran in the pre-commit hook and in
+# ci.yml. Full procedure: README.md → "Publishing a release", or the /release skill.
 # `pnpm publish -r` skips private packages and versions already on the registry, so a re-run is safe.
 
 on:

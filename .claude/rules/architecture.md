@@ -74,7 +74,7 @@ pnpm dev          # lerna run --parallel --stream dev
   `build` declares `outputs: ['{projectRoot}/dist']`.
 - Dependency order: **tokens → shared → reference**; **variants → reference** (variants depends on
   no internal package — only `class-variance-authority`); **behaviors** depends on nothing; **stencil** and **styles** (CSS-only) are independent.
-- `lerna.json`: `version: independent`, `npmClient: pnpm`.
+- `lerna.json`: **fixed mode** (`version: X.Y.Z` — changed packages move to one shared version), `npmClient: pnpm`. Releases: `README.md` → "Publishing a release", `/release` skill.
 - Nx cache lives in `.nx/` (gitignored).
 - **TODO (planned): migrate Lerna → Turbo.**
 

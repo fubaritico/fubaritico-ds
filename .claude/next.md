@@ -15,7 +15,7 @@
 > `ColorField` (label + pastille + hex + picker en popover), densité `compact`, état pressé du
 > Button par variante. Vitest Browser Mode en place (Chromium).
 >
-> **Procédure de release** (rodée 3 fois) : `pnpm exec lerna version minor --yes` → vérifier que le
+> **Procédure de release** : `README.md` → « Publishing a release », skill **`/release`** (2026-10-11). Résumé (rodée 4 fois) : `pnpm exec lerna version minor --yes` → vérifier que le
 > lockfile n'a pas été reformaté → `gh workflow run release.yml -f dry_run=false` →
 > `gh run watch <id> --exit-status` → chercher `+ @fubaritico/*@x.y.z` dans le log. Feu vert du dev
 > à chaque publication.

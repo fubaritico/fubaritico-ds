@@ -17,6 +17,7 @@
 | Commit                                            | `/commit`              |
 | Propose a commit message only                     | `/message-commit`      |
 | Fetch the SonarCloud report                       | `/sonar`               |
+| Version + publish the packages (a release)        | `/release`             |
 | Start a work session                              | `/start-session`       |
 | End a work session                                | `/end-session`         |
 | Answer "how long / since when / when did we…"     | `/timeline`            |
