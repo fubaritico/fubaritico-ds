@@ -120,6 +120,14 @@ Put here the know issues to avoid cluttering the context window.
   `showPopover()` dans un callback ref, ancre CSS par instance `--ui-<bloc>-anchor` (posée sur la
   racine ET sur la surface), placement `@supports (position-anchor: …)`, test navigateur « ouvert
   dans une Modal ». Un menu portalisé perd les vars du bloc → `.ui-x, body > .ui-x__menu { vars }`.
+- **Ne JAMAIS augmenter `SortingFns` (ou `FilterFns`) de TanStack (2026-10-12)** : dès qu'une clé y
+  est ajoutée, `sortingFns` devient OBLIGATOIRE sur tout `useReactTable` (`RowSorting.d.ts`,
+  `ResolvedSortingFns`), et un `declare module` part dans le `.d.ts` publié, donc chez le
+  consommateur. Passer le comparateur en FONCTION à la colonne (`sortingFn: sortByDate`).
+- **Vitest Browser Mode : dépendance découverte en cours de run → double React** (`Cannot read
+  properties of null (reading 'useState')`, hash `?v=` différents). Vite ré-optimise et recharge ;
+  passe au 2e run, casse à froid (CI). Ajouter la dép à `optimizeDeps.include` du projet `browser`
+  (`packages/reference/vitest.config.ts`).
 - **React propage `close` à travers l'arbre React** (l'événement DOM ne bulle pas) : un `<dialog>`
   imbriqué fermait son parent. `useNativeDialog.handleClose` ignore `target !== currentTarget` —
   tout nouveau dialog passe par ce hook.

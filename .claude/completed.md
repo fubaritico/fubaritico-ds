@@ -25,6 +25,12 @@ cumulées). **~18 commits** poussés, deux publications.
 - **Deux bugs de `useNativeDialog`** trouvés en route (Modal/Drawer concernés) : un `close` imbriqué
   propagé par React fermait le dialog parent ; un dialog remonté à chaque ouverture avalait le
   premier Échap après une fermeture par la prop.
+- **Prolongation 22:54 → 01:05** (même plage au journal : 13:30 → 01:05, 11h34, pause ~1h30
+  incluse). **DropdownFilter + TableFooterContent → top layer** (`de20233`) : il suffisait de
+  retirer `withPortal` ; tests navigateur « dans une Modal ». Projet `browser` : `optimizeDeps`
+  pour `@tanstack/react-table` (double React à froid). **Augmentation `SortingFns` retirée**
+  (`109a8bb`) : `DataTableExample` rendait `sortingFns` obligatoire sur tout tableau, et le `.d.ts`
+  publié la propageait ; comparateur passé en fonction, renvoie `0` à égalité. Poussé, non publié.
 
 ### 2026-10-09 — behaviors, publication GitHub Packages, ColorPicker → Popover → ColorField, 0.4.0
 

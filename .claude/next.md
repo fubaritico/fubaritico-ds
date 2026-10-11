@@ -3,19 +3,19 @@
 > Loaded at session start (CLAUDE.md `### Next` → `@next.md`). Single source for "what's next".
 > North-star program: **`files/plans/roadmap.md`** (phases A→F).
 
-> ## ▶ ÉTAT AU 2026-10-11 SOIR — **0.5.0 PUBLIÉE**, 8 commits poussés NON publiés
+> ## ▶ ÉTAT AU 2026-10-12 NUIT — **0.5.0 PUBLIÉE**, 10 commits poussés NON publiés
 >
 > Depuis `v0.5.0` : garde `display`, API des coins, Tooltip top layer, `TooltipService`/`useTooltip`,
-> `TruncatedText`, Dropdown / Typeahead / BottomSheet dans le top layer (voir `completed.md`).
+> `TruncatedText`, Dropdown / Typeahead / BottomSheet / DropdownFilter / TableFooterContent dans le
+> top layer, augmentation `SortingFns` retirée de `DataTableExample` (voir `completed.md`).
 >
 > **Suite immédiate, dans l'ordre** :
-> 1. **DropdownFilter** puis **TableFooterContent** → top layer (même recette, test « dans une Modal »).
-> 2. **Release 0.6.0** (`/release`, minor : il y a des `feat` et des retraits d'API) + **handoff Atlas** :
+> 1. **Release 0.6.0** (`/release`, minor : il y a des `feat` et des retraits d'API) + **handoff Atlas** :
 >    Échap dans leur modale ne ferme plus que le menu du Dropdown ; leur contournement
 >    `.polity-form .ui-card { overflow: visible }` devient inutile ; retraits : axe `flipped` de
 >    `dropdownMenuVariants`, `--ui-dropdown-z`, `typeaheadMenuVariants`, `--ui-typeahead-menu-z-index`,
 >    `BOTTOM_SHEET_OVERLAY_CLASS`, `--ui-bottom-sheet-z-index` ; `aria-label` requis sur BottomSheet.
-> 3. Étape 4 de TruncatedText (section ci-dessous), puis le chantier des **thèmes**.
+> 2. Étape 4 de TruncatedText (section ci-dessous), puis le chantier des **thèmes**.
 >
 > **Procédure de release** : `README.md` → « Publishing a release », skill **`/release`**. Feu vert
 > du dev à chaque publication. Pistes ColorPicker (curseurs par canal, Recent Colors, EyeDropper)
@@ -47,7 +47,7 @@ Détails : `known-issues.md`. **Suite = le chantier des THÈMES** (dev, 2026-10-
 thèmes par défaut, pour montrer qu'à partir des seuls tokens on obtient ce qu'on veut — dont un
 « coins carrés » (tokens `sm`/`md`/`lg` à 0) et au moins un arrondi. Voir [[theming-strategy]].
 
-## À FAIRE — les autres portals sur `body` (relevé 2026-10-11)
+## FAIT (2026-10-12) — les portals sur `body` → top layer
 
 La Tooltip est passée dans le top layer (prouvé : un portal sur `body` ouvert depuis une Modal
 finit SOUS le `<dialog>`, dans la partie inerte). **Même défaut** chez `Dropdown`, `Typeahead`
@@ -55,7 +55,7 @@ finit SOUS le `<dialog>`, dans la partie inerte). **Même défaut** chez `Dropdo
 `components/Portal`. Décision dev (2026-10-11) : top layer sur place par défaut, portal en
 option. À traiter composant par composant, chacun avec son test navigateur « ouvert dans une Modal ».
 **Dropdown FAIT** (`49faf4b`) : popover manuel ancré en CSS, focus dans le menu, Escape consommé.
-**Typeahead FAIT** (`3218422`). **BottomSheet FAIT** (`3f55d36`, `<dialog>` natif modal / popover). Restent DropdownFilter, TableFooterContent.
+**Typeahead FAIT** (`3218422`). **BottomSheet FAIT** (`3f55d36`, `<dialog>` natif modal / popover). **DropdownFilter + TableFooterContent FAITS** (`de20233`, `withPortal` retiré). Plus aucun portal par défaut.
 
 ## Thread parallèle
 
