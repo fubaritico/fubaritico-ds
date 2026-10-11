@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.4.1...v0.5.0) (2026-10-11)
+
+### Bug Fixes
+
+- **styles:** keep a 24px slider hit area whatever the thumb size ([8af6e64](https://github.com/fubaritico/fubaritico-ds/commit/8af6e64366ffc127c56861ff6263fc5a2f0d6928))
+
+### Features
+
+- **behaviors:** preview a typed hex live and make the compact color picker shorter ([81ee5c2](https://github.com/fubaritico/fubaritico-ds/commit/81ee5c24e3221436256d5af7b4f660be840fa46d))
+
 ## [0.4.1](https://github.com/fubaritico/fubaritico-ds/compare/v0.4.0...v0.4.1) (2026-10-11)
 
 **Note:** Version bump only for package fubaritico-ds
