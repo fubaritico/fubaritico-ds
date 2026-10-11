@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react'
 
+import { Button } from '@fubaritico/react/Button'
+import { Card } from '@fubaritico/react/Card'
+import { Modal } from '@fubaritico/react/Modal'
 import { Typeahead } from '@fubaritico/react/Typeahead'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
@@ -76,7 +79,7 @@ function FruitSearch({
           placeholder="Search fruits…"
           aria-label="Search fruits"
         />
-        <Typeahead.Menu>
+        <Typeahead.Menu aria-label="Suggestions">
           {results.length > 0 ? (
             results.map((fruit, index) => (
               <Typeahead.Item
@@ -168,7 +171,7 @@ export const Showcase: Story = {
       </section>
 
       <section>
-        <strong>Inside a clipping ancestor — portal escapes it</strong>
+        <strong>Inside a clipping ancestor — the top layer escapes it</strong>
         <div
           style={{
             overflow: 'hidden',
@@ -177,9 +180,50 @@ export const Showcase: Story = {
             border: '1px dashed var(--color-border, #d4d4d4)',
           }}
         >
-          <FruitSearch portal />
+          <FruitSearch />
         </div>
       </section>
     </div>
   ),
+}
+
+/**
+ * A Typeahead in a Card (which clips its content) inside a Modal: the dropdown is in the top layer,
+ * so every suggestion stays reachable, and Escape closes the dropdown first, the Modal on a second
+ * press.
+ *
+ * @returns The modal demo.
+ */
+function InModalDemo() {
+  const [isOpen, setIsOpen] = useState(false)
+  return (
+    <>
+      <Button
+        onClick={() => {
+          setIsOpen(true)
+        }}
+      >
+        Open the modal
+      </Button>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false)
+        }}
+        aria-label="Typeahead in a modal"
+      >
+        <Card style={{ inlineSize: WIDTH }}>
+          <Card.Body>
+            <FruitSearch />
+          </Card.Body>
+        </Card>
+      </Modal>
+    </>
+  )
+}
+
+/** A Typeahead opened from inside a Modal, in a clipping Card. */
+export const InsideAModal: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => <InModalDemo />,
 }

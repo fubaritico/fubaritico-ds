@@ -6,33 +6,17 @@ import type { VariantProps } from 'class-variance-authority'
 export type TypeaheadVariant = 'light' | 'dark'
 
 /**
- * Resolves the Typeahead dropdown wrapper into BEM class names
- * (`.ui-typeahead__menu`, `+ --portal`).
- *
- * Pure string output (framework-agnostic): consumed by the React reference and the
- * Stencil / Angular / Vue packages alike, none of which it couples to a framework.
- *
- * @param props - Menu options (all optional — CVA defaults apply).
- * @param props.portal - Whether the menu is rendered outside the Typeahead subtree; defaults to
- *   `false` (anchored under the field by the skin).
- * @returns The space-separated BEM class string for the resolved props.
+ * BEM element class for the Typeahead dropdown (`.ui-typeahead__menu`) — a `popover="manual"`
+ * listbox in the top layer, anchored to the field by the skin (CSS anchor positioning). Portalled or
+ * not, it is placed the same way, so it carries no modifier.
  */
-export const typeaheadMenuVariants = cva('ui-typeahead__menu', {
-  variants: {
-    portal: {
-      false: '', // anchored — fully defined by the base; no modifier emitted
-      true: 'ui-typeahead__menu--portal',
-    },
-  },
-  defaultVariants: {
-    portal: false,
-  },
-})
+export const TYPEAHEAD_MENU_CLASS = 'ui-typeahead__menu'
 
-/** Variant props inferred from {@link typeaheadMenuVariants}. */
-export type TypeaheadMenuVariantProps = VariantProps<
-  typeof typeaheadMenuVariants
->
+/**
+ * Custom property carrying the CSS anchor name that ties the dropdown to its field
+ * (`anchor-name` / `position-anchor`). The component sets it, unique per instance.
+ */
+export const TYPEAHEAD_ANCHOR_VAR = '--ui-typeahead-anchor'
 
 /**
  * Resolves the Typeahead "no results" row into BEM class names

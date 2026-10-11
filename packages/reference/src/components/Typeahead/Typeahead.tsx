@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
-import { TYPEAHEAD_CLASS } from '@fubaritico/variants'
+import { TYPEAHEAD_ANCHOR_VAR, TYPEAHEAD_CLASS } from '@fubaritico/variants'
 
 import { TypeaheadContext } from './TypeaheadContext'
 import { TypeaheadEmpty } from './TypeaheadEmpty'
@@ -10,7 +10,12 @@ import { TypeaheadInput } from './TypeaheadInput'
 import { TypeaheadItem } from './TypeaheadItem'
 import { TypeaheadMenu } from './TypeaheadMenu'
 
-import type { ComponentProps, ReactNode } from 'react'
+import type {
+  CSSProperties,
+  ComponentProps,
+  FocusEvent,
+  ReactNode,
+} from 'react'
 
 /** Internal registry entry for a single Typeahead.Item. */
 interface ItemEntry {
@@ -38,7 +43,12 @@ export interface TypeaheadProps
   minChars?: number
   /** Whether to clear the input after selecting an item (default: true) */
   clearOnSelect?: boolean
-  /** Render the dropdown in a Portal to avoid overflow clipping (default: false) */
+  /**
+   * Mount the dropdown at the end of `document.body` instead of in place (default: false). Rarely
+   * needed: the dropdown is in the top layer either way, so no `overflow` or `z-index` clips it.
+   * Avoid it inside a `Modal` or a `Popover` — a list on `body` leaves their subtree: the dialog
+   * makes it inert, and a click in it light-dismisses the popover.
+   */
   portal?: boolean
   /** Color scheme for the dropdown menu and items */
   variant?: 'light' | 'dark'
@@ -48,6 +58,10 @@ export interface TypeaheadProps
 
 /**
  * Typeahead compound component — search input with dropdown suggestions.
+ *
+ * The dropdown is a `popover="manual"` listbox in the browser's top layer, rendered in place and
+ * anchored to the field in CSS: above every `z-index`, unclipped by any `overflow`, and usable inside
+ * a `Modal` it is opened from. Focus stays in the field (`aria-activedescendant`).
  *
  * Composes `Typeahead.Input`, `Typeahead.Menu`, `Typeahead.Item`, and
  * `Typeahead.Empty` via shared context. Implements the ARIA combobox
@@ -78,6 +92,8 @@ export function Typeahead({
   portal = false,
   variant = 'light',
   className,
+  style,
+  onBlur,
   children,
   ...rest
 }: Readonly<TypeaheadProps>) {
@@ -89,6 +105,14 @@ export function Typeahead({
   const rootRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const menuId = useId()
+  // A dashed ident unique per instance: `useId` yields `«r1»`-like strings, not valid in an ident.
+  const anchorStyle = useMemo(
+    () =>
+      ({
+        [TYPEAHEAD_ANCHOR_VAR]: `--ui-typeahead-${menuId.replace(/[^\w-]/g, '')}`,
+      }) as CSSProperties,
+    [menuId]
+  )
 
   /** Invokes onSearch with optional debounce, cancelling any pending call */
   const debouncedSearch = useCallback(
@@ -128,6 +152,25 @@ export function Typeahead({
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [menuId])
+
+  /**
+   * Closes the menu when focus moves outside the Typeahead (Tab away): the list is in the top layer
+   * and would otherwise float above the page until the next click. A blur with no destination (a
+   * press on a non-focusable spot) is left to the click-outside handler.
+   *
+   * @param event - The blur event, bubbled through the React tree — portalled menu included.
+   */
+  const handleBlur = useCallback(
+    (event: FocusEvent<HTMLDivElement>) => {
+      const next = event.relatedTarget
+      if (!(next instanceof Node)) return
+      if (rootRef.current?.contains(next)) return
+      if (document.getElementById(menuId)?.contains(next)) return
+      setIsOpen(false)
+      setActiveIndex(-1)
+    },
+    [menuId]
+  )
 
   /** Registers a Typeahead.Item in the internal registry for keyboard navigation */
   const registerItem = useCallback(
@@ -242,6 +285,7 @@ export function Typeahead({
       navigateItems,
       getActiveEntry,
       portal,
+      anchorStyle,
       rootRef,
       inputRef,
     }),
@@ -253,6 +297,7 @@ export function Typeahead({
       minChars,
       menuId,
       portal,
+      anchorStyle,
       setInputValue,
       registerItem,
       unregisterItem,
@@ -268,6 +313,12 @@ export function Typeahead({
       <div
         ref={rootRef}
         className={clsx(TYPEAHEAD_CLASS, className)}
+        // The anchor name goes last: a consumer style must not unhook the dropdown.
+        style={{ ...style, ...anchorStyle }}
+        onBlur={(event) => {
+          onBlur?.(event)
+          handleBlur(event)
+        }}
         {...rest}
       >
         {children}

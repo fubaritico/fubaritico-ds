@@ -132,6 +132,8 @@ describe('Dropdown (browser)', () => {
       const controlBox = control().getBoundingClientRect()
       const menuBox = menu().getBoundingClientRect()
       expect(menuBox.top).toBeGreaterThanOrEqual(controlBox.bottom)
+      // Portalled, the menu declares the skin's defaults itself: the offset still applies.
+      expect(menuBox.top - controlBox.bottom).toBeGreaterThan(1)
       expect(Math.abs(menuBox.left - controlBox.left)).toBeLessThan(1)
     })
   })

@@ -1,6 +1,6 @@
 import { createContext, use } from 'react'
 
-import type { RefObject } from 'react'
+import type { CSSProperties, RefObject } from 'react'
 
 /** Shared state and actions for the Typeahead compound component */
 export interface TypeaheadContextValue {
@@ -36,11 +36,13 @@ export interface TypeaheadContextValue {
   getActiveEntry: (
     index: number
   ) => { value: string; disabled: boolean } | undefined
-  /** Whether the dropdown renders in a Portal (avoids overflow clipping) */
+  /** Whether the dropdown is mounted at the end of `document.body` instead of in place */
   portal: boolean
+  /** Inline style carrying the per-instance CSS anchor name (`--ui-typeahead-anchor`) */
+  anchorStyle: CSSProperties
   /** Ref to the root wrapper div (used for click-outside detection) */
   rootRef: RefObject<HTMLDivElement | null>
-  /** Ref to the input element (used for portal menu positioning) */
+  /** Ref to the input element */
   inputRef: RefObject<HTMLInputElement | null>
 }
 

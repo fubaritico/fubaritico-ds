@@ -515,25 +515,36 @@ describe('Typeahead', () => {
 
   // --- portal ---
 
-  it('should render menu in a portal when portal is enabled', async () => {
+  it('should mount the menu on document.body when portal is enabled', async () => {
     renderTypeahead({ portal: true })
     await userEvent.type(screen.getByRole('combobox'), 'a')
     const listbox = screen.getByRole('listbox')
-    expect(listbox.closest('#portal')).toBeInTheDocument()
+    expect(listbox.parentElement).toBe(document.body)
+    expect(listbox.closest('.ui-typeahead')).toBeNull()
   })
 
-  it('should render menu inline when portal is disabled', async () => {
+  it('should render the menu in place when portal is disabled', async () => {
     renderTypeahead({ portal: false })
     await userEvent.type(screen.getByRole('combobox'), 'a')
-    const listbox = screen.getByRole('listbox')
-    expect(listbox.closest('#portal')).not.toBeInTheDocument()
+    expect(screen.getByRole('listbox').closest('.ui-typeahead')).not.toBeNull()
   })
 
-  it('should position portal menu with fixed positioning', async () => {
-    renderTypeahead({ portal: true })
+  it('should make the menu a manual popover tied to the field by one anchor name', async () => {
+    const { container } = renderTypeahead({ portal: true })
     await userEvent.type(screen.getByRole('combobox'), 'a')
     const listbox = screen.getByRole('listbox')
-    expect(listbox.style.position).toBe('fixed')
+    const root = container.querySelector<HTMLElement>('.ui-typeahead')
+    const anchor = root?.style.getPropertyValue('--ui-typeahead-anchor')
+    expect(listbox).toHaveAttribute('popover', 'manual')
+    expect(anchor).toMatch(/^--ui-typeahead-[\w-]+$/)
+    expect(listbox.style.getPropertyValue('--ui-typeahead-anchor')).toBe(anchor)
+  })
+
+  it("should keep the anchor name over a consumer's style", () => {
+    const { container } = renderTypeahead({ style: { color: 'red' } })
+    const root = container.querySelector<HTMLElement>('.ui-typeahead')
+    expect(root?.style.color).toBe('red')
+    expect(root?.style.getPropertyValue('--ui-typeahead-anchor')).not.toBe('')
   })
 
   it('should render full text when no match in Highlight', async () => {

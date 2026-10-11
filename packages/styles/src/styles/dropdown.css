@@ -22,7 +22,11 @@
  * Values come from @fubaritico/tokens.
  */
 @layer ui.components {
-  .ui-dropdown {
+  /* A menu portalled to `body` (`portal` / `withPortal`) leaves the root's subtree and would inherit
+     none of these vars: it declares the defaults itself. In place, it inherits the root's — and a
+     consumer override set there. */
+  .ui-dropdown,
+  body > .ui-dropdown__menu {
     /* ---- override API (component-scoped) ---- */
     --ui-dropdown-gap: var(--spacing-3);
     --ui-dropdown-menu-gap: var(--spacing-2);

@@ -1,8 +1,8 @@
 /**
  * Typeahead — native BEM skin.
  *
- * The combobox shell around the shared pieces: `.ui-typeahead` is the positioning context for the
- * input + dropdown, `.ui-typeahead__menu` places the suggestion list under the field,
+ * The combobox shell around the shared pieces: `.ui-typeahead` is the CSS anchor of the dropdown,
+ * `.ui-typeahead__menu` places the suggestion list under the field,
  * `.ui-typeahead__empty` is the "no results" row, and `.ui-typeahead__mark` resets the `<mark>`
  * used to highlight the matched substring.
  *
@@ -10,9 +10,12 @@
  * compose `.ui-listbox__item`, so the popup look stays shared with `Menu`. This block only adds what
  * a combobox needs on top: anchoring, the empty row and the highlight.
  *
- * Positioning is LOGICAL (`inset-inline-start`, `margin-block-start`): the dropdown anchors to the
- * field's inline-start edge, so it follows the writing direction. The Tailwind version used a
- * physical `left-0`, which placed the menu on the wrong side in RTL.
+ * The dropdown is a `popover="manual"` listbox, which the browser renders in the TOP LAYER: above
+ * every z-index, outside every `overflow: hidden`, and still inside a `Modal` it is opened from (a
+ * portal would land in the inert part of the page). Placement is CSS anchor positioning (Baseline
+ * 2026), LOGICAL: under the field, start-aligned, as wide as it, flipped above when there is no
+ * room. Where anchor positioning is unsupported the UA default stays — the list is centred in the
+ * viewport, still on top and usable.
  *
  * Override surface (white-label), by precedence:
  *   1. Redefine the component-scoped `--ui-typeahead-*` vars on `.ui-typeahead`.
@@ -22,41 +25,51 @@
  * Values come from @fubaritico/tokens.
  */
 @layer ui.components {
-  .ui-typeahead {
+  /* A menu portalled to `body` (`portal` / `withPortal`) leaves the root's subtree and would inherit
+     none of these vars: it declares the defaults itself. In place, it inherits the root's — and a
+     consumer override set there. */
+  .ui-typeahead,
+  body > .ui-typeahead__menu {
     /* ---- override API (component-scoped) ---- */
     --ui-typeahead-menu-offset: var(--spacing-1);
-    --ui-typeahead-menu-z-index: 50;
+    --ui-typeahead-menu-inline-size: anchor-size(inline);
     --ui-typeahead-empty-color: var(--color-foreground-muted);
     --ui-typeahead-empty-padding-block: var(--spacing-2);
     --ui-typeahead-empty-padding-inline: var(--spacing-3);
     --ui-typeahead-empty-font-family: var(--font-roboto);
     --ui-typeahead-empty-font-size: var(--font-size-sm);
     --ui-typeahead-mark-font-weight: var(--font-weight-extrabold);
+    /* NOT an override: `--ui-typeahead-anchor` is set inline by the component, unique per instance,
+       to tie the dropdown to its field (`anchor-name` / `position-anchor`). */
 
     /* ---- base ---- */
-    /* Positioning context for the anchored dropdown. */
     box-sizing: border-box;
-    position: relative;
+    anchor-name: var(--ui-typeahead-anchor);
     inline-size: 100%;
   }
 
-  /* ---- menu (anchored under the field) ---- */
+  /* ---- menu (top layer, anchored under the field) ---- */
+  /* The listbox look (padding, border, background) comes from `.ui-listbox`. Its `margin: 0` would
+     pin the unanchored fallback to the viewport corner: restore the UA centring here. */
   .ui-typeahead__menu {
-    position: absolute;
-    inset-inline-start: 0;
-    inline-size: 100%;
-    margin-block-start: var(--ui-typeahead-menu-offset);
-    z-index: var(--ui-typeahead-menu-z-index);
+    margin: auto;
+    /* The UA paints a popover in CanvasText: take the field's colour instead. */
+    color: inherit;
   }
 
-  /* Portalled: the menu is positioned by the consumer (it lives outside this subtree), so the skin
-     contributes the stacking order ONLY — anchoring would fight the inline coordinates. */
-  .ui-typeahead__menu--portal {
-    position: static;
-    inset-inline-start: auto;
-    inline-size: auto;
-    margin-block-start: 0;
-    z-index: var(--ui-typeahead-menu-z-index);
+  @supports (position-anchor: --ui-typeahead) {
+    .ui-typeahead__menu {
+      /* Anchored only where the platform can: otherwise the UA centring stays. */
+      inset: auto;
+      margin: 0;
+      position-anchor: var(--ui-typeahead-anchor);
+      position-area: block-end span-inline-end;
+      inline-size: var(--ui-typeahead-menu-inline-size);
+      margin-block-start: var(--ui-typeahead-menu-offset);
+      /* No room below: open above. Flipping swaps the margin to the other side as well. */
+      position-try-fallbacks: flip-block;
+      position-try-order: most-block-size;
+    }
   }
 
   /* ---- empty state ---- */

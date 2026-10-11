@@ -13,8 +13,11 @@ own the data; `Typeahead` owns the interaction.
 - **Debounced search** — `debounceMs` throttles `onSearch`; the pending call is cancelled on unmount.
 - **Minimum query length** — `minChars` (default `2`) gates both the search and the dropdown.
 - **Click-outside dismissal** — including when the menu is portalled.
-- **Portal mode** — `portal` renders the dropdown outside the subtree to escape an
-  `overflow: hidden` ancestor, repositioning on scroll and resize.
+- **Top layer** — the dropdown is a native `popover` rendered in place, in the browser's top layer:
+  above every `z-index`, never clipped by an `overflow: hidden` ancestor, and usable **inside a
+  `Modal`** (Escape closes the dropdown, never the dialog). Anchored to the field in CSS: as wide as
+  it, below, flipped above when there is no room. `portal` mounts it on `body` instead (rarely
+  needed).
 - **Match highlighting** — `Typeahead.Highlight` marks the matched substring by **weight**, not
   colour, so it survives a monochrome theme.
 - **Empty state** — `Typeahead.Empty` renders a non-selectable row that keeps the listbox valid.
@@ -65,12 +68,18 @@ An empty state when the query returns nothing:
 </Typeahead.Menu>
 ```
 
-Escaping a clipping ancestor:
+Inside a Modal, in a clipping Card — nothing to do, the dropdown is in the top layer:
 
 ```tsx
-<Typeahead portal onSearch={search} onSelect={pick}>
-  …
-</Typeahead>
+<Modal isOpen={open} onClose={close} aria-label="Find a polity">
+  <Card>
+    <Card.Body>
+      <Typeahead onSearch={search} onSelect={pick}>
+        …
+      </Typeahead>
+    </Card.Body>
+  </Card>
+</Modal>
 ```
 
 Keeping the chosen label in the field instead of clearing it:
@@ -127,7 +136,7 @@ Dark dropdown:
 | `debounceMs`             | `number`                  | `0`       | Delay before `onSearch`; `0` fires immediately.                        |
 | `minChars`               | `number`                  | `2`       | Minimum query length before searching and opening.                     |
 | `clearOnSelect`          | `boolean`                 | `true`    | Clear the field after a selection.                                     |
-| `portal`                 | `boolean`                 | `false`   | Render the dropdown outside the subtree.                               |
+| `portal`                 | `boolean`                 | `false`   | Mount the dropdown at the end of `body` (rarely needed).               |
 | `variant`                | `'light' \| 'dark'`       | `'light'` | Colour scheme of the dropdown.                                         |
 | …`ComponentProps<'div'>` | —                         | —         | Everything else lands on the root wrapper.                             |
 
@@ -151,6 +160,11 @@ Dark dropdown:
   input throughout, which is what the pattern requires.
 - **Give the input an accessible name** — pass `aria-label` or `label` to `Typeahead.Input`.
   Nothing is inferred from the placeholder.
+- **Name the list too** — pass `aria-label` to `Typeahead.Menu` (e.g. "Suggestions"); a nameless
+  listbox is flagged by audits. It is not derived from the input: the input's own name is its typed
+  value when referenced.
+- A press on a suggestion keeps focus in the input; Tab out of the field closes the list. Escape
+  closes it while open — inside a `Modal`, the dialog only on the next Escape.
 - `Typeahead.Empty` is `aria-disabled` and `aria-selected={false}`, so the row is announced but
   never presented as a choice.
 - The match highlight uses font weight, not colour, so it does not rely on hue alone (WCAG 1.4.1).
@@ -168,9 +182,14 @@ Dark dropdown:
 > **Note** — `onSearch` is also called with an empty string when the query falls below `minChars`.
 > Treat that as "clear the results", not as a search for nothing.
 
-> **Note** — `portal` fixes clipping, but the dropdown is then positioned from measured coordinates.
-> It follows scroll and resize, not arbitrary layout shifts; prefer the default unless an ancestor
-> actually clips.
+> **Warning** — `portal` is no longer needed to escape `overflow: hidden` or a `z-index`: the
+> dropdown is in the top layer either way. Do not use it inside a `Modal` or a `Popover` — a list on
+> `body` leaves their subtree: the dialog makes it inert, and a click in it light-dismisses the
+> popover.
+
+> **Note** — the dropdown is placed with CSS anchor positioning (Baseline 2026). In a browser
+> without it, the list opens centred in the viewport: still on top and usable. `--ui-typeahead-menu-z-index`
+> is gone: the top layer ignores `z-index`.
 
 > **Note** — every keystroke re-renders all suggestions, because the cursor lives in one context.
 > That is fine for a typical result set; for hundreds of rows, virtualise the list.
