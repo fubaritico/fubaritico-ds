@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.5.0...v0.6.0) (2026-10-12)
+
+### Bug Fixes
+
+- **reference:** open the dropdown menu in the top layer so it works inside a modal ([49faf4b](https://github.com/fubaritico/fubaritico-ds/commit/49faf4b73aed042e4da38ff518304aba99435c4d))
+- **reference:** open the typeahead list in the top layer so it works inside a modal ([3218422](https://github.com/fubaritico/fubaritico-ds/commit/3218422e307d202be423a38901da49b3429e2169))
+- **reference:** rebuild the bottom sheet on a native dialog in the top layer ([3f55d36](https://github.com/fubaritico/fubaritico-ds/commit/3f55d3611bab88905755bcb9c486b9d76566ab33))
+
+### Features
+
+- **reference:** reveal a cut text in a tooltip with TruncatedText ([c5dd012](https://github.com/fubaritico/fubaritico-ds/commit/c5dd012a4c34b665b134193384cdb674baafd3c8))
+- **reference:** reveal cut-off table text and cell hints in a tooltip ([a410ce2](https://github.com/fubaritico/fubaritico-ds/commit/a410ce23c2317243a2838c770937495fb9d1183f))
+
 # [0.5.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.4.1...v0.5.0) (2026-10-11)
 
 **Note:** Version bump only for package @fubaritico/variants

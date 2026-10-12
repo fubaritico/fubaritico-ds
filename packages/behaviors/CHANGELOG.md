@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.5.0...v0.6.0) (2026-10-12)
+
+### Features
+
+- **behaviors:** drive tooltips with a TooltipService and the useTooltip hook ([6b6cce3](https://github.com/fubaritico/fubaritico-ds/commit/6b6cce305f400a76ea5ec875eeff244443cfb8c5))
+
 # [0.5.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.4.1...v0.5.0) (2026-10-11)
 
 ### Features
