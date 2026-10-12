@@ -111,6 +111,11 @@
        cue → WCAG 1.4.1). Replaces the old `text-blue-700`. */
     --ui-data-table-link-color: var(--color-primary);
     --ui-data-table-link-weight: var(--font-weight-semibold);
+    /* Hint trigger (a value / status icon whose hint shows in a tooltip): its keyboard ring. */
+    --ui-data-table-hint-ring-color: var(--color-ring);
+    --ui-data-table-hint-ring-width: 2px;
+    --ui-data-table-hint-ring-offset: var(--spacing-0-5);
+    --ui-data-table-hint-radius: var(--radius-sm);
     /* Duration cell value weight (source `font-medium`). */
     --ui-data-table-duration-weight: var(--font-weight-medium);
 
@@ -326,8 +331,8 @@
     block-size: calc(var(--ui-data-table-row-height) - 6px);
   }
 
-  /* Sortable column label: small, uppercase, muted, semibold; truncates with an ellipsis (the full
-     text is exposed via the native `title` when clipped). Source `truncate uppercase text-xs
+  /* Sortable column label: small, uppercase, muted, semibold; truncates with an ellipsis (rendered
+     by TruncatedText, which reveals the full text in a tooltip once clipped). Source `truncate uppercase text-xs
      font-semibold text-gray_oda-600`. */
   .ui-data-table__head-label {
     overflow: hidden;
@@ -398,6 +403,33 @@
     font-weight: var(--ui-data-table-link-weight);
     color: var(--ui-data-table-link-color);
     text-decoration: underline;
+  }
+
+  /* Hint trigger: a value or status icon made focusable so its hint shows in a tooltip. Same ring
+     as TruncatedText, so every tab stop of the grid looks alike. */
+  .ui-data-table__hint {
+    border-start-start-radius: var(
+      --ui-data-table-hint-radius-start-start,
+      var(--ui-data-table-hint-radius)
+    );
+    border-start-end-radius: var(
+      --ui-data-table-hint-radius-start-end,
+      var(--ui-data-table-hint-radius)
+    );
+    border-end-start-radius: var(
+      --ui-data-table-hint-radius-end-start,
+      var(--ui-data-table-hint-radius)
+    );
+    border-end-end-radius: var(
+      --ui-data-table-hint-radius-end-end,
+      var(--ui-data-table-hint-radius)
+    );
+  }
+
+  .ui-data-table__hint:focus-visible {
+    outline: var(--ui-data-table-hint-ring-width) solid
+      var(--ui-data-table-hint-ring-color);
+    outline-offset: var(--ui-data-table-hint-ring-offset);
   }
 
   /* Duration cell value (source `font-medium`). */

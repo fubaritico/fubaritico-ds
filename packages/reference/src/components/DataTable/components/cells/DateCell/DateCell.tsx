@@ -19,7 +19,8 @@ const isTimestamp = (value: unknown): value is number =>
  * @param locale - BCP-47-ish locale (e.g. `'fr_FR'`; underscores are normalised to hyphens). Defaults to `'fr_FR'`.
  * @param timezone - IANA time zone (e.g. `'GMT'`, `'Europe/Paris'`). Defaults to `'GMT'`.
  * @param truncate - When true, render the date via {@link TruncatedContent} so it clips with an
- *   ellipsis (and exposes the full value on hover) when the column is narrower than the text.
+ *   ellipsis when the column is narrower than the text; the cut date is then a Tab stop revealing the
+ *   full value in a tooltip on hover or keyboard focus.
  * @param className - Optional extra classes for the cell.
  * @returns A TanStack cell renderer for a date column.
  */
@@ -39,7 +40,8 @@ const DateCell = (
 
   return <TData,>({ row }: Readonly<{ row: Row<TData> }>): ReactNode => {
     const value = row.getValue(colName)
-    // The visible text is the accessible content (no aria-label on the cell role; no extra tab stop).
+    // The visible text is the accessible content (no aria-label on the cell role); a tab stop only
+    // appears with `truncate`, while the date is actually cut.
     const text = isTimestamp(value)
       ? formatter.format(new Date(toEpochMs(value)))
       : '-'

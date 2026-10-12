@@ -156,6 +156,12 @@ export const UI_DATA_TABLE_TRUNCATE_CLASS = 'ui-data-table__truncate'
 export const UI_DATA_TABLE_LINK_CLASS = 'ui-data-table__link'
 
 /**
+ * BEM element class for a hint trigger — a cell value or status icon made focusable so its hint
+ * shows in a tooltip (carries the grid's keyboard focus ring).
+ */
+export const UI_DATA_TABLE_HINT_CLASS = 'ui-data-table__hint'
+
+/**
  * BEM element class for the duration cell value (medium weight).
  */
 export const UI_DATA_TABLE_DURATION_CLASS = 'ui-data-table__duration'

@@ -5,7 +5,7 @@ import {
   UI_DATA_TABLE_SORT_TOGGLE_CLASS,
 } from '@fubaritico/variants'
 
-import { useIsTextTruncated } from '../../../hooks'
+import { TruncatedText } from '../../../../TruncatedText'
 import { SORT_DIRECTION_TO_ARIA } from '../../../utils'
 import { ArrowUpDown } from '../../features/ArrowUpDown'
 import { TableHead } from '../../primitives/TableHead'
@@ -30,7 +30,7 @@ export interface SortableHeaderCellViewProps {
 
 /**
  * Sortable header cell view — the label plus the {@link ArrowUpDown} sort toggle. When the label is
- * truncated, the full text is exposed via the native `title` attribute.
+ * truncated, the full text is revealed in a tooltip on hover or keyboard focus ({@link TruncatedText}).
  *
  * @param props - {@link SortableHeaderCellViewProps}.
  * @returns The header cell.
@@ -43,24 +43,15 @@ export function SortableHeaderCellView({
   column,
   withSeparator,
 }: Readonly<SortableHeaderCellViewProps>) {
-  const { elementRef, isTruncated } =
-    useIsTextTruncated<HTMLSpanElement>(headerLabel)
-
   const sorted = column.getIsSorted()
   const ariaSort = sorted ? SORT_DIRECTION_TO_ARIA[sorted] : 'none'
 
   return (
     <TableHead className={className} data-type={dataType} aria-sort={ariaSort}>
       <div className={UI_DATA_TABLE_HEAD_INNER_CLASS}>
-        {/* TODO(tooltip): show a <Tooltip> when truncated once the wrapping-trigger Tooltip lands. */}
-        <span
-          ref={elementRef}
-          title={isTruncated ? headerLabel : undefined}
-          aria-label={isTruncated ? headerLabel : undefined}
-          className={UI_DATA_TABLE_HEAD_LABEL_CLASS}
-        >
+        <TruncatedText className={UI_DATA_TABLE_HEAD_LABEL_CLASS}>
           {headerLabel}
-        </span>
+        </TruncatedText>
         <ArrowUpDown
           colName={colName}
           className={UI_DATA_TABLE_SORT_TOGGLE_CLASS}

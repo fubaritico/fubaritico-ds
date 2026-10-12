@@ -20,6 +20,7 @@ import {
   UI_DATA_TABLE_HEAD_INNER_CLASS,
   UI_DATA_TABLE_HEAD_LABEL_CLASS,
   UI_DATA_TABLE_HEAD_STRONG_MODIFIER,
+  UI_DATA_TABLE_HINT_CLASS,
   UI_DATA_TABLE_LINK_CLASS,
   UI_DATA_TABLE_PAGE_INPUT_CLASS,
   UI_DATA_TABLE_SCROLL_CLASS,
@@ -112,6 +113,7 @@ describe('tableRowVariants', () => {
       )
       expect(UI_DATA_TABLE_TRUNCATE_CLASS).toBe('ui-data-table__truncate')
       expect(UI_DATA_TABLE_LINK_CLASS).toBe('ui-data-table__link')
+      expect(UI_DATA_TABLE_HINT_CLASS).toBe('ui-data-table__hint')
       expect(UI_DATA_TABLE_DURATION_CLASS).toBe('ui-data-table__duration')
       expect(UI_DATA_TABLE_VISUALLY_HIDDEN_CLASS).toBe(
         'ui-data-table__visually-hidden'

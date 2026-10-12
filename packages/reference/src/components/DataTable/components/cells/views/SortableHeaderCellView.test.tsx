@@ -179,7 +179,7 @@ describe('SortableHeaderCellView', () => {
       ).toBeInTheDocument()
     })
 
-    it('leaves title undefined when the label is not truncated (jsdom reports zero widths)', () => {
+    it('renders the label as a measured truncated text, with no title (jsdom reports zero widths)', () => {
       inTable(
         <SortableHeaderCellView
           headerLabel="A very long header label that would overflow a narrow column"
@@ -188,11 +188,14 @@ describe('SortableHeaderCellView', () => {
         />
       )
 
-      expect(
-        screen.getByText(
-          'A very long header label that would overflow a narrow column'
-        )
-      ).not.toHaveAttribute('title')
+      const label = screen.getByText(
+        'A very long header label that would overflow a narrow column'
+      )
+      expect(label).toHaveClass('ui-truncated-text')
+      expect(label).not.toHaveAttribute('title')
+      expect(label).not.toHaveAttribute('aria-label')
+      // It fits (zero widths): no tab stop until the label is really cut.
+      expect(label).not.toHaveAttribute('tabindex')
     })
   })
 })

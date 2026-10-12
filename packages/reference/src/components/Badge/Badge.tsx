@@ -7,6 +7,7 @@ import {
 } from '@fubaritico/variants'
 
 import { Icon } from '../Icon'
+import { TruncatedText } from '../TruncatedText'
 
 import type { IconName } from '../Icon'
 import type { BadgeSize, BadgeVariant } from '@fubaritico/variants'
@@ -27,7 +28,8 @@ export interface BadgeProps extends ComponentProps<'span'> {
   /**
    * When `true`, caps the badge to its container width and ellipsis-truncates the label (the leading
    * icon stays visible). Use in tight layouts (e.g. a fixed-width table column). The full text stays
-   * in the DOM (announced by screen readers). Defaults to `false` (the badge sizes to its content).
+   * in the DOM (announced by screen readers); a string or number label, once actually cut, is also revealed in
+   * a tooltip on hover or keyboard focus. Defaults to `false` (the badge sizes to its content).
    */
   canTruncate?: boolean
 }
@@ -58,7 +60,15 @@ export function Badge({
         <Icon name={icon} size={BADGE_ICON_SIZE} className={BADGE_ICON_CLASS} />
       ) : null}
       {canTruncate ? (
-        <span className={BADGE_LABEL_CLASS}>{children}</span>
+        typeof children === 'string' || typeof children === 'number' ? (
+          // Measured: a tooltip and a tab stop only once the label is really cut.
+          <TruncatedText className={BADGE_LABEL_CLASS}>
+            {String(children)}
+          </TruncatedText>
+        ) : (
+          // Rich content cannot be repeated in the bubble: visual clip only.
+          <span className={BADGE_LABEL_CLASS}>{children}</span>
+        )
       ) : (
         children
       )}

@@ -1,6 +1,4 @@
-import { UI_DATA_TABLE_CELL_INNER_CLASS } from '@fubaritico/variants'
-
-import { TableCell } from '../../primitives/TableCell'
+import ClickableCellView from '../views/ClickableCellView'
 
 import type { Row } from '@tanstack/react-table'
 import type { ReactElement } from 'react'
@@ -10,7 +8,7 @@ import type { ReactElement } from 'react'
  *
  * @param callback - Invoked with `row.original` when the button is clicked.
  * @param content - Content rendered inside the button.
- * @param tooltipText - Optional hint; currently surfaced via the native `title` attribute.
+ * @param tooltipText - Optional hint, shown in a tooltip on hover / keyboard focus.
  * @param ariaLabel - Accessible name for the button (required when `content` is icon-only — WCAG
  *   4.1.2); falls back to `tooltipText`.
  * @param className - Optional extra classes for the cell.
@@ -24,24 +22,16 @@ const ClickableCell =
     ariaLabel?: string,
     className?: string
   ) =>
-  ({ row }: Readonly<{ row: Row<TData> }>) => {
-    return (
-      <TableCell className={className}>
-        <div className={UI_DATA_TABLE_CELL_INNER_CLASS}>
-          {/* TODO(tooltip): wrap in <Tooltip> once the wrapping-trigger Tooltip lands (Tooltip migrated last). */}
-          <button
-            type="button"
-            title={tooltipText}
-            aria-label={ariaLabel ?? tooltipText}
-            onClick={() => {
-              callback(row.original)
-            }}
-          >
-            {content}
-          </button>
-        </div>
-      </TableCell>
-    )
-  }
+  ({ row }: Readonly<{ row: Row<TData> }>) => (
+    <ClickableCellView
+      ariaLabel={ariaLabel}
+      className={className}
+      content={content}
+      tooltipText={tooltipText}
+      onClick={() => {
+        callback(row.original)
+      }}
+    />
+  )
 
 export default ClickableCell

@@ -6,7 +6,7 @@ The table owns _how it looks and behaves_; the caller owns _the data, columns an
 table instance in. This is the dependency-injection seam that keeps the grid framework-agnostic-ready.
 
 > **Draft / WIP** — the DataTable milestone is in progress (skin done; a11y-root, `<tfoot>` summaries,
-> Tooltip still open). This doc tracks the current public API and will tighten as the component lands.
+> grid roving focus still open). This doc tracks the current public API and will tighten as the component lands.
 
 ## Capabilities
 
@@ -140,6 +140,11 @@ the header is always sticky in virtualized mode).
 
 - The grid renders a semantic `<table>`; header cells expose `aria-sort`; the sort toggle has a dynamic
   accessible name; the status icon text is available to assistive tech.
+- **Truncated text** (`TruncatedContent`, `DateCell`, link cells, header labels, `Badge canTruncate`)
+  is revealed in a tooltip on hover or keyboard focus, and only once it is really cut. **Hints**
+  (`ClickableCell`, `IconStatusCellView`, `LabelWithTooltipCellView`) show in a tooltip too, and stay
+  in the DOM as visually hidden text (the button's description, for `ClickableCell`), so a screen
+  reader browsing the table reads them without opening the bubble.
 - **Known open item**: a clickable row currently uses `role="button"` on the `<tr>`, which breaks table
   semantics (finding A11Y-003) — being reworked. `<caption>` / `aria-busy` / a scrollable-region label
   are also on the a11y follow-up list.
@@ -152,6 +157,10 @@ the header is always sticky in virtualized mode).
 
 > **Warning** — `stickyHeader` and `maxHeight` are **paired**: passing one without the other throws.
 > Use them together to get a fixed-height, scrolling body with a pinned header.
+
+> **Note** — each cut-off text and each hint is its **own Tab stop** (the grid has no roving focus
+> yet): a narrow column on many visible rows adds that many stops. A `role="grid"` roving focus,
+> one stop for the whole grid, is planned.
 
 > **Note** — the **cell renderers are composable building blocks**, not a fixed schema. Assemble them in
 > your `columns` definition; ones you don't use are not dead code.

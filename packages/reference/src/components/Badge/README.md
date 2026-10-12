@@ -10,7 +10,8 @@ skin. Presentational only: it conveys meaning through its text, never through co
 - **Optional leading icon** — `icon` (an `IconName`), rendered decorative (`aria-hidden`); the meaning
   must still be carried by the `children` text.
 - **Truncation** — `canTruncate` caps the badge to its container width and ellipsis-clips the label on
-  one line (the icon stays visible). For tight layouts such as a fixed-width table column.
+  one line (the icon stays visible). For tight layouts such as a fixed-width table column. A string or
+  number label that is really cut becomes focusable and reveals itself in a tooltip on hover / focus.
 - **Inline element** — renders a `<span>`, so it flows inside text and forwards every `<span>`
   attribute (`id`, `aria-*`, `onClick`, `ref`, `className`, …).
 - **Headless skin** — variant/size resolve to BEM classes via `@fubaritico/variants`; colours and
@@ -85,5 +86,12 @@ Plus all native `<span>` attributes (`ComponentProps<'span'>`, including `ref` a
 
 > **Note** — `canTruncate` clips **visually** only: the full label stays in the DOM, so screen readers
 > still announce it. It needs a width-constrained container to have any effect (e.g. a table column
-> under `table-layout: fixed`); on its own the badge just sizes to its content. A hover affordance for
-> the clipped text will arrive with the Tooltip.
+> under `table-layout: fixed`); on its own the badge just sizes to its content.
+
+> **Note** — only a **single string or number** label gets the revealing tooltip (via
+> `TruncatedText`). Elements and interpolated text (`{count} items`, an array of children) are clipped
+> visually with no tooltip: pass one string (`` {`${count} items`} ``) if the full label must be
+> readable on hover.
+
+> **Warning** — a cut label becomes a **Tab stop**. Do not put a `canTruncate` badge inside a button,
+> a link or a clickable row: it would nest a focusable element inside an interactive one.

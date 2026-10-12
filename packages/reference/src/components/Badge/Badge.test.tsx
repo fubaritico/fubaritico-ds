@@ -78,6 +78,31 @@ describe('Badge', () => {
       )
     })
 
+    it('measures a string label (revealed in a tooltip once cut) when canTruncate is set', () => {
+      const { container } = render(<Badge canTruncate>Running</Badge>)
+      expect(container.querySelector('.ui-badge__label')).toHaveClass(
+        'ui-truncated-text'
+      )
+    })
+
+    it('measures a number label too when canTruncate is set', () => {
+      const { container } = render(<Badge canTruncate>{1234567}</Badge>)
+      const label = container.querySelector('.ui-badge__label')
+      expect(label).toHaveClass('ui-truncated-text')
+      expect(label).toHaveTextContent('1234567')
+    })
+
+    it('clips rich children visually only (no tooltip) when canTruncate is set', () => {
+      const { container } = render(
+        <Badge canTruncate>
+          <strong>Running</strong>
+        </Badge>
+      )
+      const label = container.querySelector('.ui-badge__label')
+      expect(label).toBeInTheDocument()
+      expect(label).not.toHaveClass('ui-truncated-text')
+    })
+
     it('renders the label bare (no wrapper, no modifier) by default', () => {
       const { container } = render(<Badge>Plain</Badge>)
       expect(container.firstChild).not.toHaveClass('ui-badge--truncate')
