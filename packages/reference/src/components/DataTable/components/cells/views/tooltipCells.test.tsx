@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { TruncatedContent } from '../../features/TruncatedContent/TruncatedContent'
+import IconStatusCell from '../IconStatusCell'
 
 import { ClickableCellView } from './ClickableCellView'
 import { IconStatusCellView } from './IconStatusCellView'
@@ -225,9 +226,7 @@ describe('IconStatusCellView', () => {
     it('renders the status as hidden text next to a decorative icon', () => {
       inRow(
         <IconStatusCellView
-          row={statusRow('Completed')}
-          keyName="status"
-          extraProps={{}}
+          status="Completed"
         />
       )
       expect(screen.getByText('Completed')).toHaveClass(
@@ -241,9 +240,7 @@ describe('IconStatusCellView', () => {
     it('with a hint, wraps the icon in a tab stop and reads the hint with the status', () => {
       inRow(
         <IconStatusCellView
-          row={statusRow('Failed')}
-          keyName="status"
-          extraProps={{}}
+          status="Failed"
           tooltipText="Disk full"
         />
       )
@@ -261,66 +258,87 @@ describe('IconStatusCellView', () => {
   describe('managed errors', () => {
     it('falls back to the default icon for an unknown status', () => {
       const unknown = inRow(
-        <IconStatusCellView row={statusRow('Weird')} keyName="status" extraProps={{}} />
+        <IconStatusCellView status="Weird" />
       )
       const fallback = unknown.container.querySelector('svg')?.outerHTML
       unknown.unmount()
       const warning = inRow(
-        <IconStatusCellView row={statusRow('Warning')} keyName="status" extraProps={{}} />
+        <IconStatusCellView status="Warning" />
       )
       // The default icon IS the warning one.
       expect(warning.container.querySelector('svg')?.outerHTML).toBe(fallback)
     })
   })
 
+  // L4: covered by the factory below — the view takes a typed status, the factory reads the row.
+
+  describe('edge cases', () => {
+    it('matches the status case-insensitively', () => {
+      const upper = inRow(
+        <IconStatusCellView status="COMPLETED" />
+      )
+      const upperIcon = upper.container.querySelector('svg')?.outerHTML
+      upper.unmount()
+      const lower = inRow(
+        <IconStatusCellView status="completed" />
+      )
+      const lowerIcon = lower.container.querySelector('svg')?.outerHTML
+      lower.unmount()
+      const fallback = inRow(
+        <IconStatusCellView status="Weird" />
+      )
+      expect(upperIcon).toBe(lowerIcon)
+      expect(upperIcon).not.toBe(fallback.container.querySelector('svg')?.outerHTML)
+    })
+  })
+})
+
+describe('IconStatusCell (factory)', () => {
+  describe('happy path', () => {
+    it('reads the status from the "status" key by default', () => {
+      const Cell = IconStatusCell()
+      inRow(<Cell row={statusRow('Completed')} />)
+      expect(screen.getByText('Completed')).toBeInTheDocument()
+    })
+  })
+
+  describe('variants', () => {
+    it('reads a custom key and forwards the hint', () => {
+      const Cell = IconStatusCell({}, 'state', 'Disk full')
+      const row = {
+        getValue: (key: string) => (key === 'state' ? 'Failed' : undefined),
+      } as unknown as Row<unknown>
+      inRow(<Cell row={row} />)
+      expect(screen.getByText('Failed (Disk full)')).toBeInTheDocument()
+    })
+  })
+
+  // L3: N/A — no handled error state; malformed data is L4.
+
   describe('unmanaged errors', () => {
     it.each([[undefined], [null], [42]])(
       'renders the default icon instead of crashing on a %j status',
       (status) => {
-        const malformed = inRow(
-          <IconStatusCellView row={statusRow(status)} keyName="status" extraProps={{}} />
-        )
+        // The factory reads the row: malformed data must not reach the view as a crash.
+        const Cell = IconStatusCell()
+        const malformed = inRow(<Cell row={statusRow(status)} />)
         const icon = malformed.container.querySelector('svg')?.outerHTML
         malformed.unmount()
         const warning = inRow(
-          <IconStatusCellView row={statusRow('Warning')} keyName="status" extraProps={{}} />
+          <IconStatusCellView status="Warning" />
         )
         expect(warning.container.querySelector('svg')?.outerHTML).toBe(icon)
       }
     )
 
     it('reads the hint alone when the status is missing', () => {
-      inRow(
-        <IconStatusCellView
-          row={statusRow(null)}
-          keyName="status"
-          extraProps={{}}
-          tooltipText="Disk full"
-        />
-      )
+      const Cell = IconStatusCell({}, 'status', 'Disk full')
+      inRow(<Cell row={statusRow(null)} />)
       expect(screen.getByText('Disk full')).toHaveClass('ui-data-table__visually-hidden')
     })
   })
 
-  describe('edge cases', () => {
-    it('matches the status case-insensitively', () => {
-      const upper = inRow(
-        <IconStatusCellView row={statusRow('COMPLETED')} keyName="status" extraProps={{}} />
-      )
-      const upperIcon = upper.container.querySelector('svg')?.outerHTML
-      upper.unmount()
-      const lower = inRow(
-        <IconStatusCellView row={statusRow('completed')} keyName="status" extraProps={{}} />
-      )
-      const lowerIcon = lower.container.querySelector('svg')?.outerHTML
-      lower.unmount()
-      const fallback = inRow(
-        <IconStatusCellView row={statusRow('Weird')} keyName="status" extraProps={{}} />
-      )
-      expect(upperIcon).toBe(lowerIcon)
-      expect(upperIcon).not.toBe(fallback.container.querySelector('svg')?.outerHTML)
-    })
-  })
+  // L5: covered by the view's edge cases (case-insensitive match).
 })
 
 describe('ClickableCellView', () => {

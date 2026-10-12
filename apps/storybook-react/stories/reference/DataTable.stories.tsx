@@ -1,6 +1,15 @@
-import { Profiler } from 'react'
+import { Profiler, useState } from 'react'
 
+import { Badge } from '@fubaritico/react/Badge'
+import { Button } from '@fubaritico/react/Button'
+import {
+  ClickableCellView,
+  IconStatusCellView,
+  LabelWithTooltipCellView,
+} from '@fubaritico/react/DataTable'
 import DataTableExample, { makeJobs } from '@fubaritico/react/DataTableExample'
+import { Icon } from '@fubaritico/react/Icon'
+import { Modal } from '@fubaritico/react/Modal'
 
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { ProfilerOnRenderCallback } from 'react'
@@ -166,4 +175,133 @@ export const Empty: Story = {
     enableRowSelection: false,
     debugTimings: false,
   },
+}
+
+/** Width (px) of the table in the modal — narrow enough that names, dates and headers get cut. */
+const MODAL_TABLE_WIDTH = 760
+
+/**
+ * A button opening the paginated table in a Modal.
+ *
+ * @returns The trigger and its modal.
+ */
+function TableInModal() {
+  const [isOpen, setIsOpen] = useState(false)
+  return (
+    <>
+      <Button
+        onClick={() => {
+          setIsOpen(true)
+        }}
+      >
+        Open the table in a modal
+      </Button>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false)
+        }}
+        aria-label="Jobs"
+      >
+        <div style={{ inlineSize: MODAL_TABLE_WIDTH, maxInlineSize: '90vw' }}>
+          <DataTableExample
+            data={paginatedData}
+            locale="en_US"
+            loading={false}
+            virtualized={false}
+            enableRowSelection={false}
+            debugTimings={false}
+          />
+        </div>
+      </Modal>
+    </>
+  )
+}
+
+/**
+ * The table inside a Modal (`<dialog>`, top layer). Hover or Tab onto a cut-off name, date or
+ * header: the tooltip opens ABOVE the modal. Escape closes the tooltip only — a second Escape closes
+ * the modal. The column filter and page-size menus open in the top layer too.
+ */
+export const InModal: Story = {
+  parameters: { controls: { disable: true }, layout: 'centered' },
+  render: () => <TableInModal />,
+}
+
+/** Width (px) of each column of the hint-cells table — cuts the long badge label. */
+const HINT_COLUMN_WIDTH = 140
+
+/** Header labels of the hint-cells table. */
+const HINT_HEADERS = [
+  'Label + hint',
+  'Status + hint',
+  'Action + hint',
+  'Badge (truncate)',
+]
+
+/**
+ * The cells that show a hint or a cut-off text in a tooltip, in a fixed-width table. First row:
+ * every cell has something to reveal (each is one Tab stop). Second row: short values and no hints —
+ * nothing to reveal, no tab stop, no bubble (only the button stays focusable).
+ */
+export const TooltipCells: Story = {
+  parameters: { controls: { disable: true }, layout: 'centered' },
+  render: () => (
+    // `.ui-data-table` carries the grid's vars, as the Card of a real DataTable does.
+    <div className="ui-data-table">
+      <table
+        className="ui-data-table__table"
+        style={{ inlineSize: HINT_COLUMN_WIDTH * HINT_HEADERS.length }}
+      >
+        <thead>
+          <tr className="ui-data-table__row">
+            {HINT_HEADERS.map((header) => (
+              <th key={header} className="ui-data-table__head">
+                {header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          <tr className="ui-data-table__row">
+            <LabelWithTooltipCellView
+              value="HRE"
+              tooltipText="Holy Roman Empire, 962–1806"
+            />
+            <IconStatusCellView
+              status="Failed"
+              tooltipText="Disk full on node 3"
+            />
+            <ClickableCellView
+              content={<Icon name="XMark" size={20} />}
+              ariaLabel="Delete job 42"
+              tooltipText="Removes the job for good"
+              onClick={() => {
+                console.warn('[TooltipCells] delete job 42')
+              }}
+            />
+            <td className="ui-data-table__cell">
+              <Badge icon="ExclamationTriangle" canTruncate>
+                Waiting for an upstream dependency
+              </Badge>
+            </td>
+          </tr>
+          <tr className="ui-data-table__row">
+            <LabelWithTooltipCellView value="FR" />
+            <IconStatusCellView status="Completed" />
+            <ClickableCellView
+              content={<Icon name="XMark" size={20} />}
+              ariaLabel="Delete job 43"
+              onClick={() => {
+                console.warn('[TooltipCells] delete job 43')
+              }}
+            />
+            <td className="ui-data-table__cell">
+              <Badge canTruncate>Done</Badge>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  ),
 }

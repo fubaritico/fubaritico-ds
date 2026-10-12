@@ -26,9 +26,7 @@ table instance in. This is the dependency-injection seam that keeps the grid fra
 ## Import
 
 ```tsx
-import DataTable, {
-  DataTableVirtualized,
-} from '@fubaritico/react/DataTable'
+import DataTable, { DataTableVirtualized } from '@fubaritico/react/DataTable'
 // building blocks for your columns:
 import {
   BadgeStatusCell,
@@ -135,6 +133,44 @@ function JobsTable({ data, columns }) {
 
 Same as above minus `maxHeight`/`stickyHeader`; adds **`height`** (viewport px of the scrollable region;
 the header is always sticky in virtualized mode).
+
+### Cell views (usable without a TanStack row)
+
+The factories (`IconStatusCell`, `ClickableCell`, …) read the row and render a **view**. The views
+are exported too, for a cell you compose yourself:
+
+```tsx
+import {
+  ClickableCellView,
+  IconStatusCellView,
+  LabelWithTooltipCellView,
+} from '@fubaritico/react/DataTable'
+import { Icon } from '@fubaritico/react/Icon'
+
+// The views render `<td>`s: place them in a row.
+export function JobRow({ onDelete }: { onDelete: () => void }) {
+  return (
+    <tr>
+      <LabelWithTooltipCellView value="HRE" tooltipText="Holy Roman Empire" />
+      <IconStatusCellView status="Failed" tooltipText="Disk full on node 3" />
+      <ClickableCellView
+        content={<Icon name="XMark" />}
+        ariaLabel="Delete job 42"
+        tooltipText="Removes the job for good"
+        onClick={onDelete}
+      />
+    </tr>
+  )
+}
+```
+
+| View                       | Props                                                            |
+| -------------------------- | ---------------------------------------------------------------- |
+| `LabelWithTooltipCellView` | `value?`, `tooltipText?`                                         |
+| `IconStatusCellView`       | `status`, `extraProps?` (Icon props), `tooltipText?`             |
+| `ClickableCellView`        | `content`, `onClick`, `ariaLabel?`, `tooltipText?`, `className?` |
+
+`IconStatusCell(extraProps?, keyName = 'status', tooltipText?)` takes the hint as its third argument.
 
 ## Accessibility
 

@@ -11,7 +11,6 @@ import { Tooltip, useTooltip } from '../../../../Tooltip'
 import { TableCell } from '../../primitives/TableCell'
 
 import type { IconName, IconProps } from '../../../../Icon'
-import type { Row } from '@tanstack/react-table'
 
 /** Maps a (lowercased) status to a DS icon. Custom hexagon glyphs are mapped to heroicons for now. */
 const STATUS_ICON: Record<string, IconName> = {
@@ -29,12 +28,10 @@ const STATUS_ICON_SIZE = 20
 
 /** Props of {@link IconStatusCellView}. */
 export interface IconStatusCellViewProps {
-  /** Key to read the status from the row. */
-  keyName: string
-  /** The row whose status is rendered. */
-  row: Row<unknown>
+  /** The status to render (matched case-insensitively; an unknown or empty one gets the default icon). */
+  status: string
   /** Extra DS Icon props (size/className overrides); `name` is derived from the status. */
-  extraProps: Partial<Omit<IconProps, 'name'>>
+  extraProps?: Partial<Omit<IconProps, 'name'>>
   /** Optional hint, shown in a tooltip on hover / keyboard focus and read by assistive technology. */
   tooltipText?: string
 }
@@ -51,14 +48,10 @@ export interface IconStatusCellViewProps {
  * @returns The status-icon cell.
  */
 export function IconStatusCellView({
-  row,
+  status,
   extraProps,
-  keyName,
   tooltipText,
 }: Readonly<IconStatusCellViewProps>) {
-  // Malformed data (no status) falls back to the default icon rather than crashing the table.
-  const raw = row.getValue<unknown>(keyName)
-  const status = typeof raw === 'string' ? raw : ''
   const iconName = STATUS_ICON[status.toLowerCase()] ?? DEFAULT_STATUS_ICON
   const triggerRef = useRef<HTMLSpanElement>(null)
   const { open, triggerProps, bubbleProps } = useTooltip({
