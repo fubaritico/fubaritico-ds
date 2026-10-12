@@ -66,7 +66,8 @@ pnpm build        # lerna run build        (topo order via Nx)
 pnpm type-check   # lerna run type-check
 pnpm test         # lerna run test
 pnpm lint         # lerna run lint
-pnpm dev          # lerna run --parallel --stream dev
+pnpm dev          # lerna run --parallel --stream dev (watch modes only — NOT a full build;
+                  #   includes a Stencil dev server; Storybook needs `pnpm build`)
 ```
 
 - `nx.json` `targetDefaults`: `build`/`type-check`/`test` have `dependsOn: ['^build']` so dependencies

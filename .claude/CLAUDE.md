@@ -97,7 +97,7 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
 - **Never `console.log`** — use `console.warn` / `console.error`
 - **Never explicit `any`** — strict TypeScript
 - **Always run** `pnpm type-check && pnpm lint && pnpm test` then `/review` after every set of modifications
-- **Always ask** user to run `pnpm dev` (or `stencil build` for the stencil package) and `pnpm storybook` after having modified a component
+- **Always ask** user to check the component in Storybook after modifying it: `pnpm build` (or the touched package's build, e.g. `pnpm --filter @fubaritico/react build`; `stencil build` for stencil), then `pnpm storybook:ref` — Storybook reads the `dist`. Not `pnpm dev` (watch modes + a Stencil server, no full build). Skip the build when the pre-commit gate just rebuilt it.
 - **Always create a Storybook story** after every component (`/story`)
 - **Model**: Haiku for questions/research, Sonnet for code/commits — suggest Haiku when appropriate
 - **For React**: instead of using `React.` for react types, import the type from react
