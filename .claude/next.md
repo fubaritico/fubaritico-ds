@@ -9,13 +9,16 @@
 > `TruncatedText`, Dropdown / Typeahead / BottomSheet / DropdownFilter / TableFooterContent dans le
 > top layer, augmentation `SortingFns` retirée de `DataTableExample` (voir `completed.md`).
 >
+> **Étape 4 de TruncatedText faite** (2026-10-12, à inclure dans la 0.6.0 : `ClickableCellView`,
+> `UI_DATA_TABLE_HINT_CLASS`, Badge `canTruncate` focusable une fois coupé).
+>
 > **Suite immédiate, dans l'ordre** :
 > 1. **Release 0.6.0** (`/release`, minor : il y a des `feat` et des retraits d'API) + **handoff Atlas** :
 >    Échap dans leur modale ne ferme plus que le menu du Dropdown ; leur contournement
 >    `.polity-form .ui-card { overflow: visible }` devient inutile ; retraits : axe `flipped` de
 >    `dropdownMenuVariants`, `--ui-dropdown-z`, `typeaheadMenuVariants`, `--ui-typeahead-menu-z-index`,
 >    `BOTTOM_SHEET_OVERLAY_CLASS`, `--ui-bottom-sheet-z-index` ; `aria-label` requis sur BottomSheet.
-> 2. Étape 4 de TruncatedText (section ci-dessous), puis le chantier des **thèmes**.
+> 2. Le chantier des **thèmes** ; focus itinérant `role="grid"` du DataTable en file.
 >
 > **Procédure de release** : `README.md` → « Publishing a release », skill **`/release`**. Feu vert
 > du dev à chaque publication. Pistes ColorPicker (curseurs par canal, Recent Colors, EyeDropper)
@@ -26,12 +29,12 @@
 
 ## FAIT (2026-10-11) — « Tooltip on truncated text » → `TruncatedText`
 
-Le stub `WithTooltip` est remplacé et supprimé. En quatre étapes validées : Tooltip dans le top
-layer (portal en option), `TooltipService` + `useTooltip` (WCAG 1.4.13), `TruncatedText` (mesuré,
-bulle `aria-hidden`, focusable seulement si coupé). **Reste l'étape 4** : remplacer les pis-aller
-`title`/`aria-label` dans `TruncatedContent`, `TruncableLinkCellView`, `SortableHeaderCellView`,
-Badge `canTruncate`, `DateCell`, items du Listbox — et les cellules qui recâblent la Tooltip à la
-main (`ClickableCell`, `IconStatusCellView`, `LabelWithTooltipCellView`) → `useTooltip`.
+Le stub `WithTooltip` est remplacé et supprimé. Quatre étapes, **toutes faites** (étape 4 le
+2026-10-12) : plus aucun `title`/`aria-label` de pis-aller. Texte coupé → `TruncatedText`
+(`TruncatedContent`/`DateCell`, en-têtes, Badge `canTruncate`) ou hooks directs (cellule lien) ;
+indices → `useTooltip` + texte masqué (`.ui-data-table__hint`). Listbox : rien à faire (ne tronque pas).
+**Suite prévue (décision dev)** : focus itinérant **`role="grid"`** du DataTable — un seul arrêt de
+Tab pour la grille, au lieu d'un par cellule coupée / indice (voir `known-issues.md`).
 
 ## FAIT (2026-10-09) — tests navigateur (Vitest Browser Mode + Playwright)
 

@@ -120,6 +120,10 @@ Put here the know issues to avoid cluttering the context window.
   `showPopover()` dans un callback ref, ancre CSS par instance `--ui-<bloc>-anchor` (posée sur la
   racine ET sur la surface), placement `@supports (position-anchor: …)`, test navigateur « ouvert
   dans une Modal ». Un menu portalisé perd les vars du bloc → `.ui-x, body > .ui-x__menu { vars }`.
+- **Cellules à indice / texte coupé = un arrêt de Tab chacune (ASSUMÉ 2026-10-12)** : `TruncatedText`
+  coupé et `.ui-data-table__hint` (`<span tabIndex={0}>` SANS rôle, exception ARIA acceptée) jusqu'au
+  focus itinérant `role="grid"` prévu. Indice aussi en texte masqué (`aria-describedby` n'existe que
+  bulle ouverte). Vars `--ui-data-table-hint-*` sur `.ui-data-table` : la fixture doit l'avoir.
 - **Ne JAMAIS augmenter `SortingFns` (ou `FilterFns`) de TanStack (2026-10-12)** : dès qu'une clé y
   est ajoutée, `sortingFns` devient OBLIGATOIRE sur tout `useReactTable` (`RowSorting.d.ts`,
   `ResolvedSortingFns`), et un `declare module` part dans le `.d.ts` publié, donc chez le
