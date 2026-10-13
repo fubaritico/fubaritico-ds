@@ -3,22 +3,15 @@
 > Loaded at session start (CLAUDE.md `### Next` → `@next.md`). Single source for "what's next".
 > North-star program: **`files/plans/roadmap.md`** (phases A→F).
 
-> ## ▶ ÉTAT AU 2026-10-12 NUIT — **0.5.0 PUBLIÉE**, 10 commits poussés NON publiés
+> ## ▶ ÉTAT AU 2026-10-13 — **0.6.0 PUBLIÉE**, handoff Atlas écrit
 >
-> Depuis `v0.5.0` : garde `display`, API des coins, Tooltip top layer, `TooltipService`/`useTooltip`,
-> `TruncatedText`, Dropdown / Typeahead / BottomSheet / DropdownFilter / TableFooterContent dans le
-> top layer, augmentation `SortingFns` retirée de `DataTableExample` (voir `completed.md`).
+> 0.6.0 publiée le 2026-10-13 (`behaviors`, `react`, `styles`, `tokens`, `variants`) : top layer
+> pour Tooltip / Dropdown / Typeahead / BottomSheet / menus du DataTable, `TooltipService`,
+> `TruncatedText` (étapes 1-4), API des coins, vues de cellules exportées. CHANGELOG complétés à la
+> main (`cadca4a` : retraits d'API + fix `109a8bb` mal typé). Handoff dans
+> `europe-map/HANDOFF-from-fubaritico-ds.md` (leur `^0.5.0` n'accepte pas la 0.6.0).
 >
-> **Étape 4 de TruncatedText faite** (2026-10-12, à inclure dans la 0.6.0 : `ClickableCellView`,
-> `UI_DATA_TABLE_HINT_CLASS`, Badge `canTruncate` focusable une fois coupé).
->
-> **Suite immédiate, dans l'ordre** :
-> 1. **Release 0.6.0** (`/release`, minor : il y a des `feat` et des retraits d'API) + **handoff Atlas** :
->    Échap dans leur modale ne ferme plus que le menu du Dropdown ; leur contournement
->    `.polity-form .ui-card { overflow: visible }` devient inutile ; retraits : axe `flipped` de
->    `dropdownMenuVariants`, `--ui-dropdown-z`, `typeaheadMenuVariants`, `--ui-typeahead-menu-z-index`,
->    `BOTTOM_SHEET_OVERLAY_CLASS`, `--ui-bottom-sheet-z-index` ; `aria-label` requis sur BottomSheet.
-> 2. Le chantier des **thèmes** ; focus itinérant `role="grid"` du DataTable en file.
+> **Suite** : le chantier des **thèmes** ; focus itinérant `role="grid"` du DataTable en file.
 >
 > **Procédure de release** : `README.md` → « Publishing a release », skill **`/release`**. Feu vert
 > du dev à chaque publication. Pistes ColorPicker (curseurs par canal, Recent Colors, EyeDropper)
