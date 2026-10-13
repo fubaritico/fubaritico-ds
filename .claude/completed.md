@@ -2,6 +2,25 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-10-13 — release 0.6.0, rôles de couleur renommés (étape 1 des thèmes)
+
+**Deux plages au journal** (14:55 → 15:05 ; 16:51 → 18:09, ~1h30 journalisées — le journal ne voit
+pas toute la soirée), 6e jour du chantier ouvert le 08/10. Poussé, non publié.
+
+- **0.6.0 publiée** + CHANGELOG complétés (`cadca4a`) + handoff Atlas.
+- **Plan des thèmes** (`files/plans/theming.md`) : marque blanche (radius 0), `tone` (camaïeu sur
+  une graine), `dark` (primary coloré) ; dérivation OKLCH au runtime depuis `--theme-seed`, table
+  L/C reprise du date-time-picker du dev. Un thème redéfinit les RÔLES, jamais l'échelle de gris.
+- **Le « muted » du 16/07 clarifié par le dev** : il visait les NOMS flous, pas la couche
+  sémantique. D'où **`c88df0f` `feat(tokens)!`** : `roles.json` remplace semantic + aliases,
+  `--color-<ce qu'on peint>-<rôle>`, 27 skins recâblés, primitives seulement dans le color picker,
+  garde `styles/test/color-roles.test.ts`. Diff résolu avant/après : 5 écarts voulus seulement
+  (survols 100→150, bordure outline 300→450, texte destructif 500→600, flèche désactivée 450→400).
+- **Review** : l'infobulle par défaut était devenue blanche sur blanche (règle de réécriture trop
+  large) — rattrapé ; `text-destructive` et `fill-on-inverse*` créés, `black` retiré.
+- **Migration Atlas** écrite (`europe-map/MIGRATION-color-roles-from-fubaritico-ds.md`), à n'appliquer
+  qu'avec la 0.7.0.
+
 ### 2026-10-11 — releases 0.4.1 / 0.5.0, coins, Tooltip → TruncatedText, portals → top layer
 
 **Une plage** (13:30 → 21:18, 7h48, 405 actions), 5e plage du chantier ouvert le 08/10 (20h34

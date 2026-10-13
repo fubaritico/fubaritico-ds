@@ -3,22 +3,22 @@
 > Loaded at session start (CLAUDE.md `### Next` → `@next.md`). Single source for "what's next".
 > North-star program: **`files/plans/roadmap.md`** (phases A→F).
 
-> ## ▶ ÉTAT AU 2026-10-13 — **0.6.0 PUBLIÉE**, handoff Atlas écrit
+> ## ▶ ÉTAT AU 2026-10-13 (soir) — **chantier des THÈMES, étape 1/5 faite** (`c88df0f`, poussé)
 >
-> 0.6.0 publiée le 2026-10-13 (`behaviors`, `react`, `styles`, `tokens`, `variants`) : top layer
-> pour Tooltip / Dropdown / Typeahead / BottomSheet / menus du DataTable, `TooltipService`,
-> `TruncatedText` (étapes 1-4), API des coins, vues de cellules exportées. CHANGELOG complétés à la
-> main (`cadca4a` : retraits d'API + fix `109a8bb` mal typé). Handoff dans
-> `europe-map/HANDOFF-from-fubaritico-ds.md` (leur `^0.5.0` n'accepte pas la 0.6.0).
+> Plan : **`files/plans/theming.md`**. Étape 1 (rôles de couleur renommés) validée par le dev dans
+> Storybook. **À voir d'abord demain** : le dev a relevé « un tout petit truc » dans la typo
+> (Typography ?) — lui demander ce que c'est avant d'enchaîner.
 >
-> **Suite** : le chantier des **thèmes** ; focus itinérant `role="grid"` du DataTable en file.
+> **Ensuite, étape 2** : marque blanche radius → 0 (tokens radius) + note CHANGELOG. Puis 3 :
+> mécanisme `[data-theme]` (build SD par thème, toolbar Storybook, test de contraste navigateur) ;
+> 4 : `tone` ; 5 : `dark`. Notes pour l'étape 3 : survol de ligne du tableau dérivé de `selected`
+> à 50 % (pas de `hover`) ; bordure de l'alerte success (green.500, ~2,3:1) → `success-hover` ?
 >
-> **Procédure de release** : `README.md` → « Publishing a release », skill **`/release`**. Feu vert
-> du dev à chaque publication. Pistes ColorPicker (curseurs par canal, Recent Colors, EyeDropper)
-> reportées par le dev — ce qu'Atlas a suffit.
+> **0.7.0 (non publiée)** : contient le renommage cassant. À la publication, handoff disant à Atlas
+> d'appliquer `europe-map/MIGRATION-color-roles-from-fubaritico-ds.md`.
 >
-> **Dette doc** : `completed.md` archivé au 2026-09-16 (`completed-archive.md`) ; `patterns-ui.md`
-> scindé (`rules/patterns-compound.md`).
+> **En file** : focus itinérant `role="grid"` du DataTable. Procédure de release : `README.md` →
+> « Publishing a release », skill **`/release`**, feu vert du dev à chaque publication.
 
 ## FAIT (2026-10-11) — « Tooltip on truncated text » → `TruncatedText`
 
