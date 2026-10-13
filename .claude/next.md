@@ -14,8 +14,10 @@
 > 4 : `tone` ; 5 : `dark`. Notes pour l'étape 3 : survol de ligne du tableau dérivé de `selected`
 > à 50 % (pas de `hover`) ; bordure de l'alerte success (green.500, ~2,3:1) → `success-hover` ?
 >
-> **0.7.0 (non publiée)** : contient le renommage cassant. À la publication, handoff disant à Atlas
-> d'appliquer `europe-map/MIGRATION-color-roles-from-fubaritico-ds.md`.
+> **0.7.0 (non publiée, prévue le 2026-10-14)** : contient le renommage cassant. Atlas est en
+> phase de TEST de son app et ne montera de version qu'après ces tests, bien plus tard (dev,
+> 2026-10-13) : ne pas presser l'upgrade. Handoff à la publication = pointer vers
+> `europe-map/MIGRATION-color-roles-from-fubaritico-ds.md`, à appliquer quand ils upgraderont.
 >
 > **En file** : focus itinérant `role="grid"` du DataTable. Procédure de release : `README.md` →
 > « Publishing a release », skill **`/release`**, feu vert du dev à chaque publication.
