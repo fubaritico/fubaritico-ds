@@ -1,0 +1,225 @@
+{
+  "color": {
+    "$description": "Colour ROLES — what each colour paints. Skins read these, themes redefine them. Naming: `--color-<what it paints>-<role>[-<state>]`.",
+    "surface": {
+      "$value": "{color.primitive.neutral.0}",
+      "$type": "color",
+      "$description": "Page and in-flow surfaces: inputs, checkboxes, outline buttons, alerts."
+    },
+    "surface-raised": {
+      "$value": "{color.primitive.neutral.0}",
+      "$type": "color",
+      "$description": "Panels laid over the page: card, menu, popover, tooltip, drawer, data table."
+    },
+    "surface-sunken": {
+      "$value": "{color.primitive.neutral.100}",
+      "$type": "color",
+      "$description": "Recessed areas: image placeholder, tab track."
+    },
+    "surface-inverse": {
+      "$value": "{color.primitive.neutral.900}",
+      "$type": "color",
+      "$description": "Inverse panel (the `dark` variants of listbox, drawer, bottom sheet, ghost-dark icon button)."
+    },
+    "surface-inverse-hover": {
+      "$value": "{color.primitive.neutral.800}",
+      "$type": "color",
+      "$description": "Hover fill on an inverse panel."
+    },
+    "surface-inverse-pressed": {
+      "$value": "{color.primitive.neutral.700}",
+      "$type": "color",
+      "$description": "Pressed fill on an inverse panel."
+    },
+    "surface-inverse-selected": {
+      "$value": "{color.primitive.neutral.850}",
+      "$type": "color",
+      "$description": "Selected fill on an inverse panel."
+    },
+    "overlay": {
+      "$value": "{color.primitive.neutral.950}",
+      "$type": "color",
+      "$description": "Scrim behind a modal, drawer or bottom sheet."
+    },
+    "fill": {
+      "$value": "{color.primitive.neutral.100}",
+      "$type": "color",
+      "$description": "Neutral filled control: secondary button, badge, avatar, skeleton."
+    },
+    "fill-hover": {
+      "$value": "{color.primitive.neutral.200}",
+      "$type": "color",
+      "$description": "Hover of a neutral filled control."
+    },
+    "hover": {
+      "$value": "{color.primitive.neutral.150}",
+      "$type": "color",
+      "$description": "Hover fill of a list item, ghost/outline button, pagination button."
+    },
+    "pressed": {
+      "$value": "{color.primitive.neutral.200}",
+      "$type": "color",
+      "$description": "Pressed/active fill of a list item."
+    },
+    "selected": {
+      "$value": "{color.primitive.neutral.100}",
+      "$type": "color",
+      "$description": "Selected fill of a list item or table row."
+    },
+    "track": {
+      "$value": "{color.primitive.neutral.200}",
+      "$type": "color",
+      "$description": "Unfilled part of a slider or progress bar."
+    },
+    "text": {
+      "$value": "{color.primitive.neutral.900}",
+      "$type": "color",
+      "$description": "Body text."
+    },
+    "text-secondary": {
+      "$value": "{color.primitive.neutral.500}",
+      "$type": "color",
+      "$description": "Labels, hints, dates, secondary glyphs (≥4.5:1 on surface)."
+    },
+    "text-placeholder": {
+      "$value": "{color.primitive.neutral.500}",
+      "$type": "color",
+      "$description": "Field placeholder (kept at 4.5:1)."
+    },
+    "text-disabled": {
+      "$value": "{color.primitive.neutral.400}",
+      "$type": "color",
+      "$description": "Disabled text, empty-list message — below 4.5:1, never for content."
+    },
+    "text-on-primary": {
+      "$value": "{color.primitive.neutral.0}",
+      "$type": "color",
+      "$description": "Text and icons on a primary fill."
+    },
+    "text-on-destructive": {
+      "$value": "{color.primitive.neutral.0}",
+      "$type": "color",
+      "$description": "Text and icons on a destructive fill."
+    },
+    "text-on-success": {
+      "$value": "{color.primitive.neutral.0}",
+      "$type": "color",
+      "$description": "Text and icons on a success fill."
+    },
+    "text-destructive": {
+      "$value": "{color.primitive.red.600}",
+      "$type": "color",
+      "$description": "Error text and glyph (5.9:1 on white): field error message, error alert, destructive menu item."
+    },
+    "text-on-inverse": {
+      "$value": "{color.primitive.neutral.200}",
+      "$type": "color",
+      "$description": "Text on an inverse panel."
+    },
+    "text-on-inverse-strong": {
+      "$value": "{color.primitive.neutral.0}",
+      "$type": "color",
+      "$description": "Emphasised text on an inverse panel (hover, selected)."
+    },
+    "text-on-inverse-secondary": {
+      "$value": "{color.primitive.neutral.400}",
+      "$type": "color",
+      "$description": "Secondary text and glyphs on an inverse panel."
+    },
+    "fill-on-inverse": {
+      "$value": "{color.primitive.neutral.0}",
+      "$type": "color",
+      "$description": "Light fill on an inverse panel (pressed ghost-dark icon button)."
+    },
+    "fill-on-inverse-hover": {
+      "$value": "{color.primitive.neutral.200}",
+      "$type": "color",
+      "$description": "Hover of the light fill on an inverse panel."
+    },
+    "table-header-text": {
+      "$value": "{color.primitive.neutral.600}",
+      "$type": "color",
+      "$description": "Data table column headers."
+    },
+    "border": {
+      "$value": "{color.primitive.neutral.200}",
+      "$type": "color",
+      "$description": "Decorative hairline between surfaces."
+    },
+    "border-strong": {
+      "$value": "{color.primitive.neutral.450}",
+      "$type": "color",
+      "$description": "Boundary of a control (field, outline button) — the lightest grey at ≥3:1 on white (WCAG 1.4.11)."
+    },
+    "border-strong-hover": {
+      "$value": "{color.primitive.neutral.500}",
+      "$type": "color",
+      "$description": "Hovered control boundary."
+    },
+    "border-on-inverse": {
+      "$value": "{color.primitive.neutral.700}",
+      "$type": "color",
+      "$description": "Hairline on an inverse panel."
+    },
+    "focus": {
+      "$value": "{color.primitive.neutral.500}",
+      "$type": "color",
+      "$description": "Focus outline — ≥3:1 on white and on the inverse panel."
+    },
+    "primary": {
+      "$value": "{color.primitive.neutral.900}",
+      "$type": "color",
+      "$description": "Primary action fill; also checked box, active tab, slider fill."
+    },
+    "primary-hover": {
+      "$value": "{color.primitive.neutral.800}",
+      "$type": "color",
+      "$description": "Hover of the primary fill."
+    },
+    "destructive": {
+      "$value": "{color.primitive.red.500}",
+      "$type": "color",
+      "$description": "Destructive / error fill and boundary."
+    },
+    "destructive-hover": {
+      "$value": "{color.primitive.red.600}",
+      "$type": "color",
+      "$description": "Hover of the destructive fill; error message text (5.9:1)."
+    },
+    "success": {
+      "$value": "{color.primitive.green.500}",
+      "$type": "color",
+      "$description": "Success fill and boundary."
+    },
+    "success-hover": {
+      "$value": "{color.primitive.green.600}",
+      "$type": "color",
+      "$description": "Hover of the success fill."
+    },
+    "warning": {
+      "$value": "{color.primitive.amber.600}",
+      "$type": "color",
+      "$description": "Warning boundary and glyph."
+    },
+    "rating-filled": {
+      "$value": "{color.primitive.neutral.900}",
+      "$type": "color",
+      "$description": "Filled part of a rating."
+    },
+    "rating-empty": {
+      "$value": "{color.primitive.neutral.300}",
+      "$type": "color",
+      "$description": "Empty part of a rating (display-only, see known issues)."
+    },
+    "skeleton-shimmer": {
+      "$value": "rgba(255, 255, 255, 0.8)",
+      "$type": "color",
+      "$description": "Highlight sweeping over a skeleton."
+    },
+    "white": {
+      "$value": "{color.primitive.neutral.0}",
+      "$type": "color",
+      "$description": "Theme-invariant white (legacy Tailwind `bg-white`, Carousel)."
+    }
+  }
+}

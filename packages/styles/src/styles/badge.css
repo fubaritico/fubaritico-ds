@@ -13,7 +13,7 @@
   .ui-badge {
     /* ---- override API (component-scoped) ---- */
     --ui-badge-bg: var(--color-primary);
-    --ui-badge-fg: var(--color-primary-foreground);
+    --ui-badge-fg: var(--color-text-on-primary);
     --ui-badge-border-color: transparent;
     --ui-badge-radius: var(--radius-full);
     --ui-badge-font-family: var(--font-inter);
@@ -48,21 +48,21 @@
 
   /* ---- variant modifiers (flat, single-class; only redefine vars) ---- */
   .ui-badge--secondary {
-    --ui-badge-bg: var(--color-secondary);
-    --ui-badge-fg: var(--color-secondary-foreground);
+    --ui-badge-bg: var(--color-fill);
+    --ui-badge-fg: var(--color-text);
   }
 
   .ui-badge--outline {
     --ui-badge-bg: transparent;
-    --ui-badge-fg: var(--color-foreground);
-    /* AA border (WCAG 1.4.11 ≥3:1): neutral.450 (~3:1 on white). `--color-input` (neutral.300) is only
-       ~1.48:1 and fails — same fix already applied to the Input control border. */
-    --ui-badge-border-color: var(--color-input-border);
+    --ui-badge-fg: var(--color-text);
+    /* AA border (WCAG 1.4.11 ≥3:1): neutral.450 (~3:1 on white). neutral.300 would only reach
+       ~1.48:1 and fail — `--color-border-strong`, the control-boundary role. */
+    --ui-badge-border-color: var(--color-border-strong);
   }
 
   .ui-badge--destructive {
     --ui-badge-bg: var(--color-destructive);
-    --ui-badge-fg: var(--color-destructive-foreground);
+    --ui-badge-fg: var(--color-text-on-destructive);
   }
 
   /* ---- size modifiers ---- */

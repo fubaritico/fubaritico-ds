@@ -20,7 +20,7 @@
   .ui-tooltip {
     /* ---- override API (component-scoped) ---- */
     --ui-tooltip-bg: var(--color-primary);
-    --ui-tooltip-fg: var(--color-primary-foreground);
+    --ui-tooltip-fg: var(--color-text-on-primary);
     --ui-tooltip-radius: var(--radius-md);
     --ui-tooltip-padding-block: var(--spacing-3);
     --ui-tooltip-padding-inline: var(--spacing-4);
@@ -79,8 +79,8 @@
   }
 
   .ui-tooltip--light {
-    --ui-tooltip-bg: var(--color-background);
-    --ui-tooltip-fg: var(--color-foreground);
+    --ui-tooltip-bg: var(--color-surface-raised);
+    --ui-tooltip-fg: var(--color-text);
 
     border: 1px solid var(--color-border);
   }

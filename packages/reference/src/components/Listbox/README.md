@@ -98,6 +98,5 @@ import { ListboxList, ListboxItem } from '@fubaritico/react/Listbox'
 > **Note** — pass `variant` to **both** `ListboxList` and each `ListboxItem`. The list styles the
 > surface; each item styles itself — they don't inherit the scheme from one another.
 
-> **Note** — the dark scheme reaches into the primitive neutral scale (no semantic on-dark tokens
-> yet). That is now the SETTLED convention, not a stopgap: no `--color-on-dark-*` family is minted —
-> every dark surface re-points its own role variables at the dark end of the neutral value scale.
+> **Note** — the dark scheme reads the inverse colour roles (`--color-surface-inverse-*`,
+> `--color-text-on-inverse-*`), so a theme recolours it; override `--ui-listbox-*` for one list.

@@ -22,14 +22,14 @@
     --ui-pagination-page-size: var(
       --spacing-9
     ); /* 36px — square hit target (≥ WCAG 2.5.5 AA 24px) */
-    --ui-pagination-ring-color: var(--color-ring);
+    --ui-pagination-ring-color: var(--color-focus);
     --ui-pagination-radius: var(--radius-md);
     --ui-pagination-font-family: var(--font-roboto);
     --ui-pagination-font-size: var(--font-size-sm);
-    --ui-pagination-fg: var(--color-foreground-muted);
-    --ui-pagination-fg-hover: var(--color-foreground);
-    --ui-pagination-fg-disabled: var(--color-input-border);
-    --ui-pagination-hover-bg: var(--color-muted);
+    --ui-pagination-fg: var(--color-text-secondary);
+    --ui-pagination-fg-hover: var(--color-text);
+    --ui-pagination-fg-disabled: var(--color-text-disabled);
+    --ui-pagination-hover-bg: var(--color-hover);
     --ui-pagination-active-color: var(--color-primary);
     --ui-pagination-transition-duration: var(--duration-fast);
     --ui-pagination-transition-easing: var(--easing-standard);

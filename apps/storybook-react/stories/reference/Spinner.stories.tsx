@@ -52,7 +52,7 @@ export const Showcase: Story = {
         <span style={{ color: 'var(--color-destructive)' }}>
           <Spinner size="md" />
         </span>
-        <span style={{ color: 'var(--color-foreground-muted)' }}>
+        <span style={{ color: 'var(--color-text-secondary)' }}>
           <Spinner size="md" />
         </span>
       </div>

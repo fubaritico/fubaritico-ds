@@ -15,9 +15,9 @@
 @layer ui.components {
   .ui-sort-arrows {
     /* ---- override API (component-scoped) ---- */
-    --ui-sort-arrows-color: var(--color-foreground-muted);
+    --ui-sort-arrows-color: var(--color-text-secondary);
     --ui-sort-arrows-dimmed-opacity: 0.5;
-    --ui-sort-arrows-ring-color: var(--color-ring);
+    --ui-sort-arrows-ring-color: var(--color-focus);
 
     box-sizing: border-box;
     display: inline-flex;

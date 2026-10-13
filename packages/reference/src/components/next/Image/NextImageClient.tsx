@@ -56,11 +56,11 @@ function NextImageClient({
   )
 
   const defaultFallback = (
-    <div className="ui:flex ui:h-full ui:w-full ui:items-center ui:justify-center ui:bg-muted">
+    <div className="ui:flex ui:h-full ui:w-full ui:items-center ui:justify-center ui:bg-surface-sunken">
       <Icon
         name="Photo"
         size={48}
-        className="ui:text-muted-foreground"
+        className="ui:text-text-secondary"
         aria-hidden="true"
       />
     </div>
@@ -68,7 +68,7 @@ function NextImageClient({
 
   return (
     <div
-      className={clsx('ui:relative ui:overflow-hidden ui:bg-muted', className)}
+      className={clsx('ui:relative ui:overflow-hidden ui:bg-surface-sunken', className)}
       style={aspectRatio ? { aspectRatio, ...style } : style}
       data-state={state}
       ref={wrapperRef}

@@ -21,11 +21,10 @@
 @layer ui.components {
   .ui-listbox {
     /* ---- override API (component-scoped ROLE vars) ---- */
-    /* Role vars wire straight to the neutral VALUE scale (not the shadcn `popover`/`secondary`/… role
-       aliases). The consumer overrides these `--ui-listbox-*` vars; whether they resolve to
-       neutral-100 or neutral-900 underneath is an opaque implementation detail. */
-    --ui-listbox-bg: var(--color-primitive-neutral-0);
-    --ui-listbox-border-color: var(--color-primitive-neutral-200);
+    /* Role vars wire to the colour roles (`--color-surface-raised`, `--color-hover`…), which a
+       theme redefines. The consumer overrides these `--ui-listbox-*` vars for one component. */
+    --ui-listbox-bg: var(--color-surface-raised);
+    --ui-listbox-border-color: var(--color-border);
     --ui-listbox-border-width: var(--spacing-px);
     --ui-listbox-radius: var(--radius-md);
     --ui-listbox-shadow: var(--shadow-md);
@@ -34,7 +33,7 @@
       --spacing-0-5
     ); /* 2px — space BETWEEN items so highlights never touch */
     --ui-listbox-max-block-size: var(--spacing-60); /* 15rem / 240px */
-    --ui-listbox-ring-color: var(--color-ring);
+    --ui-listbox-ring-color: var(--color-focus);
     --ui-listbox-ring-offset: var(--spacing-0-5);
 
     /* Self-sufficient: the skin sets its own box model so it survives in hosts with no reset
@@ -68,10 +67,10 @@
     outline-offset: var(--ui-listbox-ring-offset);
   }
 
-  /* Dark surface variant — re-points the same role vars to the darker end of the neutral value scale. */
+  /* Dark surface variant — re-points the same role vars to the inverse roles (`--color-surface-inverse-*`). */
   .ui-listbox--dark {
-    --ui-listbox-bg: var(--color-primitive-neutral-900);
-    --ui-listbox-border-color: var(--color-primitive-neutral-700);
+    --ui-listbox-bg: var(--color-surface-inverse);
+    --ui-listbox-border-color: var(--color-border-on-inverse);
   }
 
   /* ---- item ---- */
@@ -84,14 +83,14 @@
     --ui-listbox-item-font-size: var(--font-size-sm);
     --ui-listbox-item-line-height: var(--font-line-height-normal);
     --ui-listbox-item-selected-weight: var(--font-weight-medium);
-    --ui-listbox-item-color: var(--color-primitive-neutral-900);
+    --ui-listbox-item-color: var(--color-text);
     /* Emphasis ladder (light→dark): selected (persistent) < hover < active (keyboard cursor). */
-    --ui-listbox-item-hover-bg: var(--color-primitive-neutral-150);
-    --ui-listbox-item-hover-color: var(--color-primitive-neutral-900);
-    --ui-listbox-item-active-bg: var(--color-primitive-neutral-200);
-    --ui-listbox-item-active-color: var(--color-primitive-neutral-900);
-    --ui-listbox-item-selected-bg: var(--color-primitive-neutral-100);
-    --ui-listbox-item-selected-color: var(--color-primitive-neutral-900);
+    --ui-listbox-item-hover-bg: var(--color-hover);
+    --ui-listbox-item-hover-color: var(--color-text);
+    --ui-listbox-item-active-bg: var(--color-pressed);
+    --ui-listbox-item-active-color: var(--color-text);
+    --ui-listbox-item-selected-bg: var(--color-selected);
+    --ui-listbox-item-selected-color: var(--color-text);
     --ui-listbox-item-transition-duration: var(--duration-normal);
     --ui-listbox-item-transition-easing: var(--easing-standard);
 
@@ -147,16 +146,16 @@
     opacity: 0.5;
   }
 
-  /* Dark item variant — reaches into the primitive neutral scale (see `.ui-listbox--dark` note). */
+  /* Dark item variant — the inverse roles (see `.ui-listbox--dark` note). */
   .ui-listbox__item--dark {
-    --ui-listbox-item-color: var(--color-primitive-neutral-200);
+    --ui-listbox-item-color: var(--color-text-on-inverse);
     /* Same emphasis ladder on dark (distance from the neutral-900 surface): selected < hover < active. */
-    --ui-listbox-item-hover-bg: var(--color-primitive-neutral-800);
-    --ui-listbox-item-hover-color: var(--color-primitive-neutral-0);
-    --ui-listbox-item-active-bg: var(--color-primitive-neutral-700);
-    --ui-listbox-item-active-color: var(--color-primitive-neutral-0);
-    --ui-listbox-item-selected-bg: var(--color-primitive-neutral-850);
-    --ui-listbox-item-selected-color: var(--color-primitive-neutral-0);
+    --ui-listbox-item-hover-bg: var(--color-surface-inverse-hover);
+    --ui-listbox-item-hover-color: var(--color-text-on-inverse-strong);
+    --ui-listbox-item-active-bg: var(--color-surface-inverse-pressed);
+    --ui-listbox-item-active-color: var(--color-text-on-inverse-strong);
+    --ui-listbox-item-selected-bg: var(--color-surface-inverse-selected);
+    --ui-listbox-item-selected-color: var(--color-text-on-inverse-strong);
   }
 
   /* Respect reduced-motion: drop the colour transition (WCAG 2.3.3), as button.css does. */

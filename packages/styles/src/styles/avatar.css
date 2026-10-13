@@ -7,7 +7,7 @@
  *
  * Override surface (white-label), by precedence:
  *   1. Redefine the component-scoped `--ui-avatar-*` vars on `.ui-avatar` (surgical re-skin).
- *   2. Redefine a global token (e.g. `--color-muted`) → re-skins everything that uses it.
+ *   2. Redefine a global token (e.g. `--color-fill`) → re-skins everything that uses it.
  *   3. Write any plain selector (e.g. `.ui-avatar { ... }`): being unlayered, it beats this
  *      layered skin with no specificity war.
  *
@@ -20,8 +20,8 @@
   .ui-avatar {
     /* ---- override API (component-scoped) ---- */
     --ui-avatar-size: var(--spacing-10); /* 2.5rem — md base */
-    --ui-avatar-bg: var(--color-muted);
-    --ui-avatar-fg: var(--color-muted-foreground);
+    --ui-avatar-bg: var(--color-fill);
+    --ui-avatar-fg: var(--color-text-secondary);
     --ui-avatar-radius: var(--radius-full);
     --ui-avatar-font-family: var(--font-inter);
     --ui-avatar-font-weight: var(--font-weight-medium);

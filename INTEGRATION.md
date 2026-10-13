@@ -85,7 +85,7 @@ your app shell, as any application normally would:
 ```css
 body {
   font-family: var(--font-inter);
-  color: var(--color-foreground);
+  color: var(--color-text);
 }
 ```
 

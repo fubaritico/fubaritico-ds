@@ -37,10 +37,10 @@
     --ui-slider-thumb-border-width: var(--spacing-0-5);
 
     /* ---- override API: colours ---- */
-    --ui-slider-track-color: var(--color-primitive-neutral-200);
+    --ui-slider-track-color: var(--color-track);
     --ui-slider-range-color: var(--color-primary);
-    --ui-slider-thumb-color: var(--color-primitive-neutral-0);
-    --ui-slider-thumb-border-color: var(--color-primitive-neutral-900);
+    --ui-slider-thumb-color: var(--color-surface);
+    --ui-slider-thumb-border-color: var(--color-primary);
     --ui-slider-thumb-shadow: var(--shadow-sm);
     /* An arbitrary background for the track — a gradient, a checkerboard. Unset by default. */
     --ui-slider-track-image: none;
@@ -53,7 +53,7 @@
     --ui-slider-disabled-opacity: 0.5;
 
     /* ---- override API: focus ---- */
-    --ui-slider-ring-color: var(--color-ring);
+    --ui-slider-ring-color: var(--color-focus);
     --ui-slider-ring-width: 2px;
     --ui-slider-ring-offset: var(--spacing-0-5);
 

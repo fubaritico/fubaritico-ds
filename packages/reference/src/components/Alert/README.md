@@ -141,9 +141,9 @@ Forcing the politeness — a page-load banner should not interrupt:
 > **Note** — the Alert does not remove itself. `onDismiss` only tells you the button was pressed;
 > render it conditionally to make it disappear.
 
-> **Note** — the `warning` intent reads from the primitive amber scale, as no semantic warning
-> token exists yet. That follows the project convention (role variables wire to the value scale);
-> override `--ui-alert-accent` / `--ui-alert-border-color` to re-skin it.
+> **Note** — each intent reads a status role (`--color-success`, `--color-warning`,
+> `--color-text-destructive`); redefine the role to re-skin every intent, or override
+> `--ui-alert-accent` / `--ui-alert-border-color` for one alert.
 
 > **Note** — if you pass a custom `icon`, mark it `aria-hidden` unless it carries information the
 > text does not. A decorative glyph announced twice is noise.

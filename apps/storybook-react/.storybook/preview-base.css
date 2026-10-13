@@ -12,5 +12,5 @@
  */
 .sb-show-main {
   font-family: var(--font-inter);
-  color: var(--color-foreground);
+  color: var(--color-text);
 }

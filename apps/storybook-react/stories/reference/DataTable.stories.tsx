@@ -73,7 +73,7 @@ const meta = {
             minHeight: '100vh',
             boxSizing: 'border-box',
             padding: 24,
-            background: 'var(--color-background-muted)',
+            background: 'var(--color-surface-sunken)',
           }}
         >
           <Story />

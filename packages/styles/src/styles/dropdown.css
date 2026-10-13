@@ -37,7 +37,7 @@
     --ui-dropdown-font-family: var(--font-roboto);
     --ui-dropdown-transition-duration: var(--duration-fast);
     --ui-dropdown-transition-easing: var(--easing-standard);
-    --ui-dropdown-destructive-color: var(--color-destructive);
+    --ui-dropdown-destructive-color: var(--color-text-destructive);
     --ui-dropdown-divider-size: 1px;
     --ui-dropdown-divider-color: var(--color-border);
     --ui-dropdown-divider-margin: var(--spacing-1);

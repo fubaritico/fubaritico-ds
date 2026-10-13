@@ -26,8 +26,8 @@
 @layer ui.components {
   .ui-drawer {
     /* ---- override API (component-scoped ROLE vars) ---- */
-    --ui-drawer-bg: var(--color-primitive-neutral-0);
-    --ui-drawer-fg: var(--color-foreground);
+    --ui-drawer-bg: var(--color-surface-raised);
+    --ui-drawer-fg: var(--color-text);
     --ui-drawer-border-color: var(--color-border);
     --ui-drawer-border-width: var(--spacing-px);
     --ui-drawer-shadow: var(--shadow-2xl);
@@ -36,7 +36,7 @@
     --ui-drawer-footer-justify: center;
     --ui-drawer-padding-inline: var(--spacing-4);
     --ui-drawer-padding-block: var(--spacing-3);
-    --ui-drawer-backdrop-color: var(--color-primitive-neutral-950);
+    --ui-drawer-backdrop-color: var(--color-overlay);
     --ui-drawer-backdrop-opacity: 0.5;
     --ui-drawer-transition-duration: var(--duration-slow);
     --ui-drawer-transition-easing: var(--easing-standard);
@@ -127,12 +127,12 @@
   }
 
   /* ---- dark surface ---- */
-  /* Re-points the role vars at the dark end of the neutral value scale, exactly as
-     `.ui-listbox--dark` and `.ui-bottom-sheet--dark` do. No on-dark alias family. */
+  /* Re-points the role vars at the inverse roles, exactly as `.ui-listbox--dark` and
+     `.ui-bottom-sheet--dark` do. */
   .ui-drawer--dark {
-    --ui-drawer-bg: var(--color-primitive-neutral-900);
-    --ui-drawer-fg: var(--color-primitive-neutral-200);
-    --ui-drawer-border-color: var(--color-primitive-neutral-700);
+    --ui-drawer-bg: var(--color-surface-inverse);
+    --ui-drawer-fg: var(--color-text-on-inverse);
+    --ui-drawer-border-color: var(--color-border-on-inverse);
   }
 
   /* ---- regions ---- */

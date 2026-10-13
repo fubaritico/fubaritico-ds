@@ -33,7 +33,7 @@
     --ui-color-picker-gap: var(--spacing-3);
     --ui-color-picker-font-family: var(--font-inter);
     --ui-color-picker-font-size: var(--font-size-sm);
-    --ui-color-picker-text-color: var(--color-foreground);
+    --ui-color-picker-text-color: var(--color-text);
 
     /* ---- override API: area ---- */
     --ui-color-picker-area-aspect-ratio: 4 / 3;
@@ -64,10 +64,13 @@
     --ui-color-picker-swatch-radius: var(--radius-sm);
     --ui-color-picker-swatch-border-width: 1px;
     --ui-color-picker-swatch-border-color: var(--color-border);
-    --ui-color-picker-auto-stroke-color: var(--color-foreground-muted);
+    --ui-color-picker-auto-stroke-color: var(--color-text-secondary);
     --ui-color-picker-auto-stroke-width: 2px;
 
     /* ---- override API: checkerboard (under translucent colours) ---- */
+    /* Theme-INVARIANT on purpose, like the thumb rings: the picker paints colours, not chrome, so a
+       dark theme must not invert the checkerboard or the white/black rings that keep a thumb visible
+       on any colour. The only primitives the skin reads (guarded by test/color-roles.test.ts). */
     --ui-color-picker-checker-size: var(--spacing-2);
     --ui-color-picker-checker-light: var(--color-primitive-neutral-0);
     --ui-color-picker-checker-dark: var(--color-primitive-neutral-200);
@@ -83,11 +86,11 @@
       calc(var(--ui-color-picker-checker-size) * 2);
 
     /* ---- override API: hex error ---- */
-    --ui-color-picker-error-color: var(--color-destructive-hover);
+    --ui-color-picker-error-color: var(--color-text-destructive);
     --ui-color-picker-error-font-size: var(--font-size-xs);
 
     /* ---- override API: focus / states / motion ---- */
-    --ui-color-picker-ring-color: var(--color-ring);
+    --ui-color-picker-ring-color: var(--color-focus);
     /* Second tone of the focus ring: the ring sits on every colour, one tone alone can vanish. */
     --ui-color-picker-ring-contrast-color: var(--color-primitive-neutral-0);
     --ui-color-picker-ring-width: 2px;

@@ -10,7 +10,7 @@
  *
  * Override surface (white-label), by precedence:
  *   1. Redefine the component-scoped `--ui-field-*` vars (surgical re-skin).
- *   2. Redefine a global token (e.g. `--color-foreground`) → re-skins everything that uses it.
+ *   2. Redefine a global token (e.g. `--color-text`) → re-skins everything that uses it.
  *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
  *
  * Values come from @fubaritico/tokens.
@@ -22,13 +22,13 @@
     --ui-field-message-size: var(--font-size-sm);
     --ui-field-gap: var(--spacing-2);
     --ui-field-font-family: var(--font-roboto);
-    --ui-field-label-color: var(--color-foreground);
+    --ui-field-label-color: var(--color-text);
     --ui-field-label-weight: var(--font-weight-medium);
-    --ui-field-message-color: var(--color-muted-foreground);
+    --ui-field-message-color: var(--color-text-secondary);
     /* red.600 (not the base red.500): as TEXT this needs ≥4.5:1 on white (WCAG 1.4.3); red.500
        (#ef4444) only reaches ~3.7:1, red.600 (#dc2626) reaches ~5.9:1. The border/ring may stay
        red.500 — those are UI-component boundaries that only need ≥3:1. */
-    --ui-field-message-error-color: var(--color-destructive-hover);
+    --ui-field-message-error-color: var(--color-text-destructive);
     --ui-field-message-error-gap: var(--spacing-1);
 
     box-sizing: border-box;

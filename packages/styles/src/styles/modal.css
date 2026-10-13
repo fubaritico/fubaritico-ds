@@ -27,7 +27,7 @@
 @layer ui.components {
   .ui-modal {
     /* ---- override API (component-scoped) ---- */
-    --ui-modal-backdrop-color: var(--color-primitive-neutral-950);
+    --ui-modal-backdrop-color: var(--color-overlay);
     --ui-modal-backdrop-opacity: 0.8;
     --ui-modal-padding: var(--spacing-0);
     --ui-modal-place-items: center;

@@ -28,7 +28,7 @@
     /* ---- override API (component-scoped) ---- */
     --ui-rating-track-color: var(--color-rating-empty);
     --ui-rating-indicator-color: var(--color-rating-filled);
-    --ui-rating-value-color: var(--color-foreground);
+    --ui-rating-value-color: var(--color-text);
     --ui-rating-value-font-family: var(--font-roboto);
     --ui-rating-value-font-weight: var(--font-weight-medium);
     --ui-rating-value-line-height: var(--font-line-height-none);

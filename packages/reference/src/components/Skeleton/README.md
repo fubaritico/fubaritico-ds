@@ -65,7 +65,7 @@ import { Skeleton } from '@fubaritico/react/Skeleton'
 <Skeleton
   width="100%"
   height="1rem"
-  style={{ '--ui-skeleton-bg': 'var(--color-secondary)' }}
+  style={{ '--ui-skeleton-bg': 'var(--color-fill-hover)' }}
 />
 ```
 

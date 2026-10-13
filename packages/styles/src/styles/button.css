@@ -14,14 +14,14 @@
   .ui-button {
     /* ---- override API (component-scoped) ---- */
     --ui-button-bg: var(--color-primary);
-    --ui-button-fg: var(--color-primary-foreground);
+    --ui-button-fg: var(--color-text-on-primary);
     --ui-button-bg-hover: var(--color-primary-hover);
     --ui-button-fg-hover: var(
       --ui-button-fg
     ); /* variants that recolour text on hover override this */
     --ui-button-border-color: transparent;
     --ui-button-radius: var(--radius-sm);
-    --ui-button-ring-color: var(--color-ring);
+    --ui-button-ring-color: var(--color-focus);
     --ui-button-ring-offset: 2px;
     --ui-button-transition-duration: var(--duration-fast);
     --ui-button-transition-easing: var(--easing-standard);
@@ -101,26 +101,26 @@
 
   /* ---- variant modifiers (flat, single-class; only redefine vars) ---- */
   .ui-button--secondary {
-    --ui-button-bg: var(--color-secondary);
-    --ui-button-fg: var(--color-secondary-foreground);
-    --ui-button-bg-hover: var(--color-secondary-hover);
+    --ui-button-bg: var(--color-fill);
+    --ui-button-fg: var(--color-text);
+    --ui-button-bg-hover: var(--color-fill-hover);
   }
 
   .ui-button--destructive {
     --ui-button-bg: var(--color-destructive);
-    --ui-button-fg: var(--color-destructive-foreground);
+    --ui-button-fg: var(--color-text-on-destructive);
     --ui-button-bg-hover: var(--color-destructive-hover);
   }
 
   .ui-button--outline {
-    --ui-button-bg: var(--color-background);
-    --ui-button-fg: var(--color-foreground);
-    --ui-button-border-color: var(--color-input);
-    --ui-button-bg-hover: var(--color-accent);
-    --ui-button-fg-hover: var(--color-accent-foreground);
+    --ui-button-bg: var(--color-surface);
+    --ui-button-fg: var(--color-text);
+    --ui-button-border-color: var(--color-border-strong);
+    --ui-button-bg-hover: var(--color-hover);
+    --ui-button-fg-hover: var(--color-text);
     /* pressed: a dark fill, unmistakable against the light resting state */
     --ui-button-pressed-bg: var(--color-primary);
-    --ui-button-pressed-fg: var(--color-primary-foreground);
+    --ui-button-pressed-fg: var(--color-text-on-primary);
     --ui-button-pressed-border-color: var(--color-primary);
     --ui-button-pressed-ring-width: 0px;
     --ui-button-pressed-bg-hover: var(--color-primary-hover);
@@ -128,11 +128,11 @@
 
   .ui-button--ghost {
     --ui-button-bg: transparent;
-    --ui-button-fg: var(--color-foreground);
-    --ui-button-bg-hover: var(--color-accent);
-    --ui-button-fg-hover: var(--color-accent-foreground);
+    --ui-button-fg: var(--color-text);
+    --ui-button-bg-hover: var(--color-hover);
+    --ui-button-fg-hover: var(--color-text);
     --ui-button-pressed-bg: var(--color-primary);
-    --ui-button-pressed-fg: var(--color-primary-foreground);
+    --ui-button-pressed-fg: var(--color-text-on-primary);
     --ui-button-pressed-border-color: var(--color-primary);
     --ui-button-pressed-ring-width: 0px;
     --ui-button-pressed-bg-hover: var(--color-primary-hover);

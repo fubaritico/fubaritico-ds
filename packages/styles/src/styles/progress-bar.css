@@ -28,11 +28,11 @@
 @layer ui.components {
   .ui-progress-bar {
     /* ---- override API (component-scoped) ---- */
-    --ui-progress-bar-track-color: var(--color-primitive-neutral-200);
+    --ui-progress-bar-track-color: var(--color-track);
     --ui-progress-bar-indicator-color: var(--color-primary);
     --ui-progress-bar-radius: var(--radius-full);
     --ui-progress-bar-gap: var(--spacing-1);
-    --ui-progress-bar-meta-color: var(--color-foreground-muted);
+    --ui-progress-bar-meta-color: var(--color-text-secondary);
     --ui-progress-bar-meta-font-family: var(--font-inter);
     --ui-progress-bar-meta-font-size: var(--font-size-xs);
     --ui-progress-bar-meta-line-height: var(--font-line-height-normal);

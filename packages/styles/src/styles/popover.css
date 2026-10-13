@@ -30,8 +30,8 @@
 
   .ui-popover {
     /* ---- override API ---- */
-    --ui-popover-bg: var(--color-background);
-    --ui-popover-fg: var(--color-foreground);
+    --ui-popover-bg: var(--color-surface-raised);
+    --ui-popover-fg: var(--color-text);
     --ui-popover-border-width: 1px;
     --ui-popover-border-color: var(--color-border);
     --ui-popover-radius: var(--radius-sm);
@@ -39,7 +39,7 @@
     --ui-popover-padding: var(--spacing-3);
     --ui-popover-offset: var(--spacing-1);
     --ui-popover-font-family: var(--font-inter);
-    --ui-popover-ring-color: var(--color-ring);
+    --ui-popover-ring-color: var(--color-focus);
     --ui-popover-ring-width: 2px;
     --ui-popover-ring-offset: 2px;
     --ui-popover-max-block-size: calc(100dvh - var(--spacing-8));

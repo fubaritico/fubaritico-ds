@@ -33,7 +33,7 @@
     /* ---- override API (component-scoped) ---- */
     --ui-typeahead-menu-offset: var(--spacing-1);
     --ui-typeahead-menu-inline-size: anchor-size(inline);
-    --ui-typeahead-empty-color: var(--color-foreground-muted);
+    --ui-typeahead-empty-color: var(--color-text-secondary);
     --ui-typeahead-empty-padding-block: var(--spacing-2);
     --ui-typeahead-empty-padding-inline: var(--spacing-3);
     --ui-typeahead-empty-font-family: var(--font-roboto);
@@ -87,7 +87,7 @@
   /* Dark surface — re-points the role var to the readable end of the neutral scale, mirroring how
      `.ui-listbox--dark` re-maps its own role vars. */
   .ui-typeahead__empty--dark {
-    --ui-typeahead-empty-color: var(--color-primitive-neutral-400);
+    --ui-typeahead-empty-color: var(--color-text-disabled);
   }
 
   /* ---- matched-substring highlight ---- */

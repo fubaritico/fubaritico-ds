@@ -8,7 +8,7 @@
  * CONTRAST FIX carried by this migration: the Tailwind version painted the active pill with
  * `bg-primary` and left the label at the default foreground. That read fine while `--color-primary`
  * was blue, and became dark-on-dark once primary turned neutral.900 — the same trap the Listbox
- * migration fixed in reverse. The active pill now flips to `--color-primary-foreground`, so the
+ * migration fixed in reverse. The active pill now flips to `--color-text-on-primary`, so the
  * pair always moves together.
  *
  * Geometry is logical (`border-block-end`, `margin-block-*`, `padding-inline`) so the row behaves
@@ -27,22 +27,22 @@
     --ui-tabs-gap: var(--spacing-1);
     --ui-tabs-rule-color: var(--color-border);
     --ui-tabs-rule-width: var(--spacing-px);
-    --ui-tabs-track-bg: var(--color-background-muted);
+    --ui-tabs-track-bg: var(--color-surface-sunken);
     --ui-tabs-track-padding: var(--spacing-1);
     --ui-tabs-track-radius: var(--radius-lg);
     --ui-tabs-trigger-padding-inline: var(--spacing-4);
     --ui-tabs-trigger-padding-block: var(--spacing-2);
     --ui-tabs-trigger-radius: var(--radius-md);
-    --ui-tabs-trigger-color: var(--color-foreground);
+    --ui-tabs-trigger-color: var(--color-text);
     --ui-tabs-trigger-active-color: var(--color-primary);
     --ui-tabs-trigger-active-bg: var(--color-primary);
-    --ui-tabs-trigger-active-fg: var(--color-primary-foreground);
+    --ui-tabs-trigger-active-fg: var(--color-text-on-primary);
     --ui-tabs-trigger-font-family: var(--font-roboto);
     --ui-tabs-trigger-font-size: var(--font-size-sm);
     --ui-tabs-trigger-font-weight: var(--font-weight-medium);
     --ui-tabs-trigger-gap: var(--spacing-2);
     --ui-tabs-indicator-width: var(--spacing-0-5);
-    --ui-tabs-ring-color: var(--color-ring);
+    --ui-tabs-ring-color: var(--color-focus);
     --ui-tabs-ring-offset: var(--spacing-0-5);
     --ui-tabs-panel-offset: var(--spacing-4);
     --ui-tabs-transition-duration: var(--duration-fast);

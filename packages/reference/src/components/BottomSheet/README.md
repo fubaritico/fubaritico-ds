@@ -156,6 +156,6 @@ Raising the height cap for one instance:
 > **Note** — `open={false}` unmounts the content entirely. State held inside the sheet is lost on
 > close; lift anything that must survive.
 
-> **Note** — the dark surface re-points the same role variables at the dark end of the neutral
-> scale rather than using a separate on-dark token family. Override `--ui-bottom-sheet-bg` / `-fg` /
+> **Note** — the dark surface re-points the same role variables at the inverse colour roles
+> (`--color-surface-inverse`, `--color-text-on-inverse`), so a theme recolours it. Override `--ui-bottom-sheet-bg` / `-fg` /
 > `-border-color` to re-skin either scheme.

@@ -10,10 +10,9 @@
  * `display: none`, and an author `display` would override it (the `<dialog>` trap, met twice). The
  * layout goes on `[open]` (modal) and `:popover-open` (non-modal) only.
  *
- * ON-DARK COLOURS — this resolves the `TODO(tokens)` left in `icon-button.css`. No
- * `--color-on-dark-*` semantic family is minted: the `--dark` modifier re-points the same role vars
- * at the dark end of the neutral VALUE scale, exactly as `.ui-listbox--dark` does. One convention
- * for every dark surface, no parallel alias family to keep in sync.
+ * ON-DARK COLOURS — the `--dark` modifier re-points the same role vars at the inverse colour roles
+ * (`--color-surface-inverse`, `--color-text-on-inverse`, `--color-border-on-inverse`), exactly as
+ * `.ui-listbox--dark` does. One convention for every dark surface, and a theme reaches it.
  *
  * Geometry is logical (`inset-inline`, `inset-block-end`, `border-start-*-radius`,
  * `padding-inline`) so the sheet behaves in any writing mode. The slide-in is a block-axis
@@ -29,8 +28,8 @@
 @layer ui.components {
   .ui-bottom-sheet {
     /* ---- override API (component-scoped ROLE vars) ---- */
-    --ui-bottom-sheet-bg: var(--color-primitive-neutral-0);
-    --ui-bottom-sheet-fg: var(--color-foreground);
+    --ui-bottom-sheet-bg: var(--color-surface-raised);
+    --ui-bottom-sheet-fg: var(--color-text);
     --ui-bottom-sheet-border-color: var(--color-border);
     --ui-bottom-sheet-border-width: var(--spacing-px);
     --ui-bottom-sheet-radius: var(--radius-lg);
@@ -40,7 +39,7 @@
     --ui-bottom-sheet-content-gap: var(--spacing-2);
     --ui-bottom-sheet-padding-inline: var(--spacing-4);
     --ui-bottom-sheet-padding-block: var(--spacing-3);
-    --ui-bottom-sheet-backdrop-color: var(--color-primitive-neutral-950);
+    --ui-bottom-sheet-backdrop-color: var(--color-overlay);
     --ui-bottom-sheet-backdrop-opacity: 0.5;
     --ui-bottom-sheet-transition-duration: var(--duration-slow);
     --ui-bottom-sheet-transition-easing: var(--easing-standard);
@@ -96,12 +95,12 @@
     opacity: var(--ui-bottom-sheet-backdrop-opacity);
   }
 
-  /* Dark surface — re-points the role vars at the dark end of the neutral value scale, mirroring
+  /* Dark surface — re-points the role vars at the inverse colour roles, mirroring
      `.ui-listbox--dark`. The composed close button switches to `ghost-dark` on the React side. */
   .ui-bottom-sheet--dark {
-    --ui-bottom-sheet-bg: var(--color-primitive-neutral-900);
-    --ui-bottom-sheet-fg: var(--color-primitive-neutral-200);
-    --ui-bottom-sheet-border-color: var(--color-primitive-neutral-700);
+    --ui-bottom-sheet-bg: var(--color-surface-inverse);
+    --ui-bottom-sheet-fg: var(--color-text-on-inverse);
+    --ui-bottom-sheet-border-color: var(--color-border-on-inverse);
   }
 
   /* Entrance only — applied on first open, so a content update inside an already-open sheet does

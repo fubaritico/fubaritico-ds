@@ -22,8 +22,8 @@
 @layer ui.components {
   .ui-image {
     /* ---- override API (component-scoped) ---- */
-    --ui-image-bg: var(--color-primitive-neutral-100);
-    --ui-image-fallback-color: var(--color-foreground-muted);
+    --ui-image-bg: var(--color-surface-sunken);
+    --ui-image-fallback-color: var(--color-text-secondary);
     --ui-image-fit: cover;
     --ui-image-blur-scale: 1.05;
     --ui-image-transition-duration: var(--duration-normal);

@@ -18,7 +18,7 @@
  *
  * Override surface (white-label), by precedence:
  *   1. Redefine the component-scoped `--ui-data-table-*` vars (surgical re-skin).
- *   2. Redefine a global token (e.g. `--color-muted`) → re-skins everything that uses it.
+ *   2. Redefine a global token (e.g. `--color-selected`) → re-skins everything that uses it.
  *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
  *
  * Values come from @fubaritico/tokens.
@@ -34,19 +34,19 @@
        conveyed by the semantic `<table>` structure, layout and spacing, so the line is an aesthetic
        aid, not the sole means of understanding the content (a heavy AA-border on every row reads
        wrong). A consumer needing a stronger separator repoints this var (e.g. to
-       `--color-input-border`, neutral.450 ~3:1). */
+       `--color-border-strong`, neutral.450 ~3:1). */
     --ui-data-table-border-color: var(--color-border);
     --ui-data-table-border-width: 1px;
     /* Column-header text: neutral.600 (via the table token) so it clears WCAG AA on the header bg —
-       the shared `--color-muted-foreground` (neutral.500) was only ~4.5:1 there. */
-    --ui-data-table-head-color: var(--color-table-header-foreground);
+       the shared `--color-text-secondary` (neutral.500) was only ~4.5:1 there. */
+    --ui-data-table-head-color: var(--color-table-header-text);
     /* Header row height — the body row height plus a small breathing lift (54 + 6 = 60px). */
     --ui-data-table-header-row-height: calc(
       var(--ui-data-table-row-height) + 6px
     );
     --ui-data-table-head-weight: var(--font-weight-medium);
     /* Header cell background: white (matches the row surface). Replaces the old inline `[&_th]:bg-gray-100`. */
-    --ui-data-table-header-bg: var(--color-white);
+    --ui-data-table-header-bg: var(--color-surface-raised);
     /* z-index of the sticky header (`--sticky` modifier) — arbitrary layer, exposed as a var. */
     --ui-data-table-header-z: 30;
     /* Header cells get START padding only (source `pl-4`); a `<th>` has no default inline padding and
@@ -62,34 +62,34 @@
     --ui-data-table-col-link-name-width: 25%;
     --ui-data-table-col-status-icon-width: 120px;
     --ui-data-table-col-date-width: 150px;
-    --ui-data-table-row-bg: var(--color-white);
+    --ui-data-table-row-bg: var(--color-surface-raised);
     /* Body-row height (arbitrary 54px — no spacing token maps to it). Replaces the old inline
        `h-[54px]`; consumers can override the var. */
     --ui-data-table-row-height: 54px;
-    /* Selected uses muted at full strength; hover + footer use muted at 50% (matches the source
-       `bg-muted` vs `bg-muted/50`). color-mix reproduces the Tailwind `/50` alpha. Effective over a
-       white row: hover/footer ≈ #fafafa, selected = #f5f5f5 — cell foreground contrast ≫ 4.5:1. */
-    --ui-data-table-row-selected-bg: var(--color-muted);
+    /* Selected uses `--color-selected` at full strength; hover + footer use it at 50% (color-mix).
+       Effective over a white row: hover/footer ≈ #fafafa, selected = #f5f5f5 — cell foreground
+       contrast ≫ 4.5:1. */
+    --ui-data-table-row-selected-bg: var(--color-selected);
     --ui-data-table-row-hover-bg: color-mix(
       in srgb,
-      var(--color-muted) 50%,
+      var(--color-selected) 50%,
       transparent
     );
     /* No transition-duration token exists yet; exposed as a var so it stays overridable. */
     --ui-data-table-row-transition-duration: 150ms;
     --ui-data-table-footer-bg: color-mix(
       in srgb,
-      var(--color-muted) 50%,
+      var(--color-selected) 50%,
       transparent
     );
     --ui-data-table-footer-weight: var(--font-weight-medium);
-    --ui-data-table-caption-color: var(--color-muted-foreground);
+    --ui-data-table-caption-color: var(--color-text-secondary);
     --ui-data-table-caption-size: var(--font-size-sm);
 
     /* ---- cell content (cells layer) ---- */
     /* "Strong" header look (Checkbox/Clickable/Empty headers): near-black + bold, distinct from the
-       default muted `.ui-data-table__head`. Replaces the old inline `font-bold text-gray-900`. */
-    --ui-data-table-head-strong-color: var(--color-foreground);
+       default `.ui-data-table__head` (`--color-table-header-text`). Replaces the old inline `font-bold text-gray-900`. */
+    --ui-data-table-head-strong-color: var(--color-text);
     --ui-data-table-head-strong-weight: var(--font-weight-bold);
     /* "Label" header look (sortable column label): small, uppercase, semibold. Replaces the dead
        `text-gray_oda-600 text-xs font-semibold uppercase`. Its colour follows `--ui-data-table-head-color`
@@ -112,7 +112,7 @@
     --ui-data-table-link-color: var(--color-primary);
     --ui-data-table-link-weight: var(--font-weight-semibold);
     /* Hint trigger (a value / status icon whose hint shows in a tooltip): its keyboard ring. */
-    --ui-data-table-hint-ring-color: var(--color-ring);
+    --ui-data-table-hint-ring-color: var(--color-focus);
     --ui-data-table-hint-ring-width: 2px;
     --ui-data-table-hint-ring-offset: var(--spacing-0-5);
     --ui-data-table-hint-radius: var(--radius-sm);
@@ -525,12 +525,12 @@
     gap: var(--spacing-2);
   }
 
-  /* Secondary footer label ("Rows per page", "Go to page", "of N"). `--color-foreground-muted`
+  /* Secondary footer label ("Rows per page", "Go to page", "of N"). `--color-text-secondary`
      (neutral.500) clears AA on the white footer surface (~5.3:1). Replaces the dead `text-gray_oda-500`
      and the unprefixed `whitespace-nowrap`. */
   .ui-data-table__footer-label {
     white-space: nowrap;
-    color: var(--color-foreground-muted);
+    color: var(--color-text-secondary);
   }
 
   /* Go-to-page field: only constrains the width — the control chrome (border/background/radius/focus

@@ -63,7 +63,7 @@ export const Showcase: Story = {
         flexDirection: 'column',
         gap: '0.75rem',
         maxWidth: '42rem',
-        color: 'var(--color-foreground)',
+        color: 'var(--color-text)',
       }}
     >
       <Typography variant="h1">Heading 1</Typography>

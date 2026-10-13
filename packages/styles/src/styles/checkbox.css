@@ -33,16 +33,16 @@
     --ui-checkbox-gap: var(--spacing-3);
     --ui-checkbox-font-family: var(--font-roboto);
     --ui-checkbox-label-size: var(--font-size-sm);
-    --ui-checkbox-label-color: var(--color-foreground);
-    --ui-checkbox-bg: var(--color-background);
+    --ui-checkbox-label-color: var(--color-text);
+    --ui-checkbox-bg: var(--color-surface);
     /* neutral.450 (#949494) — the lightest grey clearing WCAG 1.4.11 (≥3:1) on white; the box border
        is the only boundary of the empty control, so it must be identifiable. */
-    --ui-checkbox-border-color: var(--color-input-border);
-    --ui-checkbox-border-hover: var(--color-foreground-muted);
+    --ui-checkbox-border-color: var(--color-border-strong);
+    --ui-checkbox-border-hover: var(--color-border-strong-hover);
     --ui-checkbox-checked-bg: var(--color-primary);
     --ui-checkbox-checked-border: var(--color-primary);
-    --ui-checkbox-icon-color: var(--color-primary-foreground);
-    --ui-checkbox-ring-color: var(--color-ring);
+    --ui-checkbox-icon-color: var(--color-text-on-primary);
+    --ui-checkbox-ring-color: var(--color-focus);
     --ui-checkbox-ring-offset: 2px;
     --ui-checkbox-transition-duration: var(--duration-fast);
     --ui-checkbox-transition-easing: var(--easing-standard);

@@ -24,7 +24,7 @@
     /* What marks the cut — `ellipsis` by default; a string (e.g. "…more") is valid too. */
     --ui-truncated-text-overflow: ellipsis;
     --ui-truncated-text-cursor: inherit;
-    --ui-truncated-text-ring-color: var(--color-ring);
+    --ui-truncated-text-ring-color: var(--color-focus);
     --ui-truncated-text-ring-width: 2px;
     --ui-truncated-text-ring-offset: var(--spacing-0-5);
     --ui-truncated-text-radius: var(--radius-sm);

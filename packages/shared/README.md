@@ -62,14 +62,13 @@ Tailwind CSS v4 theme configuration using the `@theme` directive. Defines color 
 ```
 
 **Available tokens**:
-- `--color-background`, `--color-foreground` - Base colors
-- `--color-primary`, `--color-primary-foreground` - Primary action colors
-- `--color-secondary`, `--color-secondary-foreground` - Secondary colors
-- `--color-muted`, `--color-muted-foreground` - Muted/disabled colors
-- `--color-accent`, `--color-accent-foreground` - Accent colors
-- `--color-destructive`, `--color-destructive-foreground` - Error/danger colors
-- `--color-card`, `--color-card-foreground` - Card component colors
-- `--color-border`, `--color-input`, `--color-ring` - Form/border colors
+- `--color-surface`, `--color-surface-raised`, `--color-surface-sunken` - Surfaces
+- `--color-text`, `--color-text-secondary`, `--color-text-on-primary` - Text
+- `--color-primary`, `--color-primary-hover` - Primary action
+- `--color-fill`, `--color-hover`, `--color-pressed`, `--color-selected` - Fills and states
+- `--color-destructive`, `--color-success`, `--color-warning` - Status
+- `--color-border`, `--color-border-strong`, `--color-focus` - Borders and focus
+- Full list: `@fubaritico/tokens` README
 - `--radius` - Default border radius
 
 ### Vite Plugins (`src/vite/`)

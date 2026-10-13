@@ -10,7 +10,7 @@
  *
  * Override surface (white-label), by precedence:
  *   1. Redefine the component-scoped `--ui-card-*` vars (surgical re-skin).
- *   2. Redefine a global token (e.g. `--color-card`) → re-skins everything that uses it.
+ *   2. Redefine a global token (e.g. `--color-surface-raised`) → re-skins everything that uses it.
  *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
  *
  * Values come from @fubaritico/tokens.
@@ -18,8 +18,8 @@
 @layer ui.components {
   .ui-card {
     /* ---- override API (component-scoped) ---- */
-    --ui-card-bg: var(--color-card);
-    --ui-card-fg: var(--color-card-foreground);
+    --ui-card-bg: var(--color-surface-raised);
+    --ui-card-fg: var(--color-text);
     /* Border is always 1px (transparent by default) so switching to `outline` causes no layout
        shift — only the colour changes. */
     --ui-card-border-color: transparent;

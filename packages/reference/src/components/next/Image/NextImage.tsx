@@ -14,7 +14,7 @@ function NextImage({
 }: Readonly<NextImageProps>) {
   return (
     <div
-      className={clsx('ui:relative ui:overflow-hidden ui:bg-muted', className)}
+      className={clsx('ui:relative ui:overflow-hidden ui:bg-surface-sunken', className)}
       style={aspectRatio ? { aspectRatio, ...style } : style}
     >
       <Image

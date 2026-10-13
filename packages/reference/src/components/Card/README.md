@@ -128,4 +128,4 @@ Each accepts the standard `<div>` props (`CardSlotProps = ComponentProps<'div'>`
 
 > **Note** — to re-skin a single card, override the `--ui-card-*` variables (e.g.
 > `--ui-card-radius`, `--ui-card-shadow`, `--ui-card-body-padding`); to re-skin all of them, override a
-> token (e.g. `--color-card`, `--color-border`).
+> token (e.g. `--color-surface-raised`, `--color-border`).

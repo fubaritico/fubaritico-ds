@@ -4,7 +4,8 @@
  * These tokens will be used by host and remotes
  *
  * All tokens are defined in packages/tokens and compiled to this @theme format.
- * Short aliases (--color-background, --color-primary, etc.) are included.
+ * Colour roles (--color-surface, --color-text, …) come from @fubaritico/tokens/tailwind. Carousel still
+ * uses Tailwind default palettes (gray/red) pending its migration.
  */
 
 /* Fonts must be imported before tokens */
