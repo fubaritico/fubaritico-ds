@@ -5,8 +5,16 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [0.6.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.5.0...v0.6.0) (2026-10-12)
 
+### API removals (adapt your code)
+
+- **BottomSheet:** `aria-label` is now required; `BOTTOM_SHEET_OVERLAY_CLASS` and `--ui-bottom-sheet-z-index` are gone (it renders in the top layer).
+- **Dropdown:** `--ui-dropdown-z` removed; the menu opens in the top layer, so a `z-index` or an `overflow: visible` workaround on a parent is no longer needed.
+- **Typeahead:** `--ui-typeahead-menu-z-index` removed (top layer).
+- **Badge `canTruncate`:** a string or number label that is really cut becomes a Tab stop revealing it in a tooltip; do not nest it in a button, link or clickable row.
+
 ### Bug Fixes
 
+- **reference:** keep the example date sort out of the TanStack types — the `SortingFns` augmentation shipped in the published `.d.ts` and made `sortingFns` required on every table ([109a8bb](https://github.com/fubaritico/fubaritico-ds/commit/109a8bbaaf254b252c6fae0f44f0d18fe0fad1dd))
 - **reference:** open the dropdown menu in the top layer so it works inside a modal ([49faf4b](https://github.com/fubaritico/fubaritico-ds/commit/49faf4b73aed042e4da38ff518304aba99435c4d))
 - **reference:** open the table filter and page-size menus in the top layer ([de20233](https://github.com/fubaritico/fubaritico-ds/commit/de202331eac8b7222e6dbbd02ef6629c4136584d))
 - **reference:** open the typeahead list in the top layer so it works inside a modal ([3218422](https://github.com/fubaritico/fubaritico-ds/commit/3218422e307d202be423a38901da49b3429e2169))

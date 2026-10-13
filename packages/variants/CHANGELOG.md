@@ -5,6 +5,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [0.6.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.5.0...v0.6.0) (2026-10-12)
 
+### API removals (adapt your code)
+
+- `dropdownMenuVariants` loses its `flipped` axis (CSS anchor positioning flips the menu).
+- `typeaheadMenuVariants` and its portal modifier removed (`TYPEAHEAD_MENU_CLASS` stays).
+- `BOTTOM_SHEET_OVERLAY_CLASS` removed (the bottom sheet's backdrop is the native `::backdrop`).
+
 ### Bug Fixes
 
 - **reference:** open the dropdown menu in the top layer so it works inside a modal ([49faf4b](https://github.com/fubaritico/fubaritico-ds/commit/49faf4b73aed042e4da38ff518304aba99435c4d))

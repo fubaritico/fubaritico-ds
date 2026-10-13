@@ -5,6 +5,11 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [0.6.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.5.0...v0.6.0) (2026-10-12)
 
+### API removals (adapt your code)
+
+- `--ui-dropdown-z`, `--ui-typeahead-menu-z-index`, `--ui-bottom-sheet-z-index` removed: those surfaces render in the top layer.
+- `.ui-bottom-sheet__overlay` removed (the backdrop is the native `::backdrop`).
+
 ### Bug Fixes
 
 - **reference:** open the dropdown menu in the top layer so it works inside a modal ([49faf4b](https://github.com/fubaritico/fubaritico-ds/commit/49faf4b73aed042e4da38ff518304aba99435c4d))
