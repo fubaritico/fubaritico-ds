@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.6.0...v0.7.0) (2026-10-21)
+
+- feat(tokens)!: rename the colour tokens to roles named after what they paint ([c88df0f](https://github.com/fubaritico/fubaritico-ds/commit/c88df0f2d19cd35c5901b9f8c53cc30a12ea789b))
+
+### BREAKING CHANGES
+
+- foreground, muted, background, secondary, accent, card, popover, input, ring,
+  primary-foreground and their variants are removed, with no alias. Overrides of the old names are
+  silently ignored: rename them (mapping in the tokens README).
+
+Claude-Session: https://claude.ai/code/session_01QJfJybYnBeCFAZi3gKjBaL
+
 # [0.6.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.5.0...v0.6.0) (2026-10-12)
 
 ### API removals (adapt your code)
