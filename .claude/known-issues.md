@@ -2,6 +2,8 @@
 
 Put here the know issues to avoid cluttering the context window.
 
+> DataTable gotchas (skin, TanStack, perf): `known-issues-datatable.md` (load when touching it).
+
 - **Listbox = primitives VISUELLES (`ListboxList`/`ListboxItem`), pas un widget (2026-07-16)** : elles
   portent le look uniquement ; **l'ARIA/keyboard/`aria-activedescendant` appartient au composeur**
   (`Menu`/`Typeahead`). `ListboxItem` rend `role="option"` + `aria-selected={isSelected}` **par défaut**,
@@ -15,25 +17,6 @@ Put here the know issues to avoid cluttering the context window.
   (ellipsis) SEULEMENT si `true`, icône reste visible ; troncature **visuelle** (texte complet reste dans
   le DOM, lu par les lecteurs d'écran). Affordance survol = viendra avec la Tooltip.
 
-- **Namespace skin DataTable = `ui-data-table` (2026-07-10)** : le BEM **block `.ui-data-table` est sur la
-  CONTAINER (la Card)**, pas sur le `<table>` — il porte tous les `--ui-data-table-*` vars pour que TOUT
-  descendant (y compris la toolbar/footer HORS `<table>`) en hérite. Le `<table>` lui-même = l'élément
-  **`.ui-data-table__table`** (box-model/border-collapse/layout). Émis par : `Table` primitive
-  (`UI_DATA_TABLE_TABLE_CLASS` sur le `<table>`) + `DataTable`/`DataTableVirtualized` (`UI_DATA_TABLE_CLASS`
-  sur `<Card className>`). Constantes dans `variants/src/table.ts`, parité testée. **Ne PAS remettre les
-  vars sur le `<table>`** (les siblings toolbar/footer ne les verraient plus → vars grisées).
-- **Custom props n'héritent qu'aux descendants** : un `--ui-*` component-var doit vivre sur un ANCÊTRE de
-  tous ses consommateurs. Si des éléments hors `<table>` (toolbar/footer) l'utilisent, la var va sur le
-  block-conteneur, jamais sur le `<table>` (leçon du refactor `ui-data-table`).
-- **Ordre de peinture des tables : cellules AU-DESSUS des lignes** → une bordure sur `<tr>` est **repeinte
-  et masquée** par un fond de cellule opaque. Corollaire : les filets d'en-tête (cellules `<th>` à fond
-  blanc opaque) vont sur **`.ui-data-table__head`** (les cellules), pas sur le `<tr>`.
-- **`border-collapse: collapse` + `<thead>` sticky : bordures des cellules NON peintes** (bug navigateur
-  connu) → le filet header/corps est un **`box-shadow` inset** sur `.ui-data-table__head`, pas une
-  `border`. Aussi : en `border-collapse: separate` les bordures `<tr>` sont **ignorées** (spec) ; c'est
-  `collapse` qui les honore (d'où `border-collapse: collapse` sur `.ui-data-table__table`).
-- **`:has([role=checkbox])` NE matche PAS un `<input type=checkbox>` natif** (rôle checkbox implicite, pas
-  d'attribut `role`) → utiliser **`:has(input[type=checkbox])`** (colonne select carrée/flush).
 - **SonarCloud : branche principale `master` alors que le dépôt est sur `main` (résolu 2026-10-08)** —
   piège coûteux, à ne pas re-subir. Le projet avait été initialisé avec **`master`** comme branche
   principale (`isMain: true`), branche qui **n'existe pas** dans le dépôt et n'a été analysée qu'une
@@ -120,14 +103,6 @@ Put here the know issues to avoid cluttering the context window.
   `showPopover()` dans un callback ref, ancre CSS par instance `--ui-<bloc>-anchor` (posée sur la
   racine ET sur la surface), placement `@supports (position-anchor: …)`, test navigateur « ouvert
   dans une Modal ». Un menu portalisé perd les vars du bloc → `.ui-x, body > .ui-x__menu { vars }`.
-- **Cellules à indice / texte coupé = un arrêt de Tab chacune (ASSUMÉ 2026-10-12)** : `TruncatedText`
-  coupé et `.ui-data-table__hint` (`<span tabIndex={0}>` SANS rôle, exception ARIA acceptée) jusqu'au
-  focus itinérant `role="grid"` prévu. Indice aussi en texte masqué (`aria-describedby` n'existe que
-  bulle ouverte). Vars `--ui-data-table-hint-*` sur `.ui-data-table` : la fixture doit l'avoir.
-- **Ne JAMAIS augmenter `SortingFns` (ou `FilterFns`) de TanStack (2026-10-12)** : dès qu'une clé y
-  est ajoutée, `sortingFns` devient OBLIGATOIRE sur tout `useReactTable` (`RowSorting.d.ts`,
-  `ResolvedSortingFns`), et un `declare module` part dans le `.d.ts` publié, donc chez le
-  consommateur. Passer le comparateur en FONCTION à la colonne (`sortingFn: sortByDate`).
 - **Vitest Browser Mode : dépendance découverte en cours de run → double React** (`Cannot read
   properties of null (reading 'useState')`, hash `?v=` différents). Vite ré-optimise et recharge ;
   passe au 2e run, casse à froid (CI). Ajouter la dép à `optimizeDeps.include` du projet `browser`
@@ -139,6 +114,12 @@ Put here the know issues to avoid cluttering the context window.
   `:modal::backdrop`, sinon la surface non modale assombrit la page.
 - **Chromium rend une liste qui défile atteignable au Tab** : dans une combobox (focus dans le
   champ), `tabIndex={-1}` sur la liste, sinon Tab y entre au lieu de quitter le composant.
+- **Bordure de la Tooltip claire : exception WCAG 1.4.11 ASSUMÉE (2026-10-21)** : `--ui-tooltip-border-color`
+  = `--color-border` (neutral.200, ~1,2:1 sur blanc). Une infobulle n'est pas un contrôle, son texte
+  reste lisible et l'ombre (`--shadow-lg`) détache déjà la bulle. Choix dev. Si un contour plus franc
+  est voulu : `--color-border-strong` (scopé, sans autre consommateur). Flèche = deux triangles
+  (`::before` contour, `::after` fond) ; `--ui-tooltip-arrow-size` = `ARROW_SIZE` (test navigateur) ;
+  contraste élevé : `forced-color-adjust: none` sur les triangles, sinon ils deviennent des rectangles.
 - **Chevron atténué d'`ArrowUpDown` : exception WCAG 1.4.11 ASSUMÉE (2026-10-08)** :
   `--ui-sort-arrows-dimmed-opacity: 0.5` ramène `--color-text-secondary` (neutral.500) à ~2,05:1 sur
   blanc, sous le plancher de 3:1 des objets graphiques. **Accepté, ce n'est pas un trou** : la direction
@@ -147,17 +128,6 @@ Put here the know issues to avoid cluttering the context window.
   nécessaire à la compréhension. Même raisonnement que la piste vide du `Rating`. Si un contraste plus
   franc est voulu un jour, remonter `--ui-sort-arrows-dimmed-opacity` à ~0,65–0,7 (var d'override,
   scopée). **Ne PAS le « corriger » d'office** — c'est un choix visuel délibéré.
-- **`DropdownFilter` : gardé, PAS mort** — c'est une **brique composable** (comme toutes les cells), juste
-  non câblée dans la config d'exemple. NE PAS la supprimer sous prétexte qu'aucune config ne l'appelle.
-  Décision de câblage (`leftActions`) à venir.
-- **`cn` vit dans `DataTable/utils/cn.ts`** + `normalizeTimestamp` + `formatDuration` dans `utils/` ;
-  `ui/` n'existe plus. Les primitives importent `cn` via `../../../utils`.
-- **Pagination = chrome, PAS dans `<tfoot>` (décidé 2026-07-15)** : `TableFooterContent` (pagination) reste
-  un `<div>` frère HORS du `<table>` (donc hors de la zone de scroll → épinglé en bas gratuitement). La
-  primitive `TableFooter` (`<tfoot>`) est **réservée aux lignes de synthèse/totaux de colonnes** (parité
-  AG-Grid, « pinned bottom rows », phase ultérieure), PAS à la pagination. Mettre la pagination dans
-  `<tfoot>` imposerait un wrapper `<tr><td colSpan>` + un collage `sticky bottom` (gotcha border-collapse)
-  pour zéro gain visible. **Ne PAS « câbler » `TableFooter` sur la pagination.**
 
 - **Avatar candidates throw outside `Avatar.Fallback`**: it's a full compound (no standalone mode) — the resolver access hooks (`useAvatarResolverActions/State`) throw if a candidate (`Avatar.Image/Initials/Icon`) is used without a surrounding `Avatar.Fallback`. By design.
 - **`react/jsx-no-leaked-render` is enforced (eslint, error)**: `{value && <JSX/>}` is forbidden when `value` is non-boolean (empty-string / zero leak) → use a ternary (`cond ? <JSX/> : null`) or coerce (`!!value &&`). Gotcha: `Boolean(src)` does **not** narrow the type — for `src: string | null` keep the ternary `src ? … : null` (narrows `src` AND avoids the leak); `Boolean(src) &&` loses the narrowing → TS error on `src={src}`.
@@ -195,5 +165,3 @@ Put here the know issues to avoid cluttering the context window.
 - **Rating `--color-rating-empty` (neutral.300, ~1.48:1 on white) is a DELIBERATE dev choice**: a review flagged it vs WCAG 1.4.11 (≥3:1 for graphical objects), but it's NOT treated as a blocker because (a) Rating is display-only, not a control boundary; (b) the score is redundantly conveyed by the high-contrast fill (neutral.900 ~17:1) AND the numeric value; (c) filled-vs-empty contrast is huge so the proportion is perceivable. If a stronger empty/track is wanted later, repoint `--color-rating-empty` to neutral.450 (the AA-min control shade) — scoped, no other consumer.
 - **Rating stars fill is RTL-safe via `--ui-rating-fill`**: the component passes ONLY the fill fraction as the `--ui-rating-fill` custom property (a 0–100% length); the skin owns the `clip-path` DIRECTION (LTR clips inline-end, a `:dir(rtl)` rule clips the other physical edge). Don't move the clip-path back inline (it was physical `inset(0 …% 0 0)` → broke RTL). The SVG ring geometry (svg px / stroke / dash arrays) stays inline (Skeleton precedent — skin owns look, not geometry).
 - **Storybook (storybook-react) consumes the BUILT `reference` dist, not src** (exports map → `dist/*`, no Vite alias to source). After changing a `reference` component you MUST rebuild it (the root `pnpm type-check`/`lint`/`test` gate does it via Nx `^build`) AND restart Storybook — Vite does NOT hot-reload a workspace dep's `dist`. Symptom: story shows stale behaviour despite saved edits.
-- **React `<Profiler>` does NOT fire in a production Storybook build** (needs the `react-dom/profiling` build). For prod perf measurement rely on the plain `debugTimings` (`performance.now` + `console.warn`, the `[DataTable] selection: …ms` line) + Chrome's `[Violation] 'click' handler took …ms` long-task warning. The `[DataTable] render: …ms` Profiler lines only appear in dev.
-- **DataTable select-all cost is TanStack O(N) (materializes a 150k-key `rowSelection`), so prod ≈ dev** — it's plain-JS data-structure work, not React render, so dev-mode inflation doesn't apply (don't expect a prod speedup). `startTransition` lowers the blocking time but RAISES the perceived total (two render passes) → don't default it for select-all-and-wait. O(1) needs the external "flag + exceptions" selection store (`files/analysis/storage-port-design.md`), reserved for the extreme (millions / Web Workers) — delegate only when necessary.
