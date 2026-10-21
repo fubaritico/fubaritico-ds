@@ -3,24 +3,24 @@
 > Loaded at session start (CLAUDE.md `### Next` → `@next.md`). Single source for "what's next".
 > North-star program: **`files/plans/roadmap.md`** (phases A→F).
 
-> ## ▶ ÉTAT AU 2026-10-13 (soir) — **chantier des THÈMES, étape 1/5 faite** (`c88df0f`, poussé)
+> ## ▶ ÉTAT AU 2026-10-21 (soir) — **0.7.0 publiée et adoptée par Atlas ; thèmes, étape 2 à faire**
 >
-> Plan : **`files/plans/theming.md`**. Étape 1 (rôles de couleur renommés) validée par le dev dans
-> Storybook. **À voir d'abord demain** : le dev a relevé « un tout petit truc » dans la typo
-> (Typography ?) — lui demander ce que c'est avant d'enchaîner.
+> Plan : **`files/plans/theming.md`**. Étape 1 (rôles de couleur) publiée en 0.7.0 ; Atlas a migré
+> (`aef0bf1` chez eux). Le « petit truc » du 13/10 (la flèche de la Tooltip) est réglé (`76bde29`,
+> non publié → partira en 0.7.1 ou avec la prochaine minor).
 >
-> **Ensuite, étape 2** : marque blanche radius → 0 (tokens radius) + note CHANGELOG. Puis 3 :
-> mécanisme `[data-theme]` (build SD par thème, toolbar Storybook, test de contraste navigateur) ;
-> 4 : `tone` ; 5 : `dark`. Notes pour l'étape 3 : survol de ligne du tableau dérivé de `selected`
-> à 50 % (pas de `hover`) ; bordure de l'alerte success (green.500, ~2,3:1) → `success-hover` ?
+> **Demain, au choix du dev** :
+> 1. **Thèmes, étape 2** : marque blanche radius → 0 (tokens radius) + note CHANGELOG. Puis 3 :
+>    mécanisme `[data-theme]` (build SD par thème, toolbar Storybook, test de contraste navigateur) ;
+>    4 : `tone` ; 5 : `dark`. Notes pour l'étape 3 : survol de ligne du tableau dérivé de `selected`
+>    à 50 % ; bordure de l'alerte success (green.500, ~2,3:1) → `success-hover` ?
+> 2. **Menu de commandes pour Atlas** (`files/REQUEST-menu-role-from-europe-historical-atlas.md`,
+>    CARTO-122, basse priorité) : `role="menu"`/`menuitem`, Tab ferme, typeahead optionnel,
+>    `aria-keyshortcuts` transmis. Ma reco : composant frère (`ActionMenu`) plutôt qu'une prop `kind`
+>    — à débattre avec le dev.
 >
-> **0.7.0 (non publiée, prévue le 2026-10-14)** : contient le renommage cassant. Atlas est en
-> phase de TEST de son app et ne montera de version qu'après ces tests, bien plus tard (dev,
-> 2026-10-13) : ne pas presser l'upgrade. Handoff à la publication = pointer vers
-> `europe-map/MIGRATION-color-roles-from-fubaritico-ds.md`, à appliquer quand ils upgraderont.
->
-> **En file** : focus itinérant `role="grid"` du DataTable. Procédure de release : `README.md` →
-> « Publishing a release », skill **`/release`**, feu vert du dev à chaque publication.
+> **En file** : focus itinérant `role="grid"` du DataTable. Release : `/release` (tapé par le dev),
+> feu vert du dev à chaque publication.
 
 ## FAIT (2026-10-11) — « Tooltip on truncated text » → `TruncatedText`
 

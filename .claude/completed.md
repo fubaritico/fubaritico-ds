@@ -2,6 +2,23 @@
 
 Put here the completed tasks and plans to avoid cluttering the context window.
 
+### 2026-10-21 — release 0.7.0, Atlas migré, flèche de la Tooltip claire
+
+**Une plage** (20:06 → 22:45, 2h39), reprise après 7 jours. Nouveau chantier.
+
+- **0.7.0 publiée** via `/release minor` (le skill ne se lance qu'à la main du dev : `disable-model-invocation`,
+  voulu). Préalable : `components.d.ts` de Stencil ignoré (`5ef57f4`). Release `980d614`, tag
+  `v0.7.0`, run `39654644976` (5 lignes `+ @fubaritico/*@0.7.0`). Handoff écrit ; **Atlas a migré
+  le soir même** (`aef0bf1` chez eux, plus aucun ancien nom), plus tôt que prévu.
+- **Le « petit truc dans tout le type » du 13/10 = « tooltip »** (dictée), pas la typo. Flèche de la
+  variante claire sans contour et décalée d'1px (offsets en border-box, boîte absolue en padding-box).
+  **`76bde29` `fix(styles)`** : deux triangles `::before` contour / `::after` fond (technique Bootstrap),
+  `--ui-tooltip-arrow-size` lié à `ARROW_SIZE` par test, **contraste élevé** (prouvé en Chromium : les
+  triangles devenaient des rectangles) → `forced-color-adjust: none`. Commande navigateur `forcedColors`
+  (`vitest.browser.media.ts`). Bordure fine claire = exception WCAG 1.4.11 assumée (dev).
+- `known-issues.md` au-delà de 200 lignes → `known-issues-datatable.md` (`4167a61`).
+- **Reçu d'Atlas** : `files/REQUEST-menu-role-from-europe-historical-atlas.md` (CARTO-122, basse priorité).
+
 ### 2026-10-13 — release 0.6.0, rôles de couleur renommés (étape 1 des thèmes)
 
 **Deux plages au journal** (14:55 → 15:05 ; 16:51 → 18:09, ~1h30 journalisées — le journal ne voit
