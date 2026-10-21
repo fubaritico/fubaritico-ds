@@ -1,13 +1,19 @@
 /**
  * Tooltip — native BEM skin.
  *
- * `.ui-tooltip` is the floating bubble; `.ui-tooltip__arrow` is the CSS-triangle pointer. The bubble
- * is positioned by the consumer (fixed, viewport-relative px from a positioning hook), so the skin
- * owns only the LOOK — colours, padding, radius, elevation, max-width — never the coordinates.
+ * `.ui-tooltip` is the floating bubble; `.ui-tooltip__arrow` is the pointer, two stacked CSS
+ * triangles (`::before` = outline, `::after` = fill) so a bordered bubble keeps one continuous
+ * outline around its arrow. The bubble is positioned by the consumer (fixed, viewport-relative px
+ * from a positioning hook), so the skin owns only the LOOK — colours, border, padding, radius,
+ * elevation, max-width — never the coordinates.
  *
- * The arrow colour tracks the bubble background via the shared `--ui-tooltip-bg` var, so a re-skin of
- * one re-skins the other automatically. Arrow borders are PHYSICAL (top/right/bottom/left) to match
- * the physical px the positioning hook computes.
+ * Arrow contract, for any framework adapter: the arrow is an absolute child of the bubble (a `div`
+ * or a `span`); the host sets its inline `top` / `left` in PHYSICAL px measured from the bubble's
+ * BORDER box, for a footprint of 2 x 1 `--ui-tooltip-arrow-size` (the React `ARROW_SIZE`). The skin
+ * subtracts the border width itself (an absolute box is placed from the padding box).
+ *
+ * The arrow tracks the bubble through `--ui-tooltip-bg` and `--ui-tooltip-border-width` /
+ * `--ui-tooltip-border-color`, so a re-skin of one re-skins the other automatically.
  *
  * Override surface (white-label), by precedence:
  *   1. Redefine the component-scoped `--ui-tooltip-*` vars (surgical re-skin).
@@ -21,6 +27,12 @@
     /* ---- override API (component-scoped) ---- */
     --ui-tooltip-bg: var(--color-primary);
     --ui-tooltip-fg: var(--color-text-on-primary);
+    /* a length, never a bare 0: the arrow subtracts it in calc() */
+    --ui-tooltip-border-width: 0px;
+    --ui-tooltip-border-color: var(--ui-tooltip-bg);
+    /* GEOMETRY, not look: the positioning math uses the same number (React: `ARROW_SIZE`). Change
+       both together, never this var alone. */
+    --ui-tooltip-arrow-size: 6px;
     --ui-tooltip-radius: var(--radius-md);
     --ui-tooltip-padding-block: var(--spacing-3);
     --ui-tooltip-padding-inline: var(--spacing-4);
@@ -41,7 +53,7 @@
        Its top / left are set inline by the component. */
     inset: auto;
     margin: 0;
-    border: 0;
+    border: var(--ui-tooltip-border-width) solid var(--ui-tooltip-border-color);
     max-inline-size: var(--ui-tooltip-max-width);
     padding-block: var(--ui-tooltip-padding-block);
     padding-inline: var(--ui-tooltip-padding-inline);
@@ -81,35 +93,117 @@
   .ui-tooltip--light {
     --ui-tooltip-bg: var(--color-surface-raised);
     --ui-tooltip-fg: var(--color-text);
-
-    border: 1px solid var(--color-border);
+    --ui-tooltip-border-width: 1px; /* hairline — no border-width token */
+    --ui-tooltip-border-color: var(--color-border);
   }
 
-  /* ---- arrow (CSS triangle) ---- */
+  /* ---- arrow (outline triangle + fill triangle) ---- */
+  /* Offsets come in border-box px while an absolute box is placed from the padding box: pull the
+     arrow back by the border width (see the arrow contract above). Physical sizes, like the
+     physical px of the positioning. */
   .ui-tooltip__arrow {
+    display: block;
     position: absolute;
-    inline-size: 0;
-    block-size: 0;
-    border: 6px solid transparent;
+    margin-top: calc(-1 * var(--ui-tooltip-border-width));
+    margin-left: calc(-1 * var(--ui-tooltip-border-width));
   }
 
-  .ui-tooltip__arrow--top {
+  .ui-tooltip__arrow::before,
+  .ui-tooltip__arrow::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border: var(--ui-tooltip-arrow-size) solid transparent;
+  }
+
+  .ui-tooltip__arrow--top,
+  .ui-tooltip__arrow--bottom {
+    width: calc(2 * var(--ui-tooltip-arrow-size));
+    height: var(--ui-tooltip-arrow-size);
+  }
+
+  .ui-tooltip__arrow--left,
+  .ui-tooltip__arrow--right {
+    width: var(--ui-tooltip-arrow-size);
+    height: calc(2 * var(--ui-tooltip-arrow-size));
+  }
+
+  /* ::before draws the outline in the border colour; ::after, the fill, sits one border width
+     closer to the bubble so it covers the bubble's own border under the arrow's base. With no
+     border, both coincide. */
+  .ui-tooltip__arrow--top::before,
+  .ui-tooltip__arrow--top::after {
     border-bottom-width: 0;
+  }
+
+  .ui-tooltip__arrow--top::before {
+    border-top-color: var(--ui-tooltip-border-color);
+  }
+
+  .ui-tooltip__arrow--top::after {
+    top: calc(-1 * var(--ui-tooltip-border-width));
     border-top-color: var(--ui-tooltip-bg);
   }
 
-  .ui-tooltip__arrow--bottom {
+  .ui-tooltip__arrow--bottom::before,
+  .ui-tooltip__arrow--bottom::after {
     border-top-width: 0;
+  }
+
+  .ui-tooltip__arrow--bottom::before {
+    border-bottom-color: var(--ui-tooltip-border-color);
+  }
+
+  .ui-tooltip__arrow--bottom::after {
+    top: var(--ui-tooltip-border-width);
     border-bottom-color: var(--ui-tooltip-bg);
   }
 
-  .ui-tooltip__arrow--left {
+  .ui-tooltip__arrow--left::before,
+  .ui-tooltip__arrow--left::after {
     border-right-width: 0;
+  }
+
+  .ui-tooltip__arrow--left::before {
+    border-left-color: var(--ui-tooltip-border-color);
+  }
+
+  .ui-tooltip__arrow--left::after {
+    left: calc(-1 * var(--ui-tooltip-border-width));
     border-left-color: var(--ui-tooltip-bg);
   }
 
-  .ui-tooltip__arrow--right {
+  .ui-tooltip__arrow--right::before,
+  .ui-tooltip__arrow--right::after {
     border-left-width: 0;
+  }
+
+  .ui-tooltip__arrow--right::before {
+    border-right-color: var(--ui-tooltip-border-color);
+  }
+
+  .ui-tooltip__arrow--right::after {
+    left: var(--ui-tooltip-border-width);
     border-right-color: var(--ui-tooltip-bg);
+  }
+
+  /* Forced colours (Windows high contrast) repaint every border colour, transparent ones included:
+     the triangles would turn into solid rectangles. Keep them out of the repaint, in system
+     colours, and give every variant a visible outline (the forced background alone has no edge).
+     Last in the file: it must win over `.ui-tooltip--light`. */
+  @media (forced-colors: active) {
+    .ui-tooltip {
+      --ui-tooltip-bg: Canvas;
+      --ui-tooltip-border-width: 1px;
+      --ui-tooltip-border-color: CanvasText;
+    }
+
+    .ui-tooltip__arrow::before,
+    .ui-tooltip__arrow::after {
+      forced-color-adjust: none;
+    }
   }
 }

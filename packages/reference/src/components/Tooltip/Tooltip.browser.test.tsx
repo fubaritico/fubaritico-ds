@@ -3,9 +3,11 @@ import { StrictMode, useRef, useState } from 'react'
 import { describe, expect, it } from 'vitest'
 import { userEvent } from 'vitest/browser'
 
+import { media } from '../../../vitest.browser.media'
 import { Modal } from '../Modal'
 
 import { Tooltip } from './Tooltip'
+import { ARROW_SIZE } from './Tooltip.constants'
 
 import type { TooltipProps } from './Tooltip'
 
@@ -40,6 +42,24 @@ function Anchored(props: FixtureProps) {
 }
 
 const bubble = () => screen.getByRole('tooltip')
+
+/** Placements, each with room around the target so it does not flip. */
+const PLACEMENTS = ['top', 'bottom', 'left', 'right'] as const
+
+/** Padding around the fixture: room for the bubble on every side, so no placement flips. */
+const ROOM = '120px 200px'
+
+/**
+ * The bubble's arrow, once the position is measured (the arrow only renders then).
+ *
+ * @returns The arrow element.
+ */
+async function arrowOf(): Promise<Element> {
+  await expect.poll(() => bubble().querySelector('.ui-tooltip__arrow')).not.toBeNull()
+  const arrow = bubble().querySelector('.ui-tooltip__arrow')
+  if (!arrow) throw new Error('the tooltip rendered no arrow')
+  return arrow
+}
 
 /**
  * Whether the bubble is what the pointer meets at its own centre — i.e. painted on top.
@@ -231,6 +251,73 @@ describe('Tooltip (browser)', () => {
     it('keeps the light variant’s border', () => {
       render(<Anchored variant="light" />)
       expect(getComputedStyle(bubble()).borderTopWidth).toBe('1px')
+    })
+
+    it.each(PLACEMENTS)(
+      'joins the light arrow to the bubble’s border, placement %s',
+      async (placement) => {
+        render(
+          <div style={{ padding: ROOM }}>
+            <Anchored variant="light" placement={placement} />
+          </div>
+        )
+        const arrow = await arrowOf()
+        const bubbleStyle = getComputedStyle(bubble())
+        const border = bubbleStyle.borderTopWidth
+        const b = bubble().getBoundingClientRect()
+        const a = arrow.getBoundingClientRect()
+        // Per placement: the arrow edge that meets the bubble, and the axis the fill is shifted on
+        // (toward the bubble, by one border width, to cover the border under the arrow's base).
+        const expected = {
+          top: { edges: [a.top, b.bottom], axis: 'top', shift: `-${border}` },
+          bottom: { edges: [a.bottom, b.top], axis: 'top', shift: border },
+          left: { edges: [a.left, b.right], axis: 'left', shift: `-${border}` },
+          right: { edges: [a.right, b.left], axis: 'left', shift: border },
+        }[placement]
+        // No gap: the arrow starts exactly at the bubble's outer edge.
+        expect(expected.edges[0]).toBeCloseTo(expected.edges[1], 1)
+        const colour = `border-${placement}-color`
+        const outline = getComputedStyle(arrow, '::before')
+        const fill = getComputedStyle(arrow, '::after')
+        expect(outline.getPropertyValue(colour)).toBe(bubbleStyle.borderTopColor)
+        expect(fill.getPropertyValue(colour)).toBe(bubbleStyle.backgroundColor)
+        expect(fill.getPropertyValue(expected.axis)).toBe(expected.shift)
+      }
+    )
+
+    it.each(PLACEMENTS)('sizes the arrow from ARROW_SIZE, placement %s', async (placement) => {
+      // The positioning math and the skin must agree on the arrow's footprint.
+      render(
+        <div style={{ padding: ROOM }}>
+          <Anchored placement={placement} />
+        </div>
+      )
+      const { width, height } = (await arrowOf()).getBoundingClientRect()
+      const vertical = placement === 'top' || placement === 'bottom'
+      expect([width, height]).toEqual(
+        vertical ? [2 * ARROW_SIZE, ARROW_SIZE] : [ARROW_SIZE, 2 * ARROW_SIZE]
+      )
+    })
+
+    it('keeps the arrow a triangle under forced colours', async () => {
+      // High contrast repaints every border colour, transparent ones too: unprotected, the arrow
+      // becomes a solid rectangle. Its sides must stay transparent, its tip in a system colour.
+      await media.forcedColors(true)
+      try {
+        render(
+          <div style={{ padding: ROOM }}>
+            <Anchored />
+          </div>
+        )
+        const outline = getComputedStyle(await arrowOf(), '::before')
+        expect(outline.borderLeftColor).toBe('rgba(0, 0, 0, 0)')
+        expect(outline.borderRightColor).toBe('rgba(0, 0, 0, 0)')
+        expect(outline.borderBottomColor).not.toBe('rgba(0, 0, 0, 0)')
+        // Every variant gets a visible outline under forced colours.
+        expect(getComputedStyle(bubble()).borderTopWidth).toBe('1px')
+      } finally {
+        await media.forcedColors(false)
+      }
     })
 
     it('opens one bubble under StrictMode’s double effects', () => {

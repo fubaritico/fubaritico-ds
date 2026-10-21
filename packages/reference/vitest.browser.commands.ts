@@ -94,3 +94,17 @@ export const pointerMove: BrowserCommand<
 export const pointerUp: BrowserCommand<[]> = async (context) => {
   await context.page.mouse.up()
 }
+
+/**
+ * Turns forced colours (Windows high contrast) on or off for the page, as the OS would: the
+ * browser then repaints colours with the system palette.
+ *
+ * @param context - Command context.
+ * @param active - `true` to force colours, `false` to restore the author colours.
+ */
+export const forcedColors: BrowserCommand<[active: boolean]> = async (
+  context,
+  active
+) => {
+  await context.page.emulateMedia({ forcedColors: active ? 'active' : 'none' })
+}

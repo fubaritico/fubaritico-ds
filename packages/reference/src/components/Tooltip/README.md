@@ -22,7 +22,10 @@ positioning primitive (`Tooltip`) plus the trigger behaviour that drives it (`us
   to `body` would put it under the dialog, in the inert part of the page). `portalContainer` mounts
   it elsewhere if you really need to. The bubble is `pointer-events: none` so it never blocks the
   target.
-- **Variants** — `dark` (default) / `light`. The arrow colour tracks the bubble background.
+- **Variants** — `dark` (default) / `light` (bordered). The arrow tracks the bubble: same fill,
+  and a bordered bubble keeps one continuous outline around it (`--ui-tooltip-border-width` /
+  `--ui-tooltip-border-color`). Under forced colours (Windows high contrast) every variant gets a
+  system-colour outline and the arrow stays a triangle.
 
 ## Import
 
@@ -148,3 +151,7 @@ const { open, triggerProps, bubbleProps } = useTooltip()
 
 > **Warning** — `targetRef` is required for `mode="target"` and `position` for `mode="manual"`; without
 > them the bubble renders at `0,0`.
+
+> **Note** — the arrow's size is geometry, not look: `--ui-tooltip-arrow-size` must stay equal to
+> the positioning's `ARROW_SIZE` (6px). Re-skin the arrow through the colour and border vars, not by
+> resizing it.

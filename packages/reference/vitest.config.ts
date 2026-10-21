@@ -2,7 +2,12 @@ import { playwright } from '@vitest/browser-playwright'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
 
-import { pointerDown, pointerMove, pointerUp } from './vitest.browser.commands'
+import {
+  forcedColors,
+  pointerDown,
+  pointerMove,
+  pointerUp,
+} from './vitest.browser.commands'
 
 // Two projects, one run (`vitest run` executes both):
 // - `unit` (jsdom): logic, wiring, static ARIA — fast, the bulk of the suite.
@@ -49,7 +54,7 @@ export default defineConfig({
             // and a component that forgets its reduced-motion rule shows up here first.
             provider: playwright({ contextOptions: { reducedMotion: 'reduce' } }),
             instances: [{ browser: 'chromium' }],
-            commands: { pointerDown, pointerMove, pointerUp },
+            commands: { forcedColors, pointerDown, pointerMove, pointerUp },
           },
         },
       },
