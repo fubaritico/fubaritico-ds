@@ -89,7 +89,7 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
   (code, comments, rules, skills, session files, READMEs, plans); the dev's own words stay quoted in French.
   **We talk in French; the Trello tickets are French** (the board is private).
 - **Never `cd` — absolute paths** — the activity-log hook writes relative to the cwd: a `cd` forks the journal
-  (a stray `.claude/skills/files/session-log.jsonl` exists since 2026-09-16) and the spans are under-reported.
+  (a fork of 2026-09-16 was merged back on 2026-10-22) and the spans are under-reported.
 - **A ticket is documentation** — a fix closes with its cause, files, the fixing snippet and the proving
   test; a feature with its patterns shown by snippets (`/trello`, "A ticket is documentation").
 - **Discuss approach FIRST, then execute the WHOLE block** — confirm the _approach_ ONCE before

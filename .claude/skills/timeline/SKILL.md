@@ -86,7 +86,7 @@ log catches all the work, committed or not, but only since its installation.
 - **Reads are not logged** — only `Edit`/`Write` and `Bash`. A session spent reading code looks empty: do not
   conclude « nothing was done », say « no change recorded in this span ».
 - **The log is written relative to the cwd** (`<cwd>/files/session-log.jsonl`): a `cd` forks it into a second
-  file the report never reads — hence CLAUDE.md's « never `cd` ». One such fork exists:
-  `.claude/skills/files/session-log.jsonl` (5 actions, 2026-09-16).
+  file the report never reads — hence CLAUDE.md's « never `cd` ». One fork happened (5 actions of
+  2026-09-16 under `.claude/skills/files/`): merged back into the main log by epoch, then deleted, on 2026-10-22.
 - **The thresholds (90 min / 48 h) are constants** of the script (`SPAN_GAP`, `STREAK_GAP`). If a result looks
   absurd, check them before concluding.

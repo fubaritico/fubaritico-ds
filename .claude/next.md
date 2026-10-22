@@ -15,8 +15,8 @@ Two tickets wait on the dev in **À valider par le développeur**:
 
 Settled by the dev on 2026-10-22: the error-handling rule adapted to a library (`rules/error-handling.md`,
 « on fera évoluer au besoin ») and **English for every file** (the repository is public), French in our talk
-and on the private board. Open: the stray journal `.claude/skills/files/session-log.jsonl` (5 actions of
-2026-09-16 that `/timeline` does not read) — copy them into `files/session-log.jsonl`, then delete it, on his go.
+and on the private board. Done the same day, on his go: the stray journal of 2026-09-16 (5 actions) merged into
+`files/session-log.jsonl` by epoch, then deleted.
 
 ## The board
 
