@@ -38,3 +38,6 @@ paths:
 - **eslint typed-lint poison from empty-src `stencil/tsconfig.json`** — REPO-137: the base `project: ['./packages/*/tsconfig.json']` glob loads stencil's build tsconfig, which has no inputs (TS18003). Any package **alphabetically after `stencil`** that relies on the base glob (e.g. `variants`) crashes with "Unable to parse the specified tsconfig". Fix per package = a scoped eslint override pointing at its own tsconfig (see the `variants` override in `eslint.config.js`, mirroring the `stencil` one). Real fix later: migrate the root config to `projectService: true`, or give stencil a non-empty tsconfig.
 - **Harness "plan mode" green overlay can persist** in the prompt (cosmetic, harness-side). Exit with Shift+Tab / Esc. We don't use plan mode — plans live in `files/plans/`.
 - **commitlint `subject-case`**: the commit subject must be **lowercase** — a subject starting with a PascalCase word (e.g. `Typography uses…`) is rejected. Write `use … on Typography` instead.
+- **commitlint `body-max-line-length` hidden by the pre-commit output**: a body line of 101 characters makes
+  the commit fail, but the cause is buried under the gate's build and test output. Keep body lines ≤ 100;
+  test a message alone with `pnpm exec commitlint --edit <file>` (or `echo "…" | pnpm exec commitlint`).

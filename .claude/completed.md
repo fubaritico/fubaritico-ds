@@ -3,6 +3,24 @@
 The last two sessions, short, citing their tickets (what shipped lives in the Fait tickets). Older ones:
 `completed-archive.md`.
 
+### 2026-10-22 — the Trello board, the context by path, every file in English, the prompt audit
+
+**Two spans** (10:46 → 13:09; 17:00 → 19:17, 4h39), the chantier opened on 21/10 (3 spans, 7h36). Pushed.
+
+- **Morning** — the board and `/trello` (REPO-143); the rules loaded by path, the prompt hook, Atlas's
+  methods ported (REPO-150); `rules/error-handling.md` for a library (`421bd15`); **every file in English**,
+  the repository being public (the dev's call); the stray journal of 16/09 merged back (`513c3ef`).
+  The dev: « c'est bon, tu peux pousser les commits ».
+- **Evening** — `/doctor prompt-audit`, then the dev: « corrige les retours du tableau », French triggers
+  « pour l'instant », « corrige les défauts restants ». Seven commits `d73b359` → `69d527b`: the six e2e
+  agents rewritten for Playwright Test against Storybook (REPO-151, done), `tests.md` and `/test` on
+  Vitest 4, `architecture.md` true to the code, `/review` routing to its agents (PLAT-008), `audit-style`
+  and `audit-owasp` rewritten for the DS, `when_to_use` in French on eleven skills (REPO-150 comment).
+- **How a review runs** (his question): `/review` orchestrates, the seven `review-*` agents hold the rules.
+- **My faults**: a first `audit-style` example with `background:` where the skin writes
+  `background-color:` (caught before commit); a `git add -A .claude`, which `/commit` forbids — it failed
+  on a pathspec and staged nothing.
+
 ### 2026-10-21 — release 0.7.0, Atlas migrated, the light Tooltip's arrow
 
 **One span** (20:06 → 22:45, 2h39), resumed after 7 days. A new chantier.
@@ -19,22 +37,3 @@ The last two sessions, short, citing their tickets (what shipped lives in the Fa
   (`vitest.browser.media.ts`). A thin light border = a WCAG 1.4.11 exception, assumed (the dev).
 - `known-issues.md` past 200 lines → `known-issues-datatable.md` (`4167a61`).
 - **Received from Atlas**: `files/REQUEST-menu-role-from-europe-historical-atlas.md` (CARTO-122, low priority).
-
-### 2026-10-13 — release 0.6.0, colour roles renamed (themes, step 1)
-
-**Two spans in the log** (14:55 → 15:05; 16:51 → 18:09, ~1h30 logged — the log does not see the whole
-evening), 6th day of the chantier opened on 08/10. Pushed, not published.
-
-- **0.6.0 published** + CHANGELOGs completed (`cadca4a`) + Atlas handoff.
-- **Themes plan** (`files/plans/theming.md`): white label (radius 0), `tone` (shades of one seed), `dark`
-  (coloured primary); OKLCH derivation at runtime from `--theme-seed`, the L/C table taken from the dev's
-  date-time-picker. A theme redefines the ROLES, never the grey scale.
-- **The "muted" of 16/07 clarified by the dev**: it meant the blurry NAMES, not the semantic layer. Hence
-  **`c88df0f` `feat(tokens)!`**: `roles.json` replaces semantic + aliases, `--color-<what it paints>-<role>`,
-  27 skins rewired, primitives only in the color picker, guard `styles/test/color-roles.test.ts`. Resolved
-  diff before/after: 5 intended shifts only (hovers 100→150, outline border 300→450, destructive text
-  500→600, disabled arrow 450→400).
-- **Review**: the default tooltip had turned white on white (a rewrite rule too broad) — caught;
-  `text-destructive` and `fill-on-inverse*` created, `black` removed.
-- **Atlas migration** written (`europe-map/MIGRATION-color-roles-from-fubaritico-ds.md`), to apply only
-  with 0.7.0.

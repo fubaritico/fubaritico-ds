@@ -5,31 +5,33 @@
 > only where we stopped, what is mid-flight, and context that is not a task. Its former content is in
 > `next-archive.md`, verbatim. Long threads (north-star, locked decisions): `next-threads.md`.
 
-## ▶ RESUME HERE (2026-10-22)
+## ▶ RESUME HERE (2026-10-22, evening)
 
-Two tickets wait on the dev in **À valider par le développeur**:
+Nothing waits in **À valider**, nothing is **En cours**, **À faire** is empty: the order is his. All is
+committed and pushed (`69d527b`).
 
-- **REPO-143** — the DS's Trello board (history backfilled, open work, the `/trello` skill), committed.
-- **REPO-150** — the context loaded by path (~100 KB → ~35 KB at launch), the rules hook, Atlas's methods
-  ported. Check: a new session, whose start must go well.
+Two checks for the dev, in a **new session** (the `.claude/` changes of 2026-10-22 load only there):
 
-Settled by the dev on 2026-10-22: the error-handling rule adapted to a library (`rules/error-handling.md`,
-« on fera évoluer au besoin ») and **English for every file** (the repository is public), French in our talk
-and on the private board. Done the same day, on his go: the stray journal of 2026-09-16 (5 actions) merged into
-`files/session-log.jsonl` by epoch, then deleted.
+- the start goes well and the prompt hook names the rules when he speaks of a component (REPO-150);
+- « écris les tests de Tabs » makes `/test` start by itself — the French `when_to_use` triggers, « pour
+  l'instant » (his words); `/context`, the Skills row, shows whether a description was cut.
+
+The e2e agents exist (REPO-151, done) but have never run: `packages/e2e` does not exist yet — their
+first run, through `e2e-orchestrator`, creates it (REPO-149, in Idées).
 
 ## The board
 
 | where               | ticket                                                                                                                                                                                                              | state                                        |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
 | **Chantiers**       | DESIGN-120 themes · DESIGN-121 DataTable · DESIGN-122 Stencil · DESIGN-123 agent-ready                                                                                                                              | rungs as checklists, linked to their tickets |
-| **À valider**       | REPO-143 board · REPO-150 context                                                                                                                                                                                   | for the dev to check                         |
+| **À valider**       | —                                                                                                                                                                                                                   | empty                                        |
 | **À faire**         | —                                                                                                                                                                                                                   | empty: the order is his                      |
 | **Backlog**         | themes 2→5 (TOKENS-124…127), Atlas's command menu (REACT-128), `role="grid"` (REACT-129), Stencil green (STENCIL-130), doc as data (DESIGN-131), DataTable leftovers (REACT-145…147), Storybook play tests (SB-148) |                                              |
+| **Idées**           | the e2e harness and the CI stubs (REPO-149), among 13 others                                                                                                                                                        |                                              |
 | **Fait**, à publier | STYLES-119 the light Tooltip's arrow                                                                                                                                                                                | ships in 0.7.1 or with the next minor        |
 
-Before 2026-10-22 the day's choice was: themes step 2 (TOKENS-124) or Atlas's menu (REACT-128, low
-priority; my recommendation: a sibling `ActionMenu` rather than a `kind` prop — to debate).
+The day's choice still stands: themes step 2 (TOKENS-124) or Atlas's menu (REACT-128, low priority; my
+recommendation: a sibling `ActionMenu` rather than a `kind` prop — to debate).
 
 ## Worth knowing
 

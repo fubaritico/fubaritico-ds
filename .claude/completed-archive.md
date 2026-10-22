@@ -1,7 +1,26 @@
 # Completed — archive
 
-Entries of 2026-10-11 and before, moved out of `completed.md` (it keeps the last two sessions). Translated into
+Entries of 2026-10-13 and before, moved out of `completed.md` (it keeps the last two sessions). Translated into
 English on 2026-10-22. Not loaded at launch. Since 2026-10-22 every delivery also has its Fait ticket on the board.
+
+### 2026-10-13 — release 0.6.0, colour roles renamed (themes, step 1)
+
+**Two spans in the log** (14:55 → 15:05; 16:51 → 18:09, ~1h30 logged — the log does not see the whole
+evening), 6th day of the chantier opened on 08/10. Pushed, not published.
+
+- **0.6.0 published** + CHANGELOGs completed (`cadca4a`) + Atlas handoff.
+- **Themes plan** (`files/plans/theming.md`): white label (radius 0), `tone` (shades of one seed), `dark`
+  (coloured primary); OKLCH derivation at runtime from `--theme-seed`, the L/C table taken from the dev's
+  date-time-picker. A theme redefines the ROLES, never the grey scale.
+- **The "muted" of 16/07 clarified by the dev**: it meant the blurry NAMES, not the semantic layer. Hence
+  **`c88df0f` `feat(tokens)!`**: `roles.json` replaces semantic + aliases, `--color-<what it paints>-<role>`,
+  27 skins rewired, primitives only in the color picker, guard `styles/test/color-roles.test.ts`. Resolved
+  diff before/after: 5 intended shifts only (hovers 100→150, outline border 300→450, destructive text
+  500→600, disabled arrow 450→400).
+- **Review**: the default tooltip had turned white on white (a rewrite rule too broad) — caught;
+  `text-destructive` and `fill-on-inverse*` created, `black` removed.
+- **Atlas migration** written (`europe-map/MIGRATION-color-roles-from-fubaritico-ds.md`), to apply only
+  with 0.7.0.
 
 ### 2026-10-11 — releases 0.4.1 / 0.5.0, corners, Tooltip → TruncatedText, portals → top layer
 
