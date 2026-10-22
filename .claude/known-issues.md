@@ -1,166 +1,23 @@
-# Known Issues
+# Known Issues — the index
 
-Put here the know issues to avoid cluttering the context window.
+> **Since 2026-10-22 the entries live in path-scoped slices** under `.claude/rules/known-issues/`: each one
+> loads only when a file of its place is read or written (`paths:`, code.claude.com/docs/en/memory). This
+> file stays loaded at every session and holds only the map below. Closed entries go to
+> `known-issues-closed.md` (verbatim, the step they close). An entry that asks for an action carries its
+> ticket (`— REACT-12`); the task itself lives on the board (`/trello`).
 
-> DataTable gotchas (skin, TanStack, perf): `known-issues-datatable.md` (load when touching it).
+| slice | holds | loads when a file matches |
+| --- | --- | --- |
+| `rules/known-issues/components.md` | the components: dialogs, top layer, Listbox, Card, Input, Rating, Spinner, Skeleton, Avatar, IconButton, the accepted WCAG exceptions | `packages/reference/src/components/**`, skins, resolvers, stories |
+| `rules/known-issues/styles-tokens.md` | tokens and skin API: colour roles, corners, radius, focus, dash-ified names, the no-reset font rule | `packages/styles/**`, `packages/tokens/**`, `packages/variants/**` |
+| `rules/known-issues/datatable.md` | the DataTable: skin scope, paint order, TanStack traps, perf | `packages/reference/src/components/DataTable/**` |
+| `rules/known-issues/tooling.md` | SonarCloud, ESLint, commitlint, the harness | root configs, `.github/**`, `.husky/**` |
+| `rules/known-issues/testing.md` | Vitest Browser Mode | test files, Vitest configs |
 
-- **Listbox = primitives VISUELLES (`ListboxList`/`ListboxItem`), pas un widget (2026-07-16)** : elles
-  portent le look uniquement ; **l'ARIA/keyboard/`aria-activedescendant` appartient au composeur**
-  (`Menu`/`Typeahead`). `ListboxItem` rend `role="option"` + `aria-selected={isSelected}` **par défaut**,
-  **overridable via rest** (Typeahead passe `aria-selected={isActive}`). **Passer `variant` aux DEUX**
-  (liste ET items) — le `--dark` est un modifier d'ÉLÉMENT (choix flat-selector assumé, pas cascade block).
-  États = échelle neutral (zéro alias shadcn) ; échelle d'emphase **selected < hover < active** ; gap 2px
-  entre items (flex `gap`, ne touche pas le padding/texte). Variante dark = primitives neutral (pas de
-  tokens on-dark encore). Resolver : `state` mono-axe (active > selected > default) ; `:where(:not(--disabled))`
-  garde active/selected. Voir [[token-neutral-scale-role-vars]].
-- **Badge `canTruncate` (2026-07-16)** : opt-in (défaut `false`) ; wrappe le label dans `.ui-badge__label`
-  (ellipsis) SEULEMENT si `true`, icône reste visible ; troncature **visuelle** (texte complet reste dans
-  le DOM, lu par les lecteurs d'écran). Affordance survol = viendra avec la Tooltip.
+**A new entry goes in its slice**, never here — except a lesson that must hold before any file is touched.
+**An older pointer** to `known-issues.md` or `known-issues-datatable.md` (tickets, plans) means a slice:
+`grep -rn "<its words>" .claude/rules/known-issues/`.
 
-- **SonarCloud : branche principale `master` alors que le dépôt est sur `main` (résolu 2026-10-08)** —
-  piège coûteux, à ne pas re-subir. Le projet avait été initialisé avec **`master`** comme branche
-  principale (`isMain: true`), branche qui **n'existe pas** dans le dépôt et n'a été analysée qu'une
-  fois, le 07/06, par le workflow one-shot `sonar-init.yml`. Toutes les analyses de la CI depuis juin
-  partaient donc sur une branche **`main` de type SHORT**, et **le plan gratuit interdit la lecture des
-  branches non principales** (`"Organization is not allowed to access data from non main branches"`).
-  **Symptôme trompeur** : la CI est verte, les tâches Compute Engine sont en `SUCCESS`, le scanner
-  publie — mais l'API, la page projet et le quality gate lisent `master` et renvoient des données
-  gelées au 07/06 (anciens chemins `src/<Component>/`, `MovieCard`, `react-router/`, tous supprimés
-  depuis). **Ne PAS en conclure que la CI est cassée** : vérifier d'abord
-  `api/project_branches/list?project=…` et la valeur de `isMain`. Correctif appliqué :
-  `project_branches/delete?branch=main` puis `project_branches/rename?name=main`. Le projet a aussi été
-  basculé **public** (`visibility: public`) — gratuit et illimité, le dépôt GitHub l'étant déjà.
-- **`SONAR_TOKEN` : il faut un USER token, pas un token d'analyse** — `/sonar` interroge
-  `api/qualitygates/project_status` et `api/issues/search`, deux endpoints de **lecture** (permission
-  _Browse_). Un **Project/Global Analysis Token** ne donne que _Execute Analysis_ : il fait tourner le
-  scan en CI mais **ne peut pas lire** les issues. D'où l'asymétrie normale : le secret GitHub Actions
-  (analyse) et le `.env` local (lecture) n'ont pas le même besoin. Alternative moindre-privilège pour
-  le local : un **Scoped Organization Token** (`sqco_`) en _Browse_ sur le seul projet — mais seul un
-  sous-ensemble des endpoints est compatible SOT, à vérifier avant de s'y fier.
-- **Police serif par défaut : le DS ne livre AUCUN reset global (rappel, élargi 2026-10-08)** —
-  chaque bloc de skin déclare sa propre `font-family` ; tout texte brut **hors** d'un bloc retombe
-  sur le serif du navigateur (Times New Roman). Déjà connu pour la `Card` ; `drawer.css`,
-  `bottom-sheet.css` et `modal.css` l'avaient oublié → corrigé. **Côté Storybook** le canvas n'avait
-  pas non plus de police de base, donc tout le décor des stories (libellés `<strong>`, légendes)
-  était en serif : ajout de `.storybook/preview-base.css` qui pose `--font-inter` sur `.sb-show-main`
-  — c'est le **rôle de l'app hôte**, pas du DS, et c'est documenté comme tel dans le fichier.
-  **Règle pour un nouveau bloc** : si du texte brut peut y atterrir, poser `--ui-<bloc>-font-family`.
-- **`.ui-card__footer` n'avait aucun `justify-content` (corrigé 2026-10-08)** — il retombait donc sur
-  `flex-start`, et les actions se ferraient à gauche par accident plutôt que par choix. Le footer
-  porte désormais un axe `align` (`start` / `center` / `end` / `between`), **`center` par défaut**
-  (choix dev). Corollaire : `Card.Footer` **EST** la rangée d'actions — ne pas emballer les boutons
-  dans un `div`, ça les réduit à un seul enfant flex et neutralise gap ET alignement.
-- **Les tokens ne sont PAS en OKLCH, contrairement à `CLAUDE.md` (relevé 2026-10-09)** — REPO-136 — les sources
-  DTCG **et** la sortie CSS sont en **hexadécimal** (`#ffffff`, `#6b6b6b`). La ligne « Style
-  Dictionary (OKLCH, DTCG) » de `rules/architecture.md` et de `CLAUDE.md` est fausse. À corriger —
-  et à trancher séparément : passer réellement en OKLCH aurait du sens (dégradés perceptuellement
-  uniformes, meilleur comportement d'une aire 2D de color picker).
-- **[RÉSOLU 2026-10-09 : Vitest Browser Mode, `Slider.browser.test.tsx`]** **Le clavier d'un `<input type="range">` n'existe pas sous jsdom (2026-10-09)** — flèches, Home,
-  End, PageUp/Down sont des comportements **navigateur**. `userEvent` ne peut donc pas piloter un
-  `Slider` en test unitaire. Les tests du Slider couvrent le **câblage** (mapping valeur→pourcentage,
-  quel callback part sur quel événement DOM) via `fireEvent`, **exception assumée** à la règle
-  « toujours userEvent » ; le clavier lui-même se vérifie dans Storybook. **Ne pas lire l'absence de
-  test clavier comme une absence de support clavier.** → la vraie réponse est le **Vitest Browser
-  Mode** (Playwright), consigné comme passe à faire dans `next.md`.
-- **`--ui-slider-track-image` est la couture du futur color picker (2026-10-09)** — un curseur de
-  teinte, d'alpha ou de canal **n'est pas un composant de plus** : c'est le `Slider` avec un fond de
-  piste et `imaged: true` (qui escamote la portion remplie). Ne pas créer de `ColorSlider` séparé.
-- **JAMAIS de `display` sur un `<dialog>` hors de `[open]` (piège rencontré DEUX fois, 2026-10-08)** —
-  le navigateur masque un dialog fermé via la règle UA `dialog:not([open]) { display: none }`. Toute
-  déclaration `display` d'auteur (skin **ou** style inline) l'écrase, et le dialog reste affiché en
-  permanence. Symptômes observés : « tous les drawers sont ouverts au démarrage », « ils s'empilent
-  dans le showcase », « le bouton close est inactif » (il marchait, le panneau ne disparaissait
-  jamais) ; côté Modal, la story injectait `style={{ display: 'grid' }}` pour centrer et cassait tout
-  l'état fermé. **Règle** : le layout d'un dialog va sur `.ui-<bloc>[open]`, jamais sur la base, et
-  **jamais** via `style`/`className` côté consommateur. Pour repositionner, exposer une var
-  (`--ui-modal-place-items`). Concerne `.ui-modal`, `.ui-drawer` et `.ui-popover`.
-  **[GARDÉ 2026-10-11]** `styles/state-guards.css` (`@layer ui.reset`, `display: none !important` sur
-  les trois blocs fermés) : en couches, l'important s'inverse, la première couche gagne et bat même
-  le `style` inline normal. Le piège ne peut plus venir d'un consommateur. Couvert par les tests
-  navigateur Modal/Drawer/Popover (classe non layered + `style` inline), sortie en fondu du Popover
-  comprise (les transitions passent avant l'important). La règle « pas de `display` sur la base »
-  reste valable pour le skin lui-même.
-- **Le backdrop d'un `<dialog>` se déclare LUI-MÊME comme cible du clic (2026-10-08)** — donc
-  `e.target === dialog` ne distingue PAS un clic sur le backdrop d'un clic sur le fond propre du
-  panneau. Ça ne marche que si le dialog couvre le viewport et que le panneau est un enfant (cas
-  `Modal`). Quand le dialog **EST** le panneau (cas `Drawer`), il faut un test géométrique contre sa
-  bounding box. D'où l'option `backdropArea: 'self' | 'outside'` de `useNativeDialog`. En test, jsdom
-  mesure tout à zéro : stubber `getBoundingClientRect` et cliquer via `user.pointer({ coords })`.
-- **API des coins (FAIT 2026-10-11)** — chaque radius du skin est `--ui-<bloc>-radius` + quatre
-  coins LOGIQUES optionnels, NON déclarés, qui retombent dessus :
-  `border-start-start-radius: var(--ui-<bloc>-radius-start-start, var(--ui-<bloc>-radius))`.
-  21 skins, testé en navigateur (Card : un coin, le bord du haut, RTL). Règle pour un nouveau bloc
-  dans `patterns-ui.md`. **Formes rondes par nature** (avatar, spinner, thumbs, points du dropdown) :
-  UNE var sur `--radius-full`, SANS coins (un coin isolé les déformerait ; relevé en review), jamais
-  `sm`/`md`/`lg`, pour qu'un thème « coins carrés » ne les équarrisse pas. Parité vérifiée par
-  `packages/styles/test/radius-api.test.ts` (82 déclarations de coin). **Pilules** (Badge, ProgressBar, piste du Slider, IconButton) : rondes pour
-  l'instant, surchargeables (choix dev). `dropdown.css` : le `9999px` en dur est devenu
-  `--ui-dropdown-dot-radius`. `progress-bar.css` `border-radius: inherit` : légitime, ne pas toucher.
-  **Valeur par défaut** : les valeurs actuelles (4–6px) restent ; le « zéro » ira dans un thème,
-  chantier des thèmes à venir (voir `next.md`).
-- **Recette top layer (2026-10-11, Tooltip / Dropdown / Typeahead / BottomSheet)** : `popover="manual"`
-  rendu EN PLACE (jamais de portal par défaut — sur `body` il finit inerte sous une Modal),
-  `showPopover()` dans un callback ref, ancre CSS par instance `--ui-<bloc>-anchor` (posée sur la
-  racine ET sur la surface), placement `@supports (position-anchor: …)`, test navigateur « ouvert
-  dans une Modal ». Un menu portalisé perd les vars du bloc → `.ui-x, body > .ui-x__menu { vars }`.
-- **Vitest Browser Mode : dépendance découverte en cours de run → double React** (`Cannot read
-properties of null (reading 'useState')`, hash `?v=` différents). Vite ré-optimise et recharge ;
-  passe au 2e run, casse à froid (CI). Ajouter la dép à `optimizeDeps.include` du projet `browser`
-  (`packages/reference/vitest.config.ts`).
-- **React propage `close` à travers l'arbre React** (l'événement DOM ne bulle pas) : un `<dialog>`
-  imbriqué fermait son parent. `useNativeDialog.handleClose` ignore `target !== currentTarget` —
-  tout nouveau dialog passe par ce hook.
-- **Un popover a aussi un `::backdrop`** : le voile d'un dialog qui peut être popover va sur
-  `:modal::backdrop`, sinon la surface non modale assombrit la page.
-- **Chromium rend une liste qui défile atteignable au Tab** : dans une combobox (focus dans le
-  champ), `tabIndex={-1}` sur la liste, sinon Tab y entre au lieu de quitter le composant.
-- **Bordure de la Tooltip claire : exception WCAG 1.4.11 ASSUMÉE (2026-10-21)** : `--ui-tooltip-border-color`
-  = `--color-border` (neutral.200, ~1,2:1 sur blanc). Une infobulle n'est pas un contrôle, son texte
-  reste lisible et l'ombre (`--shadow-lg`) détache déjà la bulle. Choix dev. Si un contour plus franc
-  est voulu : `--color-border-strong` (scopé, sans autre consommateur). Flèche = deux triangles
-  (`::before` contour, `::after` fond) ; `--ui-tooltip-arrow-size` = `ARROW_SIZE` (test navigateur) ;
-  contraste élevé : `forced-color-adjust: none` sur les triangles, sinon ils deviennent des rectangles.
-- **Chevron atténué d'`ArrowUpDown` : exception WCAG 1.4.11 ASSUMÉE (2026-10-08)** :
-  `--ui-sort-arrows-dimmed-opacity: 0.5` ramène `--color-text-secondary` (neutral.500) à ~2,05:1 sur
-  blanc, sous le plancher de 3:1 des objets graphiques. **Accepté, ce n'est pas un trou** : la direction
-  active est portée **redondamment** par l'autre chevron à pleine opacité (~5,3:1) ET par l'`aria-label`
-  du bouton (`Sort <col> (ascending|descending)`) — le chevron atténué ne porte aucune information
-  nécessaire à la compréhension. Même raisonnement que la piste vide du `Rating`. Si un contraste plus
-  franc est voulu un jour, remonter `--ui-sort-arrows-dimmed-opacity` à ~0,65–0,7 (var d'override,
-  scopée). **Ne PAS le « corriger » d'office** — c'est un choix visuel délibéré.
+**To have in mind at every session:**
 
-- **Avatar candidates throw outside `Avatar.Fallback`**: it's a full compound (no standalone mode) — the resolver access hooks (`useAvatarResolverActions/State`) throw if a candidate (`Avatar.Image/Initials/Icon`) is used without a surrounding `Avatar.Fallback`. By design.
-- **`react/jsx-no-leaked-render` is enforced (eslint, error)**: `{value && <JSX/>}` is forbidden when `value` is non-boolean (empty-string / zero leak) → use a ternary (`cond ? <JSX/> : null`) or coerce (`!!value &&`). Gotcha: `Boolean(src)` does **not** narrow the type — for `src: string | null` keep the ternary `src ? … : null` (narrows `src` AND avoids the leak); `Boolean(src) &&` loses the narrowing → TS error on `src={src}`.
-- **`--ui-avatar-line-height`**: Avatar exposes an override var for the initials line-height (parity with the rest of the skin's typographic vars); defaults to `var(--font-line-height-none)` (= 1).
-- **Dotted spacing tokens are dash-ified in the native CSS output (2026-07-16)**: the `css/variables-flat`
-  format in `sd.config.js` replaces `.` with `-`, so `spacing.0.5` emits **`--spacing-0-5`** (referenceable
-  via `var()`), `2.5`→`--spacing-2-5`, etc. The **Tailwind** `@theme` output KEEPS the dots
-  (`--spacing-0.5`) to match Tailwind's `p-0.5` utility convention → the two outputs diverge by design.
-  Use `var(--spacing-0-5)` in the skin (badge/listbox do). Was previously worked around with rem literals.
-- **`packages/styles` has no lint/type-check scripts** — REPO-138 (CSS-only) → `lerna run` and CI skip those. It HAS a `test` script since 2026-10-11 (Vitest, `test/` — source checks on the CSS, e.g. the radius API parity). Add `stylelint` later for real CSS linting.
-- **eslint typed-lint poison from empty-src `stencil/tsconfig.json`** — REPO-137: the base `project: ['./packages/*/tsconfig.json']` glob loads stencil's build tsconfig, which has no inputs (TS18003). Any package **alphabetically after `stencil`** that relies on the base glob (e.g. `variants`) crashes with "Unable to parse the specified tsconfig". Fix per package = a scoped eslint override pointing at its own tsconfig (see the `variants` override in `eslint.config.js`, mirroring the `stencil` one). Real fix later: migrate the root config to `projectService: true`, or give stencil a non-empty tsconfig.
-- **Harness "plan mode" green overlay can persist** in the prompt (cosmetic, harness-side). Exit with Shift+Tab / Esc. We don't use plan mode — plans live in `files/plans/`.
-- **commitlint `subject-case`**: the commit subject must be **lowercase** — a subject starting with a PascalCase word (e.g. `Typography uses…`) is rejected. Write `use … on Typography` instead.
-- **`ui-typography--gutter-bottom` uses a hardcoded `0.35em`** — TOKENS-139 (commented MUI parity, em-relative so it scales with the variant). No token for it; tokenize later if a per-theme gutter is wanted.
-- **`--ui-spinner-thickness` is derived from the size** (`calc(var(--ui-spinner-size) / 8)`, ≈12.5% of the diameter) so the ring scales with every size automatically and the size modifiers only set `--ui-spinner-size`. No border-width token needed; consumers can still override the component var directly.
-- **Spinner `prefers-reduced-motion` slows (2s) rather than stops** the spin — deliberate: a spinner is _essential_ motion (conveys "busy"), so it's exempt from WCAG 2.3.3, and a fully-stopped ring reads as frozen/broken. Revisit if a static/pulse fallback is preferred.
-- **Skeleton vs Spinner reduced-motion are intentionally OPPOSITE**: Skeleton **removes** the shimmer under `prefers-reduced-motion` (the placeholder block alone conveys "loading" → the shimmer is non-essential decorative motion), whereas the Spinner only slows (essential motion). Don't "harmonize" them.
-- **IconButton is a skin EXTENSION of Button, not a standalone block**: `.ui-icon-button` is always MIXED onto `.ui-button` (`class="ui-button ui-button--ghost ui-icon-button"`) — it reuses Button's colours/box-sizing/font-family and only adds the icon-fitting geometry. `icon-button.css` MUST be `@import`ed **after** `button.css` in `native-styles.css` so its single-class rules win the geometry props they override within `@layer ui.components`. `ghost-dark` is an IconButton-only variant that redefines the reused `--ui-button-*` vars; it reads the inverse colour roles (`--color-surface-inverse-*`, `--color-text-on-inverse-*`).
-- **`--color-focus` (ex-`ring`) is `neutral.500`** (#6b6b6b), chosen so the `:focus-visible` outline meets WCAG 1.4.11 (≥3:1) on BOTH a white background (~5.3:1) and the dark `ghost-dark` surface (~3.4:1). Don't lighten it back to `neutral.400` (fails on white).
-- **Skeleton has no intrinsic size**: `width`/`height`/`aspectRatio` are CSS length values applied as logical inline styles (`inlineSize`/`blockSize`) — NOT Tailwind classes anymore. Without them the block collapses to 0 and is invisible (documented in its README).
-- **Card slots throw outside `<Card>`**: `Card.Header/Body/Footer` read a marker context via a guarded hook (`useCardContext`) and **throw** if rendered without a surrounding `<Card>`. By design (slots aren't general-purpose padded boxes); the context carries no state — it only enforces composition (Avatar-style discipline).
-- **Card root is intentionally UNPADDED**: a bare `<Card>text</Card>` lets the text touch the edges. Padding lives on the slots so a direct media child (`<img>`) can sit edge-to-edge (clipped by `overflow:hidden` to the radius). Wrap content in `Card.Body`. Documented in the Card README.
-- **Card has NO region dividers**: `Card.Header/Footer` carry no separating border (removed on dev request) — regions are grouped by spacing only. `header` = tight column (title), `footer` = action row, `body` = grows (`flex:1`). Don't reintroduce borders.
-- **`.ui-card` sets `--ui-card-font-family` (Inter)**: without it, raw text inside a Card falls back to the browser serif default (Times New Roman). Composing `Typography` inside is still the recommended path; the font var only covers loose text.
-- **Typography `body` variant REMOVED → `body1`/`body2`**: MUI parity — `body1` (16px, the default) and `body2` (14px, compact). `variant="body"` no longer type-checks. Use `body2` for compact contexts (e.g. a Card body under a `h6` title, so the body doesn't read larger than the title).
-- **Radius scale capped at 6px (deliberate)** — superseded by the themes: the white-label base goes to 0, TOKENS-124: `--radius-sm` stays 4px, but `default/md/lg/xl/2xl/3xl` are ALL flattened to 6px (0.375rem) in `tokens/radius.json` — dev decision "nothing rounder than 6px". The scale is intentionally degenerate above `sm`. Card + Skeleton corners (on `lg`) are therefore 6px. Don't reintroduce 8/12/16px radii.
-- **Input `size` repurposes the native HTML attribute**: `InputProps extends Omit<ComponentProps<'input'>, 'size'>` — `size` is the DS axis (`sm`/`md`/`lg`), matching every other component. The native `size` (character width) is intentionally **removed**; control width via CSS. (Was `inputSize` pre-migration — renamed during the migration for DS consistency.)
-- **`.ui-field` is a GENERIC reusable block (its own `field.css`)**: the field layer (label + control + message) is `.ui-field` / `.ui-field__label` / `.ui-field__message` (+ `--error`), NOT `ui-input-field`. It lives in `packages/styles/src/styles/field.css` (imported BEFORE `input.css`) so Select/Textarea/Checkbox can reuse it without pulling the Input control skin. Resolver `inputFieldVariants` (in `variants/src/input.ts`) emits `ui-field`; reuse it (or add a sibling) for future controls.
-- **Colour roles renamed (2026-10-13)** : `--color-<ce qu'on peint>-<rôle>` (`surface`, `text-secondary`, `hover`, `border-strong`, `focus`…), plus de `foreground`/`muted`/`accent`/`card`. Skin = rôles seulement, sauf le color picker (invariant). Garde : `styles/test/color-roles.test.ts`. Un thème redéfinit les rôles, JAMAIS l'échelle de gris.
-- **`--color-border-strong` (neutral.450 #949494) = every control boundary** (field, outline button, outline badge): neutral.300 is only ~1.48:1 on white (fails WCAG 1.4.11 ≥3:1); 450 is the lightest grey clearing 3:1. The outline Button's latent gap (it read neutral.300) closed with the 2026-10-13 role rename.
-- **Input error state is NOT colour-only**: an error (`messageType="error"` + a non-empty `message`) recolours the message to `--color-destructive-hover` (red.600 #dc2626, ~5.9:1 — red.500 #ef4444 is only 3.73:1, fails AA text) AND prepends an `ExclamationCircle` icon (aria-hidden) so it reads by icon+text, not colour (WCAG 1.4.1). The border/ring keep red.500 (#ef4444, 3.73:1 ≥3:1 OK for a UI-component boundary). `messageType="error"` with no `message` does nothing (no `aria-invalid`, no styling).
-- **Input `role="alert"` is conditionally rendered** (alert `<p>` appears with the error): this matches MUI/react-aria FormHelperText and is conformant; a few screen readers may under-announce a live region injected already-populated. Deliberate (no always-present `sr-only` container) — revisit only if real SR testing shows a miss.
-- **Rating is display-only + grayscale by design** — REACT-140 (the clickable Phase-2 shape): `role="img"` + computed `aria-label` ("Rating: X out of Y", English default — pass `aria-label` to localise); the SVG/stars are `aria-hidden`. NO interaction/keyboard (a settable rating would be a separate interactive control; dev's Phase-2 shape = half-step clickable stars + callbacks, nothing more). NO traffic-light: fill = `--color-rating-filled` (neutral.900, repointed from amber.400) on `--color-rating-empty` (neutral.300); the score is read from the fill proportion + the number (never colour → 1.4.1).
-- **Rating `--color-rating-empty` (neutral.300, ~1.48:1 on white) is a DELIBERATE dev choice**: a review flagged it vs WCAG 1.4.11 (≥3:1 for graphical objects), but it's NOT treated as a blocker because (a) Rating is display-only, not a control boundary; (b) the score is redundantly conveyed by the high-contrast fill (neutral.900 ~17:1) AND the numeric value; (c) filled-vs-empty contrast is huge so the proportion is perceivable. If a stronger empty/track is wanted later, repoint `--color-rating-empty` to neutral.450 (the AA-min control shade) — scoped, no other consumer.
-- **Rating stars fill is RTL-safe via `--ui-rating-fill`**: the component passes ONLY the fill fraction as the `--ui-rating-fill` custom property (a 0–100% length); the skin owns the `clip-path` DIRECTION (LTR clips inline-end, a `:dir(rtl)` rule clips the other physical edge). Don't move the clip-path back inline (it was physical `inset(0 …% 0 0)` → broke RTL). The SVG ring geometry (svg px / stroke / dash arrays) stays inline (Skeleton precedent — skin owns look, not geometry).
 - **Storybook (storybook-react) consumes the BUILT `reference` dist, not src** (exports map → `dist/*`, no Vite alias to source). After changing a `reference` component you MUST rebuild it (the root `pnpm type-check`/`lint`/`test` gate does it via Nx `^build`) AND restart Storybook — Vite does NOT hot-reload a workspace dep's `dist`. Symptom: story shows stale behaviour despite saved edits.

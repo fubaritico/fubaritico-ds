@@ -1,6 +1,11 @@
-# Known Issues — DataTable
+---
+paths:
+  - "packages/reference/src/components/DataTable/**"
+  - "apps/storybook-react/stories/reference/DataTable*"
+---
+# Known issues — the DataTable
 
-> Split out of `known-issues.md` (200-line cap). Load when touching the DataTable.
+> Slice of `.claude/known-issues.md` (the index). Loads when the DataTable is touched.
 
 - **Namespace skin DataTable = `ui-data-table` (2026-07-10)** : le BEM **block `.ui-data-table` est sur la
   CONTAINER (la Card)**, pas sur le `<table>` — il porte tous les `--ui-data-table-*` vars pour que TOUT

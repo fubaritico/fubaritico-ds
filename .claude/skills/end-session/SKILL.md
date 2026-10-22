@@ -24,12 +24,17 @@ Update the Session State in CLAUDE.md to reflect the current state of work befor
    - What was completed this session (new items to add to `### Completed`)
    - What the next actionable step is (`### Next`)
    - Any new known issues surfaced (`### Known Issues`)
-4. Edit the session files (`completed.md`, `next.md`, `known-issues*.md`):
-   - `completed.md` — append this session's account (spans, the dev's words, my faults), **citing the
-     tickets** (`STYLES-12`), never re-describing what the Fait ticket already says
+4. Edit the session files (`completed.md`, `next.md`, the known-issues slices):
+   - `completed.md` — add this session's account on top (spans, the dev's words, my faults), short,
+     **citing the tickets** (`STYLES-12`), never re-describing what the Fait ticket already says. **Two
+     sessions at most**: the older one moves to `completed-archive.md`, verbatim
    - `next.md` — replace with the resume point: where we stopped, what is mid-flight, the tickets in
      À valider par le développeur / En cours / top of À faire — never a list of tasks (that is the board)
-   - known-issues — add new ones (an entry asking for an action gets its ticket, ` — REACT-12`), remove resolved ones
+   - known-issues — a new entry goes in its slice `.claude/rules/known-issues/<place>.md` (the map is
+     `known-issues.md`); one asking for an action gets its ticket (` — REACT-12`); a closed one moves to
+     `known-issues-closed.md`, verbatim, never deleted
+   - `.claude/` changed this session → run `/doctor prompt-audit` and go through its findings with the dev
+     (`rules/claude-config.md`); only what he accepts is applied
 5. **The Trello board — run the sync check of the `/trello` skill**: every ticket touched this session
    carries a comment saying where it stands; every ticket En cours / À valider is named in `next.md`;
    every plan, known-issue or `next.md` changed this session has its ticket, and every ticket it cites

@@ -16,13 +16,13 @@ designed out. In French to the dev an item is a **ticket**, never a _carte_ (`Ca
 
 ## One home per fact — the others point to it
 
-| home                                      | holds                                                                                                    | no longer holds          |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------ |
-| **the board**                             | the tasks and their state: what, stage, blocked, who has the ball, what waits for a release              | —                        |
-| `files/plans/*.md`                        | a chantier's design: why, how, trade-offs; its steps = a checklist on the ticket                         | progress                 |
-| known-issues (`.claude/known-issues*.md`) | a problem's mechanism; an entry that asks for an action carries ` — REACT-12`                            | the to-do                |
-| `.claude/next.md`                         | where we stopped, what is mid-flight, context that is not a task; names the tickets En cours / À valider | any task list            |
-| `.claude/completed.md`                    | a short account per session (spans, the dev's words, my faults), **citing** tickets                      | the detail of a delivery |
+| home                                                                           | holds                                                                                                    | no longer holds          |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- | ------------------------ |
+| **the board**                                                                  | the tasks and their state: what, stage, blocked, who has the ball, what waits for a release              | —                        |
+| `files/plans/*.md`                                                             | a chantier's design: why, how, trade-offs; its steps = a checklist on the ticket                         | progress                 |
+| known-issues (slices `.claude/rules/known-issues/*.md`, map `known-issues.md`) | a problem's mechanism; an entry that asks for an action carries ` — REACT-12`                            | the to-do                |
+| `.claude/next.md`                                                              | where we stopped, what is mid-flight, context that is not a task; names the tickets En cours / À valider | any task list            |
+| `.claude/completed.md`                                                         | a short account per session (spans, the dev's words, my faults), **citing** tickets                      | the detail of a delivery |
 
 Every gesture keeps both sides in step, in the same breath: a ticket born from a known-issue or a plan
 names it in **Détails**, and the entry gets ` — REACT-12`; a closed known-issue → its ticket `done`, the

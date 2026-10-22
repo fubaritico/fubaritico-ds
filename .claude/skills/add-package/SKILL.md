@@ -61,7 +61,11 @@ cp packages/variants/{tsconfig.json,tsconfig.build.json,vitest.config.ts} packag
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "default": "./dist/index.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
   },
   "files": ["dist", "README.md"],
   "scripts": {
@@ -100,7 +104,7 @@ cp packages/variants/{tsconfig.json,tsconfig.build.json,vitest.config.ts} packag
 
 1. **ESLint** — add a scoped override in `eslint.config.js` next to the `variants` one
    (`files: ['packages/$name/**/*.ts']`, `parserOptions.project: ['./packages/$name/tsconfig.json']`).
-   Without it, a package sorting after `stencil` crashes typed lint (TS18003, see `known-issues.md`).
+   Without it, a package sorting after `stencil` crashes typed lint (TS18003, see `.claude/rules/known-issues/tooling.md`).
 2. **Sonar** — append `packages/$name/coverage/lcov.info` to
    `sonar.javascript.lcov.reportPaths` in `sonar-project.properties`.
 3. **Docs** — add the package to `CLAUDE.md` (Project list + package count) and to
