@@ -21,6 +21,7 @@
 | Start a work session                              | `/start-session`       |
 | End a work session                                | `/end-session`         |
 | Answer "how long / since when / when did we…"     | `/timeline`            |
+| Track a task — a ticket, its column, its label    | `/trello`              |
 
 ## Apply when writing/reviewing component code (composition primitives)
 

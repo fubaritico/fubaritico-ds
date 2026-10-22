@@ -24,9 +24,15 @@ Update the Session State in CLAUDE.md to reflect the current state of work befor
    - What was completed this session (new items to add to `### Completed`)
    - What the next actionable step is (`### Next`)
    - Any new known issues surfaced (`### Known Issues`)
-4. Edit the `## Session State` section in `.claude/CLAUDE.md`:
-   - Append newly completed items to `### Completed` (keep existing entries, add new ones)
-   - Replace `### Next` with the single most actionable next step
-   - Update `### Known Issues` — add new ones, remove resolved ones
-5. If a new architectural decision or stable pattern was established this session, update the relevant memory file in `.claude/projects/.../memory/` (e.g. `MEMORY.md`, `patterns.md`)
-6. Propose all changes to the user before writing — do not write without confirmation
+4. Edit the session files (`completed.md`, `next.md`, `known-issues*.md`):
+   - `completed.md` — append this session's account (spans, the dev's words, my faults), **citing the
+     tickets** (`STYLES-12`), never re-describing what the Fait ticket already says
+   - `next.md` — replace with the resume point: where we stopped, what is mid-flight, the tickets in
+     À valider par le développeur / En cours / top of À faire — never a list of tasks (that is the board)
+   - known-issues — add new ones (an entry asking for an action gets its ticket, ` — REACT-12`), remove resolved ones
+5. **The Trello board — run the sync check of the `/trello` skill**: every ticket touched this session
+   carries a comment saying where it stands; every ticket En cours / À valider is named in `next.md`;
+   every plan, known-issue or `next.md` changed this session has its ticket, and every ticket it cites
+   exists in a coherent column.
+6. If a new architectural decision or stable pattern was established this session, update the relevant memory file in `.claude/projects/.../memory/` (e.g. `MEMORY.md`, `patterns.md`)
+7. Propose all changes to the user before writing — do not write without confirmation

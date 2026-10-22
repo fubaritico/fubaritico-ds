@@ -102,6 +102,10 @@ the pre-commit hook and `ci.yml`. Private (`shared`) and already-published versi
 so a re-run is safe. **The publication is proven only by the `+ @fubaritico/<pkg>@X.Y.Z` lines.**
 A green run with no such line published nothing.
 
+Then, on the board (`/trello`): `published X.Y.Z` — creates `[REPO] Release X.Y.Z` in Fait with every
+« à publier » ticket in its checklist, and removes the label. Narrate it like the other commands. If the
+proof line is missing, do NOT run it: nothing was published.
+
 ## 5. Handoff
 
 Write `~/Desktop/WebstormProjects/europe-map/HANDOFF-from-fubaritico-ds.md` (untracked; they delete

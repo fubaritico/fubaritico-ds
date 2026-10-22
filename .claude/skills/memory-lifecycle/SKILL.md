@@ -1,6 +1,6 @@
 ---
 name: memory-lifecycle
-description: "Manage entity status transitions in Basic Memory: archive completed work, move notes between status folders, update frontmatter, and handle edge cases. Use when marking items complete, archiving old entities, or managing any folder-based status workflow."
+description: 'Manage entity status transitions in Basic Memory: archive completed work, move notes between status folders, update frontmatter, and handle edge cases. Use when marking items complete, archiving old entities, or managing any folder-based status workflow.'
 ---
 
 # Memory Lifecycle
@@ -9,7 +9,8 @@ Manage how entities move through status stages in Basic Memory. The core princip
 
 ## When to Use
 
-- User says something is "done", "finished", "completed", "submitted", "missed", or "cancelled"
+- User says a **Basic Memory note** is "done", "finished", "completed", "submitted", "missed", or "cancelled"
+  — a task or ticket of this project marked done is `/trello`, never this skill
 - Moving entities between status folders (active → archive, pipeline → active, etc.)
 - Reverting a mistaken completion
 - Periodic cleanup of stale active items
@@ -61,14 +62,14 @@ Pick folder names that match your domain. The pattern matters more than the spec
 
 When the user mentions completion or status change, extract the intent:
 
-| Signal | Status | Action |
-|--------|--------|--------|
-| "finished", "done", "completed", "shipped" | Complete | Move to archive/completed folder |
-| "submitted", "sent", "delivered" | Complete | Move to archive/completed folder |
-| "missed", "passed", "skipped", "expired" | Missed | Move to archive or missed folder |
-| "cancelled", "abandoned", "killed" | Cancelled | Move to archive folder |
-| "paused", "on hold", "deferred" | Paused | Update frontmatter status, keep in place |
-| "restarting", "reopening", "reviving" | Reactivate | Move back to active folder |
+| Signal                                     | Status     | Action                                   |
+| ------------------------------------------ | ---------- | ---------------------------------------- |
+| "finished", "done", "completed", "shipped" | Complete   | Move to archive/completed folder         |
+| "submitted", "sent", "delivered"           | Complete   | Move to archive/completed folder         |
+| "missed", "passed", "skipped", "expired"   | Missed     | Move to archive or missed folder         |
+| "cancelled", "abandoned", "killed"         | Cancelled  | Move to archive folder                   |
+| "paused", "on hold", "deferred"            | Paused     | Update frontmatter status, keep in place |
+| "restarting", "reopening", "reviving"      | Reactivate | Move back to active folder               |
 
 ## Workflow
 

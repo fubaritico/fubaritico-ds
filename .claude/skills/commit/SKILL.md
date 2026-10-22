@@ -24,8 +24,11 @@ Prepare and propose a conventional commit for the current changes.
    - `packages/variants` → scope `variants`
    - root / monorepo config → scope `repo`
    - Multiple packages → use the most impacted scope
-4. Generate a conventional commit message
+4. Generate a conventional commit message — its TYPE must tell the truth (a fix is `fix`, even found by
+   a test): the changelog is built from it
 5. Propose the exact commands to run (user executes them)
+6. **The ticket** (`/trello`): a ticket's work is committed after the dev checked it (Definition of
+   Done, step 6); the hash goes in the ticket's comment, then `done`
 
 ## Commit format
 

@@ -137,6 +137,14 @@ To be updated.
 
 To be updated.
 
+## The board — the list of tasks (since 2026-10-22)
+
+**Trello `fubaritico-ds`** (https://trello.com/b/eEZaJpsL/fubaritico-ds), through the `/trello` skill: the
+tasks, their stage, what waits on the dev, what waits for a release, the full history since 2026-06-07.
+One home per fact: tasks on the board; a chantier's design in `files/plans/`; a problem's mechanism in the
+known-issues; `next.md` = the resume point only; `completed.md` = session accounts that **cite** tickets.
+In French to the dev: a **ticket**, never a _carte_.
+
 ## Session State (updated by `/end-session`)
 
 ### Completed

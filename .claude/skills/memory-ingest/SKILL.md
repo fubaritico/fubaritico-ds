@@ -1,6 +1,6 @@
 ---
 name: memory-ingest
-description: "Process unstructured external input (meeting transcripts, conversation logs, pasted documents) into structured Basic Memory entities. Extracts entities, searches for existing matches, proposes new entities with approval, creates notes with observations and relations, and captures action items."
+description: 'Process unstructured external input (meeting transcripts, conversation logs, pasted documents) into structured Basic Memory entities. Extracts entities, searches for existing matches, proposes new entities with approval, creates notes with observations and relations, and captures action items.'
 ---
 
 # Memory Ingest
@@ -27,6 +27,8 @@ Turn raw, unstructured input into structured Basic Memory entities. Meeting tran
 8. Extract action items      → follow-ups and commitments
 ```
 
+An action item for THIS project becomes a ticket in Idées on the Trello board (`/trello`), not a note.
+
 ## Step 1: Parse Raw Input
 
 Read the pasted content and identify its structure:
@@ -42,16 +44,17 @@ Don't rewrite or summarize the source content. Preserve it verbatim in the note 
 
 Scan the content for entities worth tracking in the knowledge graph:
 
-| Entity Type | Signals |
-|-------------|---------|
-| **Person** | Names with roles, titles, or affiliations mentioned |
-| **Organization** | Company names, agencies, institutions |
+| Entity Type       | Signals                                                             |
+| ----------------- | ------------------------------------------------------------------- |
+| **Person**        | Names with roles, titles, or affiliations mentioned                 |
+| **Organization**  | Company names, agencies, institutions                               |
 | **Topic/Concept** | Technical domains, methodologies, standards discussed substantively |
-| **Action Item** | Commitments, deadlines, "I'll do X by Y" statements |
+| **Action Item**   | Commitments, deadlines, "I'll do X by Y" statements                 |
 
 **Infer type from context.** If someone is introduced as "CTO of Acme Corp", that's both a Person and an Organization entity. If a technology is discussed in depth, it might warrant a Concept entity.
 
 **Exclude noise.** Not every name mentioned is worth an entity. Filter for:
+
 - People with substantive roles or interactions (not passing mentions)
 - Organizations discussed in business/technical context
 - Topics with enough detail to warrant their own note
@@ -75,6 +78,7 @@ search_notes(query="edge inference")
 ```
 
 Classify each entity as:
+
 - **Existing** — found in Basic Memory. Will link to it with `[[wiki-link]]`.
 - **Proposed** — not found. Will propose creation pending approval.
 
@@ -177,18 +181,18 @@ write_note(
 
 Use categories that capture the nature of the information. Common categories for ingested content:
 
-| Category | Use For |
-|----------|---------|
+| Category      | Use For                                            |
+| ------------- | -------------------------------------------------- |
 | `opportunity` | Business or collaboration opportunities identified |
-| `decision` | Decisions made or agreed upon |
-| `insight` | Non-obvious understanding gained |
-| `next_step` | Concrete action items or follow-ups |
-| `sentiment` | Enthusiasm, concerns, hesitations expressed |
-| `risk` | Risks or concerns identified |
-| `requirement` | Requirements or constraints discovered |
-| `key_finding` | Important facts from reference material |
-| `technique` | Methods, approaches, or patterns described |
-| `context` | Background information that may be useful later |
+| `decision`    | Decisions made or agreed upon                      |
+| `insight`     | Non-obvious understanding gained                   |
+| `next_step`   | Concrete action items or follow-ups                |
+| `sentiment`   | Enthusiasm, concerns, hesitations expressed        |
+| `risk`        | Risks or concerns identified                       |
+| `requirement` | Requirements or constraints discovered             |
+| `key_finding` | Important facts from reference material            |
+| `technique`   | Methods, approaches, or patterns described         |
+| `context`     | Background information that may be useful later    |
 
 Invent categories as needed — these are suggestions, not a fixed list.
 
