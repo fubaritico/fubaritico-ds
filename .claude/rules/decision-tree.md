@@ -22,6 +22,7 @@
 | End a work session                                | `/end-session`         |
 | Answer "how long / since when / when did we…"     | `/timeline`            |
 | Track a task — a ticket, its column, its label    | `/trello`              |
+| Reason about a subject whose rules are not loaded | `/rules`               |
 
 ## Apply when writing/reviewing component code (composition primitives)
 
@@ -35,7 +36,8 @@ These are knowledge skills — apply their patterns, don't "invoke" them to gene
 ## Pre-flight — BEFORE writing code
 
 1. Confirm the approach with the user (never code without confirming).
-2. Ask which reference files are needed; read the relevant `.claude/rules/*` before coding.
+2. The rules of the place must be in context: touching its files loads them (`paths:`); for a discussion the
+   prompt hook names them; `/rules` covers what it missed.
 3. Check if a skill handles this task (table above).
 4. If yes → use the Skill tool, do NOT write manually.
 5. If no → write code following the patterns, then run `pnpm type-check && pnpm lint && pnpm test` + `/review`.

@@ -1,0 +1,245 @@
+{
+  "$comment": "One table, two readers: the prompt hook (.claude/hooks/rules-for-prompt.mjs) and the /rules skill. A word matches a word of the prompt, accents and case ignored, plural s/x allowed; a trailing * matches any ending; a word with a space matches as a phrase. Paths are relative to the repository root. Never as triggers: 'tableau' (the Trello board), 'carte' (the Card component), 'ci' (« celui-ci »).",
+  "topics": {
+    "components": {
+      "label": "les composants",
+      "words": [
+        "composant",
+        "component",
+        "primitive",
+        "compound",
+        "story",
+        "stories",
+        "storybook",
+        "readme",
+        "button",
+        "bouton",
+        "card",
+        "modal",
+        "modale",
+        "drawer",
+        "bottomsheet",
+        "dialog",
+        "tooltip",
+        "infobulle",
+        "popover",
+        "dropdown",
+        "menu",
+        "typeahead",
+        "listbox",
+        "tabs",
+        "slider",
+        "colorpicker",
+        "color picker",
+        "colorfield",
+        "avatar",
+        "badge",
+        "input",
+        "rating",
+        "alert",
+        "spinner",
+        "skeleton",
+        "typography",
+        "progressbar",
+        "checkbox",
+        "pagination",
+        "datepicker",
+        "truncatedtext",
+        "top layer",
+        "react-*",
+        "sb-*"
+      ],
+      "files": [
+        {
+          "path": ".claude/rules/patterns-ui.md"
+        },
+        {
+          "path": ".claude/rules/patterns-compound.md"
+        },
+        {
+          "path": ".claude/rules/component-docs.md"
+        },
+        {
+          "path": ".claude/rules/known-issues/components.md"
+        }
+      ]
+    },
+    "styles": {
+      "label": "le skin et les tokens",
+      "words": [
+        "skin",
+        "css",
+        "bem",
+        "token",
+        "theme",
+        "themes",
+        "couleur",
+        "color",
+        "colour",
+        "radius",
+        "role",
+        "resolver",
+        "cva",
+        "variante",
+        "variant",
+        "contraste",
+        "contrast",
+        "styles-*",
+        "tokens-*",
+        "variants-*",
+        "design-*"
+      ],
+      "files": [
+        {
+          "path": ".claude/rules/patterns-ui.md"
+        },
+        {
+          "path": ".claude/rules/known-issues/styles-tokens.md"
+        }
+      ]
+    },
+    "datatable": {
+      "label": "le DataTable",
+      "words": [
+        "datatable",
+        "data table",
+        "tanstack",
+        "cellule",
+        "cell",
+        "virtualisation",
+        "virtualized",
+        "grid"
+      ],
+      "files": [
+        {
+          "path": ".claude/rules/known-issues/datatable.md"
+        },
+        {
+          "path": ".claude/rules/modular-architecture.md"
+        },
+        {
+          "path": "files/plans/roadmap.md"
+        }
+      ]
+    },
+    "behaviors": {
+      "label": "les services de comportement",
+      "words": [
+        "behavior",
+        "behaviors",
+        "behaviour",
+        "service",
+        "clavier",
+        "keyboard",
+        "focus",
+        "aria",
+        "behaviors-*"
+      ],
+      "files": [
+        {
+          "path": ".claude/rules/modular-architecture.md"
+        },
+        {
+          "path": ".claude/rules/patterns-compound.md"
+        }
+      ]
+    },
+    "stencil": {
+      "label": "Stencil et les wrappers",
+      "words": [
+        "stencil",
+        "web component",
+        "web components",
+        "angular",
+        "vue",
+        "wrapper",
+        "stencil-*"
+      ],
+      "files": [
+        {
+          "path": ".claude/rules/troubleshooting.md"
+        },
+        {
+          "path": ".claude/rules/architecture.md"
+        },
+        {
+          "path": "packages/stencil/PLAN.md"
+        }
+      ]
+    },
+    "tests": {
+      "label": "les tests",
+      "words": [
+        "test",
+        "tests",
+        "vitest",
+        "jsdom",
+        "playwright",
+        "chromium",
+        "couverture",
+        "coverage"
+      ],
+      "files": [
+        {
+          "path": ".claude/rules/tests.md"
+        },
+        {
+          "path": ".claude/rules/known-issues/testing.md"
+        }
+      ]
+    },
+    "tooling": {
+      "label": "l'outillage",
+      "words": [
+        "sonar",
+        "sonarcloud",
+        "lint",
+        "eslint",
+        "commitlint",
+        "husky",
+        "lerna",
+        "nx",
+        "pnpm",
+        "release",
+        "publier",
+        "publication",
+        "monorepo",
+        "workflow",
+        "github actions",
+        "repo-*"
+      ],
+      "files": [
+        {
+          "path": ".claude/rules/architecture.md"
+        },
+        {
+          "path": ".claude/rules/troubleshooting.md"
+        },
+        {
+          "path": ".claude/rules/known-issues/tooling.md"
+        }
+      ]
+    },
+    "claude": {
+      "label": "la configuration de Claude",
+      "words": [
+        "claude",
+        "skill",
+        "skills",
+        "hook",
+        "hooks",
+        "regle",
+        "rules",
+        "memoire",
+        "memory",
+        "prompt",
+        "context engineering"
+      ],
+      "files": [
+        {
+          "path": ".claude/rules/claude-config.md"
+        }
+      ]
+    }
+  }
+}

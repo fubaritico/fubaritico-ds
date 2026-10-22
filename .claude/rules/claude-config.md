@@ -19,8 +19,8 @@ paths:
    pages): `memory` (CLAUDE.md, rules, imports, auto memory), `hooks`, `skills`, `sub-agents`, `settings`; the
    index is `https://code.claude.com/docs/llms.txt`. **Cite it** in the answer.
 2. **Say plainly when a change goes against the guidance**, with the remedy — unasked.
-3. **A new rule file or known-issues slice gets its `paths:`** and a line in the table of `CLAUDE.md`
-   (rules) or of `known-issues.md` (slices).
+3. **A new rule file or known-issues slice gets its `paths:`**, a line in the table of `CLAUDE.md` (rules)
+   or of `known-issues.md` (slices), and its topic in `.claude/skills/rules/topics.json`.
 
 ## What the documentation says that we rely on (verified 2026-10-22, Claude Code 2.1.308)
 

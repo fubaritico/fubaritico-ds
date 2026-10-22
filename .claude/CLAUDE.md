@@ -183,5 +183,6 @@ all eight loaded every time (~100 KB). Now:
 | `claude-config.md`                                            | `.claude/**`, `CLAUDE.md` — read the current Claude Code docs before configuring |
 | `known-issues/*.md`                                           | by place — the map is `../known-issues.md`                                       |
 
-**Before coding**: touching a file of a place loads its rules. For a discussion that touches no file yet,
-read the rule of the subject first (the table above) and say in one line which ones are loaded.
+**Before coding**: touching a file of a place loads its rules; for a discussion, the prompt hook
+(`.claude/hooks/rules-for-prompt.mjs`, table `.claude/skills/rules/topics.json`) names them from the dev's words,
+and `/rules` covers what it missed. Say in one line which ones are loaded.
