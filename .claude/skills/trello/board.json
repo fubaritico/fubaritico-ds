@@ -1,0 +1,95 @@
+{
+  "$comment": "The fubaritico-ds board — everything the script must know about it. The script holds the verbs only.",
+  "board": "6ad37079956321012aa50424",
+  "url": "https://trello.com/b/eEZaJpsL/fubaritico-ds",
+  "columns": [
+    "Chantiers",
+    "Idées",
+    "Backlog",
+    "À faire",
+    "En cours",
+    "À valider par le développeur",
+    "Fait"
+  ],
+  "active": [
+    "Chantiers",
+    "À faire",
+    "En cours",
+    "À valider par le développeur"
+  ],
+  "scopes": [
+    "REACT",
+    "STYLES",
+    "TOKENS",
+    "VARIANTS",
+    "BEHAVIORS",
+    "STENCIL",
+    "SB",
+    "REPO",
+    "DESIGN"
+  ],
+  "unpublished": ["REPO", "STENCIL", "SB"],
+  "blocked": { "name": "Bloqué", "color": "red" },
+  "toPublish": { "name": "à publier", "color": "green" },
+  "priorities": { "haute": "red", "moyenne": "yellow", "aucune": null },
+  "labels": [
+    { "family": "gravité", "name": "critique", "color": "red_dark" },
+    { "family": "gravité", "name": "gênant", "color": "orange" },
+    { "family": "gravité", "name": "cosmétique", "color": "yellow" },
+
+    { "family": "couche", "name": "react", "color": "blue" },
+    { "family": "couche", "name": "styles", "color": "pink" },
+    { "family": "couche", "name": "tokens", "color": "purple" },
+    { "family": "couche", "name": "variants", "color": "sky" },
+    { "family": "couche", "name": "behaviors", "color": "lime" },
+    { "family": "couche", "name": "stencil", "color": "orange_dark" },
+    { "family": "couche", "name": "storybook", "color": "pink_dark" },
+    { "family": "couche", "name": "outillage", "color": "black" },
+    { "family": "couche", "name": "design", "color": "purple_dark" },
+
+    { "family": "type", "name": "défaut", "color": "red_light" },
+    { "family": "type", "name": "fonction", "color": "lime_dark" },
+    { "family": "type", "name": "dette", "color": "yellow_dark" },
+    { "family": "type", "name": "décision", "color": "purple_light" },
+    { "family": "type", "name": "doc", "color": "black_light" },
+    { "family": "type", "name": "a11y", "color": "sky_dark" },
+
+    { "family": "origine", "name": "demande Atlas", "color": "blue_dark" },
+
+    {
+      "family": "chantier",
+      "name": "chantier · thèmes",
+      "color": "green_dark"
+    },
+    {
+      "family": "chantier",
+      "name": "chantier · DataTable",
+      "color": "blue_light"
+    },
+    {
+      "family": "chantier",
+      "name": "chantier · Stencil",
+      "color": "lime_light"
+    },
+    {
+      "family": "chantier",
+      "name": "chantier · agent-ready",
+      "color": "orange_light"
+    },
+
+    { "family": "statut", "name": "à publier", "color": "green" },
+    { "family": "statut", "name": "Bloqué", "color": "red" }
+  ],
+  "templates": [
+    {
+      "column": "Idées",
+      "name": "Modèle — Idée",
+      "desc": "**Quoi** : <une ligne, dans tes mots>\n**D'où ça vient** : <toi / un test / une revue / Storybook / Atlas> — <date>"
+    },
+    {
+      "column": "Backlog",
+      "name": "Modèle — Backlog",
+      "desc": "**Le problème ou le besoin** : <ce qui gêne ou ce qu'on veut>\n**Le remède** : <ce qu'on fera, une ou deux phrases>\n**Critères d'acceptation** :\n- <un geste dans Storybook> → <ce qu'on voit>\n**Couches** : react | styles | tokens | variants | behaviors | stencil | storybook\n**Dépend de** : <REACT-N — pourquoi> (sinon : rien)\n**Détails** : <known-issues, plan, commit, demande Atlas>"
+    }
+  ]
+}

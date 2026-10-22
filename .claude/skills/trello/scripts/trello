@@ -1,0 +1,317 @@
+#!/usr/bin/env node
+// The fubaritico-ds board, one verb per gesture. Reads TRELLO_API_KEY and TRELLO_TOKEN from the
+// repository's .env.local and never prints either. Output on stderr (the repository forbids console.log).
+// Any Trello refusal exits 1 with its status: no retry, no fallback.
+import { readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import { createClient, TrelloError } from './client.mjs'
+
+const HERE = dirname(fileURLToPath(import.meta.url))
+const ROOT = resolve(HERE, '../../../..')
+
+/**
+ * @param {string} message - What went wrong.
+ * @returns {never}
+ */
+function fail (message) {
+  console.error(`[trello] ${message}`)
+  process.exit(1)
+}
+
+/**
+ * Reads KEY=value lines from .env.local; leading spaces tolerated.
+ *
+ * @returns {{ key: string, token: string }} The credentials.
+ */
+function readCredentials () {
+  const env = {}
+  for (const line of readFileSync(resolve(ROOT, '.env.local'), 'utf8').split('\n')) {
+    const match = line.trim().match(/^([A-Z_]+)=(.*)$/)
+    if (match) env[match[1]] = match[2].trim()
+  }
+  if (!env.TRELLO_API_KEY || !env.TRELLO_TOKEN) fail('.env.local lacks TRELLO_API_KEY or TRELLO_TOKEN')
+  return { key: env.TRELLO_API_KEY, token: env.TRELLO_TOKEN }
+}
+
+const config = JSON.parse(readFileSync(resolve(HERE, '../board.json'), 'utf8'))
+const client = createClient({ config, credentials: readCredentials() })
+const { api, lists, listNamed, allCards, card, ticketRef, label, checkLabels } = client
+const BOARD = config.board
+const LAST = config.columns.at(-1)
+
+/**
+ * @param {any} c - A card.
+ * @returns {string} `#12 [STYLES-12] title`.
+ */
+const line = (c) => `#${c.idShort} ${c.name}`
+
+const verbs = {
+  /** Creates the missing columns, labels and templates, then puts the columns in board.json order. */
+  async setup () {
+    const existing = new Map((await lists()).map((l) => [l.name, l.id]))
+    for (const [index, name] of config.columns.entries()) {
+      const pos = String((index + 1) * 1024)
+      const id = existing.get(name)
+      if (id) await api('PUT', `/lists/${id}`, { pos })
+      else {
+        await api('POST', '/lists', { idBoard: BOARD, name, pos })
+        console.warn(`column created: ${name}`)
+      }
+    }
+    const extra = [...existing.keys()].filter((n) => !config.columns.includes(n))
+    if (extra.length) console.warn(`columns outside board.json (left alone): ${extra.join(', ')}`)
+    for (const l of config.labels) await label(l.name)
+    const open = await api('GET', `/boards/${BOARD}/cards`, { fields: 'name' })
+    for (const template of config.templates) {
+      const found = open.find((c) => c.name === template.name)
+      if (found) await api('PUT', `/cards/${found.id}`, { desc: template.desc })
+      else {
+        const list = await listNamed(template.column)
+        await api('POST', '/cards', { idList: list.id, name: template.name, desc: template.desc, pos: 'top', isTemplate: 'true' })
+        console.warn(`template created: ${template.name}`)
+      }
+    }
+    console.warn('setup done')
+  },
+
+  /** list [--all] — the active columns (board.json `active`), or every column with --all. */
+  async list (flag) {
+    const all = flag === '--all'
+    const cards = await api('GET', `/boards/${BOARD}/cards`, { fields: 'name,idList,idShort,isTemplate,labels' })
+    for (const l of await lists()) {
+      const inside = cards.filter((c) => c.idList === l.id)
+      if (!all && !config.active.includes(l.name)) {
+        console.warn(`\n${l.name} — ${inside.length} (list --all)`)
+        continue
+      }
+      console.warn(`\n${l.name} — ${inside.length}`)
+      for (const c of inside) {
+        const tags = [c.isTemplate ? 'modèle' : '', ...c.labels.map((x) => x.name)].filter(Boolean)
+        console.warn(`  ${line(c)}${tags.length ? ` [${tags.join(', ')}]` : ''}`)
+      }
+    }
+  },
+
+  /** find <text> — every card whose title contains the text, archived ones included: run it before `add`. */
+  async find (text) {
+    if (!text) fail('find <text>')
+    const names = new Map((await lists()).map((l) => [l.id, l.name]))
+    const hits = (await allCards()).filter((c) => c.name.toLowerCase().includes(text.toLowerCase()))
+    for (const c of hits) console.warn(`  ${line(c)} — ${c.closed ? 'archivée' : (names.get(c.idList) ?? '?')}`)
+    console.warn(`${hits.length} match(es) for "${text}"`)
+  },
+
+  /** add <column> <"[SCOPE] title"> [description] [label…] */
+  async add (column, title, desc = '', ...labels) {
+    if (!title) fail('add <column> <"[SCOPE] title"> [description] [label…]')
+    const created = await client.add({ column, title, desc, labels })
+    console.warn(`${line(created)} added to ${column}${labels.length ? ` [${labels.join(', ')}]` : ''}`)
+  },
+
+  /** edit <card> <description> — replaces the description (shape an Idée into the Backlog template). */
+  async edit (ref, desc) {
+    if (desc === undefined) fail('edit <card> <description>')
+    const c = await card(ref)
+    await api('PUT', `/cards/${c.id}`, { desc })
+    console.warn(`${line(c)} description replaced`)
+  },
+
+  /** rename <card> <bare title> — the ticket prefix is kept. */
+  async rename (ref, bare) {
+    if (!bare) fail('rename <card> <bare title>')
+    const c = await card(ref)
+    const ticket = client.tickets.parse(c.name)
+    const name = ticket?.number ? client.tickets.format({ ...ticket, bare }) : bare
+    await api('PUT', `/cards/${c.id}`, { name })
+    console.warn(`#${c.idShort} renamed: ${c.name} → ${name}`)
+  },
+
+  /** prefix <card> <scope> — changes the scope ("styles · react" for two); the number never changes. */
+  async prefix (ref, scope) {
+    const scopes = (scope ?? '').toUpperCase().split(' · ')
+    if (scopes.length > 2 || !scopes.every((s) => config.scopes.includes(s)))
+      fail(`prefix <card> <scope>  (${config.scopes.join(', ')}; two joined by " · ")`)
+    const c = await card(ref)
+    const current = client.tickets.parse(c.name)
+    const number = current?.number ?? client.tickets.nextNumber((await allCards()).map((x) => x.name))
+    const name = client.tickets.format({ scope: scopes[0], second: scopes[1], number, bare: current ? current.bare : c.name })
+    await api('PUT', `/cards/${c.id}`, { name })
+    console.warn(`#${c.idShort} ${name}`)
+  },
+
+  /** above <card> <other card> — puts the card just above the other one, in the other one's column. */
+  async above (ref, otherRef) {
+    if (!otherRef) fail('above <card> <other card>')
+    const [c, other] = [await card(ref), await card(otherRef)]
+    const siblings = (await api('GET', `/lists/${other.idList}/cards`, { fields: 'pos' })).sort((a, b) => a.pos - b.pos)
+    const at = siblings.findIndex((s) => s.id === other.id)
+    const before = siblings.slice(0, at).filter((s) => s.id !== c.id).at(-1)
+    const pos = before ? (before.pos + siblings[at].pos) / 2 : siblings[at].pos / 2
+    await api('PUT', `/cards/${c.id}`, { idList: other.idList, pos: String(pos) })
+    console.warn(`${line(c)} placed above #${other.idShort}`)
+  },
+
+  /** move <card> <column> — to the bottom, except the last column: newest on top. */
+  async move (ref, column) {
+    if (!column) fail('move <card> <column>')
+    const target = await listNamed(column)
+    const c = await card(ref)
+    await api('PUT', `/cards/${c.id}`, { idList: target.id, pos: column === LAST ? 'top' : 'bottom' })
+    console.warn(`${line(c)} → ${column}`)
+  },
+
+  /** done <card> — to the top of Fait; tagged « à publier » when one of its scopes ships (board.json `unpublished`). */
+  async done (ref) {
+    await verbs.move(ref, LAST)
+    const c = await card(ref)
+    if (!client.ships(c.name)) return
+    const l = await label(config.toPublish.name)
+    if (!c.idLabels.includes(l.id)) await api('POST', `/cards/${c.id}/idLabels`, { value: l.id })
+    console.warn(`${line(c)} tagged ${config.toPublish.name}`)
+  },
+
+  /** published <version> — every « à publier » card loses the label; a release ticket lists them. */
+  async published (version) {
+    if (!/^\d+\.\d+\.\d+$/.test(version ?? '')) fail('published <x.y.z>')
+    const l = await label(config.toPublish.name)
+    const cards = (await api('GET', `/boards/${BOARD}/cards`, { fields: 'name,idShort,idLabels,url' }))
+      .filter((c) => c.idLabels.includes(l.id))
+    if (cards.length === 0) fail('no card carries « à publier »')
+    const release = await client.add({
+      column: LAST,
+      title: `[REPO] Release ${version}`,
+      desc: `**Publiée** : ${new Date().toISOString().slice(0, 10)} — tag \`v${version}\`\n**Contient** : ${cards.length} ticket(s), en checklist.`,
+      labels: ['outillage'],
+    })
+    const list = await api('POST', `/cards/${release.id}/checklists`, { name: `v${version}` })
+    for (const c of cards) {
+      await api('POST', `/checklists/${list.id}/checkItems`, { name: c.url, checked: 'true' })
+      await api('DELETE', `/cards/${c.id}/idLabels/${l.id}`)
+      await api('POST', `/cards/${c.id}/actions/comments`, { text: `Publié dans la ${version}` })
+    }
+    console.warn(`${line(release)}: ${cards.length} ticket(s) published`)
+  },
+
+  /** archive <card> <reason> — my own mistakes only; undone from Trello's archive. */
+  async archive (ref, reason) {
+    if (!reason) fail('archive <card> <reason>')
+    const c = await card(ref)
+    await api('POST', `/cards/${c.id}/actions/comments`, { text: `Archivée : ${reason}` })
+    await api('PUT', `/cards/${c.id}`, { closed: 'true' })
+    console.warn(`${line(c)} archived`)
+  },
+
+  /** comment <card> <text> */
+  async comment (ref, text) {
+    if (!text) fail('comment <card> <text>')
+    const c = await card(ref)
+    await api('POST', `/cards/${c.id}/actions/comments`, { text })
+    console.warn(`${line(c)} commented`)
+  },
+
+  /** block <card> <blocking card> <reason> — label, a link to the blocking card, a comment on both. */
+  async block (ref, blockingRef, reason) {
+    if (!reason) fail('block <card> <blocking card> <reason>')
+    const [c, by, blocked] = [await card(ref), await card(blockingRef), await label(config.blocked.name)]
+    if (c.id === by.id) fail('a card cannot depend on itself')
+    await api('POST', `/cards/${c.id}/idLabels`, { value: blocked.id })
+    await api('POST', `/cards/${c.id}/attachments`, { url: by.url, name: `Dépend de ${ticketRef(by)}` })
+    await api('POST', `/cards/${c.id}/actions/comments`, { text: `Bloqué par ${ticketRef(by)} — ${reason}` })
+    await api('POST', `/cards/${by.id}/actions/comments`, { text: `Bloque ${ticketRef(c)} — ${reason}` })
+    console.warn(`${ticketRef(c)} blocked by ${ticketRef(by)}: ${reason}`)
+  },
+
+  /** unblock <card> — removes the label and the « Dépend de » links, says so in a comment. */
+  async unblock (ref) {
+    const [c, blocked] = [await card(ref), await label(config.blocked.name)]
+    if (!c.idLabels.includes(blocked.id)) fail(`${ticketRef(c)} is not blocked`)
+    await api('DELETE', `/cards/${c.id}/idLabels/${blocked.id}`)
+    const links = (await api('GET', `/cards/${c.id}/attachments`)).filter((a) => a.name?.startsWith('Dépend de '))
+    for (const link of links) await api('DELETE', `/cards/${c.id}/attachments/${link.id}`)
+    await api('POST', `/cards/${c.id}/actions/comments`, { text: 'Débloqué' })
+    console.warn(`${line(c)} unblocked`)
+  },
+
+  /** link <card> <url> [name] — attaches a URL (an Atlas ticket, a commit, a plan); Trello previews cards. */
+  async link (ref, url, name) {
+    if (!/^https:\/\//.test(url ?? '')) fail('link <card> <https url> [name]')
+    const c = await card(ref)
+    await api('POST', `/cards/${c.id}/attachments`, { url, ...(name ? { name } : {}) })
+    console.warn(`${line(c)} linked ${name ?? url}`)
+  },
+
+  /** tag <card> <label>… — labels from board.json only. */
+  async tag (ref, ...names) {
+    if (names.length === 0) fail('tag <card> <label>…')
+    checkLabels(names)
+    const c = await card(ref)
+    for (const n of names) {
+      const l = await label(n)
+      if (!c.idLabels.includes(l.id)) await api('POST', `/cards/${c.id}/idLabels`, { value: l.id })
+    }
+    console.warn(`${line(c)} tagged ${names.join(', ')}`)
+  },
+
+  /** untag <card> <label> */
+  async untag (ref, name) {
+    const c = await card(ref)
+    const l = await label(name)
+    await api('DELETE', `/cards/${c.id}/idLabels/${l.id}`)
+    console.warn(`${line(c)} untagged ${name}`)
+  },
+
+  /** priority <card> haute|moyenne|aucune — the cover colour, its importance at a glance. */
+  async priority (ref, level) {
+    if (!(level in config.priorities)) fail(`priority <card> ${Object.keys(config.priorities).join('|')}`)
+    const c = await card(ref)
+    const color = config.priorities[level]
+    await api('PUT', `/cards/${c.id}`, {}, { cover: color === null ? { color: null } : { color, size: 'normal' } })
+    console.warn(`${line(c)} priority ${level}`)
+  },
+
+  /** checklist <card> <title> <item>… — a plan's steps on its card. */
+  async checklist (ref, title, ...items) {
+    if (!title || items.length === 0) fail('checklist <card> <title> <item>…')
+    const c = await card(ref)
+    const list = await api('POST', `/cards/${c.id}/checklists`, { name: title })
+    for (const name of items) await api('POST', `/checklists/${list.id}/checkItems`, { name })
+    console.warn(`${line(c)} checklist "${title}": ${items.length} items`)
+  },
+
+  /** check <card> <text> — ticks the one item whose name contains the text. */
+  async check (ref, text) {
+    if (!text) fail('check <card> <text>')
+    const c = await card(ref)
+    const items = (await api('GET', `/cards/${c.id}/checklists`)).flatMap((l) => l.checkItems)
+    const matches = items.filter((i) => i.name.includes(text))
+    if (matches.length !== 1) fail(`${matches.length} items match "${text}": ${items.map((i) => i.name).join(' | ')}`)
+    await api('PUT', `/cards/${c.id}/checkItem/${matches[0].id}`, { state: 'complete' })
+    console.warn(`${line(c)} ticked: ${matches[0].name}`)
+  },
+
+  /** show <card> — title, column, labels, description, checklists, links, comments. */
+  async show (ref) {
+    const c = await card(ref)
+    const column = (await lists()).find((l) => l.id === c.idList)?.name ?? '(archived column)'
+    const labels = (await api('GET', `/cards/${c.id}/labels`, { fields: 'name' })).map((l) => l.name)
+    console.warn(`${line(c)}\n${column} — ${c.url}${labels.length ? `\n[${labels.join(', ')}]` : ''}\n${c.desc || '(no description)'}`)
+    for (const list of await api('GET', `/cards/${c.id}/checklists`)) {
+      console.warn(`  ☐ ${list.name}`)
+      for (const i of list.checkItems) console.warn(`    ${i.state === 'complete' ? '✓' : '·'} ${i.name}`)
+    }
+    for (const a of await api('GET', `/cards/${c.id}/attachments`)) console.warn(`  🔗 ${a.name}`)
+    const comments = await api('GET', `/cards/${c.id}/actions`, { filter: 'commentCard' })
+    for (const a of comments.reverse()) console.warn(`  ${a.date.slice(0, 10)} ${a.data.text}`)
+  },
+}
+
+const [verb, ...args] = process.argv.slice(2)
+if (!verb || !(verb in verbs)) fail(`verbs: ${Object.keys(verbs).join(', ')}`)
+try {
+  await verbs[verb](...args)
+} catch (error) {
+  if (error instanceof TrelloError) fail(error.message)
+  throw error
+}
