@@ -3,42 +3,42 @@ import { Config } from '@stencil/core'
 import { reactOutputTarget } from '@stencil/react-output-target'
 
 export const config: Config = {
-  // Préfixe des fichiers générés + nom du dossier dist. Doit être unique par lib.
+  // Prefix of the generated files + name of the dist folder. Must be unique per library.
   namespace: 'ui-stencil',
 
-  // Feuille de styles globale du DS (tokens niveau 1 + variables d'accent + reset).
-  // Compilée et émise comme CSS global distribuable. En light DOM (shadow: false), c'est une
-  // feuille de page classique : auto-liée dans l'app de dev (www), à importer une fois côté
-  // consommateur (import statique React ou <link> HTML). Elle s'applique par cascade. Créée à l'étape suivante.
+  // The DS's global stylesheet (level-1 tokens + accent variables + reset).
+  // Compiled and emitted as distributable global CSS. In light DOM (shadow: false) it is a
+  // plain page stylesheet: auto-linked in the dev app (www), to import once on the
+  // consumer side (static React import or HTML <link>). It applies by cascade. Created at PLAN step 5.
   globalStyle: 'src/global/ui-stencil.css',
 
   outputTargets: [
-    // 1) Bundle auto-lazy + loader : pour utiliser <ui-button> directement dans une page HTML.
+    // 1) Auto-lazy bundle + loader: to use <ui-button> directly in an HTML page.
     { type: 'dist', esmLoaderPath: '../loader' },
 
-    // 2) Custom elements tree-shakeables — REQUIS par le wrapper React. Auto-enregistrement à l'import.
-    // externalRuntime: false → le runtime Stencil est inliné dans chaque composant (exigé par
-    // @stencil/react-output-target 1.x, qui refuse de valider la config sans ça).
+    // 2) Tree-shakeable custom elements — REQUIRED by the React wrapper. Self-registering on import.
+    // externalRuntime: false → the Stencil runtime is inlined into each component (required by
+    // @stencil/react-output-target 1.x, which refuses to validate the config without it).
     {
       type: 'dist-custom-elements',
       customElementsExportBehavior: 'auto-define-custom-elements',
       externalRuntime: false,
     },
 
-    // 3) Wrapper React généré → on ouvrira dist/react/ pour comparer à packages/reference.
+    // 3) Generated React wrapper → open dist/react/ to compare with packages/reference.
     reactOutputTarget({
       outDir: './dist/react/',
     }),
 
-    // 4) Wrapper Angular généré (standalone, s'appuie sur dist-custom-elements).
+    // 4) Generated Angular wrapper (standalone, built on dist-custom-elements).
     angularOutputTarget({
-      componentCorePackage: '@fubaritico/stencil', // doit = "name" du package.json
+      componentCorePackage: '@fubaritico/stencil', // must = the package.json "name"
       outputType: 'standalone',
       directivesProxyFile: './dist/angular/components.ts',
       directivesArrayFile: './dist/angular/index.ts',
     }),
 
-    // 5) Doc auto-générée (readme.md par composant) à partir des JSDoc sur @Prop/@Event/@Method.
+    // 5) Generated docs (a readme.md per component) from the JSDoc on @Prop/@Event/@Method.
     { type: 'docs-readme' },
   ],
 }

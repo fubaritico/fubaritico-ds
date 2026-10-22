@@ -1,128 +1,123 @@
 # Plan — `@fubaritico/stencil`
 
-> Source de vérité du travail à faire sur le package Stencil. Le pas-à-pas détaillé de chaque
-> fichier vit dans `README.md` (journal de mise en place) ; ce fichier liste **les étapes** et
-> leur **état**. Référence skill : `.claude/skills/stencil/references/10-project-monorepo.md`.
+> The steps of the Stencil package and their **state**. The detailed walk-through of each file lives in
+> `README.md` (the set-up log). Skill reference: `.claude/skills/stencil/references/10-project-monorepo.md`.
+> On the board: STENCIL-130 (steps 4 → 6 as a checklist), initiative DESIGN-122.
 
-## Objectif
+## Goal
 
-Mettre en place une **sandbox Stencil** (`packages/stencil`) qui, à partir d'**un seul** projet
-de Web Components, produit :
+Set up a **Stencil sandbox** (`packages/stencil`) that, from **one** Web Component project, produces:
 
-1. des **Web Components** natifs (`dist-custom-elements`, tree-shakeables),
-2. un **wrapper React** généré (`dist/react/`),
-3. un **wrapper Angular** généré (`dist/angular/`),
+1. native **Web Components** (`dist-custom-elements`, tree-shakeable),
+2. a generated **React wrapper** (`dist/react/`),
+3. a generated **Angular wrapper** (`dist/angular/`),
 
-en **portant 3 composants** déjà présents dans `packages/reference` pour comparer le code généré au code
-React/Tailwind écrit à la main.
+by **porting 3 components** already in `packages/reference`, to compare the generated code with the React code
+written by hand.
 
-**Composants portés** (du plus simple au plus riche) : `ui-badge` → `ui-button` → `ui-rating`.
+**Ported components** (simplest to richest): `ui-badge` → `ui-button` → `ui-rating`.
 
-## Décisions d'architecture (figées)
+## Architecture decisions (locked)
 
-- **Self-contained**, pas de nested-monorepo : un seul `package.json`, les wrappers sont des
-  **artefacts de build** dans `dist/react` et `dist/angular` (pas des packages installables). Tout
-  est supprimable avec `rm -rf packages/stencil`.
-- **Toolchain propre, mais package first-class** : Stencil **est le sujet du projet**, donc il
-  n'est **pas exclu** des scripts ni des vérifs racine. Il garde un tsconfig autonome (`jsx: "react"` +
-  `jsxFactory: "h"` + `jsxFragmentFactory: "Fragment"`, n'étend PAS le tsconfig racine — les deux modes
-  JSX sont incompatibles) et un **bloc override** dans le `eslint.config.js` racine (pragma `h`, règles
-  d'import React désactivées) plutôt qu'un ignore. Il est branché dans les vérifs racine
-  (`lint` / `type-check` / `test` / `build`).
-- **Tags préfixés `ui-`** pour refléter le design system `packages/reference`.
-- **Runner de test** : `@stencil/vitest` (le plan initial — confirmé bon). Le « runner intégré »
-  `stencil test --spec` est **déprécié** en Stencil v4.43 (supprimé en v5) ET n'est **pas** zéro-dépendance
-  (il réclame `jest@29` + `@types/jest@29` + `jest-cli@29`) : sa justification figée était fausse.
-  `@stencil/vitest` s'aligne sur le Vitest déjà présent dans le repo. La `vitest.config.ts` du package
-  (via `defineVitestConfig`, specs `*.spec.{ts,tsx}`, env `stencil`) est ramassée **automatiquement** par
-  le `vitest run` racine grâce à `projects: ['packages/*']` — pas de modif du script `test` racine. La
-  config vitest complète + le 1er spec sont posés à l'étape 6.
-- Créer une application storybook pour chaque framework UI.
+- **Self-contained**, no nested monorepo: one `package.json`, the wrappers are **build artefacts** in
+  `dist/react` and `dist/angular` (not installable packages). Everything can be removed with
+  `rm -rf packages/stencil`.
+- **Its own toolchain, but a first-class package**: Stencil **is the subject of the project**, so it is **not
+  excluded** from the root scripts and checks. It keeps a standalone tsconfig (`jsx: "react"` + `jsxFactory: "h"`
+  - `jsxFragmentFactory: "Fragment"`, does NOT extend the root tsconfig — the two JSX modes are incompatible) and
+    an **override block** in the root `eslint.config.js` (pragma `h`, React import rules off) rather than an ignore.
+- **Tags prefixed `ui-`** to mirror the `packages/reference` design system.
+- **Test runner**: `@stencil/vitest` (the initial plan — confirmed right). The "built-in runner"
+  `stencil test --spec` is **deprecated** in Stencil v4.43 (removed in v5) AND is **not** zero-dependency (it
+  needs `jest@29` + `@types/jest@29` + `jest-cli@29`): its locked justification was wrong. `@stencil/vitest`
+  aligns with the Vitest already in the repository. The package's `vitest.config.ts` (through
+  `defineVitestConfig`, specs `*.spec.{ts,tsx}`, env `stencil`) is picked up **automatically** by the root
+  `vitest run`. The full Vitest config + the first spec come at step 6.
+- One Storybook application per UI framework.
 
-## Conventions (héritées de CLAUDE.md)
+## Conventions (inherited from CLAUDE.md)
 
-- **JSDoc strict** sur chaque `@Prop` / `@Event` / `@Method` public (alimente docs + types des wrappers).
-- **Jamais `console.log`** → `console.warn` / `console.error`.
-- **Jamais `any` explicite** — TS strict.
-- **Tests 5 niveaux** par composant (`tests.md`).
-- **Discuter l'approche d'abord** ; valider chaque étape par un `stencil build` vert.
+- **Strict JSDoc** on every public `@Prop` / `@Event` / `@Method` (feeds the docs + the wrappers' types).
+- **Never `console.log`** → `console.warn` / `console.error`.
+- **Never an explicit `any`** — strict TS.
+- **5-level tests** per component (`tests.md`).
+- **Discuss the approach first**; validate each step with a green `stencil build`.
 
 ---
 
-## Étapes & état
+## Steps & state
 
-### ✅ Étape 1 — `package.json`
+### ✅ Step 1 — `package.json`
 
-Fait. `@stencil/core` en deps ; `@stencil/react-output-target` + `@stencil/angular-output-target` +
-react/react-dom en devDeps ; scripts `build` / `dev` / `test` / `lint`. _(détail : README étape 1)_
+Done. `@stencil/core` in deps; `@stencil/react-output-target` + `@stencil/angular-output-target` +
+react/react-dom in devDeps; scripts `build` / `dev` / `test` / `lint`. _(detail: README step 1)_
 
-### ✅ Étape 2 — `tsconfig.json`
+### ✅ Step 2 — `tsconfig.json`
 
-Fait. Config isolée (decorators, `jsx: "react"`, `jsxFactory: "h"`, `jsxFragmentFactory: "Fragment"`).
-_(détail : README étape 2)_
+Done. Isolated config (decorators, `jsx: "react"`, `jsxFactory: "h"`, `jsxFragmentFactory: "Fragment"`).
+_(detail: README step 2)_
 
-### ✅ Étape 3 — `stencil.config.ts`
+### ✅ Step 3 — `stencil.config.ts`
 
-Fait. 5 output targets : `dist` (+loader), `dist-custom-elements` (auto-define +
-**`externalRuntime: false`**, exigé par `@stencil/react-output-target` 1.x — sans ça la config ne valide
-pas), `reactOutputTarget`, `angularOutputTarget` (standalone), `docs-readme`. _(détail : README étape 3)_
+Done. 5 output targets: `dist` (+loader), `dist-custom-elements` (auto-define + **`externalRuntime: false`**,
+required by `@stencil/react-output-target` 1.x — without it the config does not validate), `reactOutputTarget`,
+`angularOutputTarget` (standalone), `docs-readme`. _(detail: README step 3)_
 
-### ⬜ Étape 4 — Intégration toolchain + `exports` (pré-requis avant tout build)
+### 🟡 Step 4 — Toolchain integration + `exports` (checked 2026-10-22: mostly done)
 
-- [ ] **Override ESLint racine** : bloc `{ files: ['packages/stencil/**/*.{ts,tsx}'], ... }` dans le
-      `eslint.config.js` racine (pragma `h`, `jsxFragmentFactory: 'Fragment'`, désactivation des règles
-      d'import-order React) — pas un ignore : `pnpm lint` doit couvrir stencil. Ignorer seulement
-      `packages/stencil/dist` + fichiers générés (`src/components.d.ts`).
-- [ ] Compléter le champ `exports` de `package.json` (`.`, `./dist/*`, `./components/*`, `./loader`) — sinon erreurs de résolution d'import sur les wrappers (skill golden rule #6).
-- [ ] Ajouter un script `type-check` (`tsc --noEmit -p tsconfig.json`) au `package.json` du package.
-- [ ] **Brancher stencil dans les vérifs racine** : `type-check`, `test` (`stencil test --spec`) et
-      `build` doivent inclure `@fubaritico/stencil`. _(L'orchestration `dev`/`dev:apps` des apps
-      héritées reste à recâbler dans une passe dédiée — refs périmées `@fubaritico/ui` / `@fubar-it-co/tmdb-client`.)_
+- [x] **Root ESLint override**: a `{ files: ['packages/stencil/**/*.{ts,tsx}'], ... }` block in the root
+      `eslint.config.js` (pragma `h`, `tsconfig.eslint.json`) — not an ignore: `pnpm lint` covers stencil.
+- [x] The `package.json` `exports` field (`.`, `./components/*`, `./loader`, `./dist/*`).
+- [x] A `type-check` script (`tsc --noEmit -p tsconfig.eslint.json`).
+- [x] Wired into the root `type-check`, `lint` and `test`.
+- [ ] Wired into the root **`build`**: still excluded (`build:packages` ignores it; `.github/workflows/build.yml`
+      too) until step 5 makes `stencil build` green.
 
-### ⬜ Étape 5 — Style global (`globalStyle` pointe vers un fichier manquant → build casse aujourd'hui)
+### ⬜ Step 5 — Global style (`globalStyle` points to a missing file → the build breaks today)
 
-- [ ] Créer `src/global/ui-stencil.css` : import des tokens (`@fubaritico/tokens`), variables d'accent, reset minimal.
-- [ ] `stencil build` → **doit passer au vert** (validation de la chaîne avant tout composant).
+- [ ] Create `src/global/ui-stencil.css`: tokens import (`@fubaritico/tokens`), accent variables, a minimal reset.
+- [ ] `stencil build` → **must go green** (validates the chain before any component); then add stencil back to
+      the root build and the CI build.
 
-### ⬜ Étape 6 — Port `ui-badge` (atome, CSS simple) — valide la chaîne complète
+### ⬜ Step 6 — Port `ui-badge` (an atom, simple CSS) — validates the whole chain
 
-- [ ] `src/components/ui-badge/ui-badge.tsx` (`@Component`, `@Prop`, JSDoc) + `ui-badge.css` (BEM, variables CSS overridables).
-- [ ] `src/components/ui-badge/test/ui-badge.spec.tsx` (5 niveaux).
-- [ ] `stencil build` → lire `dist/react/` et `dist/angular/` + `readme.md` généré.
-- [ ] Comparer le wrapper React généré au `packages/reference/Badge`.
+- [ ] `src/components/ui-badge/ui-badge.tsx` (`@Component`, `@Prop`, JSDoc) + `ui-badge.css` (BEM, overridable
+      CSS variables — or the shared `@fubaritico/styles` skin + `@fubaritico/variants` resolver).
+- [ ] `src/components/ui-badge/test/ui-badge.spec.tsx` (5 levels).
+- [ ] `stencil build` → read `dist/react/` and `dist/angular/` + the generated `readme.md`.
+- [ ] Compare the generated React wrapper with `packages/reference/src/components/Badge`.
 
-### ⬜ Étape 7 — Port `ui-button` (union discriminée + événement)
+### ⬜ Step 7 — Port `ui-button` (discriminated union + event)
 
-- [ ] Mapper la prop polymorphe (`as`) et l'event (`@Event` camelCase, `e.detail`).
-- [ ] `.tsx` + `.css` BEM + `.spec.tsx` (5 niveaux).
-- [ ] Rebuild → comparer wrapper vs `packages/reference/Button` (fidélité props, events, perte Tailwind).
+- [ ] Map the polymorphic prop (`as`) and the event (`@Event` camelCase, `e.detail`).
+- [ ] `.tsx` + BEM `.css` + `.spec.tsx` (5 levels).
+- [ ] Rebuild → compare the wrapper with `packages/reference/src/components/Button` (props and events fidelity).
 
-### ⬜ Étape 8 — Port `ui-rating` (état / interactivité)
+### ⬜ Step 8 — Port `ui-rating` (state / interactivity)
 
-- [ ] Sonder `@State` / `@Method` (async) / slots si besoin.
-- [ ] `.tsx` + `.css` BEM + `.spec.tsx` (5 niveaux).
-- [ ] Rebuild → comparer wrapper vs `packages/reference/Rating`.
+- [ ] Probe `@State` / `@Method` (async) / slots if needed.
+- [ ] `.tsx` + BEM `.css` + `.spec.tsx` (5 levels).
+- [ ] Rebuild → compare the wrapper with `packages/reference/src/components/Rating`.
 
-### ⬜ Étape 9 — Synthèse de découverte
+### ⬜ Step 9 — Discovery synthesis
 
-- [ ] Notes dans le README : fidélité des props, events (`e.detail`), perte de Tailwind / stratégie BEM+CSS vars, qualité des types générés (React & Angular).
-- [ ] Décider si on promeut `dist/react` / `dist/angular` en vrais packages consommables par le host.
+- [ ] Notes in the README: props fidelity, events (`e.detail`), BEM + CSS vars strategy, quality of the generated
+      types (React & Angular).
+- [ ] Decide whether `dist/react` / `dist/angular` become real packages a host can consume.
 
 ---
 
-## Checkpoint de validation (à chaque étape de composant)
+## Validation checkpoint (at each component step)
 
 ```bash
-cd packages/stencil
-pnpm build          # = stencil build : doit être vert
-pnpm test           # = stencil test --spec : 5 niveaux verts
-pnpm lint           # eslint --max-warnings 0
+pnpm --filter @fubaritico/stencil build   # = stencil build: must be green
+pnpm --filter @fubaritico/stencil test    # = vitest (@stencil/vitest): 5 levels green
+pnpm --filter @fubaritico/stencil lint    # eslint --max-warnings 0
 ```
 
-Puis, au niveau racine, s'assurer que rien n'est cassé ailleurs :
-`pnpm type-check && pnpm lint && pnpm test`.
+Then, at the root, make sure nothing broke elsewhere: `pnpm type-check && pnpm lint && pnpm test`.
 
-## Point de reprise actuel
+## Current resume point
 
-**Étape 4** (override ESLint racine + `exports` + branchement vérifs) puis **étape 5** (style global) —
-car `stencil build` échoue tant que `src/global/ui-stencil.css` n'existe pas.
+**Step 5** (global style) — `stencil build` fails as long as `src/global/ui-stencil.css` does not exist; then
+the root and CI builds take stencil back.
