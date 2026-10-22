@@ -1,44 +1,42 @@
-# Externaliser l'état : niveaux + machine simplifiée + catalogue de hooks
+# Externalising state: levels + a simplified machine + a catalogue of hooks
 
-> Documentation de référence du skill `state-storage`. Trois façons de ranger un état **hors de React**,
-> du plus léger au plus riche, chacune illustrée par un **composant pertinent** et son **cycle de vie**.
-> Puis une **proposition de machine simplifiée** (sans reprendre toute l'abstraction de Headless UI).
-> Enfin un **catalogue des hooks de comportement** réutilisables : rôle, usage, exemple, pertinence.
-> Aucun acronyme non expliqué. Les API Headless UI citées sont réelles (v2.2.10) ; le code marqué
-> « proposition » est une proposition interne au projet.
+> Reference documentation of the `state-storage` skill. Three ways to keep a state **outside React**, from the
+> lightest to the richest, each illustrated by a **relevant component** and its **lifecycle**. Then a **proposal
+> for a simplified machine** (without taking over Headless UI's whole abstraction). Finally a **catalogue of
+> reusable behaviour hooks**: role, usage, example, relevance. No unexplained acronym. The Headless UI APIs cited
+> are real (v2.2.10); code marked « proposal » is a proposal internal to the project.
 
-**Plan** — A. Trois niveaux d'état (createStore · Zustand · machine simplifiée) — B. La machine
-simplifiée, en détail — C. Catalogue des hooks — D. Récap appliqué aux composants du design system.
-
----
-
-## A. Trois niveaux d'externalisation de l'état
-
-« Externaliser » = sortir l'état du composant React pour le poser dans un **objet en mémoire** que React
-se contente de **lire**. On le fait quand l'état local (`useState`/`useReducer`) ne suffit plus :
-partage entre composants éloignés, ou beaucoup d'abonnés qui veulent chacun une petite tranche.
-
-| Niveau               | Ce que c'est                                                                        | Sélecteurs ?           | Effets ?       | Quand l'utiliser                                                       | Composant pertinent              |
-| -------------------- | ----------------------------------------------------------------------------------- | ---------------------- | -------------- | ---------------------------------------------------------------------- | -------------------------------- |
-| **1. `createStore`** | Un store « fermeture » : `lire / s'abonner / dispatcher`.                           | ❌ (abonnement global) | ❌             | Petit **singleton global** lu en entier par tous.                      | **Scroll-lock** (Modal + Drawer) |
-| **2. Zustand**       | Une librairie (~1 Ko) = `createStore` **+ sélecteurs intégrés** + un hook `create`. | ✅ (intégrés)          | via middleware | État **global** partagé, **API impérative** appelable de partout.      | **Toaster** (notifications)      |
-| **3. Machine**       | Une classe `état + reduce + subscribe + send` (+ sélecteurs/effets optionnels).     | ✅ (délégués au hook)  | ✅ (optionnel) | **Cerveau** d'un composant **complexe** (beaucoup d'enfants, clavier). | **Listbox / Typeahead**          |
-
-> Rappel : « fermeture » (_closure_) = une fonction qui **capture** des variables locales et les garde
-> vivantes après son retour. Un store en fermeture = des variables (`state`, `listeners`) enfermées
-> dans une fonction d'usine, accessibles seulement via les méthodes qu'elle expose.
+**Outline** — A. Three state levels (createStore · Zustand · simplified machine) — B. The simplified machine, in
+detail — C. Catalogue of hooks — D. Recap applied to the design system's components.
 
 ---
 
-### Niveau 1 — `createStore` (le plus léger)
+## A. Three levels of state externalisation
 
-**Ce que c'est.** Une petite usine qui renvoie trois fonctions : `getSnapshot()` (lire l'état),
-`subscribe(cb)` (être prévenu à **chaque** changement), `dispatch(action)` (déclencher un changement).
-**Pas de sélecteur** : tout abonné est réveillé à chaque changement. Donc réservé à un **petit
-singleton** lu **en entier**.
+"Externalising" = taking the state out of the React component and putting it in an **in-memory object** that
+React merely **reads**. Done when local state (`useState`/`useReducer`) is no longer enough: sharing between
+distant components, or many subscribers that each want a small slice.
+
+| Level                | What it is                                                                    | Selectors?                 | Effects?       | When to use it                                                         | Relevant component               |
+| -------------------- | ----------------------------------------------------------------------------- | -------------------------- | -------------- | ---------------------------------------------------------------------- | -------------------------------- |
+| **1. `createStore`** | A "closure" store: `read / subscribe / dispatch`.                             | ❌ (global subscription)   | ❌             | A small **global singleton** read whole by everyone.                   | **Scroll-lock** (Modal + Drawer) |
+| **2. Zustand**       | A library (~1 KB) = `createStore` **+ built-in selectors** + a `create` hook. | ✅ (built in)              | via middleware | **Global** shared state, an **imperative API** callable from anywhere. | **Toaster** (notifications)      |
+| **3. Machine**       | A class `state + reduce + subscribe + send` (+ optional selectors/effects).   | ✅ (delegated to the hook) | ✅ (optional)  | The **brain** of a **complex** component (many children, keyboard).    | **Listbox / Typeahead**          |
+
+> Reminder: a _closure_ = a function that **captures** local variables and keeps them alive after it returns. A
+> closure store = variables (`state`, `listeners`) shut inside a factory function, reachable only through the
+> methods it exposes.
+
+---
+
+### Level 1 — `createStore` (the lightest)
+
+**What it is.** A small factory returning three functions: `getSnapshot()` (read the state), `subscribe(cb)` (be
+told of **every** change), `dispatch(action)` (trigger a change). **No selector**: every subscriber is woken on
+every change. So reserved for a **small singleton** read **whole**.
 
 ```ts
-// proposition — packages/behaviors/src/create-store.ts  (≈ utils/store.ts de Headless UI)
+// proposal — packages/behaviors/src/create-store.ts  (≈ Headless UI's utils/store.ts)
 type Listener = () => void
 
 export function createStore<
@@ -49,28 +47,28 @@ export function createStore<
   let listeners = new Set<Listener>()
 
   return {
-    getSnapshot: () => state, // lire
+    getSnapshot: () => state, // read
     subscribe(cb: Listener) {
       listeners.add(cb)
-      return () => listeners.delete(cb) // rend une fonction de désabonnement
+      return () => listeners.delete(cb) // returns an unsubscribe function
     },
     dispatch(key: keyof Actions, ...args: any[]) {
       let next = actions[key].call(state, ...args)
       if (next) {
         state = next as T
-        listeners.forEach((l) => l()) // réveille TOUS les abonnés
+        listeners.forEach((l) => l()) // wakes ALL the subscribers
       }
     },
   }
 }
 ```
 
-**D'où vient `createStore` ?** Ni un standard React ni une librairie : c'est une **utilité maison de
-Headless UI** (`utils/store.ts:12`, 39 lignes, zéro dépendance). La proposition ci-dessus en est une
-adaptation **fonctionnellement identique**. L'original exact :
+**Where does `createStore` come from?** Neither a React standard nor a library: it is a **house utility of
+Headless UI** (`utils/store.ts:12`, 39 lines, zero dependency). The proposal above is a **functionally identical**
+adaptation. The exact original:
 
 ```ts
-// utils/store.ts (Headless UI v2.2.10) — l'original
+// utils/store.ts (Headless UI v2.2.10) — the original
 type ChangeFn = () => void
 type UnsubscribeFn = () => void
 type ActionFn<T> = (this: T, ...args: any[]) => T | void
@@ -100,85 +98,81 @@ export function createStore<T, ActionKey extends string>(
       let newState = actions[key].call(state, ...args)
       if (newState) {
         state = newState
-        listeners.forEach((listener) => listener()) // réveille TOUS les abonnés
+        listeners.forEach((listener) => listener()) // wakes ALL the subscribers
       }
     },
   }
 }
 ```
 
-Un seul consommateur dans tout Headless UI : `hooks/document-overflow` (le scroll-lock), branché à React
-via `hooks/use-store.ts:4` (`useStore` → `useSyncExternalStore`). C'est exactement ce Niveau 1.
+A single consumer in the whole of Headless UI: `hooks/document-overflow` (the scroll-lock), wired to React through
+`hooks/use-store.ts:4` (`useStore` → `useSyncExternalStore`). Exactly this Level 1.
 
-> ⚠️ **Ne pas confondre.** Le nom `createStore` est porté par trois choses **distinctes** : cet
-> utilitaire **interne** de Headless UI (Niveau 1, maison) ; le `createStore` de **Zustand** (Niveau 2,
-> librairie) ; celui de **Redux** (encore autre chose). Le Niveau 1 n'importe **rien** — ~20 lignes à
-> écrire (ou à copier).
+> ⚠️ **Do not confuse.** The name `createStore` is carried by three **distinct** things: this **internal** Headless
+> UI utility (Level 1, house-made); **Zustand**'s `createStore` (Level 2, a library); **Redux**'s (something else
+> again). Level 1 imports **nothing** — ~20 lines to write (or copy).
 
-**Le composant pertinent : le verrou de défilement (scroll-lock) partagé par Modal + Drawer.** Quand un
-sur-calque s'ouvre, on veut empêcher la page de défiler derrière. Plusieurs sur-calques peuvent être
-ouverts ; il faut donc un **compteur** (on ne déverrouille que quand le dernier se ferme).
+**The relevant component: the scroll lock shared by Modal + Drawer.** When an overlay opens, the page behind must
+not scroll. Several overlays can be open; so a **counter** is needed (unlock only when the last one closes).
 
 ```ts
-// proposition — packages/behaviors/src/scroll-lock.ts
+// proposal — packages/behaviors/src/scroll-lock.ts
 export const scrollLock = createStore(() => ({ count: 0 }), {
   lock() {
-    if (this.count === 0) document.body.style.overflow = 'hidden' // 1er overlay → on verrouille
+    if (this.count === 0) document.body.style.overflow = 'hidden' // 1st overlay → lock
     return { count: this.count + 1 }
   },
   unlock() {
     let count = Math.max(0, this.count - 1)
-    if (count === 0) document.body.style.overflow = '' // dernier fermé → on déverrouille
+    if (count === 0) document.body.style.overflow = '' // last one closed → unlock
     return { count }
   },
 })
 
-// le hook React qui s'y branche
+// the React hook that plugs into it
 export function useScrollLock(enabled: boolean) {
   useEffect(() => {
     if (!enabled) return
     scrollLock.dispatch('lock')
-    return () => scrollLock.dispatch('unlock') // nettoyage à la fermeture/démontage
+    return () => scrollLock.dispatch('unlock') // cleanup on close/unmount
   }, [enabled])
 }
 ```
 
 ```tsx
-// usage dans Modal (et, à l'identique, dans Drawer)
+// usage in Modal (and, identically, in Drawer)
 function Modal({ open, children }: ModalProps) {
-  useScrollLock(open) // ← tout le verrou tient dans cette ligne
+  useScrollLock(open) // ← the whole lock fits in this line
   return open ? <div className="ui-modal">{children}</div> : null
 }
 ```
 
-**Cycle de vie (déroulé).**
+**Lifecycle (step by step).**
 
-1. Le Modal s'ouvre → `useScrollLock(true)` → `dispatch('lock')` → `count` 0 → 1 → on pose
-   `overflow:hidden` sur `<body>`.
-2. Un Drawer s'ouvre par-dessus → `dispatch('lock')` → `count` 1 → 2 (le `<body>` est déjà verrouillé,
-   rien de plus à faire).
-3. Le Drawer se ferme → nettoyage de son `useEffect` → `dispatch('unlock')` → `count` 2 → 1 (toujours
-   verrouillé, car le Modal est encore là).
-4. Le Modal se ferme → `dispatch('unlock')` → `count` 1 → 0 → on **restaure** le défilement.
+1. The Modal opens → `useScrollLock(true)` → `dispatch('lock')` → `count` 0 → 1 → `overflow:hidden` on `<body>`.
+2. A Drawer opens on top → `dispatch('lock')` → `count` 1 → 2 (the `<body>` is already locked, nothing more to do).
+3. The Drawer closes → its `useEffect` cleanup → `dispatch('unlock')` → `count` 2 → 1 (still locked: the Modal is
+   still there).
+4. The Modal closes → `dispatch('unlock')` → `count` 1 → 0 → scrolling is **restored**.
 
-**Pertinence.** Idéal quand l'état est **un petit fait global** (verrouillé ou non, thème courant,
-densité) que personne ne lit « par tranche ». Pas de sélecteur = pas de complexité inutile. C'est
-exactement l'usage qu'en fait Headless UI (`hooks/document-overflow`).
+**Relevance.** Ideal when the state is **a small global fact** (locked or not, current theme, density) nobody reads
+"by slice". No selector = no needless complexity. Exactly how Headless UI uses it (`hooks/document-overflow`).
+(Note: the DS's own `useNativeDialog` restores the host's previous overflow rather than blanking it — REACT-69.)
 
 ---
 
-### Niveau 2 — Zustand (store + sélecteurs, sans le réécrire)
+### Level 2 — Zustand (store + selectors, without rewriting it)
 
-**Ce que c'est.** **Zustand** est une librairie externe (~1 Ko) : en gros, un `createStore` **avec les
-sélecteurs intégrés** et un hook prêt à l'emploi (`create`). L'abonnement se fait directement à une
-**tranche**. À assumer comme **dépendance** (mais minuscule, sans contexte, sans _provider_).
+**What it is.** **Zustand** is an external library (~1 KB): roughly, a `createStore` **with built-in selectors**
+and a ready-made hook (`create`). The subscription goes straight to a **slice**. To be accepted as a
+**dependency** (a tiny one, with no context and no _provider_).
 
-**Le composant pertinent : le système de notifications (Toaster).** Un toast peut être déclenché de
-**n'importe où** dans l'appli — y compris hors d'un composant React (dans un `catch`, une fonction
-utilitaire). C'est le cas d'école d'une **API impérative globale**.
+**The relevant component: the notification system (Toaster).** A toast can be triggered from **anywhere** in the
+app — including outside a React component (in a `catch`, a utility function). The textbook case of a **global
+imperative API**.
 
 ```ts
-// proposition — packages/behaviors-react/src/toasts.ts
+// proposal — packages/behaviors-react/src/toasts.ts
 import { create } from 'zustand'
 
 type Toast = { id: string; message: string }
@@ -196,14 +190,14 @@ export const useToasts = create<{
   remove: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 }))
 
-// API impérative appelable PARTOUT, même hors React :
+// an imperative API callable ANYWHERE, even outside React:
 export const toast = (message: string) => useToasts.getState().add(message)
 ```
 
 ```tsx
-// le rendu : <Toaster> s'abonne à la TRANCHE `toasts`
+// the rendering: <Toaster> subscribes to the `toasts` SLICE
 function Toaster() {
-  let toasts = useToasts((s) => s.toasts) // ← sélecteur intégré : ne re-render que si `toasts` change
+  let toasts = useToasts((s) => s.toasts) // ← built-in selector: re-renders only when `toasts` changes
   let remove = useToasts((s) => s.remove)
   return (
     <div className="ui-toaster">
@@ -214,30 +208,30 @@ function Toaster() {
   )
 }
 
-// ailleurs, dans un gestionnaire d'erreur quelconque :
-toast('Sauvegarde échouée') // ← aucun composant, aucun contexte requis
+// elsewhere, in any error handler:
+toast('Save failed') // ← no component, no context needed
 ```
 
-**Cycle de vie (déroulé).**
+**Lifecycle (step by step).**
 
-1. Quelque part, `toast('Sauvegardé')` → `useToasts.getState().add(...)` → la liste `toasts` change.
-2. `<Toaster>`, abonné à `s.toasts`, se redessine et affiche le nouveau toast.
-3. Le `ToastItem` programme sa propre disparition (un minuteur) → appelle `remove(id)` → la liste change
-   → `<Toaster>` se redessine sans lui.
-4. Un composant qui ne lirait que `useToasts((s) => s.toasts.length)` ne se réveillerait **que** sur un
-   changement de **nombre** — c'est le bénéfice des sélecteurs intégrés.
+1. Somewhere, `toast('Saved')` → `useToasts.getState().add(...)` → the `toasts` list changes.
+2. `<Toaster>`, subscribed to `s.toasts`, redraws and shows the new toast.
+3. The `ToastItem` schedules its own removal (a timer) → calls `remove(id)` → the list changes → `<Toaster>` redraws
+   without it.
+4. A component reading only `useToasts((s) => s.toasts.length)` would wake **only** on a change of **count** — the
+   benefit of built-in selectors.
 
-**Pertinence.** Quand on veut une **API impérative globale** (`toast()`, `openCommandPalette()`) + des
-abonnements fins, **sans** écrire la mécanique soi-même. Le prix : une dépendance de plus. **Sans aucune
-dépendance**, le Niveau 1 + `useSyncExternalStore` fait la même chose en plus verbeux — voici le détail.
+**Relevance.** When a **global imperative API** (`toast()`, `openCommandPalette()`) + fine subscriptions are
+wanted, **without** writing the mechanics yourself. The price: one more dependency. **With no dependency at all**,
+Level 1 + `useSyncExternalStore` does the same, more verbosely — here is the detail.
 
-#### Variante **sans dépendance** : `createStore` (Niveau 1) + `useSyncExternalStore` natif
+#### **Dependency-free** variant: `createStore` (Level 1) + native `useSyncExternalStore`
 
-`useSyncExternalStore` est livré **dans** React 18 (donc zéro dépendance). On refait le même Toaster avec
-le `createStore` du Niveau 1, puis un hook qui lit la liste :
+`useSyncExternalStore` ships **inside** React 18 (so zero dependency). The same Toaster with Level 1's
+`createStore`, then a hook that reads the list:
 
 ```ts
-// proposition — toaster SANS dépendance (réutilise createStore du Niveau 1)
+// proposal — a toaster WITH NO dependency (reuses Level 1's createStore)
 type Toast = { id: string; message: string }
 
 export const toastStore = createStore(() => ({ toasts: [] as Toast[] }), {
@@ -252,13 +246,13 @@ export const toast = (message: string) => toastStore.dispatch('add', message)
 ```
 
 ```tsx
-import { useSyncExternalStore } from 'react' // natif, ZÉRO dépendance
+import { useSyncExternalStore } from 'react' // native, ZERO dependency
 
 function useToasts() {
   return useSyncExternalStore(
-    toastStore.subscribe, // comment s'abonner
-    () => toastStore.getSnapshot().toasts, // instantané (navigateur)
-    () => toastStore.getSnapshot().toasts // instantané (serveur, pour le rendu côté serveur)
+    toastStore.subscribe, // how to subscribe
+    () => toastStore.getSnapshot().toasts, // snapshot (browser)
+    () => toastStore.getSnapshot().toasts // snapshot (server, for server rendering)
   )
 }
 
@@ -274,77 +268,75 @@ function Toaster() {
 }
 ```
 
-> ⚠️ **Le piège du natif (à connaître absolument).** `useSyncExternalStore` exige que l'instantané
-> (`getSnapshot`) **renvoie la même référence** tant que rien n'a changé. Ici ça marche : `state.toasts`
-> n'est un **nouvel** array que quand la liste change. **Mais** pour une tranche **dérivée** (calculée à
-> la volée — ex. `toasts.filter((t) => t.urgent)` ou `{ count, dernier }`), chaque appel crée un
-> **nouvel** objet → React croit que « ça change tout le temps » → **boucle de re-render** (ou
-> l'avertissement « getSnapshot should be cached »). Pour une tranche dérivée, il faut **mémoïser
-> explicitement**… ou passer à `useSyncExternalStoreWithSelector`.
+> ⚠️ **The native trap (a must-know).** `useSyncExternalStore` requires the snapshot (`getSnapshot`) to **return the
+> same reference** as long as nothing changed. Here it works: `state.toasts` is a **new** array only when the list
+> changes. **But** for a **derived** slice (computed on the fly — e.g. `toasts.filter((t) => t.urgent)` or
+> `{ count, last }`), each call creates a **new** object → React believes "it changes all the time" → a **re-render
+> loop** (or the warning « getSnapshot should be cached »). For a derived slice, **memoise explicitly**… or move to
+> `useSyncExternalStoreWithSelector`.
 
-#### Le sélecteur **sûr** : `useSyncExternalStoreWithSelector`
+#### The **safe** selector: `useSyncExternalStoreWithSelector`
 
 ```ts
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/with-selector'
 ```
 
-`use-sync-external-store` est un **petit paquet officiel de l'équipe React** (un seul fichier, ~1 Ko).
-React 18 a intégré `useSyncExternalStore` **mais pas** la variante « avec sélecteur » — c'est elle que
-fournit l'entrée `/with-selector`. Beaucoup ne la comptent pas vraiment comme « une dépendance » : c'est
-officiel, minuscule, et c'est elle qu'utilise Headless UI. Elle prend **en plus** un **sélecteur** + un
-**comparateur**, et **mémoïse** le résultat → pas de boucle, même pour une tranche dérivée :
+`use-sync-external-store` is a **small official package of the React team** (one file, ~1 KB). React 18 integrated
+`useSyncExternalStore` **but not** the "with selector" variant — the `/with-selector` entry provides it. Many do not
+really count it as "a dependency": official, tiny, and Headless UI uses it. It takes **in addition** a **selector** +
+a **comparator**, and **memoises** the result → no loop, even for a derived slice:
 
 ```ts
-import { shallowEqual } from '@fubaritico/behaviors' // ou la version de Headless UI
+import { shallowEqual } from '@fubaritico/behaviors' // or Headless UI's version
 
 let urgents = useSyncExternalStoreWithSelector(
   toastStore.subscribe,
-  () => toastStore.getSnapshot(), // instantané COMPLET
-  () => toastStore.getSnapshot(), // (serveur)
-  (s) => s.toasts.filter((t) => t.urgent), // tranche DÉRIVÉE (nouvel array à chaque appel) — OK ici
-  shallowEqual // "la tranche a-t-elle VRAIMENT changé ?" (comparaison superficielle)
+  () => toastStore.getSnapshot(), // FULL snapshot
+  () => toastStore.getSnapshot(), // (server)
+  (s) => s.toasts.filter((t) => t.urgent), // DERIVED slice (a new array on every call) — fine here
+  shallowEqual // "did the slice REALLY change?" (shallow comparison)
 )
 ```
 
-**La règle, en une ligne :**
+**The rule, in one line:**
 
-- Tranche = l'**objet entier** ou une **référence stable** → `useSyncExternalStore` **natif** (zéro dépendance).
-- Tranche **dérivée/calculée** → `useSyncExternalStoreWithSelector` (paquet officiel ~1 Ko) — ou mémoïsation manuelle.
+- Slice = the **whole object** or a **stable reference** → **native** `useSyncExternalStore` (zero dependency).
+- **Derived/computed** slice → `useSyncExternalStoreWithSelector` (official package, ~1 KB) — or manual memoisation.
 
-> C'est **exactement** le choix de Headless UI : `useSyncExternalStoreWithSelector` dans
-> `react-glue.tsx` (le `useSlice` des machines, pour sélectionner librement) ; `useSyncExternalStore`
-> natif dans `hooks/use-store.ts` (où la tranche est l'état entier, référence stable).
-
----
-
-### Niveau 3 — La machine (cerveau d'un composant complexe)
-
-C'est le sujet de la **Partie B** (proposition de version simplifiée). En un mot : une classe `état +
-reduce + subscribe + send`, créée **une fois par instance** de composant, sur laquelle chaque enfant
-s'abonne **par tranche**. À réserver aux composants **à beaucoup d'enfants + clavier** : Listbox,
-Typeahead. Composant pertinent montré ci-dessous : une **Listbox** (liste déroulante mono-sélection).
+> **Exactly** Headless UI's choice: `useSyncExternalStoreWithSelector` in `react-glue.tsx` (the machines' `useSlice`,
+> to select freely); native `useSyncExternalStore` in `hooks/use-store.ts` (where the slice is the whole state, a
+> stable reference). The DS's `TabsService` adapter follows the same rule (sliced subscriptions).
 
 ---
 
-## B. Proposition : une machine **simplifiée**
+### Level 3 — The machine (the brain of a complex component)
 
-Headless UI met **beaucoup** dans sa classe `Machine` : sélecteurs internes, abonnés d'événements
-(`on`), `disposables` (nettoyage), `batch` (regroupement), `DefaultMap`, un `shallowEqual` maison. **Tout
-n'est pas nécessaire d'emblée.** On garde le **noyau** et on rajoute le reste **à la demande**.
+The subject of **Part B** (a simplified version proposed). In a word: a class `state + reduce + subscribe + send`,
+created **once per component instance**, to which each child subscribes **by slice**. To reserve for components
+**with many children + keyboard**: Listbox, Typeahead. The relevant component shown below: a **Listbox**
+(single-selection dropdown list).
 
-### Ce qu'on garde / ce qu'on jette
+---
 
-| Pièce Headless UI                                              | On garde ?    | Pourquoi                                                                                              |
-| -------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------- |
-| `state` + `reduce` + `send` + `subscribe`                      | ✅            | Le cœur irréductible.                                                                                 |
-| Sélecteurs **dans** la classe                                  | ❌ (au début) | Délégués au **hook React** (voir glue). Plus simple.                                                  |
-| `on(type, cb)` (effets d'événement)                            | ❌ (au début) | À rajouter **seulement** en cas de besoin de coordination/effets (ex. fermer quand un autre s'ouvre). |
-| `disposables` / `batch` / `DefaultMap` / `shallowEqual` maison | ❌            | Optimisations avancées. À réintroduire si la perf l'exige.                                            |
+## B. Proposal: a **simplified** machine
 
-### Le noyau (≈ 25 lignes, sans framework)
+Headless UI puts **a lot** into its `Machine` class: internal selectors, event subscribers (`on`), `disposables`
+(cleanup), `batch` (grouping), `DefaultMap`, a house `shallowEqual`. **Not all of it is needed from the start.** Keep
+the **core** and add the rest **on demand**.
+
+### What we keep / what we drop
+
+| Headless UI piece                                             | Keep?         | Why                                                                                       |
+| ------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------- |
+| `state` + `reduce` + `send` + `subscribe`                     | ✅            | The irreducible core.                                                                     |
+| Selectors **inside** the class                                | ❌ (at first) | Delegated to the **React hook** (see the glue). Simpler.                                  |
+| `on(type, cb)` (event effects)                                | ❌ (at first) | To add **only** when coordination/effects are needed (e.g. close when another one opens). |
+| `disposables` / `batch` / `DefaultMap` / house `shallowEqual` | ❌            | Advanced optimisations. To bring back if performance demands it.                          |
+
+### The core (≈ 25 lines, framework-free)
 
 ```ts
-// proposition — packages/behaviors/src/machine.ts
+// proposal — packages/behaviors/src/machine.ts
 type Listener = () => void
 
 export abstract class Machine<State, Event> {
@@ -355,36 +347,39 @@ export abstract class Machine<State, Event> {
     this.state = initial
   }
 
-  /** La SEULE règle de transition : (état, événement) => nouvel état. Pure, immutable. */
+  /** The ONLY transition rule: (state, event) => new state. Pure, immutable. */
   abstract reduce(state: State, event: Event): State
 
-  /** Lire l'instantané courant (pour React). */
+  /** Read the current snapshot (for React). */
   getSnapshot = (): State => this.state
 
-  /** S'abonner aux changements ; rend une fonction de désabonnement. */
+  /** Subscribe to changes; returns an unsubscribe function. */
   subscribe = (listener: Listener): (() => void) => {
     this.listeners.add(listener)
     return () => this.listeners.delete(listener)
   }
 
-  /** Le SEUL point d'entrée des changements. */
+  /** The ONLY entry point of changes. */
   send = (event: Event): void => {
     let next = this.reduce(this.state, event)
-    if (next === this.state) return // immutabilité : même objet ⇒ rien n'a changé ⇒ on s'arrête
+    if (next === this.state) return // immutability: same object ⇒ nothing changed ⇒ stop
     this.state = next
-    this.listeners.forEach((l) => l()) // on réveille les abonnés
+    this.listeners.forEach((l) => l()) // wake the subscribers
   }
 }
 ```
 
-### La glue React (le pont, ≈ 8 lignes)
+(The DS's real version is `Store<S>` in `packages/behaviors/src/internal/store.ts`, extracted with the second
+service; `TabsService`, `ColorPickerService`, `PopoverService` and `TooltipService` extend it.)
 
-Les **sélecteurs** sont délégués ici : c'est React (via `useSyncExternalStoreWithSelector`) qui ne
-réveille un composant que si **sa tranche** change. (`useSyncExternalStore` = l'outil React 18 fait
-exprès pour lire un état hors de React, sans incohérence d'affichage pendant un rendu.)
+### The React glue (the bridge, ≈ 8 lines)
+
+The **selectors** are delegated here: React (through `useSyncExternalStoreWithSelector`) wakes a component only if
+**its slice** changes. (`useSyncExternalStore` = React 18's tool made to read a state outside React, with no display
+tearing during a render.)
 
 ```ts
-// proposition — packages/behaviors-react/src/use-machine.ts
+// proposal — packages/behaviors-react/src/use-machine.ts
 import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/with-selector'
 import type { Machine } from '@fubaritico/behaviors'
 
@@ -394,24 +389,24 @@ export function useMachineSlice<S, E, Slice>(
   isEqual?: (a: Slice, b: Slice) => boolean
 ): Slice {
   return useSyncExternalStoreWithSelector(
-    machine.subscribe, // comment s'abonner
-    machine.getSnapshot, // instantané (navigateur)
-    machine.getSnapshot, // instantané (serveur — pour le rendu côté serveur)
-    selector, // la tranche
-    isEqual // comparateur (défaut : ===)
+    machine.subscribe, // how to subscribe
+    machine.getSnapshot, // snapshot (browser)
+    machine.getSnapshot, // snapshot (server — for server rendering)
+    selector, // the slice
+    isEqual // comparator (default: ===)
   )
 }
 ```
 
-### Un composant concret : Listbox (mono-sélection)
+### A concrete component: Listbox (single selection)
 
 ```ts
-// proposition — packages/behaviors/src/listbox-machine.ts
+// proposal — packages/behaviors/src/listbox-machine.ts
 export type ListboxState = {
   open: boolean
   options: string[]
-  activeIndex: number | null // l'option "survolée" au clavier
-  value: string | null // l'option choisie
+  activeIndex: number | null // the option "hovered" by keyboard
+  value: string | null // the chosen option
 }
 export type ListboxEvent =
   | { type: 'open' }
@@ -425,7 +420,7 @@ export class ListboxMachine extends Machine<ListboxState, ListboxEvent> {
   reduce(state: ListboxState, event: ListboxEvent): ListboxState {
     switch (event.type) {
       case 'open':
-        if (state.open) return state // garde
+        if (state.open) return state // guard
         return { ...state, open: true, activeIndex: state.activeIndex ?? 0 }
       case 'close':
         if (!state.open) return state
@@ -458,7 +453,7 @@ export class ListboxMachine extends Machine<ListboxState, ListboxEvent> {
     }
   }
 
-  // Des "sélecteurs" comme simples fonctions (utilisées par le hook) :
+  // "Selectors" as plain functions (used by the hook):
   isActive = (state: ListboxState, index: number) => state.activeIndex === index
 }
 
@@ -468,7 +463,7 @@ function clamp(i: number, length: number) {
 ```
 
 ```tsx
-// proposition — côté React : le Context porte la MACHINE, pas l'état
+// proposal — on the React side: the Context carries the MACHINE, not the state
 const ListboxContext = createContext<ListboxMachine | null>(null)
 
 function Listbox({ options, children }: ListboxProps) {
@@ -480,7 +475,7 @@ function Listbox({ options, children }: ListboxProps) {
       value: null,
     })
     return m
-  }, []) // créée UNE fois
+  }, []) // created ONCE
   return (
     <ListboxContext.Provider value={machine}>
       {children}
@@ -490,7 +485,7 @@ function Listbox({ options, children }: ListboxProps) {
 
 function Option({ index, children }: OptionProps) {
   let machine = useContext(ListboxContext)!
-  // s'abonne à SA tranche : "suis-je l'option active ?"
+  // subscribes to ITS slice: "am I the active option?"
   let active = useMachineSlice(machine, (s) => machine.isActive(s, index))
   return (
     <li
@@ -505,63 +500,66 @@ function Option({ index, children }: OptionProps) {
 }
 ```
 
-**Cycle de vie (déroulé).**
+(In the DS, React 19 idioms apply instead: `<Context value>` and `use()` behind a guarded hook —
+`rules/patterns-compound.md`.)
 
-1. `<Listbox>` crée la machine **une fois** (`useMemo`) et la met dans le Context. Le Context transporte
-   **la machine** (référence stable), pas l'état.
-2. Chaque `<Option>` s'abonne à sa tranche `isActive(index)` via `useMachineSlice`.
-3. Flèche bas → appel de `machine.send({ type: 'next' })` → `reduce` calcule `activeIndex` (3 → 4) →
-   `send` réveille les abonnés.
-4. Seules l'option 3 (active → inactive) et l'option 4 (inactive → active) changent de tranche ⇒ **2
-   redessins**, pas N. Les autres options ne bougent pas.
-5. Entrée → `send({ type: 'selectActive' })` → `value` mis à jour, `open` repasse à `false`.
+**Lifecycle (step by step).**
 
-**Quand réintroduire ce qui a été jeté ?** Le jour où une Listbox doit **se fermer quand un autre overlay
-s'ouvre** → réintroduire `on(type, cb)` + une petite machine globale d'empilement. Le jour où
-l'enregistrement de 300 options déclenche 300 transitions → réintroduire `batch`. **Pas avant.**
+1. `<Listbox>` creates the machine **once** (`useMemo`) and puts it in the Context. The Context carries **the
+   machine** (a stable reference), not the state.
+2. Each `<Option>` subscribes to its slice `isActive(index)` through `useMachineSlice`.
+3. Arrow down → `machine.send({ type: 'next' })` → `reduce` computes `activeIndex` (3 → 4) → `send` wakes the
+   subscribers.
+4. Only option 3 (active → inactive) and option 4 (inactive → active) change slice ⇒ **2 redraws**, not N. The other
+   options do not move.
+5. Enter → `send({ type: 'selectActive' })` → `value` updated, `open` back to `false`.
+
+**When to bring back what was dropped?** The day a Listbox must **close when another overlay opens** → bring back
+`on(type, cb)` + a small global stacking machine. The day registering 300 options triggers 300 transitions → bring
+back `batch`. **Not before.**
 
 ---
 
-## C. Catalogue des hooks de comportement (réutilisables tels quels)
+## C. Catalogue of behaviour hooks (reusable as is)
 
-Ces hooks sont du **comportement pur** (accessibilité, focus, clavier, cycle de vie) — réutilisables
-**quelle que soit** l'architecture d'état choisie ci-dessus. Pour chacun : rôle · usage · exemple ·
-pertinence (composant concerné). Signatures réelles de Headless UI v2.2.10.
+These hooks are **pure behaviour** (accessibility, focus, keyboard, lifecycle) — reusable **whatever** state
+architecture is chosen above. For each: role · usage · example · relevance (component concerned). Real Headless UI
+v2.2.10 signatures.
 
-> **Code source complet** de chaque hook (copiable, ordonné par dépendances) :
-> `behavior-hooks-source.md`.
+> **Full source code** of each hook (copyable, ordered by dependencies): `behavior-hooks-source.md`.
 
-### `useEvent(cb)` — un callback à identité **stable**
+### `useEvent(cb)` — a callback with a **stable** identity
 
-- **Rôle.** Rend une fonction dont la **référence ne change jamais**, mais qui appelle toujours la
-  **dernière** version de la closure. Résout les _stale closures_ (lire une vieille valeur) et l'identité
-  instable qui casse les `memo`/dépendances.
-- **Exemple.**
+- **Role.** Returns a function whose **reference never changes**, but which always calls the **latest** version of
+  the closure. Solves _stale closures_ (reading an old value) and the unstable identity that breaks
+  `memo`/dependencies.
+- **Example.**
   ```ts
-  let onSelect = useEvent(() => props.onChange(value)) // stable, mais lit toujours le dernier props.onChange
+  let onSelect = useEvent(() => props.onChange(value)) // stable, but always reads the latest props.onChange
   ```
-- **Pertinence.** **Partout** où un handler est passé à un enfant mémoïsé, ou à un `addEventListener`.
+- **Relevance.** **Everywhere** a handler is passed to a memoised child, or to an `addEventListener`. (React 19's
+  `useEffectEvent` covers the effect case.)
 
-### `useLatestValue(value)` — la **dernière** valeur dans un ref
+### `useLatestValue(value)` — the **latest** value in a ref
 
-- **Rôle.** Garde `value` dans une boîte `{ current }` mise à jour après chaque rendu. Permet de lire une
-  valeur **fraîche** depuis un code à longue vie sans s'y ré-abonner.
-- **Exemple.**
+- **Role.** Keeps `value` in a `{ current }` box updated after each render. Lets long-lived code read a **fresh**
+  value without re-subscribing to it.
+- **Example.**
   ```ts
   let latest = useLatestValue(props.value)
   useEffect(() => {
-    const id = setInterval(() => console.log(latest.current), 1000)
+    const id = setInterval(() => console.warn(latest.current), 1000)
     return () => clearInterval(id)
   }, [])
   ```
-- **Pertinence.** Le pont « prop vivante → logique durable » (c'est le `dataRef` du Combobox en petit).
+- **Relevance.** The bridge "live prop → durable logic" (the Combobox's `dataRef` in small).
 
-### `useControllable(controlledValue, onChange?, defaultValue?)` — contrôlé **ou** non-contrôlé
+### `useControllable(controlledValue, onChange?, defaultValue?)` — controlled **or** uncontrolled
 
-- **Rôle.** Le pattern à valeur : si le parent passe `value` + `onChange`, le composant est **contrôlé** ;
-  sinon il gère un état **interne** (`defaultValue`). Retourne `[value, onChange]` unifiés. (Avertit même
-  en console en cas de bascule de l'un à l'autre.)
-- **Exemple.**
+- **Role.** The value pattern: if the parent passes `value` + `onChange`, the component is **controlled**; otherwise
+  it manages an **internal** state (`defaultValue`). Returns a unified `[value, onChange]`. (It even warns in the
+  console when switching from one to the other.)
+- **Example.**
   ```ts
   let [value, setValue] = useControllable(
     props.value,
@@ -569,110 +567,111 @@ pertinence (composant concerné). Signatures réelles de Headless UI v2.2.10.
     props.defaultValue
   )
   ```
-- **Pertinence.** **Tout composant à valeur** : Checkbox, Switch, Input, Tabs, Typeahead, DatePicker.
+- **Relevance.** **Every component with a value**: Checkbox, Switch, Input, Tabs, Typeahead, DatePicker.
 
-### `useSyncRefs(...refs)` — fusionner plusieurs refs en une
+### `useSyncRefs(...refs)` — merge several refs into one
 
-- **Rôle.** Un composant a sa **ref interne** (pour manipuler l'élément) **et** doit transmettre la **ref
-  externe** du consommateur. Ce hook les écrit toutes les deux.
-- **Exemple.**
+- **Role.** A component has its **internal ref** (to handle the element) **and** must forward the consumer's
+  **external ref**. This hook writes both.
+- **Example.**
   ```ts
   let internalRef = useRef<HTMLButtonElement>(null)
   let ref = useSyncRefs(internalRef, props.ref) // <button ref={ref} />
   ```
-- **Pertinence.** **Tout composant `forwardRef`** ayant aussi besoin de l'élément en interne (Button,
-  Input, Option…).
+- **Relevance.** **Every ref-forwarding component** that also needs the element internally (Button, Input,
+  Option…). The DS's version: `useMergedRef` (born of REACT-76, a consumer ref that silently disabled Modal and
+  Drawer).
 
-### `useId()` — un identifiant **stable et SSR-safe**
+### `useId()` — a **stable, SSR-safe** identifier
 
-- **Rôle.** Un identifiant unique, **identique côté serveur et client** (évite les mismatches
-  d'hydratation). Chez Headless UI, c'est un simple ré-export du `useId` de React.
-- **Exemple.**
+- **Role.** A unique identifier, **identical on server and client** (avoids hydration mismatches). In Headless UI, a
+  plain re-export of React's `useId`.
+- **Example.**
   ```ts
   let id = useId() // <label htmlFor={id} /> + <input id={id} />
   ```
-- **Pertinence.** Lier label ↔ contrôle, `aria-labelledby`, `aria-describedby` : Input, Tooltip, Field,
-  toute la couche accessibilité.
+- **Relevance.** Linking label ↔ control, `aria-labelledby`, `aria-describedby`: Input, Tooltip, Field, the whole
+  accessibility layer.
 
-### `useIsoMorphicEffect(fn, deps)` — un effet de **layout** SSR-safe
+### `useIsoMorphicEffect(fn, deps)` — an SSR-safe **layout** effect
 
-- **Rôle.** `useLayoutEffect` (qui s'exécute **avant** la peinture, pour mesurer/positionner sans
-  scintillement) mais qui **ne casse pas** le rendu serveur (où il devient `useEffect`).
-- **Exemple.**
+- **Role.** `useLayoutEffect` (which runs **before** paint, to measure/position without flicker) that **does not
+  break** server rendering (where it becomes `useEffect`).
+- **Example.**
   ```ts
   useIsoMorphicEffect(() => {
     setWidth(ref.current!.offsetWidth)
   }, [])
   ```
-- **Pertinence.** Positionner un Popover/Tooltip, mesurer un élément, synchroniser une mesure sans flash.
+- **Relevance.** Positioning a Popover/Tooltip, measuring an element, syncing a measure without a flash.
 
-### `useResolveButtonType(props, element)` — le bon `type` de bouton
+### `useResolveButtonType(props, element)` — the right button `type`
 
-- **Rôle.** Déduit le bon attribut `type` (`'button'` vs autre) selon le `as`/l'élément réel, pour éviter
-  qu'un `<button>` ne soumette un formulaire par accident.
-- **Exemple.**
+- **Role.** Deduces the right `type` attribute (`'button'` or other) from the `as`/the real element, so a `<button>`
+  does not submit a form by accident.
+- **Example.**
   ```ts
   let type = useResolveButtonType({ type: props.type, as: props.as }, element)
   ```
-- **Pertinence.** Button, IconButton, tout déclencheur polymorphe (Menu.Button, Disclosure.Button…).
+- **Relevance.** Button, IconButton, every polymorphic trigger (Menu.Button, Disclosure.Button…).
 
-### `useOutsideClick(enabled, containers, cb)` — fermer au **clic dehors**
+### `useOutsideClick(enabled, containers, cb)` — close on an **outside click**
 
-- **Rôle.** Appelle `cb` quand un clic se produit **hors** des conteneurs donnés (et seulement si
-  `enabled`).
-- **Exemple.**
+- **Role.** Calls `cb` when a click happens **outside** the given containers (and only when `enabled`).
+- **Example.**
   ```ts
   useOutsideClick(open, [buttonEl, panelEl], () => close())
   ```
-- **Pertinence.** Menu, Dropdown, Popover, Typeahead, DatePicker — tout ce qui s'ouvre en surcouche.
+- **Relevance.** Menu, Dropdown, Popover, Typeahead, DatePicker — everything that opens as an overlay. (In the DS,
+  native `popover="auto"` gives light dismiss for free.)
 
-### `useEscape(enabled, view, cb)` — fermer sur **Échap**
+### `useEscape(enabled, view, cb)` — close on **Escape**
 
-- **Rôle.** Appelle `cb` quand on presse `Échap` — **seulement** si le composant est la couche du dessus
-  (il s'appuie sur la notion de « couche au sommet »).
-- **Exemple.**
+- **Role.** Calls `cb` when `Escape` is pressed — **only** if the component is the top layer (it relies on the
+  notion of "the topmost layer").
+- **Example.**
   ```ts
-  useEscape(open, undefined, () => close()) // `view` = fenêtre, par défaut document.defaultView
+  useEscape(open, undefined, () => close()) // `view` = window, document.defaultView by default
   ```
-- **Pertinence.** Modal, Drawer, Menu, Tooltip, BottomSheet.
+- **Relevance.** Modal, Drawer, Menu, Tooltip, BottomSheet.
 
-### `useDocumentOverflowLockedEffect(...)` — bloquer le **défilement** de la page
+### `useDocumentOverflowLockedEffect(...)` — lock the page's **scrolling**
 
-- **Rôle.** Verrouille le scroll du `<body>` tant qu'un overlay est ouvert (avec comptage, comme le
-  Niveau 1 ci-dessus, dont c'est précisément l'implémentation chez Headless UI).
-- **Exemple.** voir **Niveau 1** (`useScrollLock(open)`).
-- **Pertinence.** Modal, Drawer, BottomSheet.
+- **Role.** Locks the `<body>`'s scroll while an overlay is open (with counting, like Level 1 above — precisely its
+  implementation in Headless UI).
+- **Example.** See **Level 1** (`useScrollLock(open)`).
+- **Relevance.** Modal, Drawer, BottomSheet.
 
-### Piège à focus : `focus-trap` + `use-inert-others`
+### Focus trap: `focus-trap` + `use-inert-others`
 
-- **Rôle.** **Piéger** le focus clavier **dans** un dialog (Tab ne sort pas), et rendre **inertes** (non
-  focusables, ignorés par les lecteurs d'écran) les éléments **derrière**.
-- **Exemple.** (composant) `<FocusTrap>…</FocusTrap>` autour du contenu d'un dialog.
-- **Pertinence.** Modal, Drawer, Dialog — **obligatoire** pour l'accessibilité d'un overlay modal.
+- **Role.** **Trap** keyboard focus **inside** a dialog (Tab does not leave), and make the elements **behind**
+  **inert** (not focusable, ignored by screen readers).
+- **Example.** (component) `<FocusTrap>…</FocusTrap>` around a dialog's content.
+- **Relevance.** Modal, Drawer, Dialog — **mandatory** for the accessibility of a modal overlay. (In the DS, the
+  native `<dialog>` opened with `showModal()` provides both.)
 
-### `useDisposables()` — un registre de **nettoyage** lié au composant
+### `useDisposables()` — a **cleanup** registry tied to the component
 
-- **Rôle.** Un panier de ressources (minuteurs, écouteurs, `requestAnimationFrame`) qui se **vide
-  automatiquement** au démontage. Évite d'oublier un `clearTimeout`/`removeEventListener`.
-- **Exemple.**
+- **Role.** A basket of resources (timers, listeners, `requestAnimationFrame`) **emptied automatically** on unmount.
+  Avoids forgetting a `clearTimeout`/`removeEventListener`.
+- **Example.**
   ```ts
   let d = useDisposables()
-  d.setTimeout(() => close(), 3000) // nettoyé tout seul au démontage
+  d.setTimeout(() => close(), 3000) // cleaned up by itself on unmount
   ```
-- **Pertinence.** Tout composant avec minuteurs/écouteurs : Tooltip (délai), Toast (auto-fermeture),
-  Carousel (autoplay).
+- **Relevance.** Every component with timers/listeners: Tooltip (delay), Toast (auto-close), Carousel (autoplay).
 
-### Recherche clavier : `useTextValue` + `useTreeWalker`
+### Keyboard search: `useTextValue` + `useTreeWalker`
 
-- **Rôle.** Permettre de **taper des lettres** pour sauter à l'option correspondante (`useTextValue`
-  extrait le texte d'une option ; `useTreeWalker` parcourt les nœuds).
-- **Exemple.** dans une option : `let text = useTextValue(optionRef)` → la machine compare à la frappe.
-- **Pertinence.** Listbox, Menu, Typeahead (la recherche « tape pour trouver »).
+- **Role.** Let the user **type letters** to jump to the matching option (`useTextValue` extracts an option's text;
+  `useTreeWalker` walks the nodes).
+- **Example.** In an option: `let text = useTextValue(optionRef)` → the machine compares with the keystrokes.
+- **Relevance.** Listbox, Menu, Typeahead (the "type to find" search).
 
-### `useWatch(cb, deps)` — réagir à un **changement de valeur**
+### `useWatch(cb, deps)` — react to a **value change**
 
-- **Rôle.** Exécuter `cb` quand des valeurs changent (proche d'un `useEffect`, orienté synchronisation).
-- **Exemple.**
+- **Role.** Run `cb` when values change (close to a `useEffect`, oriented towards syncing).
+- **Example.**
   ```ts
   useWatch(
     ([open]) => {
@@ -681,26 +680,29 @@ pertinence (composant concerné). Signatures réelles de Headless UI v2.2.10.
     [open]
   )
   ```
-- **Pertinence.** Synchroniser un état dérivé (réinitialiser la recherche à la fermeture, par ex.).
+- **Relevance.** Syncing a derived state (resetting the search on close, for instance).
 
 ---
 
-## D. Récap appliqué aux composants du design system
+## D. Recap applied to the design system's components
 
-| Composant                        | Niveau d'état                                        | Hooks de comportement clés                                                         |
-| -------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| **Switch / Checkbox**            | local (`useState`)                                   | `useControllable`, `useId`, `useSyncRefs`                                          |
-| **Input**                        | local                                                | `useControllable`, `useId`, `useSyncRefs`                                          |
-| **Tooltip**                      | local (+ store global si besoin)                     | `useId`, `useDisposables` (délai), `useIsoMorphicEffect` (position)                |
-| **Modal / Drawer / BottomSheet** | **createStore** (scroll-lock partagé)                | `useScrollLock`, `useEscape`, `focus-trap` + `use-inert-others`, `useId`           |
-| **Menu / Dropdown**              | local ou machine simple                              | `useOutsideClick`, `useEscape`, `useResolveButtonType`, recherche clavier          |
-| **Tabs**                         | local (`useReducer`) ou machine simple               | `useControllable` (onglet actif), `useId`, clavier                                 |
-| **Listbox**                      | **machine simplifiée**                               | `useMachineSlice`, `useOutsideClick`, recherche clavier, `useId`                   |
-| **Typeahead** (Combobox)         | **machine simplifiée** (+ `on`/empilement plus tard) | `useControllable`, `useOutsideClick`, `useId`, recherche clavier, `useLatestValue` |
-| **Toaster / notifications**      | **Zustand** (API impérative globale)                 | `useDisposables` (auto-fermeture)                                                  |
+| Component                        | State level                                    | Key behaviour hooks                                                              |
+| -------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------- |
+| **Switch / Checkbox**            | local (`useState`)                             | `useControllable`, `useId`, `useSyncRefs`                                        |
+| **Input**                        | local                                          | `useControllable`, `useId`, `useSyncRefs`                                        |
+| **Tooltip**                      | local (+ a global store if needed)             | `useId`, `useDisposables` (delay), `useIsoMorphicEffect` (position)              |
+| **Modal / Drawer / BottomSheet** | **createStore** (shared scroll-lock)           | `useScrollLock`, `useEscape`, `focus-trap` + `use-inert-others`, `useId`         |
+| **Menu / Dropdown**              | local or a simple machine                      | `useOutsideClick`, `useEscape`, `useResolveButtonType`, keyboard search          |
+| **Tabs**                         | local (`useReducer`) or a simple machine       | `useControllable` (active tab), `useId`, keyboard                                |
+| **Listbox**                      | **simplified machine**                         | `useMachineSlice`, `useOutsideClick`, keyboard search, `useId`                   |
+| **Typeahead** (Combobox)         | **simplified machine** (+ `on`/stacking later) | `useControllable`, `useOutsideClick`, `useId`, keyboard search, `useLatestValue` |
+| **Toaster / notifications**      | **Zustand** (a global imperative API)          | `useDisposables` (auto-close)                                                    |
 
-**À retenir.** La grande majorité des composants n'a besoin que d'**état local + quelques hooks de
-comportement**. La **machine simplifiée** ne sert que pour **Listbox/Typeahead**. Le **createStore** ne
-sert que pour le **scroll-lock**. **Zustand** uniquement pour une **API impérative globale** (toasts).
-Les **hooks (Partie C)** sont, eux, le vrai trésor réutilisable — du comportement pur, indépendant de
-l'architecture d'état.
+(Written on 2026-06-12, before `@fubaritico/behaviors` existed. Since 2026-10-09 the DS's answer for Tabs, the
+ColorPicker, the Popover and the Tooltip is a **behaviour service** per component — `/behavior-service` — which is
+this Level 3 machine, framework-agnostic, with a thin React adapter.)
+
+**Takeaway.** The vast majority of components only need **local state + a few behaviour hooks**. The **simplified
+machine** is only for **Listbox/Typeahead**. **createStore** only for the **scroll-lock**. **Zustand** only for a
+**global imperative API** (toasts). The **hooks (Part C)** are the real reusable treasure — pure behaviour,
+independent of the state architecture.

@@ -1,18 +1,18 @@
-# Code source des hooks de comportement à reprendre
+# Source code of the behaviour hooks to take over
 
-> Annexe code du catalogue (Partie C de `state-externalization.md`). Source réelle Headless UI v2.2.10,
-> copiable. **Ordre = par dépendances** : les « fondations » d'abord (les autres les importent). Chaque
-> hook indique ses **dépendances internes**. Les hooks trop entremêlés (outside-click complet, focus-trap)
-> sont donnés en version condensée fidèle ou pointés.
+> Code appendix of the catalogue (Part C of `state-externalization.md`). Real Headless UI v2.2.10 source,
+> copyable. **Order = by dependencies**: the « foundations » first (the others import them). Each hook states its
+> **internal dependencies**. The most entangled hooks (the full outside-click, focus-trap) are given as a faithful
+> condensed version or pointed to.
 
 ---
 
-## 0. Fondations (importées par presque tous les autres)
+## 0. Foundations (imported by almost all the others)
 
-### `env` (minimal) — « suis-je sur le serveur ? »
+### `env` (minimal) — « am I on the server? »
 
 ```ts
-// L'original (utils/env) gère aussi le "handoff" SSR ; un minimal suffit pour démarrer :
+// The original (utils/env) also handles the SSR "handoff"; a minimal one is enough to start:
 export const isServer = typeof document === 'undefined'
 ```
 
@@ -36,9 +36,9 @@ export let useIsoMorphicEffect = (
 }
 ```
 
-Dépend de : `env`.
+Depends on: `env`.
 
-### `useLatestValue` — la dernière valeur dans un ref
+### `useLatestValue` — the latest value in a ref
 
 ```ts
 import { useRef } from 'react'
@@ -53,9 +53,9 @@ export function useLatestValue<T>(value: T) {
 }
 ```
 
-Dépend de : `useIsoMorphicEffect`.
+Depends on: `useIsoMorphicEffect`.
 
-### `useEvent` — callback à identité stable
+### `useEvent` — a callback with a stable identity
 
 ```ts
 import React from 'react'
@@ -71,12 +71,12 @@ export let useEvent = function useEvent<
 }
 ```
 
-Dépend de : `useLatestValue`.
+Depends on: `useLatestValue`.
 
-### `disposables` + `useDisposables` — registre de nettoyage
+### `disposables` + `useDisposables` — a cleanup registry
 
 ```ts
-// micro-task minimal (l'original a un repli pour vieux navigateurs) :
+// a minimal micro-task (the original has a fallback for old browsers):
 const microTask = (cb: () => void) => queueMicrotask(cb)
 
 export function disposables() {
@@ -142,21 +142,21 @@ export function disposables() {
 import { useEffect, useState } from 'react'
 import { disposables } from './disposables'
 
-/** Un registre `disposables` lié au cycle de vie : vidé au démontage. */
+/** A `disposables` registry tied to the lifecycle: emptied on unmount. */
 export function useDisposables() {
-  let [d] = useState(disposables) // useState(initializer) → créé une fois
+  let [d] = useState(disposables) // useState(initializer) → created once
   useEffect(() => () => d.dispose(), [d])
   return d
 }
 ```
 
-Dépend de : `queueMicrotask` (natif).
+Depends on: `queueMicrotask` (natif).
 
 ---
 
-## 1. Valeur & refs
+## 1. Value & refs
 
-### `useControllable` — contrôlé ou non-contrôlé
+### `useControllable` — controlled or uncontrolled
 
 ```ts
 import { useRef, useState } from 'react'
@@ -171,13 +171,13 @@ export function useControllable<T>(
   let [internalValue, setInternalValue] = useState(defaultValue)
   let isControlled = controlledValue !== undefined
 
-  // (Avertissements console en cas de bascule contrôlé↔non-contrôlé — omis ici pour la concision)
+  // (Console warnings when switching controlled↔uncontrolled — left out here for brevity)
 
   return [
     (isControlled ? controlledValue : internalValue)!,
     useEvent((value: T) => {
       if (isControlled) return onChange?.(value)
-      // met à jour l'état interne AVANT onChange (utile pour soumettre un form dans onChange)
+      // updates the internal state BEFORE onChange (useful to submit a form inside onChange)
       flushSync(() => setInternalValue(value))
       return onChange?.(value)
     }),
@@ -185,9 +185,9 @@ export function useControllable<T>(
 }
 ```
 
-Dépend de : `useEvent`, `flushSync` (react-dom).
+Depends on: `useEvent`, `flushSync` (react-dom).
 
-### `useSyncRefs` — fusionner plusieurs refs
+### `useSyncRefs` — merge several refs
 
 ```ts
 import { useEffect, useRef } from 'react'
@@ -218,16 +218,16 @@ export function useSyncRefs<TType>(
     }
   })
 
-  // @ts-expect-error — si toutes les refs sont "optionnelles", on ne renvoie rien
+  // @ts-expect-error — if every ref is "optional", nothing is returned
   return refs.every((ref) => ref == null || ref?.[Optional])
     ? undefined
     : syncRefs
 }
 ```
 
-Dépend de : `useEvent`.
+Depends on: `useEvent`.
 
-### `useResolveButtonType` — le bon `type` de bouton (autonome)
+### `useResolveButtonType` — the right button `type` (standalone)
 
 ```ts
 import { useMemo } from 'react'
@@ -248,20 +248,20 @@ export function useResolveButtonType<TTag>(
 }
 ```
 
-Dépend de : rien.
+Depends on: nothing.
 
 ### `useId`
 
 ```ts
-// Chez Headless UI, simple ré-export du hook natif (React 18+) :
+// In Headless UI, a plain re-export of the native hook (React 18+):
 export { useId } from 'react'
 ```
 
 ---
 
-## 2. Cycle de vie
+## 2. Lifecycle
 
-### `useWatch` — réagir à un changement de valeurs
+### `useWatch` — react to a change of values
 
 ```ts
 import { useEffect, useRef } from 'react'
@@ -287,13 +287,13 @@ export function useWatch<T extends any[]>(
 }
 ```
 
-Dépend de : `useEvent`.
+Depends on: `useEvent`.
 
 ---
 
-## 3. Clavier & interaction
+## 3. Keyboard & interaction
 
-### `useEscape` — fermer sur Échap
+### `useEscape` — close on Escape
 
 ```ts
 import { useEventListener } from './use-event-listener'
@@ -304,8 +304,8 @@ export function useEscape(
   view = typeof document !== 'undefined' ? document.defaultView : null,
   cb: (event: KeyboardEvent) => void
 ) {
-  // Original : `let isTopLayer = useIsTopLayer(enabled, 'escape')` (notion de "couche au sommet"
-  // via une machine d'empilement). Pour un DS simple, remplacer par `enabled` directement.
+  // Original: `let isTopLayer = useIsTopLayer(enabled, 'escape')` (the notion of "topmost layer"
+  // through a stacking machine). For a simple DS, replace it with `enabled` directly.
   useEventListener(view, 'keydown', (event) => {
     if (!enabled) return
     if (event.defaultPrevented) return
@@ -315,13 +315,13 @@ export function useEscape(
 }
 ```
 
-Dépend de : `useEventListener`, `Keys`. (Original : aussi `useIsTopLayer`.)
+Depends on: `useEventListener`, `Keys`. (Original: also `useIsTopLayer`.)
 
-### `useOutsideClick` — version **condensée fidèle**
+### `useOutsideClick` — a **faithful condensed** version
 
 ```ts
-// ⚠️ L'original fait 198 lignes : il gère aussi le tactile (seuil de 30px = scroll, pas clic),
-// le blur d'iframe, le perçage du Shadow DOM, et un test "élément focusable". Version essentielle :
+// ⚠️ The original is 198 lines: it also handles touch (a 30px threshold = scroll, not click),
+// iframe blur, piercing the Shadow DOM, and a "focusable element" test. The essential version:
 import { useEffect } from 'react'
 
 export function useOutsideClick(
@@ -335,8 +335,8 @@ export function useOutsideClick(
       let target = event.target as Element | null
       if (!target || !target.isConnected) return
       for (let container of containers()) {
-        if (container?.contains(target)) return // clic à l'intérieur → on ignore
-        // perçage Shadow DOM :
+        if (container?.contains(target)) return // a click inside → ignored
+        // piercing the Shadow DOM:
         if (
           event.composed &&
           event.composedPath().includes(container as EventTarget)
@@ -345,7 +345,7 @@ export function useOutsideClick(
       }
       cb(event, target) // clic dehors
     }
-    // phase "capture" → les stopPropagation intermédiaires ne l'annulent pas
+    // "capture" phase → an intermediate stopPropagation does not cancel it
     document.addEventListener('pointerdown', onPointerDown, true)
     return () =>
       document.removeEventListener('pointerdown', onPointerDown, true)
@@ -353,10 +353,10 @@ export function useOutsideClick(
 }
 ```
 
-Original — dépend de : `useDocumentEvent`, `useWindowEvent`, `useLatestValue`, `isMobile`, utils
+Original — depends on: `useDocumentEvent`, `useWindowEvent`, `useLatestValue`, `isMobile`, utils
 `focus-management` (`isFocusableElement`) et `dom`.
 
-### `useTextValue` — extraire le texte d'une option (recherche clavier)
+### `useTextValue` — extract an option's text (keyboard search)
 
 ```ts
 import { useRef, type MutableRefObject } from 'react'
@@ -380,9 +380,9 @@ export function useTextValue(element: MutableRefObject<HTMLElement | null>) {
 }
 ```
 
-Dépend de : `useEvent`, `getTextValue` (util qui lit `aria-label`/`textContent`).
+Depends on: `useEvent`, `getTextValue` (a util that reads `aria-label`/`textContent`).
 
-### `useTreeWalker` — parcourir les nœuds (filtrage clavier)
+### `useTreeWalker` — walk the nodes (keyboard filtering)
 
 ```ts
 import { useEffect, useRef } from 'react'
@@ -430,33 +430,34 @@ export function useTreeWalker(
 }
 ```
 
-Dépend de : `useIsoMorphicEffect`, `getOwnerDocument`.
+Depends on: `useIsoMorphicEffect`, `getOwnerDocument`.
 
 ---
 
-## 4. À porter (composants entiers, pas des hooks à inliner)
+## 4. To port (whole components, not hooks to inline)
 
-### Verrou de défilement (scroll-lock)
+### Scroll lock
 
-Le code minimal est déjà fourni dans `state-externalization.md` (**Niveau 1**, `createStore` + `useScrollLock`).
-La version Headless UI (`hooks/document-overflow`) ajoute : compensation de la barre de défilement
-(éviter le saut de mise en page), cas iOS, et restauration fine. Reprendre au besoin.
+The minimal code is already in `state-externalization.md` (**Level 1**, `createStore` + `useScrollLock`). The
+Headless UI version (`hooks/document-overflow`) adds: scrollbar compensation (avoiding the layout jump), iOS cases,
+and fine restoration. Take it over if needed.
 
 ### `focus-trap` + `use-inert-others`
 
-Ce sont des **composants/hooks volumineux** (plusieurs centaines de lignes, très entremêlés). À **porter**
-depuis Headless UI ou à remplacer par une petite lib dédiée. Responsabilités à couvrir :
+These are **bulky components/hooks** (several hundred lines, heavily entangled). To **port** from Headless UI or to
+replace with a small dedicated library. Responsibilities to cover:
 
-1. **Focus initial** à l'ouverture (premier élément focusable, ou un élément ciblé).
-2. **Cycle du Tab** : `Tab`/`Shift+Tab` bouclent **dans** le piège, ne sortent jamais.
-3. **Restauration** du focus à l'élément déclencheur à la fermeture.
-4. **Inertie de l'arrière-plan** : `inert`/`aria-hidden` sur le reste, ignoré par les lecteurs d'écran.
+1. **Initial focus** on opening (the first focusable element, or a targeted one).
+2. **Tab cycling**: `Tab`/`Shift+Tab` loop **inside** the trap, never leave it.
+3. **Restoring** focus to the triggering element on close.
+4. **Background inertness**: `inert`/`aria-hidden` on the rest, ignored by screen readers.
 
-Obligatoire pour l'accessibilité d'un overlay **modal** (Modal, Drawer, Dialog).
+Mandatory for the accessibility of a **modal** overlay (Modal, Drawer, Dialog). In the DS, the native `<dialog>`
+opened with `showModal()` provides all four (`useNativeDialog`).
 
 ---
 
-## Carte des dépendances (ordre de portage)
+## Dependency map (porting order)
 
 ```
 env
@@ -470,7 +471,7 @@ disposables → useDisposables        │
                                     └─ useTextValue (+ getTextValue)
 useEventListener → useEscape (+ Keys)
 useIsoMorphicEffect → useTreeWalker (+ getOwnerDocument)
-useResolveButtonType (autonome) ·  useId (natif)
+useResolveButtonType (standalone) ·  useId (native)
 ```
 
-Porter `env → useIsoMorphicEffect → useLatestValue → useEvent` **en premier** : tout le reste en dépend.
+Port `env → useIsoMorphicEffect → useLatestValue → useEvent` **first**: everything else depends on them.
