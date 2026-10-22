@@ -1,82 +1,44 @@
 # A03:2025 — Software Supply Chain Failures
 
-OWASP Top 10 #3 (expands A06:2021 "Vulnerable & Outdated Components"). Highest exploit score
-of any 2025 category (8.17). Covers the full lifecycle: sourcing, building, distributing,
-and deploying third-party components.
+OWASP Top 10 #3 (new). Compromised or vulnerable dependencies, build and release pipeline.
+
+**In this repository**: the most relevant category — the DS is itself a dependency of other projects
+(europe-map), so a compromise here propagates to every consumer.
 
 ## Checklist
 
 ### Critical
 
-#### OWASP-A03-001: Dependencies with known critical CVEs
-- **Where**: All `package.json` files, `pnpm-lock.yaml`
-- **Check**: Run `pnpm audit` — any critical severity findings
-- **Check**: Direct dependencies with known RCE, auth bypass, or data leak CVEs
-- **Note**: Report the output of `pnpm audit --audit-level critical`
+#### OWASP-A03-001: Known-vulnerable dependency
+- **Where**: every `package.json`, `pnpm-lock.yaml`
+- **Check**: `pnpm audit --prod` on the published packages; a high/critical advisory reachable at runtime
+
+#### OWASP-A03-002: Lockfile not enforced in CI
+- **Where**: `.github/actions/setup`, `.github/workflows/*`
+- **Check**: CI installs with `--frozen-lockfile`
 
 ### High
 
-#### OWASP-A03-002: Severely outdated framework versions
-- **Where**: Root and workspace `package.json` files
-- **Check**: Core frameworks not more than 2 major versions behind
-- **Check**: Security-critical packages (express, supabase, expo) on supported versions
-- **Frameworks**: React, React Native, Expo SDK, Express, Supabase client
+#### OWASP-A03-003: Third-party action not pinned
+- **Where**: `.github/workflows/*.yml`, `.github/actions/*`
+- **Check**: actions outside `actions/*` pinned to a full commit SHA; `actions/*` at least to a major tag
 
-#### OWASP-A03-003: Unmaintained dependencies
-- **Where**: All `package.json` files
-- **Check**: No dependencies that are archived, deprecated, or unmaintained (>2 years no release)
-- **Check**: No packages with published security advisories and no fix available
+#### OWASP-A03-004: Runtime dependency a consumer does not need
+- **Where**: `dependencies` / `peerDependencies` of the published packages
+- **Check**: `behaviors` has zero dependencies, `variants` only `class-variance-authority`; test and build
+  tools stay in `devDependencies`; `shared` never a runtime dependency of `@fubaritico/react`
 
-#### OWASP-A03-004: Dependencies with high CVEs
-- **Where**: All `package.json` files
-- **Check**: Run `pnpm audit` — any high severity findings
-- **Check**: Known vulnerabilities in transitive dependencies
-
-#### OWASP-A03-005: Unhardened CI/CD pipeline
-- **Where**: `.github/workflows/`, build scripts
-- **Check**: GitHub Actions pinned by commit SHA, not tag (`actions/checkout@<sha>` not `@v4`)
-- **Check**: No secrets in workflow files
-- **Check**: No arbitrary code execution from PR comments
-- **Check**: Separate read/write tokens per pipeline stage
-- **Note**: If no CI/CD configured yet, note as informational
+#### OWASP-A03-005: Install scripts
+- **Where**: every `package.json`; `pnpm-workspace.yaml` (`onlyBuiltDependencies`)
+- **Check**: no `preinstall`/`postinstall` in published packages; dependency build scripts allowed by name only
 
 ### Medium
 
-#### OWASP-A03-006: Missing lockfile integrity
-- **Where**: `pnpm-lock.yaml`
-- **Check**: Lockfile exists and is committed
-- **Check**: No `resolutions` or `overrides` that mask vulnerability warnings
+#### OWASP-A03-006: Version drift outside the catalog
+- **Where**: `package.json` files, `pnpm-workspace.yaml` `catalog:`
+- **Check**: shared tooling on `catalog:` (vitest, playwright, react); no loose `^` range that can split a
+  version across packages
 
-#### OWASP-A03-007: Unused dependencies increasing attack surface
-- **Where**: All `package.json` files
-- **Check**: No obviously unused packages (installed but never imported)
-- **Check**: Dev dependencies not accidentally in `dependencies`
-
-#### OWASP-A03-008: Missing Expo SDK alignment
-- **Where**: `apps/mobile-expo/package.json`
-- **Check**: All Expo packages aligned to current SDK version
-- **Check**: Run `npx expo install --check` mentally (verify version compatibility)
-
-#### OWASP-A03-009: Untrusted package sources
-- **Where**: `.npmrc`, package installation config
-- **Check**: No dependencies from unknown/untrusted registries
-- **Check**: `.npmrc` doesn't point to unexpected registries
-- **Check**: No typosquatted package names (verify against official npm registry)
-
-### Low
-
-#### OWASP-A03-010: Outdated dev tooling
-- **Where**: Root `package.json` devDependencies
-- **Check**: Linters, formatters, build tools reasonably current
-- **Note**: Low security risk but can indicate unmaintained project hygiene
-
-#### OWASP-A03-011: Pinned versions without update strategy
-- **Where**: `package.json`, pnpm catalog
-- **Check**: Dependencies use range operators (`^`, `~`) for security patches
-- **Check**: Or alternatively, Dependabot/Renovate configured for updates
-- **Note**: Informational — no active exploit risk
-
-#### OWASP-A03-012: Missing SBOM (Software Bill of Materials)
-- **Where**: Build/deployment pipeline
-- **Check**: SBOM generated as CI artifact for production builds
-- **Note**: Informational for this project stage — becoming a compliance requirement
+#### OWASP-A03-007: Peer ranges too narrow or too wide
+- **Where**: `peerDependencies` of `@fubaritico/react`
+- **Check**: real ranges (`>=19`), not an exact version resolved through `catalog:`

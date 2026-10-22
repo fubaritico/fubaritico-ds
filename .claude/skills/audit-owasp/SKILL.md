@@ -3,14 +3,15 @@ name: audit-owasp
 description: Full-codebase OWASP Top 10 (2025) security audit using 10 parallel subagents (one per category). Produces structured JSON findings with severity scoring. Use when auditing security, checking OWASP compliance, running a security scan, or hardening the app.
 allowed-tools: Agent Read Glob Grep Bash(ls:*)
 metadata:
-  author: financial-app
-  version: "2.0"
+  author: fubaritico-ds
+  version: "3.0"
 ---
 
 # Audit OWASP — Full-Codebase Security Audit
 
 Orchestrates 10 parallel domain-expert subagents — one per OWASP Top 10 (2025) category — to audit
-the entire codebase (API + web + mobile + shared packages) for security vulnerabilities.
+the entire codebase (components, behaviour services, resolvers, the Storybook showcase, the CI and the
+published packages) for security vulnerabilities.
 
 ## OWASP Top 10:2025 Categories
 
@@ -37,24 +38,21 @@ the entire codebase (API + web + mobile + shared packages) for security vulnerab
 ### Step 1 — Scope Detection
 
 Scan the full codebase. Include:
-- `apps/api/src/**/*.ts` (server routes, middleware, auth)
-- `apps/web/src/**/*.{ts,tsx}` (web app, loaders, components)
-- `apps/mobile-expo/src/**/*.{ts,tsx}` (mobile app, screens, navigation)
-- `packages/shared/src/**/*.{ts,tsx}` (auth, hooks, utils)
-- `packages/reference/src/**/*.{ts,tsx}` (UI components — XSS vectors)
-- Config files: `*.config.*`, `app.json`, `package.json`, `.env.example`
+- `packages/reference/src/**/*.{ts,tsx}` (UI components — XSS vectors, `dangerouslySetInnerHTML`, URLs)
+- `packages/{behaviors,variants,shared}/src/**/*.{ts,tsx}` (services, resolvers, utils, vite plugins)
+- `packages/stencil/src/**/*.{ts,tsx}` (Web Components — `innerHTML`, attributes)
+- `apps/storybook-react/{.storybook,stories}/**` (preview, stories shipped on a public site)
+- Config files: `*.config.*`, `package.json`, `pnpm-workspace.yaml`, `.github/workflows/*`, `.husky/*`
 
 Exclude: `node_modules/`, `build/`, `dist/`, `*.test.*`, `*.stories.*`, lock files, `*.d.ts`
 
 ### Step 2 — Load Context
 
 Read all files in scope. Group them by layer:
-- **API layer**: `apps/api/src/`
-- **Web layer**: `apps/web/src/`
-- **Mobile layer**: `apps/mobile-expo/src/`
-- **Shared layer**: `packages/shared/src/`
-- **UI layer**: `packages/reference/src/`
-- **Config layer**: root configs, app.json, env examples
+- **UI layer**: `packages/reference/src/`, `packages/stencil/src/`
+- **Logic layer**: `packages/behaviors/src/`, `packages/variants/src/`, `packages/shared/src/`
+- **Showcase layer**: `apps/storybook-react/`
+- **Supply-chain & CI layer**: root configs, `pnpm-workspace.yaml`, `.github/workflows/`, `.husky/`
 
 ### Step 3 — Dispatch 10 Parallel Subagents
 
@@ -93,23 +91,26 @@ Use severity levels:
 - low: best practice deviation, informational
 
 If a finding depends on runtime behavior or library version you're not 100% certain about,
-set "needs_verification": true and provide a "verification_query" for context7 lookup.
+set "needs_verification": true and provide a "verification_query" (checked in `opensrc/` or on the web).
 ```
 
 Agents and their scope:
 
 | # | Agent | Prefix | Layers to audit |
 |---|-------|--------|-----------------|
-| 1 | Broken Access Control (incl. SSRF) | OWASP-A01 | API, Web (loaders), Mobile (navigation), Shared (HTTP clients) |
-| 2 | Security Misconfiguration | OWASP-A02 | Config, API, Web |
-| 3 | Software Supply Chain Failures | OWASP-A03 | All package.json files, lockfile, CI/CD configs |
+| 1 | Broken Access Control (incl. SSRF) | OWASP-A01 | Supply-chain & CI (workflow permissions), UI (links) |
+| 2 | Security Misconfiguration | OWASP-A02 | Supply-chain & CI, Showcase, published `package.json` files |
+| 3 | Software Supply Chain Failures | OWASP-A03 | All package.json files, lockfile, CI configs |
 | 4 | Cryptographic Failures | OWASP-A04 | All layers |
-| 5 | Injection | OWASP-A05 | API, Web (.web.tsx), UI (.web.tsx) |
-| 6 | Insecure Design | OWASP-A06 | All layers |
-| 7 | Authentication Failures | OWASP-A07 | API (auth middleware), Shared (auth), Web/Mobile (auth flows) |
-| 8 | Software & Data Integrity Failures | OWASP-A08 | All layers |
-| 9 | Security Logging & Alerting Failures | OWASP-A09 | API, Shared |
-| 10 | Mishandling Exceptional Conditions | OWASP-A10 | API (error handlers, middleware), Web/Mobile (error boundaries), Shared (hooks) |
+| 5 | Injection | OWASP-A05 | UI, Logic (regex, Vite plugins), Supply-chain & CI (shell) |
+| 6 | Insecure Design | OWASP-A06 | UI, Logic |
+| 7 | Authentication Failures | OWASP-A07 | Supply-chain & CI, `.claude/skills/*/scripts` (toolchain tokens) — no app auth |
+| 8 | Software & Data Integrity Failures | OWASP-A08 | Supply-chain & CI, generated artefacts, Showcase |
+| 9 | Security Logging & Alerting Failures | OWASP-A09 | UI, Logic, CI |
+| 10 | Mishandling Exceptional Conditions | OWASP-A10 | UI, Logic |
+
+The DS has no server, no authentication and no user data: each reference says what is out of scope, and
+an agent reports nothing there rather than inventing a finding.
 
 ### Step 4 — Aggregate & Score
 
@@ -120,16 +121,19 @@ category_score = max(0, 100 - (critical * 25) - (high * 15) - (medium * 5) - (lo
 ```
 
 Weights for overall score:
-- A01 Broken Access Control: 15%
+- A01 Broken Access Control: 5%
 - A02 Security Misconfiguration: 10%
-- A03 Software Supply Chain Failures: 8%
-- A04 Cryptographic Failures: 12%
-- A05 Injection: 15%
-- A06 Insecure Design: 8%
-- A07 Authentication Failures: 12%
-- A08 Software & Data Integrity Failures: 8%
+- A03 Software Supply Chain Failures: 20%
+- A04 Cryptographic Failures: 5%
+- A05 Injection: 25%
+- A06 Insecure Design: 10%
+- A07 Authentication Failures: 5%
+- A08 Software & Data Integrity Failures: 10%
 - A09 Security Logging & Alerting Failures: 5%
-- A10 Mishandling Exceptional Conditions: 7%
+- A10 Mishandling Exceptional Conditions: 5%
+
+(Weighted to the DS's surface: a component library is mostly attacked through the HTML it renders and
+the dependencies it ships to its consumers.)
 
 Verdict thresholds:
 - 80-100 + no critical → `pass`
@@ -146,10 +150,11 @@ Follow with:
 - Overall score + verdict
 - Top 3 priority fixes
 
-### Step 6 — Verify Ambiguous Findings (context7)
+### Step 6 — Verify Ambiguous Findings
 
 Before recommending fixes, check findings where `needs_verification: true`:
-1. Run the `verification_query` through context7
+1. Run the `verification_query` against `opensrc/` (CLAUDE.md → Source code reference) or the web — there is
+   no context7 in this project
 2. If confirmed → keep finding
 3. If disproved → discard, adjust score
 4. Report verification results to user
@@ -185,10 +190,7 @@ Do NOT auto-fix. Present recommendations and let the user decide.
 
 ## Known Accepted Risks (do NOT flag)
 
-These are documented in CLAUDE.md "Known Issues" and are intentionally accepted:
-- SEC-002: bare RN (`apps/mobile/`) uses plain AsyncStorage — learning reference, not published
-- SEC-006: `redirectTo` in oauth.ts not validated — deferred until login UI complete
-- ARCH-003b: factories read env vars directly — accepted DX trade-off
-- Google client IDs empty in .env — pending Google Cloud Console setup
-- `http://localhost` in dev configs — dev-only, not production
-- `http://10.0.2.2` in Android configs — emulator loopback, not production
+Only the one below so far. An accepted risk is the dev's decision: it goes here with its date and its reason, and a
+finding matching it is not reported.
+
+- `http://localhost` in dev configs (Storybook, Playwright `baseURL`) — local development only.
