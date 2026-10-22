@@ -1,3 +1,10 @@
+---
+paths:
+  - "packages/reference/src/components/**"
+  - "packages/styles/src/**"
+  - "packages/variants/src/**"
+  - "apps/storybook-react/stories/**"
+---
 # Compound Components Pattern (React 19) — packages/reference
 
 > Split out of `patterns-ui.md` (200-line cap). Load it for any compound / context component

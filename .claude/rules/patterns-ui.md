@@ -1,3 +1,10 @@
+---
+paths:
+  - "packages/reference/src/components/**"
+  - "packages/styles/src/**"
+  - "packages/variants/src/**"
+  - "apps/storybook-react/stories/**"
+---
 # UI Component Patterns — packages/reference
 
 ## Component Template

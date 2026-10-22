@@ -1,3 +1,11 @@
+---
+paths:
+  - "**/*.test.{ts,tsx}"
+  - "**/*.spec.{ts,tsx}"
+  - "**/vitest.config.ts"
+  - "**/vitest.setup.ts"
+  - "**/vitest.browser.*"
+---
 # Rules — Test Policy
 
 > Every new component, hook, utility, or bug fix MUST ship with tests.

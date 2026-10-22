@@ -1,3 +1,11 @@
+---
+paths:
+  - "packages/reference/src/components/**"
+  - "packages/styles/src/**"
+  - "packages/variants/src/**"
+  - "apps/storybook-react/stories/**"
+  - "packages/reference/src/components/**/README.md"
+---
 # Rules — Component Documentation Plan
 
 > **Every** design-system component ships a usage doc — no component is "done" without it (same

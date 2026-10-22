@@ -1,3 +1,15 @@
+---
+paths:
+  - "packages/stencil/**"
+  - "package.json"
+  - "**/package.json"
+  - "pnpm-workspace.yaml"
+  - "nx.json"
+  - "lerna.json"
+  - "eslint.config.js"
+  - ".husky/**"
+  - "**/vitest.config.ts"
+---
 # Troubleshooting & Architectural Decisions
 
 > Real issues hit while standing up the Stencil DS monorepo. See `architecture.md` for the layout.

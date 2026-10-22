@@ -23,8 +23,10 @@ Gather all necessary written context from previous session.
      A `SessionStart` hook already injects a short version of this automatically; the report adds the
      per-span detail and the most-touched files.
 2. Read @.claude/CLAUDE.md to load current Session State and reference file list
-3. Ask the user which rule files are needed for this session, based on what's in `### Next`
-4. Read the relevant rule files and memorize their patterns
+3. **Load the rules of the subjects `next.md` points to** — rules are path-scoped (CLAUDE.md, "Reference
+   Files"): they load when a file of their place is touched, not before. Read the rule and the
+   known-issues slice of each subject at hand (`.claude/rules/…`, `.claude/rules/known-issues/…`)
+4. Say in one line which rules are loaded, so the dev can name what is missing
 5. **Read the Trello board** — `/trello` skill: `list`, then its sync check. Tell the dev, in two
    lines, what waits on him in **À valider par le développeur** and what tops **À faire**: the board is
    the list of tasks, `next.md` only the resume point.

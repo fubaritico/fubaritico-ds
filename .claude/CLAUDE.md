@@ -159,16 +159,22 @@ Read @next.md
 
 Read @known-issues.md
 
-## Reference Files (load on demand — NOT auto-loaded)
+## Reference Files — how they load (2026-10-22)
 
-| File                      | When to load                                               |
-| ------------------------- | ---------------------------------------------------------- |
-| `architecture.md`         | Stack, packages, scripts, monorepo orchestration           |
-| `modular-architecture.md` | SOLID/pluggable/standalone rule — ANY component, DataTable |
-| `decision-tree.md`        | Skill triggers — check before coding                       |
-| `patterns-ui.md`          | UI component, design system story                          |
-| `patterns-compound.md`    | Compound / context component (React 19 idioms)             |
-| `tests.md`                | Writing tests — 5-level policy                             |
-| `troubleshooting.md`      | Debug, architectural decisions                             |
+**A rule in `.claude/rules/` without `paths:` loads at every session; with `paths:`, when a matching file is
+read or written** (code.claude.com/docs/en/memory). Until 2026-10-22 this table said "NOT auto-loaded": false,
+all eight loaded every time (~100 KB). Now:
 
-**Before coding**: ask which reference files are needed — do NOT start coding without the relevant files loaded.
+| File (under `.claude/rules/`) | Loads |
+| --- | --- |
+| `decision-tree.md` | **every session** — skill triggers, before any file is touched |
+| `patterns-ui.md`, `patterns-compound.md`, `component-docs.md` | components, skins, resolvers, stories |
+| `modular-architecture.md` | `packages/*/src/**` |
+| `architecture.md` | `packages/**`, `apps/**`, root configs, `.github/**` |
+| `tests.md` | test files, Vitest configs |
+| `troubleshooting.md` | `packages/stencil/**`, root configs, `.husky/**` |
+| `claude-config.md` | `.claude/**`, `CLAUDE.md` — read the current Claude Code docs before configuring |
+| `known-issues/*.md` | by place — the map is `../known-issues.md` |
+
+**Before coding**: touching a file of a place loads its rules. For a discussion that touches no file yet,
+read the rule of the subject first (the table above) and say in one line which ones are loaded.

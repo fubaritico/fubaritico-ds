@@ -1,3 +1,14 @@
+---
+paths:
+  - "packages/**"
+  - "apps/**"
+  - "package.json"
+  - "pnpm-workspace.yaml"
+  - "nx.json"
+  - "lerna.json"
+  - "eslint.config.js"
+  - ".github/**"
+---
 # Architecture — fubaritico-ds
 
 > Multi-framework **design-system generator** built on **Stencil**. From one Web Component project
