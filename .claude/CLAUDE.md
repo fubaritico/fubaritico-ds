@@ -111,7 +111,7 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
 - **Shared responsibility** — you and the user share ownership of code quality. Care about every line; review your own output before presenting it.
 - **Research FIRST** — when something fails or behaves unexpectedly, search the web (GitHub issues, changelogs, docs) BEFORE modifying code. Most bugs are version incompatibilities or misconfigurations, not your code alone.
 - **If it works elsewhere, it works here** — never conclude "it can't work" or write workaround mocks. Find the root cause in your setup (resolution paths, singletons, config) and fix it.
-- **Never fallback values** — never serve hardcoded/stale data as silent degradation. If a runtime dependency (a build tool, generator, config) fails, surface the error; don't mask it.
+- **Never fallback values** — never serve hardcoded/stale data as silent degradation. If a runtime dependency (a build tool, generator, config) fails, surface the error; don't mask it. Full rule, adapted to a library: `rules/error-handling.md`.
 - **Never `--no-verify`** on commit without the developer's explicit agreement
 - **JSDoc everywhere (strict)** — every exported interface property, every function (`@param` + `@returns`), every hook, every type with properties, every constant. Exempt: generated artefacts (`packages/stencil/dist/{react,angular}`, `components.d.ts`) + test files.
 - **Modular / pluggable architecture (ESSENTIAL, SOLID)** — every element MUST run **standalone**, be
@@ -177,6 +177,7 @@ all eight loaded every time (~100 KB). Now:
 | `decision-tree.md`                                            | **every session** — skill triggers, before any file is touched                   |
 | `patterns-ui.md`, `patterns-compound.md`, `component-docs.md` | components, skins, resolvers, stories                                            |
 | `modular-architecture.md`                                     | `packages/*/src/**`                                                              |
+| `error-handling.md` | `packages/*/src/**` — throw on misuse, silent on a declined gesture, ask before any fallback |
 | `architecture.md`                                             | `packages/**`, `apps/**`, root configs, `.github/**`                             |
 | `tests.md`                                                    | test files, Vitest configs                                                       |
 | `troubleshooting.md`                                          | `packages/stencil/**`, root configs, `.husky/**`                                 |

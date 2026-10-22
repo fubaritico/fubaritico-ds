@@ -240,6 +240,24 @@
           "path": ".claude/rules/claude-config.md"
         }
       ]
+    },
+    "errors": {
+      "label": "la gestion d'erreur",
+      "words": [
+        "erreur",
+        "error",
+        "errors",
+        "fallback",
+        "throw",
+        "catch",
+        "exception",
+        "repli"
+      ],
+      "files": [
+        {
+          "path": ".claude/rules/error-handling.md"
+        }
+      ]
     }
   }
 }
