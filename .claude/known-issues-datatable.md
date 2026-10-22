@@ -21,7 +21,7 @@
   `collapse` qui les honore (d'où `border-collapse: collapse` sur `.ui-data-table__table`).
 - **`:has([role=checkbox])` NE matche PAS un `<input type=checkbox>` natif** (rôle checkbox implicite, pas
   d'attribut `role`) → utiliser **`:has(input[type=checkbox])`** (colonne select carrée/flush).
-- **Cellules à indice / texte coupé = un arrêt de Tab chacune (ASSUMÉ 2026-10-12)** : `TruncatedText`
+- **Cellules à indice / texte coupé = un arrêt de Tab chacune (ASSUMÉ 2026-10-12)** — REACT-129 : `TruncatedText`
   coupé et `.ui-data-table__hint` (`<span tabIndex={0}>` SANS rôle, exception ARIA acceptée) jusqu'au
   focus itinérant `role="grid"` prévu. Indice aussi en texte masqué (`aria-describedby` n'existe que
   bulle ouverte). Vars `--ui-data-table-hint-*` sur `.ui-data-table` : la fixture doit l'avoir.
@@ -29,7 +29,7 @@
   est ajoutée, `sortingFns` devient OBLIGATOIRE sur tout `useReactTable` (`RowSorting.d.ts`,
   `ResolvedSortingFns`), et un `declare module` part dans le `.d.ts` publié, donc chez le
   consommateur. Passer le comparateur en FONCTION à la colonne (`sortingFn: sortByDate`).
-- **`DropdownFilter` : gardé, PAS mort** — c'est une **brique composable** (comme toutes les cells), juste
+- **`DropdownFilter` : gardé, PAS mort** — REACT-133 — c'est une **brique composable** (comme toutes les cells), juste
   non câblée dans la config d'exemple. NE PAS la supprimer sous prétexte qu'aucune config ne l'appelle.
   Décision de câblage (`leftActions`) à venir.
 - **`cn` vit dans `DataTable/utils/cn.ts`** + `normalizeTimestamp` + `formatDuration` dans `utils/` ;

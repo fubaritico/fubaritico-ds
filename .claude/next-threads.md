@@ -33,7 +33,7 @@ Détails : [[datatable-behavior-decisions]].
 
 **Loose ends restants (à traiter quand le dev le dira)** :
 
-- **a11y root** : le `role="button"` sur `<tr>` (ligne cliquable) **casse la sémantique table** (finding
+- **a11y root** — REACT-132 : le `role="button"` sur `<tr>` (ligne cliquable) **casse la sémantique table** (finding
   A11Y-003 ouvert) ; `<caption>` / `aria-busy` sur le `<table>` ; label de région scrollable.
 - **`DropdownFilter`** : gardé (biblio composable, PAS mort), non câblé — décision à venir.
 - **Nettoyage tokens** : la direction est tranchée (rôle→value-scale, drop des alias shadcn — voir
