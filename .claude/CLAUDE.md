@@ -82,6 +82,13 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
 ## Critical Workflow Rules
 
 - **Be concise** — no recap, no enumerations, no unsolicited explanations. Act, then report briefly if needed.
+- **Every problem ships with its severity and its remedy (IMPORTANT)** — blocking / worth knowing /
+  cosmetic, and the way out, in the same breath. A caveat earns its place only if it changes what we do next.
+- **Announce every command** — its cause, its reason, its action, before running it. Never silently.
+- **Never `cd` — absolute paths** — the activity-log hook writes relative to the cwd: a `cd` forks the journal
+  (a stray `.claude/skills/files/session-log.jsonl` exists since 2026-09-16) and the spans are under-reported.
+- **A ticket is documentation** — a fix closes with its cause, files, the fixing snippet and the proving
+  test; a feature with its patterns shown by snippets (`/trello`, "A ticket is documentation").
 - **Discuss approach FIRST, then execute the WHOLE block** — confirm the _approach_ ONCE before
   coding. Once it's agreed (or the dev says "go"/"fais-le"), execute the entire task end-to-end —
   edits, tests, commit — WITHOUT re-asking on each sub-step. Do NOT re-confirm obvious or
@@ -165,16 +172,16 @@ Read @known-issues.md
 read or written** (code.claude.com/docs/en/memory). Until 2026-10-22 this table said "NOT auto-loaded": false,
 all eight loaded every time (~100 KB). Now:
 
-| File (under `.claude/rules/`) | Loads |
-| --- | --- |
-| `decision-tree.md` | **every session** — skill triggers, before any file is touched |
-| `patterns-ui.md`, `patterns-compound.md`, `component-docs.md` | components, skins, resolvers, stories |
-| `modular-architecture.md` | `packages/*/src/**` |
-| `architecture.md` | `packages/**`, `apps/**`, root configs, `.github/**` |
-| `tests.md` | test files, Vitest configs |
-| `troubleshooting.md` | `packages/stencil/**`, root configs, `.husky/**` |
-| `claude-config.md` | `.claude/**`, `CLAUDE.md` — read the current Claude Code docs before configuring |
-| `known-issues/*.md` | by place — the map is `../known-issues.md` |
+| File (under `.claude/rules/`)                                 | Loads                                                                            |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `decision-tree.md`                                            | **every session** — skill triggers, before any file is touched                   |
+| `patterns-ui.md`, `patterns-compound.md`, `component-docs.md` | components, skins, resolvers, stories                                            |
+| `modular-architecture.md`                                     | `packages/*/src/**`                                                              |
+| `architecture.md`                                             | `packages/**`, `apps/**`, root configs, `.github/**`                             |
+| `tests.md`                                                    | test files, Vitest configs                                                       |
+| `troubleshooting.md`                                          | `packages/stencil/**`, root configs, `.husky/**`                                 |
+| `claude-config.md`                                            | `.claude/**`, `CLAUDE.md` — read the current Claude Code docs before configuring |
+| `known-issues/*.md`                                           | by place — the map is `../known-issues.md`                                       |
 
 **Before coding**: touching a file of a place loads its rules. For a discussion that touches no file yet,
 read the rule of the subject first (the table above) and say in one line which ones are loaded.
