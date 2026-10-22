@@ -3,10 +3,9 @@
 > Entries closed, moved here verbatim the step they close. Not loaded at launch; read when a past
 > problem comes back.
 
-- **[RÉSOLU 2026-10-09 : Vitest Browser Mode, `Slider.browser.test.tsx`]** **Le clavier d'un `<input type="range">` n'existe pas sous jsdom (2026-10-09)** — flèches, Home,
-  End, PageUp/Down sont des comportements **navigateur**. `userEvent` ne peut donc pas piloter un
-  `Slider` en test unitaire. Les tests du Slider couvrent le **câblage** (mapping valeur→pourcentage,
-  quel callback part sur quel événement DOM) via `fireEvent`, **exception assumée** à la règle
-  « toujours userEvent » ; le clavier lui-même se vérifie dans Storybook. **Ne pas lire l'absence de
-  test clavier comme une absence de support clavier.** → la vraie réponse est le **Vitest Browser
-  Mode** (Playwright), consigné comme passe à faire dans `next.md`.
+- **[CLOSED 2026-10-09: Vitest Browser Mode, `Slider.browser.test.tsx`]** **An `<input type="range">`'s
+  keyboard does not exist under jsdom (2026-10-09)** — arrows, Home, End, PageUp/Down are **browser**
+  behaviours. `userEvent` therefore cannot drive a `Slider` in a unit test. The Slider's unit tests cover the
+  **wiring** (value → percentage, which callback fires on which DOM event) through `fireEvent`, an **assumed
+  exception** to « always userEvent »; the keyboard itself was checked in Storybook. **Do not read a missing
+  keyboard test as missing keyboard support.** → the real answer was **Vitest Browser Mode** (Playwright).

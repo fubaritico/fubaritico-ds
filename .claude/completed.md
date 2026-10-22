@@ -1,41 +1,40 @@
 ## Completed
 
-Put here the completed tasks and plans to avoid cluttering the context window.
+The last two sessions, short, citing their tickets (what shipped lives in the Fait tickets). Older ones:
+`completed-archive.md`.
 
-### 2026-10-21 — release 0.7.0, Atlas migré, flèche de la Tooltip claire
+### 2026-10-21 — release 0.7.0, Atlas migrated, the light Tooltip's arrow
 
-**Une plage** (20:06 → 22:45, 2h39), reprise après 7 jours. Nouveau chantier.
+**One span** (20:06 → 22:45, 2h39), resumed after 7 days. A new chantier.
 
-- **0.7.0 publiée** via `/release minor` (le skill ne se lance qu'à la main du dev : `disable-model-invocation`,
-  voulu). Préalable : `components.d.ts` de Stencil ignoré (`5ef57f4`). Release `980d614`, tag
-  `v0.7.0`, run `39654644976` (5 lignes `+ @fubaritico/*@0.7.0`). Handoff écrit ; **Atlas a migré
-  le soir même** (`aef0bf1` chez eux, plus aucun ancien nom), plus tôt que prévu.
-- **Le « petit truc dans tout le type » du 13/10 = « tooltip »** (dictée), pas la typo. Flèche de la
-  variante claire sans contour et décalée d'1px (offsets en border-box, boîte absolue en padding-box).
-  **`76bde29` `fix(styles)`** : deux triangles `::before` contour / `::after` fond (technique Bootstrap),
-  `--ui-tooltip-arrow-size` lié à `ARROW_SIZE` par test, **contraste élevé** (prouvé en Chromium : les
-  triangles devenaient des rectangles) → `forced-color-adjust: none`. Commande navigateur `forcedColors`
-  (`vitest.browser.media.ts`). Bordure fine claire = exception WCAG 1.4.11 assumée (dev).
-- `known-issues.md` au-delà de 200 lignes → `known-issues-datatable.md` (`4167a61`).
-- **Reçu d'Atlas** : `files/REQUEST-menu-role-from-europe-historical-atlas.md` (CARTO-122, basse priorité).
+- **0.7.0 published** through `/release minor` (the skill only starts by the dev's hand:
+  `disable-model-invocation`, on purpose). Beforehand: Stencil's `components.d.ts` ignored (`5ef57f4`).
+  Release `980d614`, tag `v0.7.0`, run `39654644976` (5 lines `+ @fubaritico/*@0.7.0`). Handoff written;
+  **Atlas migrated the same evening** (`aef0bf1` on their side, no old name left), earlier than planned.
+- **The "little thing in the whole type" of 13/10 = "tooltip"** (dictation), not the type. The light
+  variant's arrow had no outline and sat 1px off (offsets in border-box, an absolute box in padding-box).
+  **`76bde29` `fix(styles)`**: two triangles `::before` outline / `::after` fill (Bootstrap's technique),
+  `--ui-tooltip-arrow-size` tied to `ARROW_SIZE` by a test, **forced colours** (proven in Chromium: the
+  triangles became rectangles) → `forced-color-adjust: none`. Browser command `forcedColors`
+  (`vitest.browser.media.ts`). A thin light border = a WCAG 1.4.11 exception, assumed (the dev).
+- `known-issues.md` past 200 lines → `known-issues-datatable.md` (`4167a61`).
+- **Received from Atlas**: `files/REQUEST-menu-role-from-europe-historical-atlas.md` (CARTO-122, low priority).
 
-### 2026-10-13 — release 0.6.0, rôles de couleur renommés (étape 1 des thèmes)
+### 2026-10-13 — release 0.6.0, colour roles renamed (themes, step 1)
 
-**Deux plages au journal** (14:55 → 15:05 ; 16:51 → 18:09, ~1h30 journalisées — le journal ne voit
-pas toute la soirée), 6e jour du chantier ouvert le 08/10. Poussé, non publié.
+**Two spans in the log** (14:55 → 15:05; 16:51 → 18:09, ~1h30 logged — the log does not see the whole
+evening), 6th day of the chantier opened on 08/10. Pushed, not published.
 
-- **0.6.0 publiée** + CHANGELOG complétés (`cadca4a`) + handoff Atlas.
-- **Plan des thèmes** (`files/plans/theming.md`) : marque blanche (radius 0), `tone` (camaïeu sur
-  une graine), `dark` (primary coloré) ; dérivation OKLCH au runtime depuis `--theme-seed`, table
-  L/C reprise du date-time-picker du dev. Un thème redéfinit les RÔLES, jamais l'échelle de gris.
-- **Le « muted » du 16/07 clarifié par le dev** : il visait les NOMS flous, pas la couche
-  sémantique. D'où **`c88df0f` `feat(tokens)!`** : `roles.json` remplace semantic + aliases,
-  `--color-<ce qu'on peint>-<rôle>`, 27 skins recâblés, primitives seulement dans le color picker,
-  garde `styles/test/color-roles.test.ts`. Diff résolu avant/après : 5 écarts voulus seulement
-  (survols 100→150, bordure outline 300→450, texte destructif 500→600, flèche désactivée 450→400).
-- **Review** : l'infobulle par défaut était devenue blanche sur blanche (règle de réécriture trop
-  large) — rattrapé ; `text-destructive` et `fill-on-inverse*` créés, `black` retiré.
-- **Migration Atlas** écrite (`europe-map/MIGRATION-color-roles-from-fubaritico-ds.md`), à n'appliquer
-  qu'avec la 0.7.0.
-
-> Entrées antérieures : `completed-archive.md`.
+- **0.6.0 published** + CHANGELOGs completed (`cadca4a`) + Atlas handoff.
+- **Themes plan** (`files/plans/theming.md`): white label (radius 0), `tone` (shades of one seed), `dark`
+  (coloured primary); OKLCH derivation at runtime from `--theme-seed`, the L/C table taken from the dev's
+  date-time-picker. A theme redefines the ROLES, never the grey scale.
+- **The "muted" of 16/07 clarified by the dev**: it meant the blurry NAMES, not the semantic layer. Hence
+  **`c88df0f` `feat(tokens)!`**: `roles.json` replaces semantic + aliases, `--color-<what it paints>-<role>`,
+  27 skins rewired, primitives only in the color picker, guard `styles/test/color-roles.test.ts`. Resolved
+  diff before/after: 5 intended shifts only (hovers 100→150, outline border 300→450, destructive text
+  500→600, disabled arrow 450→400).
+- **Review**: the default tooltip had turned white on white (a rewrite rule too broad) — caught;
+  `text-destructive` and `fill-on-inverse*` created, `black` removed.
+- **Atlas migration** written (`europe-map/MIGRATION-color-roles-from-fubaritico-ds.md`), to apply only
+  with 0.7.0.

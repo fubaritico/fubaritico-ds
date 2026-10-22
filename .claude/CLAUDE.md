@@ -85,6 +85,9 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
 - **Every problem ships with its severity and its remedy (IMPORTANT)** — blocking / worth knowing /
   cosmetic, and the way out, in the same breath. A caveat earns its place only if it changes what we do next.
 - **Announce every command** — its cause, its reason, its action, before running it. Never silently.
+- **Language** (the dev's call, 2026-10-22) — **the repository is public: every file is written in English**
+  (code, comments, rules, skills, session files, READMEs, plans); the dev's own words stay quoted in French.
+  **We talk in French; the Trello tickets are French** (the board is private).
 - **Never `cd` — absolute paths** — the activity-log hook writes relative to the cwd: a `cd` forks the journal
   (a stray `.claude/skills/files/session-log.jsonl` exists since 2026-09-16) and the spans are under-reported.
 - **A ticket is documentation** — a fix closes with its cause, files, the fixing snippet and the proving
@@ -172,17 +175,17 @@ Read @known-issues.md
 read or written** (code.claude.com/docs/en/memory). Until 2026-10-22 this table said "NOT auto-loaded": false,
 all eight loaded every time (~100 KB). Now:
 
-| File (under `.claude/rules/`)                                 | Loads                                                                            |
-| ------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `decision-tree.md`                                            | **every session** — skill triggers, before any file is touched                   |
-| `patterns-ui.md`, `patterns-compound.md`, `component-docs.md` | components, skins, resolvers, stories                                            |
-| `modular-architecture.md`                                     | `packages/*/src/**`                                                              |
-| `error-handling.md` | `packages/*/src/**` — throw on misuse, silent on a declined gesture, ask before any fallback |
-| `architecture.md`                                             | `packages/**`, `apps/**`, root configs, `.github/**`                             |
-| `tests.md`                                                    | test files, Vitest configs                                                       |
-| `troubleshooting.md`                                          | `packages/stencil/**`, root configs, `.husky/**`                                 |
-| `claude-config.md`                                            | `.claude/**`, `CLAUDE.md` — read the current Claude Code docs before configuring |
-| `known-issues/*.md`                                           | by place — the map is `../known-issues.md`                                       |
+| File (under `.claude/rules/`)                                 | Loads                                                                                        |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `decision-tree.md`                                            | **every session** — skill triggers, before any file is touched                               |
+| `patterns-ui.md`, `patterns-compound.md`, `component-docs.md` | components, skins, resolvers, stories                                                        |
+| `modular-architecture.md`                                     | `packages/*/src/**`                                                                          |
+| `error-handling.md`                                           | `packages/*/src/**` — throw on misuse, silent on a declined gesture, ask before any fallback |
+| `architecture.md`                                             | `packages/**`, `apps/**`, root configs, `.github/**`                                         |
+| `tests.md`                                                    | test files, Vitest configs                                                                   |
+| `troubleshooting.md`                                          | `packages/stencil/**`, root configs, `.husky/**`                                             |
+| `claude-config.md`                                            | `.claude/**`, `CLAUDE.md` — read the current Claude Code docs before configuring             |
+| `known-issues/*.md`                                           | by place — the map is `../known-issues.md`                                                   |
 
 **Before coding**: touching a file of a place loads its rules; for a discussion, the prompt hook
 (`.claude/hooks/rules-for-prompt.mjs`, table `.claude/skills/rules/topics.json`) names them from the dev's words,

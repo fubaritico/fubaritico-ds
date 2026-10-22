@@ -1,7 +1,8 @@
-# Next — fils longs (programme, milestones, livré)
+# Next — long threads (programme, milestones, delivered)
 
-> Scindé de `next.md` le 2026-10-09 (plafond 200 lignes). `next.md` = l'actionnable immédiat ;
-> ici = la toile de fond : north-star, milestones en cours, décisions verrouillées.
+> Split out of `next.md` on 2026-10-09 (200-line cap). `next.md` = the resume point; here = the backdrop:
+> north-star, milestones in progress, locked decisions. The tasks themselves are on the board (`/trello`),
+> the initiatives in its Chantiers column (DESIGN-120…123).
 
 ## North-star (roadmap.md)
 
@@ -15,75 +16,71 @@ Phases: **A** DataTable skin (React) → **B** finish reference DS → **C** max
 (≈AG Grid) → **D** Stencil generation (WC/Angular/Vue/React, no DataTable) → **E** DataTable on
 `table-core` (agnostic) → **F** DataTable in Stencil (multi-framework). Plans C/E/F = to write.
 
-## ACTIVE — DataTable (milestone EN COURS, PAS finie)
+## ACTIVE — DataTable (milestone IN PROGRESS, NOT finished) — DESIGN-121
 
-**Objectif : ZÉRO bug.** Le skin BEM est largement fait mais la milestone table **n'est pas terminée** —
-le dev pilote et donnera les prochaines tâches au fil de l'eau. Ne pas considérer la table comme « done ».
+**Goal: ZERO bugs.** The BEM skin is largely done but the table milestone **is not over** — the dev drives
+and hands out the next tasks as they come. Do not consider the table « done ».
 
-**Skin de-Tailwind DONE ✅** (session 2026-07-10, 8 commits `bd33847`..`5ad66f5`, cf. `completed.md`) :
-cells + features + chrome skinnés, namespace **`ui-data-table`** ; **block `.ui-data-table` sur la Card**
-(porte les vars, toolbar/footer héritent) ; `<table>` = `.ui-data-table__table` ; `Readonly<Props>`
-partout ; a11y cells (aria-sort, texte masqué statut, noms accessibles) ; `DateCell` prop `truncate`.
-Constantes dans `variants/src/table.ts`, tests de parité dans `table.test.ts`.
+**Skin de-Tailwind DONE** (2026-07-10, 8 commits `bd33847`..`5ad66f5`): cells + features + chrome skinned,
+namespace **`ui-data-table`**; **block `.ui-data-table` on the Card** (carries the vars, toolbar/footer
+inherit); `<table>` = `.ui-data-table__table`; `Readonly<Props>` everywhere; cell a11y (aria-sort, hidden
+status text, accessible names); `DateCell` prop `truncate`. Constants in `variants/src/table.ts`, parity tests
+in `table.test.ts`.
 
-**Résolu cette session (2026-07-16)** : scroll paginé (`overflow: auto`) ; **quickfilter réparé**
-(`getFilteredRowModel`) ; **footer = chrome sibling, PAS `<tfoot>`** (tranché — `<tfoot>` réservé aux
-lignes de synthèse) ; **Tooltip-texte-tronqué = PROCHAINE SESSION** (voir bandeau haut) ; README draft.
-Détails : [[datatable-behavior-decisions]].
+**Settled on 2026-07-16**: paginated scroll (`overflow: auto`); **quick filter repaired**
+(`getFilteredRowModel`); **footer = chrome sibling, NOT `<tfoot>`** (`<tfoot>` reserved for summary rows);
+README draft. Details: [[datatable-behavior-decisions]].
 
-**Loose ends restants (à traiter quand le dev le dira)** :
+**Remaining loose ends (when the dev says so)**:
 
-- **a11y root** — REACT-132 : le `role="button"` sur `<tr>` (ligne cliquable) **casse la sémantique table** (finding
-  A11Y-003 ouvert) ; `<caption>` / `aria-busy` sur le `<table>` ; label de région scrollable.
-- **`DropdownFilter`** : gardé (biblio composable, PAS mort), non câblé — décision à venir.
-- **Nettoyage tokens** : la direction est tranchée (rôle→value-scale, drop des alias shadcn — voir
-  [[token-neutral-scale-role-vars]]) ; reste à repointer le skin DataTable (utilise encore les alias).
+- **a11y root** — REACT-132: `role="button"` on a `<tr>` (clickable row) **breaks the table semantics**
+  (finding A11Y-003 open); `<caption>` / `aria-busy` on the `<table>`; scrollable region label.
+- **`DropdownFilter`** — REACT-133: kept (composable library, NOT dead), not wired — decision pending.
+- **Leftovers of the migration plan**: boolean props → composition (REACT-145), the 12 untested cells
+  (REACT-146), small cleanup (REACT-147).
 
-Perf (`data-table-review-backlog-deferred-findings`) : select-all 150k ≈ **207 ms (OFF, prod)**, coût =
-bookkeeping TanStack O(N), pas le paint ; `startTransition` = pansement, pas par défaut. Le skin doit
-survivre au swap `react-table`→`table-core` (Phase E) : classes sur les primitives sémantiques, pas sur
-l'API TanStack. Plan/checklist : `files/plans/datatable-migration.md`.
+Perf (`data-table-review-backlog-deferred-findings`): select-all 150k ≈ **207 ms (OFF, prod)**, cost =
+TanStack O(N) bookkeeping, not paint; `startTransition` = a band-aid, not a default. The skin must survive the
+`react-table` → `table-core` swap (Phase E): classes on the semantic primitives, not on the TanStack API.
+Plan/checklist: `files/plans/datatable-migration.md` (its checkboxes are stale: progress lives on the tickets).
 
 ## THREAD — white-label native-CSS DS (Phase B)
 
-Plan : `files/plans/native-css-migration.md`. Memory : `native-css-migration-backlog`, `white-label-native-css`.
+Plan: `files/plans/native-css-migration.md`. Memory: `native-css-migration-backlog`, `white-label-native-css`.
 
-**MIGRATION QUASI TERMINÉE.** 28 composants portent un README et un skin BEM. Ajouts du 2026-10-08/09
-au-delà du backlog initial : **Menu, Modal, Typeahead, Image, Drawer, Tabs** migrés ; **Alert**,
-**ProgressBar**, **Slider** écrits ; **BottomSheet** (ex-Drawer, renommé) ; **Drawer** réécrit sur
-`<dialog>` natif.
+**MIGRATION ALMOST DONE.** 28 components carry a README and a BEM skin. Added on 2026-10-08/09 beyond the
+initial backlog: **Menu, Modal, Typeahead, Image, Drawer, Tabs** migrated; **Alert**, **ProgressBar**,
+**Slider** written; **BottomSheet** (ex-Drawer, renamed); **Drawer** rewritten on a native `<dialog>`. Of the
+nine components the dev was to bring over, only the **DatePicker** is left (REACT-142); the `icons` package
+too (DESIGN-144).
 
-**RESTE SUR TAILWIND — exclu du paquet publié, pas supprimé** : `Carousel` (138 classes) et
-`next/*` (50). Ils vivent au dépôt, hors build. `HeroImage` est **parqué en `.bak`** (voir son
-`PARKED.md`), `TrailerCard` supprimé — tous deux couplés au domaine TMDB.
+**STILL ON TAILWIND — excluded from the published package, not deleted** (REACT-134): `Carousel` (138
+classes) and `next/*` (50). They live in the repository, outside the build. `HeroImage` is **parked as `.bak`**
+(see its `PARKED.md`), `TrailerCard` deleted — both tied to the TMDB domain.
 
-**Icon, Portal, ConditionalWrapper** : zéro Tailwind, donc déjà compatibles ; il leur manque
-seulement un README.
+**Icon, Portal, ConditionalWrapper**: zero Tailwind, so already compatible; they only lack a README
+(REACT-135).
 
-## LIVRÉ — paquets consommables par le monorepo voisin
+## DELIVERED — packages consumable by the sibling monorepo
 
-`01be734`. Quatre paquets publics en **0.1.0**, tarballs dans `dist-tarballs/` (gitignoré) avec un
-`INSTALL.md`. Doc d'intégration à la racine : **`INTEGRATION.md`**.
+`01be734`. Four public packages in **0.1.0**, then published on GitHub Packages from **0.2.0** (`d9bc1db`)
+as `@fubaritico/*`; `reference` ships as **`@fubaritico/react`**, the React deliverable (decided 2026-10-09).
+Integration doc at the root: **`INTEGRATION.md`**.
 
-Cinq blocages levés : `styles` n'était pas publiable ; le barrel injectait Tailwind + preflight ;
-l'export `./styles.css` pointait le mauvais fichier ; `msw` était livré en dépendance (désormais
-peer optionnelle) ; **les 27 README de composants ne partaient pas** (`files: ['dist']`) — un script
-les copie maintenant dans `dist`, ce qui compte surtout pour une IA intégratrice.
+Five blockers lifted at 0.1.0: `styles` was not publishable; the barrel injected Tailwind + preflight; the
+`./styles.css` export pointed at the wrong file; `msw` shipped as a dependency (now an optional peer); **the 27
+component READMEs did not ship** (`files: ['dist']`) — a script now copies them into `dist`, which matters most
+for an integrating AI. `getBlurDataUrl` is internalised ⇒ `reference` no longer depends on `shared` at run time.
 
-`getBlurDataUrl` est internalisé ⇒ `reference` ne dépend plus de `shared` à l'exécution.
+## Locked decisions
 
-⚠️ `reference` reste officiellement un **bac à sable, pas un livrable** (cf. `CLAUDE.md`). On le
-consomme comme **v1 temporaire**, décision assumée du dev ; les chemins pourront bouger.
+Lerna + Nx (no Turbo); skin = `@fubaritico/styles`; CVA resolvers in `@fubaritico/variants` (pure TS,
+React/DOM-free); behaviour services in `@fubaritico/behaviors`; web-only. Stateful/compound → `/state-storage`
+skill. Then: finish Stencil → wire `build:packages` (DESIGN-122).
 
-## Décisions verrouillées
+## Analysis artefacts (persisted)
 
-Lerna + Nx (no Turbo) ; `reference` = sandbox **NON livrable** ; skin = `@fubaritico/styles` ; CVA
-resolvers in `@fubaritico/variants` (pur TS, React/DOM-free) ; web-only. Stateful/compound → skill
-`/state-storage`. Phase 2 (dev) = 9 composants neufs + package `icons`. Phase 3 = finir Stencil → wire `build:packages`.
-
-## Artefacts d'analyse (ce soir, persistés)
-
-`files/analysis/storage-port-design.md` (StoragePort seam/sink, observable, même-écran, commenté ligne à ligne).
-Notes Basic Memory : `scope-object-builder-latency-analysis-odaseva`,
+`files/analysis/storage-port-design.md` (StoragePort seam/sink, observable, same screen, commented line by
+line). Basic Memory notes: `scope-object-builder-latency-analysis-odaseva`,
 `data-table-industrial-multi-framework-goal-external-selection-store-decision`,
-`data-table-review-backlog-deferred-findings` (résultats benchmark ajoutés).
+`data-table-review-backlog-deferred-findings` (benchmark results added).

@@ -9,73 +9,71 @@ paths:
 
 > Slice of `.claude/known-issues.md` (the index). Loads when a component, its skin, its resolver or its story is touched.
 
-- **Listbox = primitives VISUELLES (`ListboxList`/`ListboxItem`), pas un widget (2026-07-16)** : elles
-  portent le look uniquement ; **l'ARIA/keyboard/`aria-activedescendant` appartient au composeur**
-  (`Menu`/`Typeahead`). `ListboxItem` rend `role="option"` + `aria-selected={isSelected}` **par défaut**,
-  **overridable via rest** (Typeahead passe `aria-selected={isActive}`). **Passer `variant` aux DEUX**
-  (liste ET items) — le `--dark` est un modifier d'ÉLÉMENT (choix flat-selector assumé, pas cascade block).
-  États = échelle neutral (zéro alias shadcn) ; échelle d'emphase **selected < hover < active** ; gap 2px
-  entre items (flex `gap`, ne touche pas le padding/texte). Variante dark = primitives neutral (pas de
-  tokens on-dark encore). Resolver : `state` mono-axe (active > selected > default) ; `:where(:not(--disabled))`
-  garde active/selected. Voir [[token-neutral-scale-role-vars]].
-- **Badge `canTruncate` (2026-07-16)** : opt-in (défaut `false`) ; wrappe le label dans `.ui-badge__label`
-  (ellipsis) SEULEMENT si `true`, icône reste visible ; troncature **visuelle** (texte complet reste dans
-  le DOM, lu par les lecteurs d'écran). Affordance survol = viendra avec la Tooltip.
-- **`.ui-card__footer` n'avait aucun `justify-content` (corrigé 2026-10-08)** — il retombait donc sur
-  `flex-start`, et les actions se ferraient à gauche par accident plutôt que par choix. Le footer
-  porte désormais un axe `align` (`start` / `center` / `end` / `between`), **`center` par défaut**
-  (choix dev). Corollaire : `Card.Footer` **EST** la rangée d'actions — ne pas emballer les boutons
-  dans un `div`, ça les réduit à un seul enfant flex et neutralise gap ET alignement.
-- **`--ui-slider-track-image` est la couture du futur color picker (2026-10-09)** — un curseur de
-  teinte, d'alpha ou de canal **n'est pas un composant de plus** : c'est le `Slider` avec un fond de
-  piste et `imaged: true` (qui escamote la portion remplie). Ne pas créer de `ColorSlider` séparé.
-- **JAMAIS de `display` sur un `<dialog>` hors de `[open]` (piège rencontré DEUX fois, 2026-10-08)** —
-  le navigateur masque un dialog fermé via la règle UA `dialog:not([open]) { display: none }`. Toute
-  déclaration `display` d'auteur (skin **ou** style inline) l'écrase, et le dialog reste affiché en
-  permanence. Symptômes observés : « tous les drawers sont ouverts au démarrage », « ils s'empilent
-  dans le showcase », « le bouton close est inactif » (il marchait, le panneau ne disparaissait
-  jamais) ; côté Modal, la story injectait `style={{ display: 'grid' }}` pour centrer et cassait tout
-  l'état fermé. **Règle** : le layout d'un dialog va sur `.ui-<bloc>[open]`, jamais sur la base, et
-  **jamais** via `style`/`className` côté consommateur. Pour repositionner, exposer une var
-  (`--ui-modal-place-items`). Concerne `.ui-modal`, `.ui-drawer` et `.ui-popover`.
-  **[GARDÉ 2026-10-11]** `styles/state-guards.css` (`@layer ui.reset`, `display: none !important` sur
-  les trois blocs fermés) : en couches, l'important s'inverse, la première couche gagne et bat même
-  le `style` inline normal. Le piège ne peut plus venir d'un consommateur. Couvert par les tests
-  navigateur Modal/Drawer/Popover (classe non layered + `style` inline), sortie en fondu du Popover
-  comprise (les transitions passent avant l'important). La règle « pas de `display` sur la base »
-  reste valable pour le skin lui-même.
-- **Le backdrop d'un `<dialog>` se déclare LUI-MÊME comme cible du clic (2026-10-08)** — donc
-  `e.target === dialog` ne distingue PAS un clic sur le backdrop d'un clic sur le fond propre du
-  panneau. Ça ne marche que si le dialog couvre le viewport et que le panneau est un enfant (cas
-  `Modal`). Quand le dialog **EST** le panneau (cas `Drawer`), il faut un test géométrique contre sa
-  bounding box. D'où l'option `backdropArea: 'self' | 'outside'` de `useNativeDialog`. En test, jsdom
-  mesure tout à zéro : stubber `getBoundingClientRect` et cliquer via `user.pointer({ coords })`.
-- **Recette top layer (2026-10-11, Tooltip / Dropdown / Typeahead / BottomSheet)** : `popover="manual"`
-  rendu EN PLACE (jamais de portal par défaut — sur `body` il finit inerte sous une Modal),
-  `showPopover()` dans un callback ref, ancre CSS par instance `--ui-<bloc>-anchor` (posée sur la
-  racine ET sur la surface), placement `@supports (position-anchor: …)`, test navigateur « ouvert
-  dans une Modal ». Un menu portalisé perd les vars du bloc → `.ui-x, body > .ui-x__menu { vars }`.
-- **React propage `close` à travers l'arbre React** (l'événement DOM ne bulle pas) : un `<dialog>`
-  imbriqué fermait son parent. `useNativeDialog.handleClose` ignore `target !== currentTarget` —
-  tout nouveau dialog passe par ce hook.
-- **Un popover a aussi un `::backdrop`** : le voile d'un dialog qui peut être popover va sur
-  `:modal::backdrop`, sinon la surface non modale assombrit la page.
-- **Chromium rend une liste qui défile atteignable au Tab** : dans une combobox (focus dans le
-  champ), `tabIndex={-1}` sur la liste, sinon Tab y entre au lieu de quitter le composant.
-- **Bordure de la Tooltip claire : exception WCAG 1.4.11 ASSUMÉE (2026-10-21)** : `--ui-tooltip-border-color`
-  = `--color-border` (neutral.200, ~1,2:1 sur blanc). Une infobulle n'est pas un contrôle, son texte
-  reste lisible et l'ombre (`--shadow-lg`) détache déjà la bulle. Choix dev. Si un contour plus franc
-  est voulu : `--color-border-strong` (scopé, sans autre consommateur). Flèche = deux triangles
-  (`::before` contour, `::after` fond) ; `--ui-tooltip-arrow-size` = `ARROW_SIZE` (test navigateur) ;
-  contraste élevé : `forced-color-adjust: none` sur les triangles, sinon ils deviennent des rectangles.
-- **Chevron atténué d'`ArrowUpDown` : exception WCAG 1.4.11 ASSUMÉE (2026-10-08)** :
-  `--ui-sort-arrows-dimmed-opacity: 0.5` ramène `--color-text-secondary` (neutral.500) à ~2,05:1 sur
-  blanc, sous le plancher de 3:1 des objets graphiques. **Accepté, ce n'est pas un trou** : la direction
-  active est portée **redondamment** par l'autre chevron à pleine opacité (~5,3:1) ET par l'`aria-label`
-  du bouton (`Sort <col> (ascending|descending)`) — le chevron atténué ne porte aucune information
-  nécessaire à la compréhension. Même raisonnement que la piste vide du `Rating`. Si un contraste plus
-  franc est voulu un jour, remonter `--ui-sort-arrows-dimmed-opacity` à ~0,65–0,7 (var d'override,
-  scopée). **Ne PAS le « corriger » d'office** — c'est un choix visuel délibéré.
+- **Listbox = VISUAL primitives (`ListboxList`/`ListboxItem`), not a widget (2026-07-16)**: they carry the
+  look only; **the ARIA/keyboard/`aria-activedescendant` belong to the composer** (`Menu`/`Typeahead`).
+  `ListboxItem` renders `role="option"` + `aria-selected={isSelected}` **by default**, **overridable through
+  rest** (Typeahead passes `aria-selected={isActive}`). **Pass `variant` to BOTH** (list AND items) — `--dark`
+  is an ELEMENT modifier (a flat-selector choice, assumed, not a block cascade). States = the neutral scale
+  (zero shadcn alias); emphasis ladder **selected < hover < active**; 2px gap between items (flex `gap`, leaves
+  padding/text alone). Dark variant = neutral primitives (no on-dark tokens yet). Resolver: a single `state`
+  axis (active > selected > default); `:where(:not(--disabled))` guards active/selected. See
+  [[token-neutral-scale-role-vars]].
+- **Badge `canTruncate` (2026-07-16)**: opt-in (default `false`); wraps the label in `.ui-badge__label`
+  (ellipsis) ONLY when `true`, the icon stays visible; truncation is **visual** (the full text stays in the
+  DOM, read by screen readers). The hover affordance came with the Tooltip (`TruncatedText`).
+- **`.ui-card__footer` had no `justify-content` (fixed 2026-10-08)** — it fell back to `flex-start`, so the
+  actions sat at the start by accident rather than by choice. The footer now carries an `align` axis
+  (`start` / `center` / `end` / `between`), **`center` by default** (the dev's choice). Corollary: `Card.Footer`
+  **IS** the action row — do not wrap the buttons in a `div`: it makes them one flex child and cancels both
+  gap AND alignment.
+- **`--ui-slider-track-image` is the seam of the color picker (2026-10-09)** — a hue, alpha or channel slider
+  **is not one more component**: it is the `Slider` with a track background and `imaged: true` (which hides the
+  filled part). Do not create a separate `ColorSlider`.
+- **NEVER a `display` on a `<dialog>` outside `[open]` (trap met TWICE, 2026-10-08)** — the browser hides a
+  closed dialog through the UA rule `dialog:not([open]) { display: none }`. Any author `display` (skin **or**
+  inline style) overrides it, and the dialog stays on screen for good. Symptoms seen: « tous les drawers sont
+  ouverts au démarrage », « ils s'empilent dans le showcase », « le bouton close est inactif » (it worked, the
+  panel never went away); on the Modal side, the story injected `style={{ display: 'grid' }}` to centre and
+  broke the whole closed state. **Rule**: a dialog's layout goes on `.ui-<block>[open]`, never on the base, and
+  **never** through a consumer's `style`/`className`. To reposition, expose a var (`--ui-modal-place-items`).
+  Concerns `.ui-modal`, `.ui-drawer` and `.ui-popover`.
+  **[GUARDED 2026-10-11]** `styles/state-guards.css` (`@layer ui.reset`, `display: none !important` on the three
+  closed blocks): in layers, important reverses, the first layer wins and beats even a normal inline `style`.
+  The trap can no longer come from a consumer. Covered by the Modal/Drawer/Popover browser tests (an
+  unlayered class + an inline `style`), the Popover's exit fade included (transitions run before the
+  important). The rule « no `display` on the base » still holds for the skin itself.
+- **A `<dialog>`'s backdrop reports ITSELF as the click target (2026-10-08)** — so `e.target === dialog` does
+  NOT tell a backdrop click from a click on the panel's own background. It only works when the dialog covers
+  the viewport and the panel is a child (the `Modal` case). When the dialog **IS** the panel (the `Drawer`
+  case), it takes a geometric test against its bounding box. Hence `useNativeDialog`'s option
+  `backdropArea: 'self' | 'outside'`. In tests jsdom measures everything as zero: stub
+  `getBoundingClientRect` and click through `user.pointer({ coords })`.
+- **Top-layer recipe (2026-10-11, Tooltip / Dropdown / Typeahead / BottomSheet)**: `popover="manual"` rendered
+  IN PLACE (never a portal by default — on `body` it ends up inert under a Modal), `showPopover()` in a
+  callback ref, a per-instance CSS anchor `--ui-<block>-anchor` (set on the root AND the surface), placement
+  under `@supports (position-anchor: …)`, a browser test « open inside a Modal ». A portalled menu loses the
+  block's vars → `.ui-x, body > .ui-x__menu { vars }`.
+- **React propagates `close` through the React tree** (the DOM event does not bubble): a nested `<dialog>`
+  closed its parent. `useNativeDialog.handleClose` ignores `target !== currentTarget` — every new dialog goes
+  through this hook.
+- **A popover has a `::backdrop` too**: the scrim of a dialog that can be a popover goes on
+  `:modal::backdrop`, otherwise the non-modal surface darkens the page.
+- **Chromium makes a scrolling list reachable by Tab**: in a combobox (focus in the field), `tabIndex={-1}` on
+  the list, otherwise Tab enters it instead of leaving the component.
+- **The light Tooltip's border: a WCAG 1.4.11 exception, ASSUMED (2026-10-21)**: `--ui-tooltip-border-color` =
+  `--color-border` (neutral.200, ~1.2:1 on white). A tooltip is not a control, its text stays legible and the
+  shadow (`--shadow-lg`) already detaches the bubble. The dev's choice. If a firmer outline is wanted:
+  `--color-border-strong` (scoped, no other consumer). Arrow = two triangles (`::before` outline, `::after`
+  fill); `--ui-tooltip-arrow-size` = `ARROW_SIZE` (browser test); forced colours: `forced-color-adjust: none`
+  on the triangles, otherwise they become rectangles.
+- **`ArrowUpDown`'s dimmed chevron: a WCAG 1.4.11 exception, ASSUMED (2026-10-08)**:
+  `--ui-sort-arrows-dimmed-opacity: 0.5` brings `--color-text-secondary` (neutral.500) to ~2.05:1 on white,
+  under the 3:1 floor of graphical objects. **Accepted, not a hole**: the active direction is carried
+  **redundantly** by the other chevron at full opacity (~5.3:1) AND by the button's `aria-label`
+  (`Sort <col> (ascending|descending)`) — the dimmed chevron carries no information needed to understand.
+  Same reasoning as the `Rating`'s empty track. If a firmer contrast is wanted one day, raise
+  `--ui-sort-arrows-dimmed-opacity` to ~0.65–0.7 (an override var, scoped). **Do NOT « fix » it on your own** —
+  it is a deliberate visual choice.
 - **Avatar candidates throw outside `Avatar.Fallback`**: it's a full compound (no standalone mode) — the resolver access hooks (`useAvatarResolverActions/State`) throw if a candidate (`Avatar.Image/Initials/Icon`) is used without a surrounding `Avatar.Fallback`. By design.
 - **`react/jsx-no-leaked-render` is enforced (eslint, error)**: `{value && <JSX/>}` is forbidden when `value` is non-boolean (empty-string / zero leak) → use a ternary (`cond ? <JSX/> : null`) or coerce (`!!value &&`). Gotcha: `Boolean(src)` does **not** narrow the type — for `src: string | null` keep the ternary `src ? … : null` (narrows `src` AND avoids the leak); `Boolean(src) &&` loses the narrowing → TS error on `src={src}`.
 - **`--ui-avatar-line-height`**: Avatar exposes an override var for the initials line-height (parity with the rest of the skin's typographic vars); defaults to `var(--font-line-height-none)` (= 1).

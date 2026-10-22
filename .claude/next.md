@@ -5,35 +5,35 @@
 > only where we stopped, what is mid-flight, and context that is not a task. Its former content is in
 > `next-archive.md`, verbatim. Long threads (north-star, locked decisions): `next-threads.md`.
 
-## ▶ ON REPREND ICI (2026-10-22)
+## ▶ RESUME HERE (2026-10-22)
 
-Deux tickets t'attendent dans **À valider par le développeur** :
+Two tickets wait on the dev in **À valider par le développeur**:
 
-- **REPO-143** — le tableau Trello du DS (historique rattrapé, travail ouvert, skill `/trello`), commité.
-- **REPO-150** — le contexte chargé par chemin (~100 Ko → ~35 Ko au lancement), le hook des règles, les
-  méthodes d'Atlas portées. Vérification : une nouvelle session, dont le début doit bien se passer.
+- **REPO-143** — the DS's Trello board (history backfilled, open work, the `/trello` skill), committed.
+- **REPO-150** — the context loaded by path (~100 KB → ~35 KB at launch), the rules hook, Atlas's methods
+  ported. Check: a new session, whose start must go well.
 
-Restent à trancher (`files/plans/context-engineering-sync.md`) : la règle de gestion d'erreur d'Atlas à
-adapter à une bibliothèque ; la langue des fichiers (anglais chez Atlas) ; fusionner puis supprimer le journal
-égaré `.claude/skills/files/session-log.jsonl` (ton feu vert : c'est une suppression).
+Settled by the dev on 2026-10-22: the error-handling rule adapted to a library (`rules/error-handling.md`,
+« on fera évoluer au besoin ») and **English for every file** (the repository is public), French in our talk
+and on the private board. Open: the stray journal `.claude/skills/files/session-log.jsonl` (5 actions of
+2026-09-16 that `/timeline` does not read) — copy them into `files/session-log.jsonl`, then delete it, on his go.
 
-## Le tableau
+## The board
 
-| où                  | ticket                                                                                                                                                 | état                                        |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
-| **Chantiers**       | DESIGN-120 thèmes · DESIGN-121 DataTable · DESIGN-122 Stencil · DESIGN-123 agent-ready                                                                 | paliers en checklist, liés aux tickets      |
-| **À valider**          | REPO-143 tableau · REPO-150 contexte                                                                                                                       | à vérifier par toi
-| **À faire**         | —                                                                                                                                                      | vide : l'ordre est le tien                  |
-| **Backlog**         | thèmes 2→5 (TOKENS-124…127), menu de commandes Atlas (REACT-128), `role="grid"` (REACT-129), Stencil vert (STENCIL-130), doc comme donnée (DESIGN-131) |                                             |
-| **Fait**, à publier | STYLES-119 flèche de la Tooltip claire                                                                                                                 | partira en 0.7.1 ou avec la prochaine minor |
+| where               | ticket                                                                                                                                                                                                              | state                                        |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| **Chantiers**       | DESIGN-120 themes · DESIGN-121 DataTable · DESIGN-122 Stencil · DESIGN-123 agent-ready                                                                                                                              | rungs as checklists, linked to their tickets |
+| **À valider**       | REPO-143 board · REPO-150 context                                                                                                                                                                                   | for the dev to check                         |
+| **À faire**         | —                                                                                                                                                                                                                   | empty: the order is his                      |
+| **Backlog**         | themes 2→5 (TOKENS-124…127), Atlas's command menu (REACT-128), `role="grid"` (REACT-129), Stencil green (STENCIL-130), doc as data (DESIGN-131), DataTable leftovers (REACT-145…147), Storybook play tests (SB-148) |                                              |
+| **Fait**, à publier | STYLES-119 the light Tooltip's arrow                                                                                                                                                                                | ships in 0.7.1 or with the next minor        |
 
-Avant le 22/10, l'option du jour était : thèmes étape 2 (TOKENS-124) ou le menu d'Atlas (REACT-128,
-basse priorité ; ma reco : composant frère `ActionMenu` plutôt qu'une prop `kind` — à débattre).
+Before 2026-10-22 the day's choice was: themes step 2 (TOKENS-124) or Atlas's menu (REACT-128, low
+priority; my recommendation: a sibling `ActionMenu` rather than a `kind` prop — to debate).
 
-## À savoir
+## Worth knowing
 
-- Le jeton Trello atteint **tous** les tableaux du compte, celui d'Atlas compris : le script n'écrit que
-  sur le nôtre (`board.json`). Le skill d'Atlas dit l'inverse (« its token reaches this board only ») :
-  c'est devenu faux, à lui signaler.
-- Release : `/release` (tapé par le dev), feu vert du dev à chaque publication ; ensuite
-  `trello published X.Y.Z`.
+- The Trello token reaches **every** board of the account, Atlas's included: the script writes only to ours
+  (`board.json`). Atlas's skill says the opposite (« its token reaches this board only »): no longer true, to
+  tell its side. Its script also resolves a ticket whose scope is mistyped; ours refuses it.
+- Release: `/release` (typed by the dev), his go at each publication; then `trello published X.Y.Z`.
