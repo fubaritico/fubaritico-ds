@@ -2,7 +2,7 @@
   "$comment": "One table, two readers: the prompt hook (.claude/hooks/rules-for-prompt.mjs) and the /rules skill. A word matches a word of the prompt, accents and case ignored, plural s/x allowed; a trailing * matches any ending; a word with a space matches as a phrase. Paths are relative to the repository root. Never as triggers: 'tableau' (the Trello board), 'carte' (the Card component), 'ci' (« celui-ci »).",
   "topics": {
     "components": {
-      "label": "les composants",
+      "label": "the components",
       "words": [
         "composant",
         "component",
@@ -65,7 +65,7 @@
       ]
     },
     "styles": {
-      "label": "le skin et les tokens",
+      "label": "the skin and the tokens",
       "words": [
         "skin",
         "css",
@@ -99,7 +99,7 @@
       ]
     },
     "datatable": {
-      "label": "le DataTable",
+      "label": "the DataTable",
       "words": [
         "datatable",
         "data table",
@@ -123,7 +123,7 @@
       ]
     },
     "behaviors": {
-      "label": "les services de comportement",
+      "label": "the behaviour services",
       "words": [
         "behavior",
         "behaviors",
@@ -145,7 +145,7 @@
       ]
     },
     "stencil": {
-      "label": "Stencil et les wrappers",
+      "label": "Stencil and the wrappers",
       "words": [
         "stencil",
         "web component",
@@ -168,7 +168,7 @@
       ]
     },
     "tests": {
-      "label": "les tests",
+      "label": "the tests",
       "words": [
         "test",
         "tests",
@@ -189,7 +189,7 @@
       ]
     },
     "tooling": {
-      "label": "l'outillage",
+      "label": "the tooling",
       "words": [
         "sonar",
         "sonarcloud",
@@ -221,7 +221,7 @@
       ]
     },
     "claude": {
-      "label": "la configuration de Claude",
+      "label": "Claude's configuration",
       "words": [
         "claude",
         "skill",
@@ -242,7 +242,7 @@
       ]
     },
     "errors": {
-      "label": "la gestion d'erreur",
+      "label": "error handling",
       "words": [
         "erreur",
         "error",

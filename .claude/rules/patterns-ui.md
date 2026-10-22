@@ -89,11 +89,11 @@ Rules:
   `@fubaritico/variants` (emitting `.ui-<block>` classes) backed by a `<component>.css` in
   `@fubaritico/styles`. The `ui:` Tailwind prefix only survives in the components still queued for
   migration (Tabs, Drawer, Carousel, Typeahead, `next/Image`) — **never write new `ui:` classes**.
-- **GÉNÉREUX en variables de surcharge — mieux trop que pas assez.** Chaque propriété cosmétique
-  mérite sa `--ui-<bloc>-*`. Une var inutilisée coûte une ligne ; une var manquante force le
-  consommateur à court-circuiter le skin, et c'est là qu'un thème diverge. Densité de référence :
-  `Slider` en expose **20**. Seule limite, la **mécanique** (centrage, zone de clic, calculs) : la
-  skin possède le look, pas la géométrie.
+- **GENEROUS with override variables — better too many than too few** (the dev, 2026-10-09). Every
+  cosmetic property deserves its `--ui-<block>-*`. An unused var costs one line; a missing one forces the
+  consumer to bypass the skin, and that is where a theme diverges. Reference density: the `Slider` exposes
+  **20**. The one limit is the **mechanics** (centring, hit area, maths): the skin owns the look, not the
+  geometry.
 - **Radius = the corner API.** A radius is `--ui-<bloc>-radius` plus four logical corners that
   fall back to it: `border-start-start-radius: var(--ui-<bloc>-radius-start-start,
   var(--ui-<bloc>-radius))`, and so on for the three others (corner vars NOT declared). A shape

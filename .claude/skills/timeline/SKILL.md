@@ -1,45 +1,45 @@
 ---
 name: timeline
-description: Interroger le journal d'activité du projet — temps réellement passé, plages de travail, chantiers étalés sur plusieurs jours, fichiers les plus touchés, écart depuis la dernière session. Use when the user asks "combien de temps", "depuis quand", "on a passé combien sur X", "timeline", "historique", "quand est-ce qu'on a travaillé sur", how long something took, when work happened, or how much time went into a file or a component.
+description: Query the project's activity log — time really spent, work spans, chantiers spread over several days, most-touched files, the gap since the last session. Use when the user asks "combien de temps", "depuis quand", "on a passé combien sur X", "timeline", "historique", "quand est-ce qu'on a travaillé sur", how long something took, when work happened, or how much time went into a file or a component.
 allowed-tools: Bash Read
 metadata:
   author: fubaritico-ds
-  version: '1.0'
+  version: '1.1'
 ---
 
-# Timeline — interroger le journal d'activité
+# Timeline — query the activity log
 
-Répond aux questions de **temps réel de travail** à partir de `files/session-log.jsonl` (gitignoré),
-alimenté par les hooks d'horodatage (`~/.claude/hooks/session-log.sh`).
+Answers questions about **real working time** from `files/session-log.jsonl` (git-ignored), fed by the
+time-stamping hooks (`~/.claude/hooks/session-log.sh`).
 
-## Modèle temporel (à ne pas confondre)
+## Time model (do not confuse)
 
-| Notion                | Définition                                               | Fiable ? |
-| --------------------- | -------------------------------------------------------- | -------- |
-| **Session technique** | Le process Claude Code (`session_start` → `session_end`) | **NON**  |
-| **Plage d'activité**  | Actions espacées de < 90 min — le travail réel           | **OUI**  |
-| **Chantier**          | Plages espacées de < 48 h — peut couvrir plusieurs jours | **OUI**  |
+| Notion                | Definition                                                | Reliable? |
+| --------------------- | --------------------------------------------------------- | --------- |
+| **Technical session** | the Claude Code process (`session_start` → `session_end`) | **NO**    |
+| **Work span**         | actions less than 90 min apart — the real work            | **YES**   |
+| **Chantier**          | spans less than 48 h apart — may cover several days       | **YES**   |
 
-**Ne JAMAIS répondre une durée basée sur la session technique.** Un terminal laissé ouvert la nuit
-donnerait « 14 h de travail » pour 40 min réelles, et trois `/clear` dans la journée donneraient trois
-sessions pour une seule journée de travail. Les plages sont **dérivées des timestamps d'actions** —
-c'est la seule mesure honnête. Quand tu cites un chiffre, dis de quelle notion il vient.
+**NEVER answer a duration based on the technical session.** A terminal left open overnight would give
+« 14 h de travail » for 40 real minutes, and three `/clear` in a day would give three sessions for one day of
+work. Spans are **derived from the actions' timestamps** — the only honest measure. When quoting a figure,
+say which notion it comes from.
 
-## Commande de base
+## Base command
 
 ```bash
-~/.claude/hooks/session-log.sh report "$PWD" 30   # 30 = fenêtre en jours
+~/.claude/hooks/session-log.sh report "$PWD" 30   # 30 = window in days
 ```
 
-Sort : l'état du chantier (en cours / interrompu, depuis quand, cumul), les plages une par une, et les
-fichiers les plus touchés. Ça couvre la majorité des questions — commence toujours par là.
+Prints: the chantier's state (in progress / interrupted, since when, total), the spans one by one, and the
+most-touched files. It covers most questions — always start there.
 
-## Recettes pour les questions plus précises
+## Recipes for finer questions
 
-Le journal est du JSONL : `{ts, epoch, ev, f?, cmd?}` avec `ev ∈ edit|bash|session_start|session_end`.
-Toujours parser avec `fromjson?` pour ignorer une éventuelle ligne corrompue.
+The log is JSONL: `{ts, epoch, ev, f?, cmd?}` with `ev ∈ edit|bash|session_start|session_end`. Always parse
+with `fromjson?` to skip a corrupt line.
 
-**Temps passé sur un fichier / un composant** (plages ne contenant QUE des actions le concernant) :
+**Time spent on a file / a component** (spans holding ONLY actions on it):
 
 ```bash
 jq -Rrn --arg pat 'DataTable' '
@@ -48,43 +48,45 @@ jq -Rrn --arg pat 'DataTable' '
   | reduce .[] as $e ([]; if (length==0) or ($e.epoch - .[-1].end > 5400)
       then . + [{start:$e.epoch,end:$e.epoch,n:1}]
       else .[:-1] + [{start:.[-1].start,end:$e.epoch,n:(.[-1].n+1)}] end)
-  | "\(length) plages, \((map(.end-.start)|add)/3600*10|round/10) h, \(map(.n)|add) éditions"
+  | "\(length) spans, \((map(.end-.start)|add)/3600*10|round/10) h, \(map(.n)|add) edits"
 ' files/session-log.jsonl
 ```
 
-**Activité par jour** :
+**Activity per day**:
 
 ```bash
 jq -Rrn '[inputs | fromjson? | select(.ev=="edit")] | group_by(.ts[0:10])
-  | map("\(.[0].ts[0:10]) — \(length) éditions")[]' files/session-log.jsonl
+  | map("\(.[0].ts[0:10]) — \(length) edits")[]' files/session-log.jsonl
 ```
 
-**Quand a-t-on touché ce fichier pour la dernière fois ?**
+**When was this file last touched?**
 
 ```bash
 jq -Rrn --arg f 'next.md' '[inputs | fromjson? | select(.ev=="edit" and (.f//""|test($f)))]
   | last | .ts' files/session-log.jsonl
 ```
 
-## Compléter avec git
+## Complete with git
 
-Le journal ne couvre que les sessions **depuis l'installation des hooks**. Pour l'historique antérieur,
-croise avec git — qui horodate tout ce qui a été commité :
+The log only covers sessions **since the hooks were installed** (2026-09-16). For the earlier history,
+cross it with git — which time-stamps everything committed:
 
 ```bash
 git log --format='%ad %s' --date=format:'%Y-%m-%d %H:%M' -- <path>
 ```
 
-Le journal et git sont **complémentaires** : git connaît le passé profond mais rate les sessions sans
-commit ; le journal capte tout le travail, commité ou non, mais seulement depuis son installation.
+The log and git are **complementary**: git knows the deep past but misses the sessions without a commit; the
+log catches all the work, committed or not, but only since its installation.
 
 ## Gotchas
 
-- **Le journal peut ne pas exister** (`files/session-log.jsonl` absent = hooks jamais déclenchés dans
-  ce projet). Le dire franchement plutôt que de répondre un chiffre inventé, et basculer sur git.
-- **Il est gitignoré** (dossier `files`) : local à la machine, jamais partagé, jamais commité.
-- **Les lectures ne sont pas journalisées** — seuls `Edit`/`Write` et `Bash` le sont. Donc une session
-  passée à lire du code apparaît vide : ne pas conclure « rien n'a été fait », dire « aucune
-  modification enregistrée sur cette plage ».
-- **Les seuils (90 min / 48 h) sont des constantes** du script (`SPAN_GAP`, `STREAK_GAP`). Si un
-  résultat semble absurde, vérifie-les avant de conclure.
+- **The log may not exist** (`files/session-log.jsonl` missing = hooks never fired in this project). Say so
+  plainly rather than answer an invented figure, and fall back on git.
+- **It is git-ignored** (`files/`): local to the machine, never shared, never committed.
+- **Reads are not logged** — only `Edit`/`Write` and `Bash`. A session spent reading code looks empty: do not
+  conclude « nothing was done », say « no change recorded in this span ».
+- **The log is written relative to the cwd** (`<cwd>/files/session-log.jsonl`): a `cd` forks it into a second
+  file the report never reads — hence CLAUDE.md's « never `cd` ». One such fork exists:
+  `.claude/skills/files/session-log.jsonl` (5 actions, 2026-09-16).
+- **The thresholds (90 min / 48 h) are constants** of the script (`SPAN_GAP`, `STREAK_GAP`). If a result looks
+  absurd, check them before concluding.

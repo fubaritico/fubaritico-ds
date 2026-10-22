@@ -52,11 +52,11 @@ component (`reference`). Never start with the `.tsx`.
 
 - **The native BEM skin, NOT Tailwind** — classes come from the `@fubaritico/variants` resolver.
   Never write new `ui:` Tailwind classes (that prefix only survives in the not-yet-migrated components).
-- **GÉNÉREUX en variables de surcharge — mieux trop que pas assez.** Chaque propriété cosmétique
-  mérite sa `--ui-<bloc>-*`. Une var inutilisée coûte une ligne ; une var manquante force le
-  consommateur à court-circuiter le skin, et c'est là qu'un thème diverge. Densité de référence :
-  `Slider` en expose **20**. Seule limite, la **mécanique** (centrage, zone de clic, calculs) : la
-  skin possède le look, pas la géométrie.
+- **GENEROUS with override variables — better too many than too few** (the dev, 2026-10-09). Every
+  cosmetic property deserves its `--ui-<block>-*`. An unused var costs one line; a missing one forces the
+  consumer to bypass the skin, and that is where a theme diverges. Reference density: the `Slider` exposes
+  **20**. The one limit is the **mechanics** (centring, hit area, maths): the skin owns the look, not the
+  geometry.
 - No domain logic — pure, presentational design-system components only
 - Extend with `ComponentProps<'element'>` (never `HTMLAttributes`); `Omit` any native prop you repurpose
 - Export the props interface as a named export, the component as default
