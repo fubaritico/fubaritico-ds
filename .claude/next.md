@@ -7,16 +7,22 @@
 
 ## ▶ ON REPREND ICI (2026-10-22)
 
-**REPO-143 — le tableau Trello du DS**, **À valider par le développeur** : tableau, skill `/trello`, historique
-rattrapé (119 tickets en Fait, chaque commit couvert), travail ouvert posé, branchements faits. Reste :
-**ta vérification du tableau**, puis le commit (la définition de fini le place après ton contrôle).
+Deux tickets t'attendent dans **À valider par le développeur** :
+
+- **REPO-143** — le tableau Trello du DS (historique rattrapé, travail ouvert, skill `/trello`), commité.
+- **REPO-150** — le contexte chargé par chemin (~100 Ko → ~35 Ko au lancement), le hook des règles, les
+  méthodes d'Atlas portées. Vérification : une nouvelle session, dont le début doit bien se passer.
+
+Restent à trancher (`files/plans/context-engineering-sync.md`) : la règle de gestion d'erreur d'Atlas à
+adapter à une bibliothèque ; la langue des fichiers (anglais chez Atlas) ; fusionner puis supprimer le journal
+égaré `.claude/skills/files/session-log.jsonl` (ton feu vert : c'est une suppression).
 
 ## Le tableau
 
 | où                  | ticket                                                                                                                                                 | état                                        |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
 | **Chantiers**       | DESIGN-120 thèmes · DESIGN-121 DataTable · DESIGN-122 Stencil · DESIGN-123 agent-ready                                                                 | paliers en checklist, liés aux tickets      |
-| **À valider**          | REPO-143 le tableau Trello du DS                                                                                                                       | à vérifier par toi, puis commit
+| **À valider**          | REPO-143 tableau · REPO-150 contexte                                                                                                                       | à vérifier par toi
 | **À faire**         | —                                                                                                                                                      | vide : l'ordre est le tien                  |
 | **Backlog**         | thèmes 2→5 (TOKENS-124…127), menu de commandes Atlas (REACT-128), `role="grid"` (REACT-129), Stencil vert (STENCIL-130), doc comme donnée (DESIGN-131) |                                             |
 | **Fait**, à publier | STYLES-119 flèche de la Tooltip claire                                                                                                                 | partira en 0.7.1 ou avec la prochaine minor |
