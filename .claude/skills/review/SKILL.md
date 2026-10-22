@@ -1,11 +1,7 @@
 ---
 name: review
 description: Multi-agent code review for rules compliance, security, accessibility, quality, architecture, and React best practices. Produces JSON findings and iterates up to 3 times.
-triggers:
-  - review code
-  - check compliance
-  - run review
-  - code review
+when_to_use: 'Quand le dev dit « fais une review », « relis le code », « passe la review », « vérifie la conformité », « revue de code », « audit du code », après une série de modifications.'
 ---
 
 # Review — Multi-Agent Code Reviewer
@@ -33,19 +29,22 @@ Filter to only: `*.ts`, `*.tsx`, `*.js`, `*.jsx`, `*.json`, `*.css` (exclude `no
 
 ### Step 2 — Load Context
 
-Read all files in scope. For each file, determine which reference guides apply:
+Read all files in scope. Each subagent of Step 3 carries its own rules in its system prompt
+(`.claude/agents/review/<domain>.md`) — the rules live there, nowhere else. Route each file to the
+subagents that apply:
 
-- `packages/stencil/**/*.tsx` → platform-safety.md, accessibility.md, architecture.md
-- `packages/reference/src/**` → react-best-practices.md, accessibility.md, architecture.md, quality.md
-- `packages/shared/**` → architecture.md, quality.md, security.md
-- `packages/tokens/**` → architecture.md
-- `packages/styles/**` and any `*.css` → styles (BEM rules from `bem-structure` + ` audit-style`), architecture.md
-- `packages/variants/**` (CVA resolvers — the shipped home, pure TS) → styles (CVA↔skin class-name
-  parity), platform-safety (MUST stay React/DOM-free), quality.md, architecture.md
-- `*.variants.ts` (legacy/local CVA resolvers, if any) → styles (class-name parity vs the skin), quality.md
-- `packages/reference/src/components/**/README.md` → component-docs.md (co-located usage doc plan)
-- All `*.tsx` → accessibility.md
-- All files → quality.md, security.md
+- `packages/stencil/**` → `review-platform-safety`, `review-accessibility`, `review-architecture`
+- `packages/reference/src/**` → `review-react`, `review-accessibility`, `review-architecture`, `review-quality`
+- `packages/behaviors/**` → `review-platform-safety` (React/DOM-free), `review-architecture`, `review-quality`
+- `packages/shared/**` → `review-architecture`, `review-quality`, `review-security`
+- `packages/tokens/**` → `review-architecture`
+- `packages/styles/**` and any `*.css` → `review-styles` (BEM rules from `bem-structure` + `audit-style`),
+  `review-architecture`
+- `packages/variants/**` (CVA resolvers, pure TS) → `review-styles` (CVA↔skin class-name parity),
+  `review-platform-safety` (React/DOM-free), `review-quality`, `review-architecture`
+- `packages/reference/src/components/**/README.md` → checked by the orchestrator (Step 2b, `component-docs.md`)
+- All `*.tsx` → `review-accessibility`
+- All files → `review-quality`, `review-security`
 
 #### Step 2b — Component doc-page presence (orchestrator check, not a subagent)
 
@@ -56,7 +55,7 @@ directory), verify a usage doc exists at
 
 - **missing README** → `high` ("Component <X> ships no usage doc README").
 - **README missing a mandatory section** (or its `> N/A` note) → `medium`.
-- **code sample that imports the barrel** (Tailwind leak) **or doesn't match the public API** → `medium`.
+- **code sample that imports the barrel** (not the per-component subpath) **or doesn't match the public API** → `medium`.
 
 A component is never `ready` without a compliant doc page.
 
@@ -66,12 +65,14 @@ Launch all 7 **custom subagents** simultaneously using the Agent tool. Each suba
 in `.claude/agents/review/` and has its own system prompt with domain-specific rules.
 
 Pass each subagent the list of files in scope as user message content (file paths + content).
-Always pass `*.css`, `packages/variants/**`, and any `*.variants.ts` to **`review-styles`** (the other
-agents largely ignore CSS); also pass `packages/variants/**` to **`review-platform-safety`** (React-free check).
+Always pass `*.css` and `packages/variants/**` to **`review-styles`** (the other agents largely ignore
+CSS); also pass `packages/variants/**` and `packages/behaviors/**` to **`review-platform-safety`**
+(React/DOM-free check).
 
 Subagents (by `name` / `agent_type`):
 
-1. **`review-platform-safety`** — cross-platform safety (RN in web, HTML in native, CVA classes)
+1. **`review-platform-safety`** — cross-output safety (Stencil WC purity vs React, wrapper fidelity,
+   framework-agnostic `variants`/`behaviors`)
 2. **`review-security`** — security vulnerabilities (XSS, injection, secrets, auth)
 3. **`review-architecture`** — architecture rules (layers, SOLID, component patterns)
 4. **`review-quality`** — code quality (JSDoc, any types, console.log, dead code)
@@ -135,7 +136,7 @@ If verdict is NOT `ready`:
 
 1. Fix all `critical` findings immediately
 2. Fix `high` findings
-3. Re-run affected agents only (not all 6) on modified files
+3. Re-run affected agents only (not all 7) on modified files
 4. Repeat up to 3 times total
 
 ### Step 8 — Handle Remaining Violations

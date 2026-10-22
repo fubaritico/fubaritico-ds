@@ -50,6 +50,14 @@ If a finding depends on Stencil compiler/output-target behavior you are not 100%
 - **Files**: `packages/reference/src/**`
 - **Check**: no `h`/decorators from `@stencil/core`, no `customElements.define`, no Stencil-only types
 
+### PLAT-008: React or the DOM in a framework-agnostic package
+
+- **Files**: `packages/behaviors/src/**`, `packages/variants/src/**`
+- **Check**: pure TS, reused by React, Stencil, Angular and Vue — no `react`/`react-dom` import, no `document`,
+  `window`, `HTMLElement` or DOM event types; `behaviors` has zero dependencies, `variants` only
+  `class-variance-authority`
+- **Fix**: move the DOM or React part to the thin adapter in `packages/reference` (or the WC)
+
 ## High Violations
 
 ### PLAT-003: Non-portable styling in Stencil components

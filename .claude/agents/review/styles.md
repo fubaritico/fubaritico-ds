@@ -10,8 +10,8 @@ multi-framework, white-label design-system monorepo.
 
 The skin is **portable native CSS** in `packages/styles` (BEM, `@layer`, component-scoped CSS
 variables), consumed identically by React / Web Components / Angular / Vue. Theme palette/scales
-come from `@fubaritico/tokens`. Variant→class mapping is done with CVA (e.g. `*.variants.ts`).
-Rules are sourced from the project skills `bem-structure` and ` audit-style`.
+come from `@fubaritico/tokens`. Variant→class mapping is done with CVA in `packages/variants/src/<component>.ts`.
+These rules are the single source; the `audit-style` skill is the audit procedure, `bem-structure` the background.
 
 Review the files provided against the rules below. Return ONLY a valid JSON array of findings. No
 prose, no markdown fences around the JSON. If no violations found, return an empty array: `[]`
@@ -37,7 +37,7 @@ Each finding must follow this exact schema:
 Prefix all IDs with `STYLE-`. Set `"needs_verification": true` with a `"verification_query"` only
 for ambiguous cases (verify via `opensrc/` or the web — no context7 here).
 
-Scope: `*.css` files (skin partials, barrels) and the CVA variant resolvers (`*.variants.ts`) when
+Scope: `*.css` files (skin partials, barrels) and the CVA resolvers (`packages/variants/src/*.ts`) when
 checking class-name parity. Ignore generated/bundled output (`**/dist/**`).
 
 ---
@@ -69,7 +69,7 @@ checking class-name parity. Ignore generated/bundled output (`**/dist/**`).
 
 ### STYLE-005: CVA ↔ skin class parity
 
-- **Check**: every class name a CVA resolver emits (`*.variants.ts`) has a matching selector in the
+- **Check**: every class name a CVA resolver emits (`packages/variants/src/*.ts`) has a matching selector in the
   skin, and vice-versa (no orphan modifier classes, no skin rule for a class never emitted). An
   intentionally empty variant (e.g. `default: ''` → base class only) is OK **if** documented.
 

@@ -36,21 +36,27 @@ If a finding depends on library/API behavior you are not 100% sure about, set `"
 
 # Architecture Rules
 
-> Project = 4 packages: `tokens`, `shared`, `reference` (React/Tailwind), `stencil` (Web Components).
-> `apps/storybook-*` are scaffolds. Orchestration = Lerna + Nx.
+> Project = 7 packages: `tokens`, `styles` (BEM skin), `variants` (CVA resolvers), `behaviors` (behaviour
+> services), `shared` (private), `reference` (`@fubaritico/react`, the React deliverable), `stencil`
+> (Web Components). `apps/storybook-react` is set up, the other Storybook apps are scaffolds.
+> Orchestration = Lerna + Nx.
 
 ## Critical Violations
 
 ### ARCH-001: Wrong dependency direction / circular deps
 
-- **Order (one-directional)**: `tokens → shared → reference`; `stencil` is independent
-- **Forbidden**: any package importing from `apps/*`; `shared`/`tokens` importing from `reference` or `stencil`; `reference` importing from `stencil` (or vice-versa); any import cycle
+- **Order (one-directional)**: `tokens` → `styles`, `shared`, `stencil`; `behaviors` and `variants` depend
+  on no internal package; `reference` → `tokens`, `styles`, `variants`, `behaviors`, `shared` (dev only);
+  `apps/storybook-react` → the packages
+- **Forbidden**: any package importing from `apps/*`; `tokens`/`styles`/`variants`/`behaviors`/`shared`
+  importing from `reference` or `stencil`; `behaviors`/`variants` importing React or the DOM; `reference`
+  importing from `stencil` (or vice-versa); any import cycle
 
 ### ARCH-002: Hardcoded design values
 
 - **Files**: All (except `packages/tokens/**`)
-- **Check**: No raw hex colors, raw px for spacing/sizing/font; no Tailwind arbitrary values
-  (`ui:bg-[#1a1a2e]`, `ui:text-[14px]`, `ui:p-[12px]`)
+- **Check**: No raw hex colors, raw px for spacing/sizing/font in a skin, a resolver or a component; no new
+  `ui:` Tailwind class (legacy Carousel and `next/*` only)
 - **Required**: use design tokens / theme variables (`@fubaritico/tokens`)
 
 ### ARCH-003: Editing generated artefacts
