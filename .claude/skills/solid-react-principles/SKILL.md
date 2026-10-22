@@ -8,7 +8,7 @@ description:
   involving component splitting, fat components, prop drilling, tight coupling,
   or extensibility.
 metadata:
-  author: financial-app
+  author: fubaritico-ds
   version: '1.0'
   source: 'Frontend Highlights — Applying SOLID Principles in React Applications'
 ---

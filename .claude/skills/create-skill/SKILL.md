@@ -115,8 +115,12 @@ Layer 3: references/, scripts/, assets/ — loaded only when needed
 
 Good: specific keywords, explains what AND when
 ```yaml
-description: Create a new cross-platform component in @financial-app/ui following the file extension split pattern. Use when creating a UI component, adding a design system component, or scaffolding a new component.
+description: Create a new React UI component in packages/reference following the project patterns. Use when scaffolding a design system component.
+when_to_use: 'Quand le dev dit « crée un composant », « nouveau composant », « ajoute un composant React ».'
 ```
+
+The dev speaks French: put the French trigger phrases in `when_to_use` (the dev's call, 2026-10-22), keep
+`description` in English (the repository is public). Both count toward the 1,536-character listing cap.
 
 Bad: vague, no trigger keywords
 ```yaml

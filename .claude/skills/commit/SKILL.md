@@ -1,14 +1,16 @@
 ---
 name: commit
-description: Prepare and propose a conventional commit for the current changes. Use when committing code, creating a git commit, or finalizing a set of changes.
+description: Prepare and make a conventional commit for the current changes. Use when committing code, creating a git commit, or finalizing a set of changes.
+when_to_use: 'Quand le dev dit « commit », « committe », « fais le commit », « on committe », « valide les changements dans git ».'
 allowed-tools: Bash(git:*)
 metadata:
-  version: '1.0'
+  version: '1.1'
 ---
 
 # Commit
 
-Prepare and propose a conventional commit for the current changes.
+Prepare and make a conventional commit for the current changes (CLAUDE.md: once the approach is
+agreed, the block runs end-to-end — edits, tests, commit).
 
 ## Steps
 
@@ -26,7 +28,8 @@ Prepare and propose a conventional commit for the current changes.
    - Multiple packages → use the most impacted scope
 4. Generate a conventional commit message — its TYPE must tell the truth (a fix is `fix`, even found by
    a test): the changelog is built from it
-5. Propose the exact commands to run (user executes them)
+5. Show the message and the staged files, then commit (stage files by name, never `git add -A`); push only
+   when the dev asks
 6. **The ticket** (`/trello`): a ticket's work is committed after the dev checked it (Definition of
    Done, step 6); the hash goes in the ticket's comment, then `done`
 

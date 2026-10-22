@@ -1,6 +1,7 @@
 ---
 name: state-storage
 description: Choose and scaffold the right state level for a component — local React state, createStore, Zustand, or a simplified Machine. Use when a component needs to hold or share state, when adding stateful/interactive behavior, when re-render or state-complexity grows, when wiring keyboard/focus/active-item logic, or when deciding how state crosses components. Challenges toward the lightest sufficient option (the "spectrum of storage").
+when_to_use: 'Quand le dev dit « où mettre l''état », « quel niveau de state », « un store », « Zustand ou pas », « une machine à états », « l''état partagé entre composants », « trop de re-renders ».'
 allowed-tools: Read Write Edit
 metadata:
   author: fubaritico-ds

@@ -1,6 +1,7 @@
 ---
 name: sonar
 description: Fetch and display the SonarCloud analysis report for this project (quality gate + open issues by severity).
+when_to_use: 'Quand le dev dit « Sonar », « SonarCloud », « le rapport Sonar », « le quality gate », « les issues Sonar ».'
 allowed-tools: Bash
 metadata:
   version: "1.0"

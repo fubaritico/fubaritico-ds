@@ -1,6 +1,6 @@
 ---
 name: end-session
-description: Update the Session State in CLAUDE.md to reflect the current state of work before closing the session.
+description: Close a work session — record its account in completed.md, the resume point in next.md, new known issues in their slice, and sync the Trello board. Use when the dev says « fin de session », « on s'arrête », « on clôt », end-session, or before closing a session.
 allowed-tools: Read Edit Bash
 metadata:
   version: '1.1'
@@ -8,7 +8,8 @@ metadata:
 
 # End Session
 
-Update the Session State in CLAUDE.md to reflect the current state of work before closing the session.
+Write the session files that CLAUDE.md imports (`completed.md`, `next.md`, the known-issues slices) and
+sync the board, before closing the session.
 
 ## Steps
 
@@ -39,5 +40,7 @@ Update the Session State in CLAUDE.md to reflect the current state of work befor
    carries a comment saying where it stands; every ticket En cours / À valider is named in `next.md`;
    every plan, known-issue or `next.md` changed this session has its ticket, and every ticket it cites
    exists in a coherent column.
-6. If a new architectural decision or stable pattern was established this session, update the relevant memory file in `.claude/projects/.../memory/` (e.g. `MEMORY.md`, `patterns.md`)
+6. If a new architectural decision or stable pattern was established this session, write it to the auto
+   memory (`~/.claude/projects/-Users-stephanecottereau-Desktop-WebstormProjects-fubaritico-ds/memory/`):
+   one fact per file, indexed by one line in `MEMORY.md`
 7. Propose all changes to the user before writing — do not write without confirmation

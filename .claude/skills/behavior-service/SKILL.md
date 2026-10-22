@@ -1,6 +1,7 @@
 ---
 name: behavior-service
 description: Build a component's behaviour as a framework-agnostic service in packages/behaviors (state, registry, keyboard, focus, ARIA attributes — one service per component) plus its thin React adapter in packages/reference. Use when a component needs interactive behaviour shared across frameworks (React, Stencil, Angular, Vue), when porting a component's logic out of React, when writing a "state as a service", a behaviour service, a headless core, or when /state-storage lands on an external store.
+when_to_use: 'Quand le dev dit « le service de comportement », « sors la logique de React », « le comportement agnostique », « le clavier et le focus en service », « le cœur headless », « porte le comportement vers Stencil ».'
 allowed-tools: Read Write Edit Bash(pnpm:*) Bash(git:*)
 argument-hint: '[component-name]'
 metadata:

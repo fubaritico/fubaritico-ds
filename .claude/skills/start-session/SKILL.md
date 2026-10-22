@@ -1,6 +1,7 @@
 ---
 name: start-session
 description: Gather all necessary written context from the previous session. Use at the start of a work session to reload state and relevant rules.
+when_to_use: 'Quand le dev dit « on reprend », « début de session », « on commence », « où on en était », « start-session ».'
 allowed-tools: Read Bash
 metadata:
   version: '1.1'
