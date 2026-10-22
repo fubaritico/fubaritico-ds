@@ -1,11 +1,11 @@
 name: Deploy Storybook (Netlify)
 
-# TODO milestone — non fonctionnel : les apps/storybook-* sont des scaffolds vides (pas de
-# package.json) et aucun secret Netlify n'existe. Squelette calqué sur react-and-react-native-
-# financial-app. Manuel uniquement (workflow_dispatch) tant que ce n'est pas prêt.
+# TODO milestone (REPO-149) — not functional: no Netlify secret exists, and only apps/storybook-react
+# is set up (`pnpm build-storybook:ref`); the three other apps/storybook-* are empty scaffolds. Skeleton
+# modelled on react-and-react-native-financial-app. Manual only (workflow_dispatch) until it is ready.
 #
-# Quand prêt : un job par framework (web-component / react / angular / vuejs), déclenché sur succès
-# de la CI (workflow_run). Secrets requis : NETLIFY_AUTH_TOKEN + NETLIFY_SITE_ID_<framework>.
+# When ready: one job per framework (web-component / react / angular / vuejs), triggered on the CI's
+# success (workflow_run). Secrets required: NETLIFY_AUTH_TOKEN + NETLIFY_SITE_ID_<framework>.
 on:
   workflow_dispatch:
   # workflow_run:

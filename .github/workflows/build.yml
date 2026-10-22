@@ -24,8 +24,8 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-  # TODO milestone — non fonctionnel tant que les apps/storybook-* n'ont pas de package.json.
-  # Décommenter quand au moins un Storybook est buildable.
+  # TODO milestone (REPO-149) — storybook-react is buildable since 2026-06-09 (`build-storybook:ref`);
+  # uncomment and point it at that app once the CI should build it.
   #
   # build-storybook:
   #   runs-on: ubuntu-latest

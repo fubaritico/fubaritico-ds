@@ -1,9 +1,9 @@
 name: Accessibility (pa11y)
 
-# TODO milestone — non fonctionnel : pa11y a besoin d'un Storybook SERVI (les apps/storybook-*
-# sont des scaffolds vides). À activer quand un Storybook est buildable + servable. Manuel
-# uniquement (ne se déclenche pas sur push/PR). Le script root `a11y` (pa11y-ci) et `.pa11yci.json`
-# sont prêts ; il manque juste un serveur Storybook sur les ports ciblés.
+# TODO milestone (REPO-149) — not functional: pa11y needs a SERVED Storybook. storybook-react builds
+# (`pnpm build-storybook:ref`) but nothing serves it here yet. Manual only (does not trigger on push/PR).
+# The root `a11y` script (pa11y-ci) and `.pa11yci.json` are ready; only a Storybook server on the
+# targeted ports is missing.
 on:
   workflow_dispatch:
 
