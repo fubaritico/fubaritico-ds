@@ -11,8 +11,9 @@ paths:
 > Every new component, hook, utility, or bug fix MUST ship with tests.
 > No code is considered done without tests, a `/commit`, and `/end-session`.
 
-Stack: **Vitest 3** — React Testing Library (jsdom) for `packages/reference`,
-**`@stencil/vitest`** for `packages/stencil`. Tests run per-package via `lerna run test`.
+Stack: **Vitest 4** (catalog) — React Testing Library (jsdom) + Vitest Browser Mode (Chromium) for
+`packages/reference`; `node` environment for `behaviors`, `variants`, `styles`, `shared`; **`@stencil/vitest`**
+for `packages/stencil`. Tests run per-package via `lerna run test`.
 
 ## Mandatory Completion Sequence
 
@@ -34,8 +35,8 @@ The nominal use case with valid inputs.
 
 ```
 - Component renders with required props
-- Hook returns expected data (useQuery success)
-- Section renders content from a `default` MSW handler
+- A behaviour service returns the expected snapshot for a valid input
+- A resolver returns the expected BEM classes for its defaults
 - Interaction (click, type) produces the expected result
 ```
 
@@ -45,8 +46,8 @@ All meaningful variations of valid inputs — each prop combination, each branch
 
 ```
 - Component with each variant/size/state prop combination
-- Hook with different valid params (movie vs tv, different ids)
-- Conditional rendering branches (empty list vs populated, mobile vs desktop)
+- Hook or service with different valid params (controlled vs uncontrolled, ltr vs rtl, horizontal vs vertical)
+- Conditional rendering branches (empty list vs populated, with/without a slot)
 - light/dark variants, with/without optional props
 ```
 
@@ -55,7 +56,7 @@ All meaningful variations of valid inputs — each prop combination, each branch
 Errors the code explicitly handles — expected failures with user-facing feedback.
 
 ```
-- Section error state (error MSW handler → error message or hidden section)
+- A broken contract throws (a slot outside its parent — `rules/error-handling.md`)
 - Form/input validation feedback (aria-invalid, error message)
 - Disabled states prevent interaction
 - Empty state (return null / "no results")
@@ -63,10 +64,10 @@ Errors the code explicitly handles — expected failures with user-facing feedba
 
 ### Level 4 — Unmanaged Error Cases
 
-Unexpected failures — network errors, malformed data.
+Unexpected failures — malformed data, a misbehaving collaborator.
 
 ```
-- Malformed input (missing fields, wrong types) — `??` fallbacks hold
+- Malformed input (missing fields, wrong types) is surfaced, never masked by a fallback
 - Unexpected null/undefined props or return values
 - Async errors surfaced, not swallowed
 ```
@@ -77,10 +78,10 @@ Boundary conditions and unusual but possible scenarios.
 
 ```
 - Empty arrays, null values, undefined optional props
-- Maximum-length strings, zero values, missing images (poster/profile path null)
+- Maximum-length strings, zero values, a missing image source (Avatar fallback)
 - Rapid mount/unmount (cleanup, no act warnings)
-- Unicode/special characters in search input
-- Single item vs many items (pagination / "More results" boundary)
+- Unicode/special characters in an input
+- Single item vs many items (first/last tab wrap, the pagination boundary)
 ```
 
 ## Test Scope by Layer
@@ -102,6 +103,18 @@ Boundary conditions and unusual but possible scenarios.
 - Reflects `@State` changes / `@Method` calls (L2–L3)
 - Missing optional props / slots empty (L5)
 - See `references/09-testing.md` in the `stencil` skill
+
+### Behaviour services (`packages/behaviors`) and resolvers (`packages/variants`)
+
+- Pure TS in `node` — no DOM, no React: drive the service through its public API (`state`, events,
+  keyboard handlers) and assert snapshots and ARIA attribute objects; a resolver returns class strings
+- Collaborators are injected — pass a mock, never reach a global (`rules/modular-architecture.md`)
+- Runner: Vitest `node`, files `src/**/*.test.ts`
+
+### Skin and tokens (`packages/styles`)
+
+- Contract tests in `test/*.test.ts` (`node`): the CSS keeps its API (colour roles, radius variables) —
+  parse the built or source CSS, never snapshot it whole
 
 ### Utilities & hooks (`packages/shared`)
 
@@ -130,8 +143,8 @@ pointer capture and drags, `:has()` / `:dir()` / `:focus-visible`, RTL rendering
 
 ## Test Utilities & Mocks
 
-- React render helpers in `@fubaritico/shared/test-utils`
-  (`renderWithReactQuery`, `renderWithRouter`, …)
+- Plain `render` from `@testing-library/react` by default; `renderWithRouter` from
+  `@fubaritico/shared/test-utils` only for a router adapter (e.g. `LinkButton`)
 - Generic browser mocks via `setupBrowserMocks()` from `@fubaritico/shared/mocks`
 - ALWAYS `userEvent` (never `fireEvent`)
 - Mock modules at the top level with `vi.mock(...)`
