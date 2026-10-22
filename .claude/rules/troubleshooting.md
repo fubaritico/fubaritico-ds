@@ -31,7 +31,7 @@ paths:
 
 ### `lerna run` → `ENOLERNA lerna.json does not exist`
 
-**Solution**: Lerna v8 requires `lerna.json` (`{ "version": "independent", "npmClient": "pnpm" }`).
+**Solution**: Lerna v8 requires `lerna.json`; ours is in **fixed mode** (`"version": "X.Y.Z"`, `"npmClient": "pnpm"`) — `rules/architecture.md`.
 
 ### Cross-package types unresolved during `type-check`/`test`
 

@@ -13,8 +13,8 @@ paths:
 
 > Multi-framework **design-system generator** built on **Stencil**. From one Web Component project
 > (`packages/stencil`) we produce native Web Components + generated **React** and **Angular** wrappers,
-> showcased in per-framework Storybook apps. `packages/reference` (React) is the hand-written
-> reference we port from.
+> showcased in per-framework Storybook apps. `packages/reference` is the **React deliverable**, published
+> as `@fubaritico/react` (decided 2026-10-09), and the source the Stencil ports compare against.
 
 ## Tech Stack
 
@@ -26,8 +26,8 @@ paths:
 | WC → React      | `@stencil/react-output-target`                 | 1.5.x   |
 | WC → Angular    | `@stencil/angular-output-target`               | 1.3.x   |
 | Reference UI    | React                                          | 19.2.x  |
-| Styling         | Tailwind CSS v4 (CSS-first)                    | 4.x     |
-| Design tokens   | Style Dictionary (OKLCH, DTCG)                 | —       |
+| Styling         | Native BEM skin (`@layer`, `--ui-*` vars) + CVA | —       |
+| Design tokens   | Style Dictionary (DTCG, hex output)            | —       |
 | Language        | TypeScript                                     | ~5.7.2  |
 | Testing         | Vitest 4.1.8 (+ `@stencil/vitest`, RTL, jsdom) | —       |
 | Lint            | ESLint 9 (flat config)                         | —       |
@@ -45,12 +45,12 @@ apps/
 packages/
 ├── behaviors/    @fubaritico/behaviors — behaviour services, one per component (state/keyboard/focus/ARIA)
 │   └── src/<domain>/ → dist (tsc); no React/DOM; zero dependencies
-├── reference/    @fubaritico/react — React DS components (the port source)
+├── reference/    @fubaritico/react — the React deliverable (and the port source)
 │   ├── src/components/<Component>/ → Component.tsx, .types.ts, .test.tsx, README.md, index.ts
-│   ├── src/index.ts (root barrel), src/styles.css (Tailwind entry, legacy components only)
+│   ├── src/index.ts (root barrel, CSS-free since `01be734`)
 │   ├── vitest.config.ts, vitest.setup.ts, tsconfig.json, tsconfig.build.json
 │   └── styling: BEM skin (`@fubaritico/styles`) + resolvers (`@fubaritico/variants`).
-│       The `ui:` Tailwind prefix is LEGACY — only the not-yet-migrated components still use it.
+│       The `ui:` Tailwind prefix is LEGACY — only Carousel and `next/*` still use it, out of the build.
 ├── shared/       @fubaritico/shared — utils, test-utils, browser mocks, theme, fonts, vite plugins
 │   └── src/{utils,hooks,tailwind,fonts,test-utils,mocks/browser,vite}/
 ├── stencil/      @fubaritico/stencil — the Stencil sandbox (SUBJECT of the project)
@@ -84,11 +84,11 @@ pnpm dev          # lerna run --parallel --stream dev (watch modes only — NOT 
 - `nx.json` `targetDefaults`: `build`/`type-check`/`test` have `dependsOn: ['^build']` so dependencies
   are built first (cross-package types come from `dist/*.d.ts` — there are no tsconfig `paths` to source).
   `build` declares `outputs: ['{projectRoot}/dist']`.
-- Dependency order: **tokens → shared → reference**; **variants → reference** (variants depends on
-  no internal package — only `class-variance-authority`); **behaviors** depends on nothing; **stencil** and **styles** (CSS-only) are independent.
+- Dependency order: **tokens → styles, shared, stencil**; **behaviors** and **variants** depend on no internal
+  package (variants: `class-variance-authority` only); **reference** → tokens, styles, variants, behaviors
+  (`shared` as a dev dependency only, since `01be734`); `apps/storybook-react` → the packages.
 - `lerna.json`: **fixed mode** (`version: X.Y.Z` — changed packages move to one shared version), `npmClient: pnpm`. Releases: `README.md` → "Publishing a release", `/release` skill.
-- Nx cache lives in `.nx/` (gitignored).
-- **TODO (planned): migrate Lerna → Turbo.**
+- Nx cache lives in `.nx/` (gitignored). **Lerna + Nx stay — no Turbo** (decided `ebc3e6e`).
 
 ## Versions & pnpm catalog
 
@@ -109,16 +109,18 @@ pnpm dev          # lerna run --parallel --stream dev (watch modes only — NOT 
 
 ## Testing
 
-- Each package owns its Vitest config. Spec/test files: `*.test.tsx` (reference), `*.test.ts` (shared),
-  `*.spec.{ts,tsx}` (stencil, via `@stencil/vitest`). 5-level policy in `tests.md`.
+- Each package owns its Vitest config. Spec/test files: `*.test.tsx` + `*.browser.test.tsx` (reference),
+  `*.test.ts` (behaviors, variants, shared, `styles/test/`), `*.spec.{ts,tsx}` (stencil, via
+  `@stencil/vitest`); `*.e2e.ts` reserved for Playwright Test against Storybook. 5-level policy in `tests.md`.
 - `stencil test --spec` is **deprecated** (removed in Stencil v5) — use `@stencil/vitest`.
 
 ## CSS / Styling
 
-- Tailwind v4, CSS-first (no `tailwind.config.js`).
-- `packages/reference`: migrated components use the native BEM skin (`@fubaritico/styles`) with
-  classes from `@fubaritico/variants`. The `ui:` Tailwind prefix is legacy, kept only by the
-  components still queued for migration (Tabs, Drawer, Carousel, Typeahead, `next/Image`).
+- **The native BEM skin is the styling mechanism**: `@fubaritico/styles` (`@layer`, `--ui-*` vars) fed by
+  tokens, classes from the `@fubaritico/variants` resolvers. Tailwind v4 survives only in `shared`'s theme
+  and the tokens' `dist/tailwind` output.
+- `packages/reference`: the `ui:` Tailwind prefix is legacy, kept only by the components still queued for
+  migration (Carousel and the `next/*` adapters, excluded from the published build — REACT-134).
 - `packages/stencil`: BEM + overridable CSS variables (light DOM), global sheet `src/global/ui-stencil.css`,
   fed by `@fubaritico/tokens`; component tags prefixed `ui-`.
 - New package/app: define a new prefix, never reuse an existing one.

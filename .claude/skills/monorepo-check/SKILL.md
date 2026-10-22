@@ -3,75 +3,71 @@ name: monorepo-check
 description: Validate monorepo health — check dependency graph, circular dependencies, workspace configuration, package naming, and layer order. Use when adding packages, changing dependencies, or auditing the monorepo structure.
 allowed-tools: Read Grep Glob Bash(pnpm:*)
 metadata:
-  author: financial-app
-  version: "1.0"
+  author: fubaritico-ds
+  version: '2.0'
 ---
 
 # Monorepo Check
 
-Validate monorepo health and dependency correctness.
+Validate monorepo health and dependency correctness. The layout and the orchestration (Lerna + Nx) are in
+`.claude/rules/architecture.md`.
 
 ## Dependency Rules
 
 ```
-@financial-app/tokens           -> depends on nothing
-@financial-app/tailwind-config  -> depends on @financial-app/tokens
-@financial-app/ui               -> depends on @financial-app/tokens, @financial-app/tailwind-config
-@financial-app/shared           -> depends on nothing (pure TS, no renderer)
-apps/*                          -> depends on @financial-app/ui, @financial-app/shared
+@fubaritico/tokens      -> nothing
+@fubaritico/behaviors   -> nothing (pure TS, no React/DOM, zero deps)
+@fubaritico/variants    -> nothing internal (class-variance-authority only, no React/DOM)
+@fubaritico/styles      -> @fubaritico/tokens (CSS-only)
+@fubaritico/shared      -> @fubaritico/tokens (private)
+@fubaritico/stencil     -> @fubaritico/tokens (private)
+@fubaritico/react       -> tokens, styles, variants, behaviors; shared as a devDependency only
+apps/storybook-react    -> the packages (private)
 ```
 
-**Never** create circular dependencies. Shared packages **never** import from apps.
+**Never** create circular dependencies. Packages **never** import from apps; `reference` and `stencil`
+never import each other.
 
 ## Validation Checklist
 
 ### Package naming
-- [ ] All packages use `@financial-app/` scope
-- [ ] Apps use `-financial-app` suffix (e.g. `mobile-expo-financial-app`)
-- [ ] Apps have `"private": true`
+
+- [ ] All packages use the `@fubaritico/` scope (`packages/reference` publishes as `@fubaritico/react`)
+- [ ] `shared`, `stencil`, the apps (and `e2e` once it exists) have `"private": true`
 
 ### Dependency direction
+
 - [ ] No package imports from apps
 - [ ] No circular dependencies
-- [ ] Layer order respected: tokens -> tailwind-config -> ui -> apps
-- [ ] @financial-app/shared has no renderer imports (no react-native, no react-dom)
+- [ ] `behaviors` and `variants` import no React, no DOM, no internal package
+- [ ] `@fubaritico/react` has `shared` in `devDependencies` only (consumers must not inherit msw, svgr, Tailwind)
 
 ### Workspace config
+
 - [ ] `pnpm-workspace.yaml` includes `packages/*` and `apps/*`
-- [ ] Shared devDependencies use `catalog:` pattern
-- [ ] All packages have `type-check` script
+- [ ] Shared versions use the `catalog:` pattern (vitest especially — see `rules/troubleshooting.md`)
+- [ ] Every package with TS has `type-check`, `lint` and `test` scripts (`styles`: `test` only — REPO-138)
+- [ ] Internal dependencies use `workspace:*`
 
 ### Build order
-- [ ] tokens builds before tailwind-config
-- [ ] tailwind-config builds before ui
-- [ ] ui builds before apps
+
+- [ ] `nx.json` `targetDefaults` keep `dependsOn: ['^build']` on `build`, `type-check`, `test`
 
 ## Commands
 
 ```bash
-# List all workspace packages
-pnpm -r list --depth -1
-
-# Check for missing dependencies
-pnpm install --frozen-lockfile
-
-# Run type-check across all packages
-pnpm type-check
-
-# Run lint across all packages
-pnpm lint
-
-# Run tests across all packages
-pnpm test
+pnpm -r list --depth -1          # list all workspace packages
+pnpm install --frozen-lockfile   # check for missing dependencies
+pnpm type-check && pnpm lint && pnpm test
 ```
 
 ## Quick Audit Script
 
 ```bash
-# Check for circular deps (grep for cross-imports)
-# Apps should not be imported by packages
-grep -r "@financial-app/ui" packages/tokens/ packages/shared/ || echo "OK: no reverse imports"
-grep -r "mobile-expo-financial-app\|mobile-financial-app\|web-financial-app" packages/ || echo "OK: no app imports in packages"
+# packages must not import apps; the agnostic packages must not import React
+grep -rn "@fubaritico/storybook" packages/*/src || echo "OK: no app imports in packages"
+grep -rln "from 'react'" packages/behaviors/src packages/variants/src || echo "OK: behaviors/variants stay agnostic"
+grep -rn "@fubaritico/stencil" packages/reference/src || echo "OK: reference does not import stencil"
 ```
 
 ## Gotchas
@@ -79,4 +75,3 @@ grep -r "mobile-expo-financial-app\|mobile-financial-app\|web-financial-app" pac
 - pnpm-workspace.yaml uses globs (`packages/*`, `apps/*`) — no manual registration needed
 - Always use `pnpm --filter` to target specific packages
 - Never use npm or yarn
-- `workspace:^` protocol for internal dependencies

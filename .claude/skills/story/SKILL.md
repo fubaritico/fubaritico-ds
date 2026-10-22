@@ -1,6 +1,7 @@
 ---
 name: story
 description: Create a Storybook story for a component. Mandatory after every component creation. Use when a new component is created or when adding stories to existing components.
+when_to_use: 'Quand le dev dit « fais la story », « ajoute une story », « mets-le dans Storybook », « le showcase », « le playground », « une story pour ce composant ».'
 allowed-tools: Read Write
 argument-hint: '[ComponentName]'
 metadata:
@@ -27,12 +28,10 @@ Stencil-generated React wrappers go under `Generated/*` later). `layout: 'center
 (tokens + `@fubaritico/styles`) are set **globally** in `.storybook/preview.ts` — do NOT repeat
 `layout` per meta, and do NOT use Tailwind.
 
-**CRITICAL — import from the CSS-free subpath, NOT the barrel.** `@fubaritico/react` (barrel) runs
-`import './styles.css'` (= `@import "tailwindcss"`), which injects Tailwind **preflight** (a global
-`* { padding:0; margin:0 }` reset) into the skin-based Storybook and **strips the skin's box-model**
-(layers ignore specificity → the reset wins). Import the per-component subpath
-`@fubaritico/react/<Component>` → `dist/<Component>` (CSS-free, no Tailwind). Only story-ize
-components already migrated to the skin.
+**Import from the per-component subpath, not the barrel** — `@fubaritico/react/<Component>` →
+`dist/<Component>`: the way a consumer imports one component, and a tighter bundle (package README). Until
+`01be734` (2026-10-09) the barrel ran `import './styles.css'` and injected Tailwind's preflight, which
+stripped the skin's box model; it is CSS-free since. Only story-ize components already migrated to the skin.
 
 Three stories per component: **Playground** (controls) + **Doc** (autodocs, automatic) + **Showcase**
 (ALL cases in one render, controls disabled). The Showcase replaces per-variant/per-size stories.
@@ -94,7 +93,7 @@ export const Showcase: Story = {
 - NO Tailwind classes in stories (the React Storybook loads only tokens + the native skin) — use inline
   styles or the component's own BEM classes for showcase layout.
 - `Playground` (controls) + `Showcase` (ALL cases, controls disabled). `Doc` is autodocs (automatic).
-- Import from `@fubaritico/react/<Component>` (CSS-free subpath) — NEVER the barrel (Tailwind leak).
+- Import from `@fubaritico/react/<Component>` (the per-component subpath) — not the barrel.
 - No mocks, no router — DS components are presentational. Only story-ize components already migrated to the skin.
 
 ---

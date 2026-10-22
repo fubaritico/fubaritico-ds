@@ -1,6 +1,7 @@
 ---
 name: new-react-component
 description: Create a new React UI component in packages/reference following the project patterns. Use when scaffolding a design system component.
+when_to_use: 'Quand le dev dit « crée un composant », « nouveau composant », « ajoute un composant React », « scaffolde le composant », « un composant du DS ».'
 allowed-tools: Read Write Edit
 argument-hint: '[ComponentName]'
 metadata:
@@ -26,7 +27,7 @@ component (`reference`). Never start with the `.tsx`.
 1. Read an already-**migrated** component as reference before writing anything — e.g.
    `packages/reference/src/components/Rating/` (flat, variant + size axes) or
    `packages/reference/src/components/Avatar/` (React 19 compound). Do NOT copy one still on Tailwind
-   (Tabs, Drawer, Carousel, Typeahead, `next/Image`) — those ARE the migration backlog.
+   (Carousel, `next/*`) — those ARE the migration backlog (REACT-134).
 2. Add the BEM skin `packages/styles/src/styles/<block>.css`: block `.ui-<block>` inside
    `@layer ui.components`, `--ui-<block>-*` override vars, tokens only (no literals), logical
    properties. `@import` it from `packages/styles/src/native-styles.css`.

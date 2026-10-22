@@ -13,7 +13,7 @@ Project to generate multi UI framework base on a stencilJS architecture. The pro
 - `packages/shared` - **private** (not published) — shared utils, test-utils, browser mocks, Tailwind theme + fonts, vite plugins (React-flavored)
 - `packages/stencil` - the **Stencil sandbox**: one Web Component project producing native WC + generated React/Angular wrappers (see its `README.md` + `PLAN.md`)
 - `packages/styles` - `@fubaritico/styles` — portable native **BEM skin** (CSS-only, `@layer` + `--ui-*` component vars), fed by tokens. The shipped skin.
-- `packages/tokens` - design tokens (Style Dictionary, OKLCH, DTCG) → generated CSS/JS/TS/Tailwind
+- `packages/tokens` - design tokens (Style Dictionary, DTCG, hex output) → generated CSS/JS/TS/Tailwind
 - `packages/variants` - `@fubaritico/variants` — **framework-agnostic CVA resolvers** (pure TS, no React/DOM; dep `class-variance-authority` only) emitting the skin's BEM class names. Reused by reference + Stencil/Angular/Vue. **The home for variant→class logic** (decided over `shared`/`styles`).
 
 These **7 packages** exist today. `apps/storybook-react` is set up and wired; the other three
@@ -54,7 +54,8 @@ by the infrastructure they happen to be wired to (routing lib, data source, fram
 
 ## NOTICE FOR THE AGENT
 
-THIS FILE AND ALL OTHER DEPENDENT FILES MUST NOT EXCEED 200 LINES. If so, split them in the most relevant way.
+Keep this file and each file it loads under **200 lines** — the documented target (`rules/claude-config.md`):
+longer files cost context and are followed less. Past it, split along the most relevant seam.
 
 ## Source code reference
 
@@ -78,6 +79,9 @@ npx opensrc@0.6 path <repo-git> # GitHub repo URL ex: https://github.com/tamagui
 # above commande fetches the repo if not present see online doc at: https://opensrc.sh/
 
 ```
+
+A fetch **recreates a root `AGENTS.md`** with this same section: delete it. It duplicates this one, and Claude
+Code does not load it while `.claude/CLAUDE.md` exists (`rules/claude-config.md`).
 
 ## Critical Workflow Rules
 

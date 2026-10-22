@@ -88,7 +88,7 @@ Rules:
 - **Styling = the native BEM skin, NOT Tailwind.** A new component consumes a CVA resolver from
   `@fubaritico/variants` (emitting `.ui-<block>` classes) backed by a `<component>.css` in
   `@fubaritico/styles`. The `ui:` Tailwind prefix only survives in the components still queued for
-  migration (Tabs, Drawer, Carousel, Typeahead, `next/Image`) — **never write new `ui:` classes**.
+  migration (Carousel and the `next/*` adapters, excluded from the published build — REACT-134) — **never write new `ui:` classes**.
 - **GENEROUS with override variables — better too many than too few** (the dev, 2026-10-09). Every
   cosmetic property deserves its `--ui-<block>-*`. An unused var costs one line; a missing one forces the
   consumer to bypass the skin, and that is where a theme diverges. Reference density: the `Slider` exposes

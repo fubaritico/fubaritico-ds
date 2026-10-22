@@ -20,7 +20,7 @@ paths:
   the authored reference that travels with the component).
 - Written as **plain Markdown** — fenced ` ```tsx ` code blocks (it does not import the stories).
 - Code samples must be **copy-pastable** and import from the CSS-free subpath
-  `@fubaritico/react/<Component>` (never the Tailwind-leaking barrel — see the `story` skill).
+  `@fubaritico/react/<Component>` (the per-component subpath, not the barrel — see the `story` skill).
 
 ## Mandatory plan (in this order)
 
