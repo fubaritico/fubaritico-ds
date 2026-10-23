@@ -1,99 +1,35 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
-import { customContentFor } from './custom-content.js'
 import {
-  GLOBAL_TOASTER_UID,
-  GLOBAL_TOASTER_VERSION,
-  getGlobalToaster,
-} from './global-toaster.js'
-import { createToaster } from './toast-machine.js'
+  TOASTER_DEFAULTS,
+  TOAST_LEAVE_DURATION,
+  createToaster,
+} from './toast-machine.js'
+import {
+  keyEvent,
+  manualScheduler,
+  message,
+  setup,
+  titles,
+} from './toast.test-utils.js'
 
 import type { ToastInput, ToastScheduler, ToasterOptions } from './types.js'
 
-/** A scheduler driven by hand: `tick(ms)` advances the clock and runs what is due. */
-function manualScheduler() {
-  let now = 0
-  let nextId = 0
-  const timers = new Map<number, { at: number; callback: () => void }>()
-  const scheduler: ToastScheduler = {
-    set: (callback, delay) => {
-      nextId++
-      timers.set(nextId, { at: now + delay, callback })
-      return nextId
-    },
-    clear: (handle) => {
-      timers.delete(handle as number)
-    },
-    now: () => now,
-  }
-  const tick = (ms: number) => {
-    now += ms
-    for (const [id, timer] of [...timers].sort((a, b) => a[1].at - b[1].at)) {
-      if (timer.at <= now && timers.has(id)) {
-        timers.delete(id)
-        timer.callback()
-      }
-    }
-  }
-  return { scheduler, tick, pending: () => timers.size }
-}
-
-/**
- * A toaster on a manual clock, removal at once unless told otherwise.
- *
- * @param options - Options to merge.
- * @returns The toaster, its clock and a listener spy.
- */
-function setup(options: Partial<ToasterOptions> = {}) {
-  const clock = manualScheduler()
-  const toaster = createToaster<string>({
-    uid: 'app',
-    scheduler: clock.scheduler,
-    leaveDuration: 0,
-    ...options,
-  })
-  const listener = vi.fn()
-  toaster.subscribe(listener)
-  return { toaster, listener, ...clock }
-}
-
-/**
- * A toast holding a message with this title.
- *
- * @param title - The message's title.
- * @param rest - Other input fields.
- * @returns The input.
- */
-const message = (
-  title: string,
-  rest: Omit<ToastInput<string>, 'message'> = {}
-): ToastInput<string> => ({ message: { title }, ...rest })
-
-/**
- * The titles on screen, in display order.
- *
- * @param toaster - The toaster.
- * @param toaster.getState - Its snapshot reader.
- * @returns The titles, top to bottom.
- */
-const titles = (toaster: {
-  getState: () => { toasts: readonly { message?: { title?: string } }[] }
-}) => toaster.getState().toasts.map((toast) => toast.message?.title)
-
-/**
- * A key event double.
- *
- * @param key - The key.
- * @param flags - Optional modifier / state flags.
- * @returns The event, with a `preventDefault` spy.
- */
-const keyEvent = (
-  key: string,
-  flags: { ctrlKey?: boolean; defaultPrevented?: boolean } = {}
-) => ({ key, ...flags, preventDefault: vi.fn() })
-
 describe('ToastMachine', () => {
   describe('happy path', () => {
+    it('documents its defaults in one object', () => {
+      expect(TOASTER_DEFAULTS).toEqual({
+        max: 5,
+        duration: 5000,
+        leaveDuration: TOAST_LEAVE_DURATION,
+        position: 'bottom-end',
+        hotkey: 'F8',
+        label: 'Notifications',
+        closeLabel: 'Close',
+      })
+      expect(Object.isFrozen(TOASTER_DEFAULTS)).toBe(true)
+    })
+
     it('shows a toast with the default options', () => {
       const { toaster } = setup()
       const id = toaster.show(message('Saved'))
@@ -261,6 +197,20 @@ describe('ToastMachine', () => {
       expect(titles(toaster)).toEqual([])
     })
 
+    it('keeps a dismissed toast for TOAST_LEAVE_DURATION by default', () => {
+      const clock = manualScheduler()
+      const toaster = createToaster<string>({
+        uid: 'app',
+        scheduler: clock.scheduler,
+      })
+      const id = toaster.show(message('Saved'))
+      toaster.dismiss(id)
+      clock.tick(TOAST_LEAVE_DURATION - 1)
+      expect(titles(toaster)).toEqual(['Saved'])
+      clock.tick(1)
+      expect(titles(toaster)).toEqual([])
+    })
+
     it('does not count a leaving toast towards max', () => {
       const { toaster } = setup({ max: 1, leaveDuration: 200 })
       toaster.show(message('a'))
@@ -290,20 +240,6 @@ describe('ToastMachine', () => {
         const [toast] = toaster.getState().toasts
         expect(toast.custom).toEqual({ kind: 'react', value: '<node>' })
         expect(toast.message).toBeUndefined()
-      })
-
-      it('hands free content to the adapter of its framework', () => {
-        const { toaster } = setup()
-        toaster.show({ custom: { kind: 'react', value: '<node>' } })
-        const [toast] = toaster.getState().toasts
-        expect(customContentFor(toast, 'react')).toBe('<node>')
-      })
-
-      it('tells an adapter to render the message when there is no free content', () => {
-        const { toaster } = setup()
-        toaster.show(message('Saved'))
-        const [toast] = toaster.getState().toasts
-        expect(customContentFor(toast, 'react')).toBeUndefined()
       })
 
       it('keeps a message beside free content', () => {
@@ -548,15 +484,6 @@ describe('ToastMachine', () => {
       )
     })
 
-    it('throws when an adapter reads free content of another framework', () => {
-      const { toaster } = setup()
-      toaster.show({ id: 'up', custom: { kind: 'angular', value: '<tpl>' } })
-      const [toast] = toaster.getState().toasts
-      expect(() => customContentFor(toast, 'react')).toThrow(
-        /angular content, which a react stack cannot render/
-      )
-    })
-
     it.each([
       ['title', { title: 42 }],
       ['description', { description: {} }],
@@ -630,7 +557,7 @@ describe('ToastMachine', () => {
       toaster.setOptions({ renderer: 'react' })
       expect(() => {
         toaster.setOptions({ renderer: 'angular' })
-      }).toThrow(/already rendered by react; a angular adapter/)
+      }).toThrow(/already rendered by react; the angular adapter/)
     })
 
     it('accepts the same renderer declared twice (a remounted adapter)', () => {
@@ -649,80 +576,84 @@ describe('ToastMachine', () => {
       ).toThrow(/rendered by react/)
     })
 
-    it.each([
-      ['ctrlKey', { ctrlKey: true }],
-      ['defaultPrevented', { defaultPrevented: true }],
-    ])('leaves an Escape with %s to others', (_flag, flags) => {
-      const { toaster } = setup()
-      const id = toaster.show(message('Saved'))
-      const event = keyEvent('Escape', flags)
-      expect(toaster.handleToastKeydown(id, event)).toBe(false)
-      expect(event.preventDefault).not.toHaveBeenCalled()
-      expect(titles(toaster)).toEqual(['Saved'])
-    })
+    describe('declined gestures — silent: no throw, the UI state is the answer', () => {
+      it('ignores Escape on a toast that is not dismissible', () => {
+        const { toaster } = setup()
+        const id = toaster.show(message('Uploading', { dismissible: false }))
+        const event = keyEvent('Escape')
+        expect(toaster.handleToastKeydown(id, event)).toBe(false)
+        expect(event.preventDefault).not.toHaveBeenCalled()
+        expect(titles(toaster)).toEqual(['Uploading'])
+      })
 
-    it('ignores Escape on a toast that is not dismissible', () => {
-      const { toaster } = setup()
-      const id = toaster.show(message('Uploading', { dismissible: false }))
-      const event = keyEvent('Escape')
-      expect(toaster.handleToastKeydown(id, event)).toBe(false)
-      expect(event.preventDefault).not.toHaveBeenCalled()
-      expect(titles(toaster)).toEqual(['Uploading'])
-    })
+      it('ignores Escape on a toast that is leaving or gone', () => {
+        const { toaster } = setup({ leaveDuration: 200 })
+        const id = toaster.show(message('Saved'))
+        toaster.dismiss(id)
+        expect(toaster.handleToastKeydown(id, keyEvent('Escape'))).toBe(false)
+        expect(toaster.handleToastKeydown('nope', keyEvent('Escape'))).toBe(
+          false
+        )
+      })
 
-    it('ignores Escape on a toast that is leaving or gone', () => {
-      const { toaster } = setup({ leaveDuration: 200 })
-      const id = toaster.show(message('Saved'))
-      toaster.dismiss(id)
-      expect(toaster.handleToastKeydown(id, keyEvent('Escape'))).toBe(false)
-      expect(toaster.handleToastKeydown('nope', keyEvent('Escape'))).toBe(false)
-    })
+      it.each([
+        ['ctrlKey', { ctrlKey: true }],
+        ['defaultPrevented', { defaultPrevented: true }],
+      ])('leaves an Escape with %s to others', (_flag, flags) => {
+        const { toaster } = setup()
+        const id = toaster.show(message('Saved'))
+        const event = keyEvent('Escape', flags)
+        expect(toaster.handleToastKeydown(id, event)).toBe(false)
+        expect(event.preventDefault).not.toHaveBeenCalled()
+        expect(titles(toaster)).toEqual(['Saved'])
+      })
 
-    it('still dismisses a non-dismissible toast by code', () => {
-      const { toaster } = setup()
-      const id = toaster.show(message('Uploading', { dismissible: false }))
-      expect(toaster.dismiss(id)).toBe(true)
-      expect(titles(toaster)).toEqual([])
-    })
+      it('still dismisses a non-dismissible toast by code', () => {
+        const { toaster } = setup()
+        const id = toaster.show(message('Uploading', { dismissible: false }))
+        expect(toaster.dismiss(id)).toBe(true)
+        expect(titles(toaster)).toEqual([])
+      })
 
-    it('does not consume the hotkey when the stack is empty', () => {
-      const { toaster, listener } = setup()
-      const event = keyEvent('F8')
-      expect(toaster.handleKeydown(event)).toBe(false)
-      expect(event.preventDefault).not.toHaveBeenCalled()
-      expect(listener).not.toHaveBeenCalled()
-    })
+      it('does not consume the hotkey when the stack is empty', () => {
+        const { toaster, listener } = setup()
+        const event = keyEvent('F8')
+        expect(toaster.handleKeydown(event)).toBe(false)
+        expect(event.preventDefault).not.toHaveBeenCalled()
+        expect(listener).not.toHaveBeenCalled()
+      })
 
-    it('does not consume the hotkey when only leaving toasts remain', () => {
-      const { toaster } = setup({ leaveDuration: 200 })
-      const id = toaster.show(message('Saved'))
-      toaster.dismiss(id)
-      expect(toaster.handleKeydown(keyEvent('F8'))).toBe(false)
-    })
+      it('does not consume the hotkey when only leaving toasts remain', () => {
+        const { toaster } = setup({ leaveDuration: 200 })
+        const id = toaster.show(message('Saved'))
+        toaster.dismiss(id)
+        expect(toaster.handleKeydown(keyEvent('F8'))).toBe(false)
+      })
 
-    it('leaves a modified hotkey to the browser', () => {
-      const { toaster } = setup()
-      toaster.show(message('Saved'))
-      expect(toaster.handleKeydown(keyEvent('F8', { ctrlKey: true }))).toBe(
-        false
-      )
-      expect(toaster.getState().focusToken).toBe(0)
-    })
+      it('leaves a modified hotkey to the browser', () => {
+        const { toaster } = setup()
+        toaster.show(message('Saved'))
+        expect(toaster.handleKeydown(keyEvent('F8', { ctrlKey: true }))).toBe(
+          false
+        )
+        expect(toaster.getState().focusToken).toBe(0)
+      })
 
-    it('leaves a hotkey another listener consumed', () => {
-      const { toaster } = setup()
-      toaster.show(message('Saved'))
-      const event = keyEvent('F8', { defaultPrevented: true })
-      expect(toaster.handleKeydown(event)).toBe(false)
-      expect(toaster.getState().focusToken).toBe(0)
-    })
+      it('leaves a hotkey another listener consumed', () => {
+        const { toaster } = setup()
+        toaster.show(message('Saved'))
+        const event = keyEvent('F8', { defaultPrevented: true })
+        expect(toaster.handleKeydown(event)).toBe(false)
+        expect(toaster.getState().focusToken).toBe(0)
+      })
 
-    it('reports a dismiss of an unknown or leaving toast as declined', () => {
-      const { toaster } = setup({ leaveDuration: 200 })
-      expect(toaster.dismiss('nope')).toBe(false)
-      const id = toaster.show(message('Saved'))
-      toaster.dismiss(id)
-      expect(toaster.dismiss(id)).toBe(false)
+      it('reports a dismiss of an unknown or leaving toast as declined', () => {
+        const { toaster } = setup({ leaveDuration: 200 })
+        expect(toaster.dismiss('nope')).toBe(false)
+        const id = toaster.show(message('Saved'))
+        toaster.dismiss(id)
+        expect(toaster.dismiss(id)).toBe(false)
+      })
     })
   })
 
@@ -752,16 +683,15 @@ describe('ToastMachine', () => {
       ).toThrow(error)
       expect(titles(toaster)).toEqual([])
     })
+  })
 
+  describe('edge cases', () => {
     it('consumes the hotkey from an event without preventDefault', () => {
       const { toaster } = setup()
       toaster.show(message('Saved'))
       expect(toaster.handleKeydown({ key: 'F8' })).toBe(true)
       expect(toaster.getState().focusToken).toBe(1)
     })
-  })
-
-  describe('edge cases', () => {
     it('returns the same snapshot reference until something changes', () => {
       const { toaster } = setup()
       const before = toaster.getState()
@@ -856,99 +786,6 @@ describe('ToastMachine', () => {
       toaster.show(message('b'))
       expect(listener).not.toHaveBeenCalled()
       expect(again).toHaveBeenCalledTimes(1)
-    })
-  })
-})
-
-describe('getGlobalToaster', () => {
-  const SLOT = Symbol.for('@fubaritico/toaster')
-  const host = globalThis as unknown as Record<symbol, unknown>
-
-  afterEach(() => {
-    Reflect.deleteProperty(host, SLOT)
-  })
-
-  describe('happy path', () => {
-    it('returns the same machine to every caller', () => {
-      expect(getGlobalToaster<string>()).toBe(getGlobalToaster<string>())
-    })
-
-    it('stores it under the registered symbol another copy of the package resolves', () => {
-      const toaster = getGlobalToaster<string>()
-      expect(host[SLOT]).toEqual({ version: GLOBAL_TOASTER_VERSION, toaster })
-    })
-
-    it('exposes no destroy, at run time either', () => {
-      const shared = getGlobalToaster<string>() as unknown as Record<
-        string,
-        unknown
-      >
-      expect(shared.destroy).toBeUndefined()
-      expect(Object.isFrozen(shared)).toBe(true)
-    })
-
-    it('namespaces its ids with the page uid', () => {
-      const id = getGlobalToaster<string>().show(message('Saved'))
-      expect(id.startsWith(`${GLOBAL_TOASTER_UID}-`)).toBe(true)
-    })
-  })
-
-  describe('managed errors', () => {
-    it('throws when the page was set up by a copy on another contract version', () => {
-      const valid = getGlobalToaster<string>()
-      host[SLOT] = { version: GLOBAL_TOASTER_VERSION + 1, toaster: valid }
-      expect(() => getGlobalToaster()).toThrow(
-        /Align the design-system versions/
-      )
-    })
-
-    it.each([
-      ['a string', 'hijacked'],
-      ['an object without a toaster', { version: GLOBAL_TOASTER_VERSION }],
-      [
-        'a toaster missing its methods',
-        { version: GLOBAL_TOASTER_VERSION, toaster: { show: () => '' } },
-      ],
-      [
-        'a toaster without its attribute builders',
-        {
-          version: GLOBAL_TOASTER_VERSION,
-          toaster: Object.fromEntries(
-            [
-              'show',
-              'dismiss',
-              'dismissAll',
-              'pause',
-              'resume',
-              'setOptions',
-              'getState',
-              'subscribe',
-              'batch',
-              'handleKeydown',
-              'handleToastKeydown',
-            ].map((name) => [name, () => undefined])
-          ),
-        },
-      ],
-    ])('throws when the slot holds %s', (_label, value) => {
-      host[SLOT] = value
-      expect(() => getGlobalToaster()).toThrow(/is not a toaster/)
-    })
-  })
-
-  // L4: N/A — the slot's content is checked (managed errors); no async path.
-
-  describe('edge cases', () => {
-    it('keeps the stack of one bundle when another unsubscribes', () => {
-      const shared = getGlobalToaster<string>()
-      const first = vi.fn()
-      const second = vi.fn()
-      const unsubscribeFirst = shared.subscribe(first)
-      shared.subscribe(second)
-      unsubscribeFirst()
-      shared.show(message('Saved'))
-      expect(first).not.toHaveBeenCalled()
-      expect(second).toHaveBeenCalledTimes(1)
     })
   })
 })

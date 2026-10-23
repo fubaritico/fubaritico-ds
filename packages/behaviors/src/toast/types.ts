@@ -137,7 +137,8 @@ export interface ToasterOptions {
   duration?: number
   /**
    * How long a dismissed toast stays in its `leaving` phase before removal, in ms — the length of
-   * the skin's exit transition (`--ui-toast-leave-duration`); defaults to `200`. `0` removes at once.
+   * the skin's exit transition (`--ui-toast-transition-duration`); defaults to `150`
+   * (`TOAST_LEAVE_DURATION`). `0` removes at once.
    */
   leaveDuration?: number
   /** Where the stack sits; defaults to `'bottom-end'`. */

@@ -3,13 +3,19 @@ import { hasModifier } from '../internal/keys.js'
 import { Store } from '../internal/store.js'
 import { globalTimers } from '../internal/timers.js'
 
-import { TOAST_POSITIONS, TOAST_VARIANTS } from './types.js'
+import {
+  checkContent,
+  checkDuration,
+  checkFixedOptions,
+  checkOptions,
+  checkRendererConflict,
+  typeName,
+} from './toast-validation.js'
 
 import type {
   ToastInput,
   ToastPauseReason,
   ToastPoliteness,
-  ToastPosition,
   ToastRecord,
   ToastScheduler,
   ToasterOptions,
@@ -22,26 +28,35 @@ import type {
   TimerHandle,
 } from '../common/types.js'
 
-/** How many toasts are shown at once by default. */
-const DEFAULT_MAX = 5
+/**
+ * Default length of a toast's exit transition, in ms — the skin's `--ui-toast-transition-duration`
+ * (`--duration-fast`). Exported so an adapter's browser test can hold the two together.
+ */
+export const TOAST_LEAVE_DURATION = 150
 
-/** Default lifetime of a toast, in ms. */
-const DEFAULT_DURATION = 5000
+/**
+ * The options a toaster takes when they are not given — the one home of these values (the JSDoc of
+ * {@link ToasterOptions} names them, this holds them).
+ */
+export const TOASTER_DEFAULTS = Object.freeze({
+  /** How many toasts are shown at once. */
+  max: 5,
+  /** Lifetime of a toast, in ms. */
+  duration: 5000,
+  /** Length of a toast's exit, in ms. */
+  leaveDuration: TOAST_LEAVE_DURATION,
+  /** Where the stack sits. */
+  position: 'bottom-end',
+  /** The key that moves focus into the stack (Radix Toast's choice). */
+  hotkey: 'F8',
+  /** Accessible name of the stack's region. */
+  label: 'Notifications',
+  /** Accessible name of a toast's close button. */
+  closeLabel: 'Close',
+})
 
-/** Default length of a toast's exit transition, in ms — `--ui-toast-leave-duration` in the skin. */
-const DEFAULT_LEAVE_DURATION = 200
-
-/** Where the stack sits by default. */
-const DEFAULT_POSITION: ToastPosition = 'bottom-end'
-
-/** The key that moves focus into the stack by default (Radix Toast's choice). */
-const DEFAULT_HOTKEY = 'F8'
-
-/** Default accessible name of the stack's region. */
-const DEFAULT_LABEL = 'Notifications'
-
-/** Default accessible name of a toast's close button. */
-const DEFAULT_CLOSE_LABEL = 'Close'
+/** The key that closes the focused toast. */
+const DISMISS_KEY = 'Escape'
 
 /** A toast plus what the machine tracks about its timer. */
 interface Entry<C> {
@@ -53,158 +68,6 @@ interface Entry<C> {
   startedAt: number | null
   /** Its pending timer — the end of its life, or the end of its exit (boxed: any handle value). */
   timer: { handle: TimerHandle } | null
-}
-
-/**
- * Checks a lifetime: a positive number of ms, or `Infinity`.
- *
- * @param value - The lifetime to check.
- * @param name - Where it comes from, for the message.
- * @returns The value, when valid.
- * @throws RangeError when it is not positive (`NaN`, `0`, a negative number).
- */
-function checkDuration(value: number, name: string): number {
-  if (!(value > 0))
-    throw new RangeError(
-      `Toast: ${name} must be a positive number of milliseconds or Infinity, got ${String(value)}.`
-    )
-  return value
-}
-
-/** The string options: each must be a non-empty string when given. */
-const STRING_OPTIONS = ['hotkey', 'label', 'closeLabel', 'renderer'] as const
-
-/** The options fixed at creation, refused by `setOptions`. */
-const FIXED_OPTIONS = ['uid', 'scheduler'] as const
-
-/**
- * Whether a value is an object one can read fields from.
- *
- * @param value - Anything.
- * @returns `true` for a non-null object.
- */
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
-}
-
-/**
- * Names a value's type for an error message.
- *
- * @param value - Anything.
- * @returns `'null'` or its `typeof`.
- */
-const typeName = (value: unknown): string =>
-  value === null ? 'null' : typeof value
-
-/**
- * Checks, at run time, the options present in an options object or a patch. The shared toaster is
- * configured by bundles of other frameworks and by plain JavaScript, where the types do not hold:
- * an option out of contract must fail in the caller, not in a later snapshot every bundle reads.
- *
- * @param options - Options or a patch.
- * @throws RangeError when `max`, `duration`, `leaveDuration` or `position` is out of range.
- * @throws TypeError when a string option is not a non-empty string.
- */
-function checkOptions(options: ToasterOptionsPatch): void {
-  const { max, duration, leaveDuration } = options
-  if (max !== undefined && (!Number.isInteger(max) || max < 1))
-    throw new RangeError(
-      `Toast: max must be a positive integer, got ${String(max)}.`
-    )
-  if (duration !== undefined) checkDuration(duration, 'the toaster duration')
-  if (
-    leaveDuration !== undefined &&
-    (!Number.isFinite(leaveDuration) || leaveDuration < 0)
-  )
-    throw new RangeError(
-      `Toast: leaveDuration must be zero or a positive number of milliseconds, got ${String(leaveDuration)}.`
-    )
-  const position: unknown = options.position
-  if (position !== undefined && !TOAST_POSITIONS.some((p) => p === position))
-    throw new RangeError(
-      `Toast: position must be one of ${TOAST_POSITIONS.join(', ')}, got ${JSON.stringify(position)}.`
-    )
-  for (const name of STRING_OPTIONS) {
-    const value: unknown = options[name]
-    if (value !== undefined && (typeof value !== 'string' || value === ''))
-      throw new TypeError(
-        `Toast: ${name} must be a non-empty string, got ${typeName(value)}.`
-      )
-  }
-}
-
-/**
- * Checks a framework-neutral message: an object of string fields and a known variant.
- *
- * @param message - The `message` a caller passed.
- * @throws TypeError when it is not an object, a field is not a string, or the variant is unknown.
- */
-function checkMessage(message: unknown): void {
-  if (!isRecord(message))
-    throw new TypeError(
-      `Toast: message must be an object ({ title, description, icon, variant }), got ${typeName(message)}.`
-    )
-  for (const field of ['title', 'description', 'icon'] as const) {
-    const value = message[field]
-    if (value !== undefined && typeof value !== 'string')
-      throw new TypeError(
-        `Toast: message.${field} must be a string, got ${typeName(value)}.`
-      )
-  }
-  const { variant } = message
-  if (variant !== undefined && !TOAST_VARIANTS.some((v) => v === variant))
-    throw new TypeError(
-      `Toast: message.variant must be one of ${TOAST_VARIANTS.join(', ')}, got ${JSON.stringify(variant)}.`
-    )
-}
-
-/**
- * Checks free content: an object naming its framework, one the stack can render.
- *
- * @param custom - The `custom` content a caller passed.
- * @param renderer - The framework the stack's adapter renders, when one is declared.
- * @throws TypeError when it is not an object or has no `kind`.
- * @throws Error when it belongs to a framework the stack cannot render.
- */
-function checkCustom(custom: unknown, renderer: string | undefined): void {
-  if (!isRecord(custom))
-    throw new TypeError(
-      `Toast: custom must be an object ({ kind, value }), got ${typeName(custom)}.`
-    )
-  const { kind } = custom
-  if (typeof kind !== 'string' || kind === '')
-    throw new TypeError(
-      'Toast: a `custom` content needs its `kind` — the framework that renders it.'
-    )
-  if (renderer !== undefined && kind !== renderer)
-    throw new Error(
-      `Toast: this page's stack is rendered by ${renderer}, it cannot render ${kind} content. ` +
-        `Send a \`message\` to share a toast across frameworks.`
-    )
-}
-
-/**
- * Checks, at run time, what a caller asks to show — reached by plain JavaScript too, so a field out
- * of contract fails here, in the caller, not later in a class name or an icon lookup.
- *
- * @param input - The toast to show.
- * @param renderer - The framework the stack's adapter renders, when one is declared.
- * @throws TypeError when the input is out of contract (nothing to render, a malformed message or
- *   custom content).
- * @throws Error when the custom content belongs to a framework the stack cannot render.
- */
-function checkContent(input: unknown, renderer: string | undefined): void {
-  if (!isRecord(input))
-    throw new TypeError(
-      `Toast: show() takes an object ({ message, custom, … }), got ${typeName(input)}.`
-    )
-  const { message, custom } = input
-  if (message === undefined && custom === undefined)
-    throw new TypeError(
-      'Toast: show() needs a `message` or a `custom` content — there is nothing to render.'
-    )
-  if (message !== undefined) checkMessage(message)
-  if (custom !== undefined) checkCustom(custom, renderer)
 }
 
 /**
@@ -265,11 +128,7 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
    * @throws Error when another framework already declared itself the stack's `renderer`.
    */
   setOptions(patch: ToasterOptionsPatch): void {
-    for (const name of FIXED_OPTIONS)
-      if (Object.prototype.hasOwnProperty.call(patch, name))
-        throw new TypeError(
-          `Toast: ${name} is fixed when the toaster is created; setOptions cannot change it.`
-        )
+    checkFixedOptions(patch)
     checkOptions(patch)
     // An absent option and an option passed as `undefined` mean the same: keep the current value.
     const defined = Object.fromEntries(
@@ -281,16 +140,7 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
       Object.keys(defined) as (keyof ToasterOptionsPatch)[]
     ).some((name) => defined[name] !== this.opts[name])
     if (!changed) return
-    const { renderer } = this.opts
-    if (
-      defined.renderer !== undefined &&
-      renderer !== undefined &&
-      defined.renderer !== renderer
-    )
-      throw new Error(
-        `Toast: this page's stack is already rendered by ${renderer}; a ${defined.renderer} ` +
-          `adapter cannot render it too. Mount one Toaster per page.`
-      )
+    checkRendererConflict(this.opts.renderer, defined.renderer)
     this.opts = { ...this.opts, ...defined }
     this.batch(() => {
       this.evict()
@@ -311,7 +161,7 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
   show(input: ToastInput<C>): string {
     checkContent(input, this.opts.renderer)
     const duration = checkDuration(
-      input.duration ?? this.opts.duration ?? DEFAULT_DURATION,
+      input.duration ?? this.opts.duration ?? TOASTER_DEFAULTS.duration,
       'duration'
     )
     const id = input.id ?? `${slug(this.opts.uid)}-${String(++this.sequence)}`
@@ -406,7 +256,8 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
    */
   handleKeydown(event: KeyboardLike): boolean {
     if (hasModifier(event) || event.defaultPrevented === true) return false
-    if (event.key !== (this.opts.hotkey ?? DEFAULT_HOTKEY)) return false
+    if (event.key !== (this.opts.hotkey ?? TOASTER_DEFAULTS.hotkey))
+      return false
     if (this.visibleEntries().length === 0) return false
     event.preventDefault?.()
     this.focusToken++
@@ -423,7 +274,7 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
    */
   handleToastKeydown(id: string, event: KeyboardLike): boolean {
     if (hasModifier(event) || event.defaultPrevented === true) return false
-    if (event.key !== 'Escape') return false
+    if (event.key !== DISMISS_KEY) return false
     const entry = this.find(id)
     if (entry?.record.phase !== 'visible' || !entry.record.dismissible)
       return false
@@ -438,10 +289,10 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
    * @returns DOM attributes (presence semantics).
    */
   regionAttrs(): DomAttributes {
-    const hotkey = this.opts.hotkey ?? DEFAULT_HOTKEY
+    const hotkey = this.opts.hotkey ?? TOASTER_DEFAULTS.hotkey
     return {
       role: 'region',
-      'aria-label': `${this.opts.label ?? DEFAULT_LABEL} (${hotkey})`,
+      'aria-label': `${this.opts.label ?? TOASTER_DEFAULTS.label} (${hotkey})`,
       tabindex: -1,
     }
   }
@@ -465,7 +316,7 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
   closeButtonAttrs(toast: ToastRecord<C>): DomAttributes {
     return {
       type: 'button',
-      'aria-label': this.opts.closeLabel ?? DEFAULT_CLOSE_LABEL,
+      'aria-label': this.opts.closeLabel ?? TOASTER_DEFAULTS.closeLabel,
       'aria-controls': toast.domId,
     }
   }
@@ -507,7 +358,7 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
    * @returns The immutable snapshot.
    */
   protected createSnapshot(): ToasterSnapshot<C> {
-    const position = this.opts.position ?? DEFAULT_POSITION
+    const position = this.opts.position ?? TOASTER_DEFAULTS.position
     const oldestFirst = this.entries.map((entry) => entry.record)
     return {
       toasts: position.startsWith('top') ? oldestFirst : oldestFirst.reverse(),
@@ -554,7 +405,7 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
 
   /** Starts the exit of the oldest visible toasts until at most `max` are left. */
   private evict(): void {
-    const max = this.opts.max ?? DEFAULT_MAX
+    const max = this.opts.max ?? TOASTER_DEFAULTS.max
     const visible = this.visibleEntries()
     visible.slice(0, Math.max(0, visible.length - max)).forEach((entry) => {
       this.leave(entry)
@@ -569,14 +420,14 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
   private leave(entry: Entry<C>): void {
     this.clearTimer(entry)
     entry.record = { ...entry.record, phase: 'leaving' }
-    const delay = this.opts.leaveDuration ?? DEFAULT_LEAVE_DURATION
+    const delay = this.opts.leaveDuration ?? TOASTER_DEFAULTS.leaveDuration
     if (delay === 0) {
       this.remove(entry)
       return
     }
     entry.timer = {
       handle: this.scheduler.set(() => {
-        entry.timer = null
+        this.releaseTimer(entry)
         this.remove(entry)
         this.commit()
       }, delay),
@@ -602,8 +453,7 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
     if (this.pauseReasons.size > 0 || entry.remaining === Infinity) return
     entry.timer = {
       handle: this.scheduler.set(() => {
-        entry.timer = null
-        entry.startedAt = null
+        this.releaseTimer(entry)
         this.batch(() => {
           this.leave(entry)
           this.commit()
@@ -634,6 +484,15 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
    */
   private clearTimer(entry: Entry<C>): void {
     if (entry.timer !== null) this.scheduler.clear(entry.timer.handle)
+    this.releaseTimer(entry)
+  }
+
+  /**
+   * Forgets a toast's timer — after it fired, or once cleared.
+   *
+   * @param entry - The toast.
+   */
+  private releaseTimer(entry: Entry<C>): void {
     entry.timer = null
     entry.startedAt = null
   }
