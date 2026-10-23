@@ -1,14 +1,15 @@
 ---
 paths:
-  - "packages/**"
-  - "apps/**"
-  - "package.json"
-  - "pnpm-workspace.yaml"
-  - "nx.json"
-  - "lerna.json"
-  - "eslint.config.js"
-  - ".github/**"
+  - 'packages/**'
+  - 'apps/**'
+  - 'package.json'
+  - 'pnpm-workspace.yaml'
+  - 'nx.json'
+  - 'lerna.json'
+  - 'eslint.config.js'
+  - '.github/**'
 ---
+
 # Architecture — fubaritico-ds
 
 > Multi-framework **design-system generator** built on **Stencil**. From one Web Component project
@@ -18,19 +19,19 @@ paths:
 
 ## Tech Stack
 
-| Category        | Technology                                     | Version |
-| --------------- | ---------------------------------------------- | ------- |
-| Package manager | pnpm (workspaces + catalog)                    | 10.8.1  |
-| Monorepo runner | Lerna (powered by Nx)                          | 8.2.x   |
-| Web Components  | Stencil (`@stencil/core`)                      | 4.43.5  |
-| WC → React      | `@stencil/react-output-target`                 | 1.5.x   |
-| WC → Angular    | `@stencil/angular-output-target`               | 1.3.x   |
-| Reference UI    | React                                          | 19.2.x  |
+| Category        | Technology                                      | Version |
+| --------------- | ----------------------------------------------- | ------- |
+| Package manager | pnpm (workspaces + catalog)                     | 10.8.1  |
+| Monorepo runner | Lerna (powered by Nx)                           | 8.2.x   |
+| Web Components  | Stencil (`@stencil/core`)                       | 4.43.5  |
+| WC → React      | `@stencil/react-output-target`                  | 1.5.x   |
+| WC → Angular    | `@stencil/angular-output-target`                | 1.3.x   |
+| Reference UI    | React                                           | 19.2.x  |
 | Styling         | Native BEM skin (`@layer`, `--ui-*` vars) + CVA | —       |
-| Design tokens   | Style Dictionary (DTCG, hex output)            | —       |
-| Language        | TypeScript                                     | ~5.7.2  |
-| Testing         | Vitest 4.1.8 (+ `@stencil/vitest`, RTL, jsdom) | —       |
-| Lint            | ESLint 9 (flat config)                         | —       |
+| Design tokens   | Style Dictionary (DTCG, hex output)             | —       |
+| Language        | TypeScript                                      | ~5.7.2  |
+| Testing         | Vitest 4.1.8 (+ `@stencil/vitest`, RTL, jsdom)  | —       |
+| Lint            | ESLint 9 (flat config)                          | —       |
 
 ## Project Structure
 
@@ -133,6 +134,20 @@ commitlint (body lines ≤ 100 chars). Husky is wired via the root `prepare: hus
 Allowed types: `build chore ci docs feat fix perf refactor revert style test`
 Format: `type(scope): subject` (lowercase, no trailing period, ≤ 100 chars).
 Scopes: `reference` (or `ui`), `behaviors`, `shared`, `stencil`, `styles`, `tokens`, `variants`, `repo` (root/monorepo).
+
+**Branches and pull requests (the dev's call, 2026-10-23)** — so `main` stays releasable while a
+ticket spans several commits:
+
+- A ticket's work goes on its own branch, cut from `main` before the first edit (`git switch -c`
+  carries uncommitted work along), named `<type>/<TICKET>-<title-slug>`: the commit type, the ticket
+  (`/trello`), its title in lowercase ASCII with dashes — `[REACT-152 · BEHAVIORS] Toast : la pile de
+notifications` → `feat/REACT-152-toast-la-pile-de-notifications`.
+- Once the dev validated the work: push, open a PR to `main` (`gh pr create`, the ticket in the
+  body), link it on the ticket (`trello link`). `ci.yml` runs on it.
+- CI green → merge **fast-forward** (`git merge --ff-only` on `main`, push): GitHub marks the PR merged.
+  Never squash or rebase-merge — they rewrite the hashes the tickets cite. `main` behind → rebase the
+  branch first, before any hash is cited.
+- Pushing and merging are outward-facing: the dev's go each time.
 
 ## Forbidden
 
