@@ -11,7 +11,11 @@ import { createTooltipService } from '@fubaritico/behaviors'
 
 import { toReactAttributes } from '../../utils'
 
-import type { TooltipOptions, TooltipService } from '@fubaritico/behaviors'
+import type {
+  TooltipOptions,
+  TooltipOptionsPatch,
+  TooltipService,
+} from '@fubaritico/behaviors'
 import type {
   FocusEvent,
   HTMLAttributes,
@@ -69,7 +73,7 @@ export function useTooltip(options: UseTooltipOptions = {}): UseTooltipResult {
       service.setOptions(serviceOptions)
       return
     }
-    const patch: Partial<TooltipOptions> = {}
+    const patch: TooltipOptionsPatch = {}
     for (const [name, value] of Object.entries(serviceOptions))
       if (value !== undefined) Object.assign(patch, { [name]: value })
     service.setOptions(patch)

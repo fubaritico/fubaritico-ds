@@ -9,6 +9,8 @@ export interface KeyboardLike {
   key: string
   /** Called when the service consumes the key. */
   preventDefault?: () => void
+  /** Whether another handler already consumed it — a service that reads it leaves the key alone. */
+  defaultPrevented?: boolean
   /** Modifier state: a modified key is a browser / AT shortcut and is never consumed. */
   altKey?: boolean
   /** See `altKey`. */
@@ -35,6 +37,20 @@ export type DomAttributes = Record<string, string | number | undefined>
 
 /** Text direction — decides which horizontal arrow means "next" / "more". */
 export type Direction = 'ltr' | 'rtl'
+
+/** A timer handle, as returned by a scheduler. Opaque: only handed back to its `clear`. */
+export type TimerHandle = unknown
+
+/**
+ * The timers a service delays with — a port, so tests drive time by hand and a framework may plug its
+ * own. Fixed when the service is created: a handle is only ever cleared by the scheduler that set it.
+ */
+export interface TimerScheduler {
+  /** Runs `callback` after `delay` milliseconds. */
+  set: (callback: () => void, delay: number) => TimerHandle
+  /** Cancels a pending `set`. */
+  clear: (handle: TimerHandle) => void
+}
 
 /** Listener notified with each new snapshot of a service. */
 export type Listener<S> = (snapshot: S) => void

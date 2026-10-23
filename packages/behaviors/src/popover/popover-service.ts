@@ -1,3 +1,4 @@
+import { slug } from '../internal/ids.js'
 import { Store } from '../internal/store.js'
 
 import type {
@@ -6,14 +7,6 @@ import type {
   PopoverToggleState,
 } from './types.js'
 import type { DomAttributes } from '../common/types.js'
-
-/**
- * Makes a string safe inside an HTML id and a CSS dashed ident.
- *
- * @param value - Any string (a framework-generated id…).
- * @returns The string with every character outside `[A-Za-z0-9_-]` replaced by `-`.
- */
-const slug = (value: string): string => value.replace(/[^\w-]/g, '-')
 
 /** Focusable descendants, in DOM order — what receives focus when the surface opens. */
 const INITIAL_FOCUS_SELECTOR = [

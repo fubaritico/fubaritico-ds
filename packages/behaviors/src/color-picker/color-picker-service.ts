@@ -1,3 +1,4 @@
+import { hasModifier } from '../internal/keys.js'
 import { clamp } from '../internal/math.js'
 import { Store } from '../internal/store.js'
 
@@ -472,7 +473,7 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
    */
   handleKeydown(target: ColorPickerTarget, event: KeyboardLike): boolean {
     // Alt / Ctrl / Cmd + key belong to the browser and assistive technology.
-    if (event.altKey || event.ctrlKey || event.metaKey) return false
+    if (hasModifier(event)) return false
     if (this.isTargetBlocked(target)) return false
 
     // Escape during a drag on this surface puts the colour back.

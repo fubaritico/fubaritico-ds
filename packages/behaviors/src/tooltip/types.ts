@@ -1,16 +1,10 @@
-/** A timer handle, as returned by the scheduler. Opaque: only handed back to `clear`. */
-export type TimerHandle = unknown
+import type { TimerScheduler } from '../common/types.js'
 
 /**
  * The timers the service delays with — a port, so tests drive time synchronously and a framework
  * may plug its own. Defaults to the global `setTimeout` / `clearTimeout`.
  */
-export interface TooltipScheduler {
-  /** Runs `callback` after `delay` milliseconds. */
-  set: (callback: () => void, delay: number) => TimerHandle
-  /** Cancels a pending `set`. */
-  clear: (handle: TimerHandle) => void
-}
+export type TooltipScheduler = TimerScheduler
 
 /** Options of a TooltipService. Every one may be changed later through `setOptions`. */
 export interface TooltipOptions {
@@ -40,9 +34,12 @@ export interface TooltipOptions {
   disabled?: boolean
   /** Called when the open state changes (pointer, focus, Escape, an imperative call). */
   onOpenChange?: (open: boolean) => void
-  /** Timer port; defaults to the global timers. */
+  /** Timer port; defaults to the global timers. Fixed at creation: `setOptions` does not take it. */
   scheduler?: TooltipScheduler
 }
+
+/** What `setOptions` accepts: every option but the timer port, fixed at creation. */
+export type TooltipOptionsPatch = Partial<Omit<TooltipOptions, 'scheduler'>>
 
 /** Immutable snapshot of a TooltipService. */
 export interface TooltipSnapshot {

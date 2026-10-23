@@ -1,43 +1,25 @@
+import { slug } from '../internal/ids.js'
+import { hasModifier } from '../internal/keys.js'
 import { Store } from '../internal/store.js'
+import { globalTimers } from '../internal/timers.js'
 
 import type {
-  TimerHandle,
   TooltipOptions,
+  TooltipOptionsPatch,
   TooltipScheduler,
   TooltipSnapshot,
 } from './types.js'
-import type { DomAttributes, KeyboardLike } from '../common/types.js'
+import type {
+  DomAttributes,
+  KeyboardLike,
+  TimerHandle,
+} from '../common/types.js'
 
 /** Default delay before a hovered trigger opens the bubble, in ms. */
 const DEFAULT_OPEN_DELAY = 300
 
 /** Default grace delay before the bubble closes after the pointer leaves, in ms. */
 const DEFAULT_CLOSE_DELAY = 150
-
-/** The global timer functions, typed here: the package compiles without DOM or Node types. */
-interface TimerHost {
-  /** Global `setTimeout`. */
-  setTimeout: (callback: () => void, delay: number) => TimerHandle
-  /** Global `clearTimeout`. */
-  clearTimeout: (handle: TimerHandle) => void
-}
-
-/** The global timers, behind the scheduler port. */
-const globalScheduler: TooltipScheduler = {
-  set: (callback, delay) =>
-    (globalThis as unknown as TimerHost).setTimeout(callback, delay),
-  clear: (handle) => {
-    ;(globalThis as unknown as TimerHost).clearTimeout(handle)
-  },
-}
-
-/**
- * Makes a string safe inside an HTML id.
- *
- * @param value - Any string (a framework-generated id…).
- * @returns The string with every character outside `[A-Za-z0-9_-]` replaced by `-`.
- */
-const slug = (value: string): string => value.replace(/[^\w-]/g, '-')
 
 /**
  * Tooltip trigger behaviour as a framework-agnostic service — WCAG 1.4.13 "content on hover or
@@ -66,6 +48,8 @@ export class TooltipService extends Store<TooltipSnapshot> {
   private focused = false
   /** The pending open or close, if any — one at a time (boxed: a handle may be any value). */
   private pending: { handle: TimerHandle } | null = null
+  /** The timers, fixed at creation: a handle is only ever cleared by the scheduler that set it. */
+  private readonly scheduler: TooltipScheduler
 
   /**
    * @param options - Initial options; `uid` is required.
@@ -73,6 +57,7 @@ export class TooltipService extends Store<TooltipSnapshot> {
   constructor(options: TooltipOptions) {
     super()
     this.opts = { ...options }
+    this.scheduler = options.scheduler ?? globalTimers
     this.controlled = options.open !== undefined
     this.open = options.disabled
       ? false
@@ -96,7 +81,7 @@ export class TooltipService extends Store<TooltipSnapshot> {
    * @param patch - The options to change. `'open' in patch` distinguishes an absent prop from one
    *   passed as `undefined`.
    */
-  setOptions(patch: Partial<TooltipOptions>): void {
+  setOptions(patch: TooltipOptionsPatch): void {
     const before = this.getState()
     const uidChanged = patch.uid !== undefined && patch.uid !== this.opts.uid
     const describeChanged =
@@ -203,7 +188,7 @@ export class TooltipService extends Store<TooltipSnapshot> {
    * @returns `true` when the key was consumed.
    */
   handleKeydown(event: KeyboardLike): boolean {
-    if (event.altKey || event.ctrlKey || event.metaKey) return false
+    if (hasModifier(event)) return false
     if (event.key !== 'Escape') return false
     if (!this.getState().open) {
       // Nothing shown yet: a pending open is dismissed too, but the key is not consumed.
@@ -286,9 +271,8 @@ export class TooltipService extends Store<TooltipSnapshot> {
    */
   private schedule(open: boolean, delay: number): void {
     this.cancelPending()
-    const scheduler = this.opts.scheduler ?? globalScheduler
     this.pending = {
-      handle: scheduler.set(() => {
+      handle: this.scheduler.set(() => {
         this.pending = null
         this.setOpen(open)
       }, delay),
@@ -302,7 +286,7 @@ export class TooltipService extends Store<TooltipSnapshot> {
    */
   cancelPending(): void {
     if (this.pending === null) return
-    ;(this.opts.scheduler ?? globalScheduler).clear(this.pending.handle)
+    this.scheduler.clear(this.pending.handle)
     this.pending = null
   }
 }

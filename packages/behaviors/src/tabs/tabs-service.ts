@@ -1,3 +1,5 @@
+import { slug } from '../internal/ids.js'
+import { hasModifier } from '../internal/keys.js'
 import { Store } from '../internal/store.js'
 
 import type {
@@ -20,14 +22,6 @@ type ResolvedOptions = Required<
   Omit<TabsOptions, 'activeId' | 'onActiveChange' | 'onWarn'>
 > &
   Pick<TabsOptions, 'activeId' | 'onActiveChange' | 'onWarn'>
-
-/**
- * Makes a string safe inside an HTML `id` attribute.
- *
- * @param value - Any string (a tab value, a framework-generated id…).
- * @returns The string with every character outside `[A-Za-z0-9_-]` replaced by `-`.
- */
-const slug = (value: string): string => value.replace(/[^\w-]/g, '-')
 
 /**
  * Tabs behaviour as a framework-agnostic service: tab registry, controlled / uncontrolled
@@ -325,7 +319,7 @@ export class TabsService extends Store<TabsSnapshot> {
    */
   handleKeydown(event: KeyboardLike): boolean {
     // Alt+Arrow (history), Ctrl/Cmd+Arrow, Ctrl+Home… belong to the browser and assistive tech.
-    if (event.altKey || event.ctrlKey || event.metaKey) return false
+    if (hasModifier(event)) return false
 
     const { nextKey, previousKey } = this.arrowKeys()
 
