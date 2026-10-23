@@ -71,6 +71,35 @@ const paintedOnTop = (element: Element) => {
   return hits(element, rect.x + rect.width / 2, rect.y + rect.height / 2)
 }
 
+/**
+ * The vertical centre of an element.
+ *
+ * @param element - The element.
+ * @returns Its centre's y, in px.
+ */
+const centreY = (element: Element) => {
+  const rect = element.getBoundingClientRect()
+  return rect.top + rect.height / 2
+}
+
+/**
+ * The three parts of a message toast that must line up: its glyph, its title, its close button.
+ *
+ * @param item - The toast's `<li>`.
+ * @returns The glyph's SVG, the title, the close button.
+ */
+const parts = (item: Element): Element[] => {
+  const found = [
+    item.querySelector('.ui-toast__icon svg'),
+    item.querySelector('.ui-toast__title'),
+    item.querySelector('.ui-toast__close'),
+  ]
+  return found.map((part) => {
+    if (!part) throw new Error('a toast part is missing')
+    return part
+  })
+}
+
 /** Props of {@link PageWithModal}. */
 interface PageWithModalProps {
   /** The Toaster props. */
@@ -267,6 +296,30 @@ describe('Toaster (browser)', () => {
   // L4: N/A — the environment knows `:modal` and the Popover API; the degraded mode is jsdom's.
 
   describe('edge cases', () => {
+    it('centres the glyph, the title and the close button in a one-line toast', () => {
+      const { toast, props } = setup()
+      render(<Toaster {...props} />)
+      run(() => toast.info('Saved to your list'))
+      const item = screen.getByRole('listitem')
+      const middle = centreY(item)
+      for (const part of parts(item))
+        expect(Math.abs(centreY(part) - middle)).toBeLessThanOrEqual(0.5)
+    })
+
+    it('lines the glyph and the close button up with the title in a long toast', () => {
+      const { toast, props } = setup()
+      render(<Toaster {...props} />)
+      run(() =>
+        toast.warning('Your storage is nearly full', {
+          description: 'You have used 9.6 GB of your 10 GB. '.repeat(4),
+        })
+      )
+      const item = screen.getByRole('listitem')
+      const [glyph, title, close] = parts(item)
+      expect(Math.abs(centreY(glyph) - centreY(title))).toBeLessThanOrEqual(0.5)
+      expect(Math.abs(centreY(close) - centreY(title))).toBeLessThanOrEqual(0.5)
+    })
+
     it('fades out over the machine leave duration (skin and machine agree)', () => {
       const { toast, props } = setup()
       render(<Toaster {...props} />)

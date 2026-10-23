@@ -33,7 +33,8 @@ import type { ReactToastContent, ToasterProps } from './Toast.types'
  * after its hotkey (F8 moves focus into it), with a polite and an assertive live region that
  * announce each toast without taking focus (WCAG 4.1.3).
  *
- * Mount ONE per page, near the root; show toasts with `toast()` from anywhere. The behaviour — the
+ * Mount ONE per page, in the HOST (in micro-frontends, the remotes only call `toast()`); show toasts
+ * with `toast()` from anywhere. A second Toaster on the same stack throws. The behaviour — the
  * five-toast limit, the timers, their pause while the pointer or focus is on the stack or the page
  * is hidden (WCAG 2.2.1), Escape, the order, what is announced and how loud — is the
  * `@fubaritico/behaviors` toast machine; this component binds it to React and renders it.
@@ -83,6 +84,9 @@ export function Toaster({
     onFocus,
     onBlur,
   })
+
+  // The one view of the page's stack: a second Toaster (one in a remote) throws here.
+  useLayoutEffect(() => toaster.attachRenderer(), [toaster])
 
   // Props → machine before paint. Declares React as the renderer and the icon set, so a toast of
   // another framework's content, or naming an unknown icon, is refused in its caller rather than

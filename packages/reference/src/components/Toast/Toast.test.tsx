@@ -368,6 +368,31 @@ describe('Toaster', () => {
       }).toThrow(/"Unicorn" is not an icon this page's stack renders/)
     })
 
+    it('throws when a second Toaster renders the same stack (one in a remote)', () => {
+      const toaster = createToaster<ReactToastContent>({ uid: 'twice' })
+      const original = console.error
+      console.error = () => undefined
+      try {
+        expect(() =>
+          render(
+            <>
+              <Toaster toaster={toaster} />
+              <Toaster toaster={toaster} />
+            </>
+          )
+        ).toThrow(/already has a Toaster — mount it once, in the host/)
+      } finally {
+        console.error = original
+      }
+    })
+
+    it('lets a Toaster mount again once the first unmounted', () => {
+      const toaster = createToaster<ReactToastContent>({ uid: 'again' })
+      const first = render(<Toaster toaster={toaster} />)
+      first.unmount()
+      expect(() => render(<Toaster toaster={toaster} />)).not.toThrow()
+    })
+
     it('leaves the stack unfocused when the hotkey comes with a modifier', async () => {
       const user = userEvent.setup()
       const { toast, run } = setup()
