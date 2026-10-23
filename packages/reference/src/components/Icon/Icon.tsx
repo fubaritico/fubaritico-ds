@@ -90,8 +90,10 @@ import {
 
 import type { ComponentType, SVGProps } from 'react'
 
+/** A Heroicons component. */
 type HeroIcon = ComponentType<SVGProps<SVGSVGElement>>
 
+/** The 24 px outline set — sizes above 20 px. */
 const iconMap24: Record<string, HeroIcon> = {
   ArrowLeft: ArrowLeftIcon24,
   ArrowRight: ArrowRightIcon24,
@@ -125,6 +127,7 @@ const iconMap24: Record<string, HeroIcon> = {
   XMark: XMarkIcon24,
 }
 
+/** The 20 px solid set — sizes 17 to 20 px; also the reference list of names. */
 const iconMap20: Record<string, HeroIcon> = {
   ArrowLeft: ArrowLeftIcon20,
   ArrowRight: ArrowRightIcon20,
@@ -158,6 +161,7 @@ const iconMap20: Record<string, HeroIcon> = {
   XMark: XMarkIcon20,
 }
 
+/** The 16 px micro set — sizes up to 16 px, completed by the 20 px set where it has no glyph. */
 const iconMap16: Record<string, HeroIcon> = {
   ArrowLeft: ArrowLeftIcon16,
   ArrowRight: ArrowRightIcon16,
@@ -184,6 +188,7 @@ const iconMap16: Record<string, HeroIcon> = {
   XMark: XMarkIcon16,
 }
 
+/** The names of the design system's icons. */
 export type IconName =
   | 'ArrowLeft'
   | 'ArrowRight'
@@ -216,8 +221,29 @@ export type IconName =
   | 'Users'
   | 'XMark'
 
+/**
+ * Whether a string names an icon of the set — for a name that comes from outside the types (another
+ * bundle, plain JavaScript), before it reaches {@link Icon}, which cannot render an unknown one.
+ *
+ * @param name - Any string.
+ * @returns `true` when the set holds an icon of that name.
+ */
+export function isIconName(name: string): name is IconName {
+  return Object.prototype.hasOwnProperty.call(iconMap20, name)
+}
+
+/**
+ * Every icon name of the set, at run time — what a component declares to a framework-agnostic
+ * service (the toast machine refuses another name in its caller).
+ */
+export const ICON_NAMES: readonly IconName[] = Object.freeze(
+  Object.keys(iconMap20).filter(isIconName)
+)
+
+/** The sizes an icon is drawn at, in px. */
 export type IconSize = 16 | 20 | 24 | 32 | 48 | 64
 
+/** Props of the {@link Icon}. */
 export interface IconProps extends SVGProps<SVGSVGElement> {
   /** Icon name from the available subset */
   name: IconName
@@ -225,6 +251,16 @@ export interface IconProps extends SVGProps<SVGSVGElement> {
   size?: IconSize
 }
 
+/**
+ * Icon — one glyph of the design system's set (Heroicons), decorative: always `aria-hidden`, so the
+ * meaning must be carried by a label or the text beside it.
+ *
+ * @param props - {@link IconProps}.
+ * @param props.name - The glyph.
+ * @param props.size - Its size in px; defaults to `24`. Picks the 16 / 20 / 24 px drawing.
+ * @param props.className - Extra classes.
+ * @returns The SVG.
+ */
 function Icon({ name, size = 24, className, ...rest }: Readonly<IconProps>) {
   let IconComponent: HeroIcon
 

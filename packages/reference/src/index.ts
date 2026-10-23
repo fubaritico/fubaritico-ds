@@ -80,7 +80,7 @@ export type {
   BottomSheetVariant,
 } from './components/BottomSheet'
 
-export { Icon } from './components/Icon'
+export { Icon, isIconName } from './components/Icon'
 export type { IconProps, IconName, IconSize } from './components/Icon'
 
 export { IconButton } from './components/IconButton'
@@ -145,6 +145,18 @@ export type { TabsProps, TabsVariant } from './components/Tabs'
 export { TruncatedText } from './components/TruncatedText'
 export type { TruncatedTextProps } from './components/TruncatedText'
 
+export { Toaster, createToastApi, toast } from './components/Toast'
+export type {
+  ReactToastContent,
+  ReactToaster,
+  ToastApi,
+  ToastCustomOptions,
+  ToasterPosition,
+  ToasterProps,
+  ToastMessageOptions,
+  ToastOptions,
+  ToastVariant,
+} from './components/Toast'
 export { Tooltip, useTooltip } from './components/Tooltip'
 export type {
   TooltipProps,
