@@ -187,12 +187,12 @@
       "$description": "Hover of the destructive fill; error message text (5.9:1)."
     },
     "success": {
-      "$value": "{color.primitive.green.500}",
+      "$value": "{color.primitive.green.600}",
       "$type": "color",
-      "$description": "Success fill and boundary."
+      "$description": "Success fill, boundary and glyph (3.3:1 on white — WCAG 1.4.11; green.500 was 2.28:1)."
     },
     "success-hover": {
-      "$value": "{color.primitive.green.600}",
+      "$value": "{color.primitive.green.700}",
       "$type": "color",
       "$description": "Hover of the success fill."
     },
