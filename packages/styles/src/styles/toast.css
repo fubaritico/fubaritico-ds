@@ -1,0 +1,268 @@
+/**
+ * Toast — native BEM skin. Two blocks:
+ *
+ * - `.ui-toaster` — the one stack of the page: a `popover="manual"` landmark in the top layer,
+ *   pinned to one of six positions (`--top-start` … `--bottom-end`, logical). Its parts:
+ *   `__list` (the toasts, an `<ol>`) and `__announcer` (two visually hidden live regions, polite and
+ *   assertive, the adapter writes into). The stack stays open while it is mounted, empty or not:
+ *   its live regions must exist before the first toast to be announced.
+ * - `.ui-toast` — one toast: a neutral surface whose intent colours only the border and the glyph
+ *   (as on the Alert, so the text keeps full contrast and meaning never rests on hue alone — WCAG
+ *   1.4.3, 1.4.1). Its parts: `__icon`, `__content` (`__title`, `__description`), `__close`.
+ *   `--bare` drops the surface for free content that brings its own (an `Alert`).
+ *
+ * Motion: a toast fades and slides in from the stack's edge (`@starting-style`) and out while its
+ * `data-phase` is `leaving` (set by the behaviour machine). TIMING, not look:
+ * `--ui-toast-transition-duration` is the machine's `leaveDuration` (`TOAST_LEAVE_DURATION`, 150 ms
+ * = `--duration-fast`) — the toast is removed when it elapses. Change both together. Under reduced
+ * motion the slide goes; the fade stays (it carries no movement). The slide is the stack's
+ * (`--ui-toaster-slide-distance` × `--ui-toaster-slide-direction`, set by the position), inherited by
+ * each toast as `--ui-toast-slide`.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-toaster-*` / `--ui-toast-*` vars.
+ *   2. Redefine a global token → re-skins every toast.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico/tokens. The skin is self-sufficient (own box-sizing + font-family).
+ */
+@layer ui.components {
+  /* ---------------------------------------------------------------- the stack */
+  .ui-toaster {
+    /* ---- override API (component-scoped) ---- */
+    --ui-toaster-offset: var(--spacing-6);
+    --ui-toaster-gap: var(--spacing-2);
+    --ui-toaster-width: 356px; /* layout geometry — no width token; override to re-skin */
+    --ui-toaster-font-family: var(--font-inter);
+    /* How far a toast slides in from (unsigned), and from which side: the position modifiers set
+       the direction (1: from below, -1: from above); the toasts read the product. */
+    --ui-toaster-slide-distance: var(--spacing-2);
+    --ui-toaster-slide-direction: 1;
+    --ui-toaster-slide: calc(
+      var(--ui-toaster-slide-direction) * var(--ui-toaster-slide-distance)
+    );
+
+    box-sizing: border-box;
+    position: fixed;
+    /* A `popover="manual"` (top layer): undo the user-agent popover box — centred with
+       `inset: 0; margin: auto`, drawn with a border, padding and Canvas colours. */
+    inset: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+    color: inherit;
+    overflow: visible;
+    inline-size: min(
+      var(--ui-toaster-width),
+      calc(100% - 2 * var(--ui-toaster-offset))
+    );
+    font-family: var(--ui-toaster-font-family);
+  }
+
+  /* The edge: a top stack slides its toasts down into place, a bottom stack up. */
+  .ui-toaster--top-start,
+  .ui-toaster--top-center,
+  .ui-toaster--top-end {
+    --ui-toaster-slide-direction: -1;
+
+    inset-block-start: var(--ui-toaster-offset);
+  }
+
+  .ui-toaster--bottom-start,
+  .ui-toaster--bottom-center,
+  .ui-toaster--bottom-end {
+    inset-block-end: var(--ui-toaster-offset);
+  }
+
+  /* The alignment, logical: `start` / `end` follow the text direction. `center` is a fixed box of
+     a known width, centred by its auto margins (direction-proof, unlike a 50% + translate). */
+  .ui-toaster--top-start,
+  .ui-toaster--bottom-start {
+    inset-inline-start: var(--ui-toaster-offset);
+  }
+
+  .ui-toaster--top-center,
+  .ui-toaster--bottom-center {
+    inset-inline: 0;
+    margin-inline: auto;
+  }
+
+  .ui-toaster--top-end,
+  .ui-toaster--bottom-end {
+    inset-inline-end: var(--ui-toaster-offset);
+  }
+
+  .ui-toaster__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-toaster-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Visually hidden, still read: the live regions the adapter writes a toast's text into. */
+  .ui-toaster__announcer {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-toaster {
+      --ui-toaster-slide-distance: 0px;
+    }
+  }
+
+  /* ---------------------------------------------------------------- one toast */
+  .ui-toast {
+    /* ---- override API (component-scoped ROLE vars) ---- */
+    --ui-toast-bg: var(--color-surface);
+    --ui-toast-fg: var(--color-text);
+    --ui-toast-border-color: var(--color-border);
+    --ui-toast-border-width: var(--spacing-px);
+    --ui-toast-accent: var(--color-text-secondary);
+    --ui-toast-radius: var(--radius-md);
+    --ui-toast-shadow: var(--shadow-lg);
+    --ui-toast-gap: var(--spacing-3);
+    --ui-toast-content-gap: var(--spacing-1);
+    /* The slide of the enclosing stack (signed by its edge); outside a `.ui-toaster`, none — the
+       toast only fades. Override it here for one toast. */
+    --ui-toast-slide: var(--ui-toaster-slide, 0px);
+    --ui-toast-padding-inline: var(--spacing-4);
+    --ui-toast-padding-block: var(--spacing-3);
+    --ui-toast-font-family: var(--font-inter);
+    --ui-toast-title-font-size: var(--font-size-sm);
+    --ui-toast-title-font-weight: var(--font-weight-semibold);
+    --ui-toast-description-font-size: var(--font-size-sm);
+    --ui-toast-line-height: var(--font-line-height-normal);
+    --ui-toast-ring-color: var(--color-focus);
+    --ui-toast-ring-offset: var(--spacing-0-5);
+    /* TIMING, not look: the behaviour machine's leaveDuration — change both together. */
+    --ui-toast-transition-duration: var(--duration-fast);
+    --ui-toast-transition-easing: var(--easing-standard);
+
+    /* ---- base (neutral) ---- */
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ui-toast-gap);
+    padding-inline: var(--ui-toast-padding-inline);
+    padding-block: var(--ui-toast-padding-block);
+    border: var(--ui-toast-border-width) solid var(--ui-toast-border-color);
+    border-start-start-radius: var(
+      --ui-toast-radius-start-start,
+      var(--ui-toast-radius)
+    );
+    border-start-end-radius: var(
+      --ui-toast-radius-start-end,
+      var(--ui-toast-radius)
+    );
+    border-end-start-radius: var(
+      --ui-toast-radius-end-start,
+      var(--ui-toast-radius)
+    );
+    border-end-end-radius: var(
+      --ui-toast-radius-end-end,
+      var(--ui-toast-radius)
+    );
+    background-color: var(--ui-toast-bg);
+    color: var(--ui-toast-fg);
+    box-shadow: var(--ui-toast-shadow);
+    font-family: var(--ui-toast-font-family);
+    line-height: var(--ui-toast-line-height);
+    overflow-wrap: anywhere;
+    opacity: 1;
+    translate: 0 0;
+    transition:
+      opacity var(--ui-toast-transition-duration)
+        var(--ui-toast-transition-easing),
+      translate var(--ui-toast-transition-duration)
+        var(--ui-toast-transition-easing);
+  }
+
+  /* Entry: from transparent and the stack's edge. */
+  @starting-style {
+    .ui-toast {
+      opacity: 0;
+      translate: 0 var(--ui-toast-slide);
+    }
+  }
+
+  /* Exit: the machine holds the toast in `leaving` for the transition's length, then removes it. */
+  .ui-toast[data-phase='leaving'] {
+    opacity: 0;
+    translate: 0 var(--ui-toast-slide);
+    pointer-events: none;
+  }
+
+  /* Focusable (Escape closes it): the ring of the design system. */
+  .ui-toast:focus-visible {
+    outline: 2px solid var(--ui-toast-ring-color);
+    outline-offset: var(--ui-toast-ring-offset);
+  }
+
+  /* ---- intent modifiers (border + glyph only; the text stays at full contrast) ---- */
+  .ui-toast--success {
+    --ui-toast-accent: var(--color-success);
+    --ui-toast-border-color: var(--color-success);
+  }
+
+  .ui-toast--warning {
+    --ui-toast-accent: var(--color-warning);
+    --ui-toast-border-color: var(--color-warning);
+  }
+
+  .ui-toast--error {
+    --ui-toast-accent: var(--color-text-destructive);
+    --ui-toast-border-color: var(--color-text-destructive);
+  }
+
+  /* Free content with a surface of its own: keep the shadow and the corners, drop the rest. */
+  .ui-toast--bare {
+    --ui-toast-padding-inline: 0px;
+    --ui-toast-padding-block: 0px;
+    --ui-toast-border-width: 0px;
+    --ui-toast-bg: transparent;
+  }
+
+  /* ---- parts ---- */
+  /* `flex-shrink: 0` so a long message never squeezes the glyph out of shape. */
+  .ui-toast__icon {
+    flex-shrink: 0;
+    color: var(--ui-toast-accent);
+  }
+
+  .ui-toast__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--ui-toast-content-gap);
+    /* Lets a long unbroken string wrap instead of widening the flex item past its share. */
+    min-inline-size: 0;
+  }
+
+  .ui-toast__title {
+    margin: 0;
+    font-size: var(--ui-toast-title-font-size);
+    font-weight: var(--ui-toast-title-font-weight);
+  }
+
+  .ui-toast__description {
+    margin: 0;
+    font-size: var(--ui-toast-description-font-size);
+  }
+
+  /* Pinned to the inline-end edge, aligned with the first line of text. */
+  .ui-toast__close {
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+}

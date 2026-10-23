@@ -39,6 +39,7 @@
 @import './styles/spinner.css';
 @import './styles/table.css';
 @import './styles/tabs.css';
+@import './styles/toast.css';
 @import './styles/tooltip.css';
 @import './styles/truncated-text.css';
 @import './styles/typeahead.css';
