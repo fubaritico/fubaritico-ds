@@ -7,7 +7,10 @@ describe('customContentFor', () => {
   describe('happy path', () => {
     it('hands free content to the adapter of its framework', () => {
       const { toaster } = setup()
-      toaster.show({ custom: { kind: 'react', value: '<node>' } })
+      toaster.show({
+        message: { title: 'Upload' },
+        custom: { kind: 'react', value: '<node>' },
+      })
       const [toast] = toaster.getState().toasts
       expect(customContentFor(toast, 'react')).toBe('<node>')
     })
@@ -25,7 +28,11 @@ describe('customContentFor', () => {
   describe('managed errors', () => {
     it('throws when an adapter reads free content of another framework', () => {
       const { toaster } = setup()
-      toaster.show({ id: 'up', custom: { kind: 'angular', value: '<tpl>' } })
+      toaster.show({
+        id: 'up',
+        message: { title: 'Upload' },
+        custom: { kind: 'angular', value: '<tpl>' },
+      })
       const [toast] = toaster.getState().toasts
       expect(() => customContentFor(toast, 'react')).toThrow(
         /angular content, which a react stack cannot render/

@@ -35,8 +35,12 @@ const SHARED_METHODS = [
   'batch',
   'handleKeydown',
   'handleToastKeydown',
+  'announce',
+  'regionRemounted',
   'regionAttrs',
   'toastAttrs',
+  'titleAttrs',
+  'descriptionAttrs',
   'closeButtonAttrs',
   'announcerAttrs',
 ] as const

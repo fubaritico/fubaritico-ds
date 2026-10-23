@@ -31,6 +31,21 @@ export type ToastPauseReason = 'pointer' | 'focus' | 'document'
 /** How a screen reader announces a toast: `polite` waits for a pause, `assertive` interrupts. */
 export type ToastPoliteness = 'polite' | 'assertive'
 
+/** One toast waiting to be announced: the adapter reads its text and hands it back. */
+export interface ToastAnnouncement {
+  /** Its number — what the adapter hands back with the text (`announce`). */
+  seq: number
+  /** The toast's id. */
+  toastId: string
+  /** Where its text is on the page. */
+  domId: string
+  /** Which live region reads it. */
+  politeness: ToastPoliteness
+}
+
+/** What each live region reads out. */
+export type ToastLive = Readonly<Record<ToastPoliteness, string>>
+
 /** The intents of a toast's message — the `Alert`'s, plus a neutral default. Checked at run time. */
 export const TOAST_VARIANTS = [
   'neutral',
@@ -100,7 +115,11 @@ export interface ToastInput<C> {
   duration?: number
   /** Whether the user can close it (a close button, Escape); defaults to `true`. */
   dismissible?: boolean
-  /** Announced assertively (it interrupts) rather than politely; defaults to `false`. */
+  /**
+   * Announced assertively (it interrupts) rather than politely; defaults to `false`. An urgent toast
+   * stays until dismissed unless a `duration` is given (WCAG 2.2.1: what interrupts may need acting
+   * on, and not everyone reaches it within 5 s).
+   */
   urgent?: boolean
 }
 
@@ -150,6 +169,11 @@ export interface ToasterOptions {
   /** The `KeyboardEvent.key` that moves focus into the stack; defaults to `'F8'`. */
   hotkey?: string
   /**
+   * The icon names the stack's adapter can render. Declared, a message naming another icon throws in
+   * `show()` — in the caller, whichever bundle it is in, not in the stack's render.
+   */
+  icons?: readonly string[]
+  /**
    * The framework the stack's adapter renders (`'react'`…). Declared, a `custom` content of another
    * framework throws in `show()` — in the caller's bundle, not in the stack's render.
    */
@@ -182,4 +206,8 @@ export interface ToasterSnapshot<C> {
    * CHANGES, never because it is non-zero.
    */
   focusToken: number
+  /** The toasts waiting to be announced, oldest first — for the adapter to read and hand back. */
+  announcements: readonly ToastAnnouncement[]
+  /** What each live region reads out now. */
+  live: ToastLive
 }

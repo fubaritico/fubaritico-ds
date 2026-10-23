@@ -76,6 +76,15 @@ export function checkOptions(options: ToasterOptionsPatch): void {
     throw new RangeError(
       `Toast: position must be one of ${TOAST_POSITIONS.join(', ')}, got ${JSON.stringify(position)}.`
     )
+  const icons: unknown = options.icons
+  if (
+    icons !== undefined &&
+    (!Array.isArray(icons) ||
+      !icons.every((name) => typeof name === 'string' && name !== ''))
+  )
+    throw new TypeError(
+      'Toast: icons must be an array of non-empty icon names.'
+    )
   for (const name of STRING_OPTIONS) {
     const value: unknown = options[name]
     if (value !== undefined && (typeof value !== 'string' || value === ''))
@@ -89,9 +98,14 @@ export function checkOptions(options: ToasterOptionsPatch): void {
  * Checks a framework-neutral message: an object of string fields and a known variant.
  *
  * @param message - The `message` a caller passed.
- * @throws TypeError when it is not an object, a field is not a string, or the variant is unknown.
+ * @param icons - The icon names the stack's adapter renders, when declared.
+ * @throws TypeError when it is not an object, a field is not a string, the variant is unknown, or
+ *   the icon is not one the stack renders.
  */
-function checkMessage(message: unknown): void {
+function checkMessage(
+  message: unknown,
+  icons: readonly string[] | undefined
+): void {
   if (!isRecord(message))
     throw new TypeError(
       `Toast: message must be an object ({ title, description, icon, variant }), got ${typeName(message)}.`
@@ -103,6 +117,11 @@ function checkMessage(message: unknown): void {
         `Toast: message.${field} must be a string, got ${typeName(value)}.`
       )
   }
+  const { icon } = message
+  if (typeof icon === 'string' && icons !== undefined && !icons.includes(icon))
+    throw new TypeError(
+      `Toast: message.icon ${JSON.stringify(icon)} is not an icon this page's stack renders.`
+    )
   const { variant } = message
   if (variant !== undefined && !TOAST_VARIANTS.some((v) => v === variant))
     throw new TypeError(
@@ -141,13 +160,15 @@ function checkCustom(custom: unknown, renderer: string | undefined): void {
  *
  * @param input - The toast to show.
  * @param renderer - The framework the stack's adapter renders, when one is declared.
+ * @param icons - The icon names it renders, when declared.
  * @throws TypeError when the input is out of contract (nothing to render, a malformed message or
- *   custom content).
+ *   custom content, free content without a title).
  * @throws Error when the custom content belongs to a framework the stack cannot render.
  */
 export function checkContent(
   input: unknown,
-  renderer: string | undefined
+  renderer: string | undefined,
+  icons?: readonly string[]
 ): void {
   if (!isRecord(input))
     throw new TypeError(
@@ -158,8 +179,19 @@ export function checkContent(
     throw new TypeError(
       'Toast: show() needs a `message` or a `custom` content — there is nothing to render.'
     )
-  if (message !== undefined) checkMessage(message)
-  if (custom !== undefined) checkCustom(custom, renderer)
+  if (message !== undefined) checkMessage(message, icons)
+  if (custom === undefined) return
+  checkCustom(custom, renderer)
+  // Free content has no title element: its message title is its accessible name, and its close
+  // button's — without it the toast is a focusable element with no name.
+  if (
+    !isRecord(message) ||
+    typeof message.title !== 'string' ||
+    message.title === ''
+  )
+    throw new TypeError(
+      'Toast: a `custom` content needs a `message.title` — its accessible name (WCAG 4.1.2).'
+    )
 }
 
 /**

@@ -180,6 +180,26 @@ describe('ToastMachine', () => {
       expect(toaster.getState().toasts[0]?.domId).toBe(before)
     })
 
+    it('keeps an urgent toast until it is dismissed (WCAG 2.2.1)', () => {
+      const { toaster, tick } = setup()
+      toaster.show(message('Offline', { urgent: true }))
+      tick(60_000)
+      expect(titles(toaster)).toEqual(['Offline'])
+    })
+
+    it('honours the duration given to an urgent toast', () => {
+      const { toaster, tick } = setup()
+      toaster.show(message('Offline', { urgent: true, duration: 2000 }))
+      tick(2000)
+      expect(titles(toaster)).toEqual([])
+    })
+
+    it('accepts an icon the stack renders', () => {
+      const { toaster } = setup({ icons: ['Check'] })
+      toaster.show({ message: { title: 'Done', icon: 'Check' } })
+      expect(titles(toaster)).toEqual(['Done'])
+    })
+
     it('flags an urgent toast', () => {
       const { toaster } = setup()
       toaster.show(message('Offline', { urgent: true }))
@@ -236,10 +256,12 @@ describe('ToastMachine', () => {
     describe('content', () => {
       it('keeps free content labelled with its framework', () => {
         const { toaster } = setup()
-        toaster.show({ custom: { kind: 'react', value: '<node>' } })
+        toaster.show({
+          message: { title: 'Upload' },
+          custom: { kind: 'react', value: '<node>' },
+        })
         const [toast] = toaster.getState().toasts
         expect(toast.custom).toEqual({ kind: 'react', value: '<node>' })
-        expect(toast.message).toBeUndefined()
       })
 
       it('keeps a message beside free content', () => {
@@ -383,7 +405,7 @@ describe('ToastMachine', () => {
         })
       })
 
-      it('makes a toast focusable, with its DOM id and phase', () => {
+      it('makes a toast focusable, named by its title', () => {
         const { toaster } = setup()
         toaster.show(message('Saved', { id: 'save' }))
         const [toast] = toaster.getState().toasts
@@ -391,18 +413,59 @@ describe('ToastMachine', () => {
           id: toast.domId,
           tabindex: 0,
           'data-phase': 'visible',
+          'aria-labelledby': `${toast.domId}-title`,
+          'aria-label': undefined,
+        })
+        expect(toaster.titleAttrs(toast)).toEqual({
+          id: `${toast.domId}-title`,
         })
       })
 
-      it('names the close button and ties it to its toast', () => {
+      it('names the close button after its toast title', () => {
         const { toaster } = setup({ closeLabel: 'Fermer' })
         toaster.show(message('Saved'))
         const [toast] = toaster.getState().toasts
         expect(toaster.closeButtonAttrs(toast)).toEqual({
           type: 'button',
+          id: `${toast.domId}-close`,
           'aria-label': 'Fermer',
-          'aria-controls': toast.domId,
+          'aria-labelledby': `${toast.domId}-close ${toast.domId}-title`,
         })
+      })
+
+      it('names free content and its close button by its label', () => {
+        const { toaster } = setup()
+        toaster.show({
+          message: { title: 'Upload' },
+          custom: { kind: 'react', value: '<progress>' },
+        })
+        const [toast] = toaster.getState().toasts
+        expect(toaster.toastAttrs(toast)['aria-label']).toBe('Upload')
+        expect(toaster.toastAttrs(toast)['aria-labelledby']).toBeUndefined()
+        expect(toaster.closeButtonAttrs(toast)['aria-label']).toBe(
+          'Close Upload'
+        )
+      })
+
+      it('names an untitled toast by its description', () => {
+        const { toaster } = setup()
+        toaster.show({ message: { description: 'Stored' } })
+        const [toast] = toaster.getState().toasts
+        expect(toaster.toastAttrs(toast)['aria-labelledby']).toBe(
+          `${toast.domId}-description`
+        )
+        expect(toaster.descriptionAttrs(toast)).toEqual({
+          id: `${toast.domId}-description`,
+        })
+      })
+
+      it('names the close button of an untitled toast after its description', () => {
+        const { toaster } = setup()
+        toaster.show({ message: { description: 'Stored' } })
+        const [toast] = toaster.getState().toasts
+        expect(toaster.closeButtonAttrs(toast)['aria-labelledby']).toBe(
+          `${toast.domId}-close ${toast.domId}-description`
+        )
       })
 
       it('describes a polite and an assertive live region, both role status', () => {
@@ -477,6 +540,14 @@ describe('ToastMachine', () => {
       expect(() => toaster.show({})).toThrow(TypeError)
     })
 
+    it('throws on free content without a title, its accessible name', () => {
+      const { toaster } = setup()
+      expect(() =>
+        toaster.show({ custom: { kind: 'react', value: '<node>' } })
+      ).toThrow(/needs a `message.title` — its accessible name/)
+      expect(titles(toaster)).toEqual([])
+    })
+
     it('throws on free content without its framework', () => {
       const { toaster } = setup()
       expect(() => toaster.show({ custom: { kind: '', value: 'x' } })).toThrow(
@@ -496,6 +567,21 @@ describe('ToastMachine', () => {
       )
     })
 
+    it('throws in the caller on an icon the stack does not render', () => {
+      const { toaster } = setup({ icons: ['Check'] })
+      expect(() =>
+        toaster.show({ message: { title: 'Done', icon: 'Chek' } })
+      ).toThrow(/message.icon "Chek" is not an icon this page's stack renders/)
+      expect(titles(toaster)).toEqual([])
+    })
+
+    it.each([[['']], ['Check'], [[42]]])('throws on icons %o', (icons) => {
+      const { toaster } = setup()
+      expect(() => {
+        toaster.setOptions({ icons } as unknown as ToasterOptions)
+      }).toThrow(/icons must be an array of non-empty icon names/)
+    })
+
     it('throws on an unknown variant', () => {
       const { toaster } = setup()
       const input = {
@@ -507,14 +593,20 @@ describe('ToastMachine', () => {
     it('throws in the caller when the stack cannot render the free content', () => {
       const { toaster } = setup({ renderer: 'react' })
       expect(() =>
-        toaster.show({ custom: { kind: 'angular', value: '<tpl>' } })
+        toaster.show({
+          message: { title: 'Upload' },
+          custom: { kind: 'angular', value: '<tpl>' },
+        })
       ).toThrow(/rendered by react, it cannot render angular content/)
       expect(titles(toaster)).toEqual([])
     })
 
     it('accepts free content of the framework the stack renders', () => {
       const { toaster } = setup({ renderer: 'react' })
-      toaster.show({ custom: { kind: 'react', value: '<node>' } })
+      toaster.show({
+        message: { title: 'Upload' },
+        custom: { kind: 'react', value: '<node>' },
+      })
       expect(toaster.getState().toasts).toHaveLength(1)
     })
 
@@ -572,7 +664,10 @@ describe('ToastMachine', () => {
       const { toaster } = setup()
       toaster.setOptions({ renderer: 'react' })
       expect(() =>
-        toaster.show({ custom: { kind: 'angular', value: '<tpl>' } })
+        toaster.show({
+          message: { title: 'Upload' },
+          custom: { kind: 'angular', value: '<tpl>' },
+        })
       ).toThrow(/rendered by react/)
     })
 

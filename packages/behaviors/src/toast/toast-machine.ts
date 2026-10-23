@@ -3,6 +3,8 @@ import { hasModifier } from '../internal/keys.js'
 import { Store } from '../internal/store.js'
 import { globalTimers } from '../internal/timers.js'
 
+import { ToastAnnouncer } from './toast-announcer.js'
+import * as attrs from './toast-attrs.js'
 import {
   checkContent,
   checkDuration,
@@ -91,6 +93,8 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
   private opts: ToasterOptions
   /** The timers, fixed at creation: a handle is only ever cleared by the scheduler that set it. */
   private readonly scheduler: ToastScheduler
+  /** The announcement rules: what to read, how loud, for how long. */
+  private readonly announcer: ToastAnnouncer
   /** Every toast on screen, oldest first — leaving ones included. */
   private entries: Entry<C>[] = []
   /** What currently holds the timers. */
@@ -115,6 +119,9 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
     checkOptions(options)
     this.opts = { ...options }
     this.scheduler = options.scheduler ?? globalTimers
+    this.announcer = new ToastAnnouncer(this.scheduler, () => {
+      this.commit()
+    })
   }
 
   /**
@@ -159,11 +166,12 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
    * @throws Error when the custom content belongs to a framework the stack's `renderer` cannot render.
    */
   show(input: ToastInput<C>): string {
-    checkContent(input, this.opts.renderer)
-    const duration = checkDuration(
-      input.duration ?? this.opts.duration ?? TOASTER_DEFAULTS.duration,
-      'duration'
-    )
+    checkContent(input, this.opts.renderer, this.opts.icons)
+    // An urgent toast stays until dismissed unless told otherwise (WCAG 2.2.1).
+    const lifetime = input.urgent
+      ? Infinity
+      : (this.opts.duration ?? TOASTER_DEFAULTS.duration)
+    const duration = checkDuration(input.duration ?? lifetime, 'duration')
     const id = input.id ?? `${slug(this.opts.uid)}-${String(++this.sequence)}`
     const record: Omit<ToastRecord<C>, 'domId'> = {
       id,
@@ -289,36 +297,57 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
    * @returns DOM attributes (presence semantics).
    */
   regionAttrs(): DomAttributes {
-    const hotkey = this.opts.hotkey ?? TOASTER_DEFAULTS.hotkey
-    return {
-      role: 'region',
-      'aria-label': `${this.opts.label ?? TOASTER_DEFAULTS.label} (${hotkey})`,
-      tabindex: -1,
-    }
+    return attrs.regionAttrs(
+      this.opts.label ?? TOASTER_DEFAULTS.label,
+      this.opts.hotkey ?? TOASTER_DEFAULTS.hotkey
+    )
   }
 
   /**
-   * Attributes of one toast: focusable, so Escape reaches it; its phase for the skin's transition.
+   * Attributes of one toast: focusable, so Escape reaches it; named by its title, else its
+   * description, or by the `label` of free content; its phase for the skin's transition.
    *
    * @param toast - A toast of the snapshot.
    * @returns DOM attributes (presence semantics).
    */
   toastAttrs(toast: ToastRecord<C>): DomAttributes {
-    return { id: toast.domId, tabindex: 0, 'data-phase': toast.phase }
+    return attrs.toastAttrs(toast)
   }
 
   /**
-   * Attributes of a toast's close button.
+   * Attributes of a toast's title — the id the toast and its close button are named by. Rendered
+   * only for a message with a title (free content has no title element).
+   *
+   * @param toast - A toast of the snapshot.
+   * @returns DOM attributes (presence semantics).
+   */
+  titleAttrs(toast: ToastRecord<C>): DomAttributes {
+    return attrs.titleAttrs(toast)
+  }
+
+  /**
+   * Attributes of a toast's description — the id an untitled toast and its close button are named
+   * by. Rendered only for a message with a description.
+   *
+   * @param toast - A toast of the snapshot.
+   * @returns DOM attributes (presence semantics).
+   */
+  descriptionAttrs(toast: ToastRecord<C>): DomAttributes {
+    return attrs.descriptionAttrs(toast)
+  }
+
+  /**
+   * Attributes of a toast's close button, named after its toast — five toasts are not five
+   * identical « Close » buttons: « Close Saved », « Close Upload failed ».
    *
    * @param toast - A toast of the snapshot.
    * @returns DOM attributes (presence semantics).
    */
   closeButtonAttrs(toast: ToastRecord<C>): DomAttributes {
-    return {
-      type: 'button',
-      'aria-label': this.opts.closeLabel ?? TOASTER_DEFAULTS.closeLabel,
-      'aria-controls': toast.domId,
-    }
+    return attrs.closeButtonAttrs(
+      toast,
+      this.opts.closeLabel ?? TOASTER_DEFAULTS.closeLabel
+    )
   }
 
   /**
@@ -331,11 +360,38 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
    * @returns DOM attributes (presence semantics).
    */
   announcerAttrs(politeness: ToastPoliteness): DomAttributes {
-    return {
-      role: 'status',
-      'aria-live': politeness,
-      'aria-atomic': 'true',
-    }
+    return attrs.announcerAttrs(politeness)
+  }
+
+  /**
+   * Hands back the text of a queued announcement (`snapshot.announcements`), read by the adapter
+   * from the page once the toast is rendered — never in the frame it was inserted.
+   *
+   * @param seq - The announcement's number.
+   * @param text - The toast's text as rendered.
+   * @returns Whether a queued announcement was fulfilled (`false`: already done, or its toast gone).
+   */
+  announce(seq: number, text: string): boolean {
+    if (!this.announcer.fulfil(seq, text)) return false
+    this.commit()
+    return true
+  }
+
+  /**
+   * The adapter remounted the stack (it moved into or out of a modal dialog). A remount fires no
+   * pointerleave and no blur, and its live regions start empty, so:
+   * - what was being read is queued again (a region inserted already filled is not reliably read);
+   * - the pointer reason is released (the pointer is not on the new node);
+   * - the focus reason is released unless focus was inside — the adapter then gives it back.
+   *
+   * @param focusInside - Whether focus was inside the stack before the move.
+   */
+  regionRemounted(focusInside: boolean): void {
+    this.batch(() => {
+      if (this.announcer.replay()) this.commit()
+      this.resume('pointer')
+      if (!focusInside) this.resume('focus')
+    })
   }
 
   /**
@@ -348,6 +404,7 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
     })
     this.entries = []
     this.pauseReasons.clear()
+    this.announcer.reset()
     this.clearStore()
   }
 
@@ -365,6 +422,8 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
       position,
       paused: this.pauseReasons.size > 0,
       focusToken: this.focusToken,
+      announcements: this.announcer.pendingAnnouncements(),
+      live: this.announcer.liveText(),
     }
   }
 
@@ -382,6 +441,7 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
     entry.record = { ...record, domId: entry.record.domId }
     entry.remaining = record.duration
     this.startTimer(entry)
+    this.announcer.queue(entry.record)
   }
 
   /**
@@ -400,6 +460,7 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
     }
     this.startTimer(entry)
     this.entries.push(entry)
+    this.announcer.queue(entry.record)
     this.evict()
   }
 
@@ -442,6 +503,7 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
   private remove(entry: Entry<C>): void {
     this.clearTimer(entry)
     this.entries = this.entries.filter((e) => e !== entry)
+    this.announcer.forget(entry.record.id)
   }
 
   /**

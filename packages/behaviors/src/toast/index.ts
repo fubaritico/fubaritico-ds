@@ -1,4 +1,5 @@
 export * from './custom-content.js'
 export * from './global-toaster.js'
+export { TOAST_ANNOUNCEMENT_LIFETIME } from './toast-announcer.js'
 export * from './toast-machine.js'
 export * from './types.js'
