@@ -34,6 +34,10 @@
     --ui-toaster-gap: var(--spacing-2);
     --ui-toaster-width: 356px; /* layout geometry — no width token; override to re-skin */
     --ui-toaster-font-family: var(--font-inter);
+    /* The stack never outgrows the viewport (400% zoom, WCAG 1.4.10): past it, the list scrolls. */
+    --ui-toaster-max-block-size: calc(100dvh - 2 * var(--ui-toaster-offset));
+    --ui-toaster-ring-color: var(--color-focus);
+    --ui-toaster-ring-offset: var(--spacing-0-5);
     /* How far a toast slides in from (unsigned), and from which side: the position modifiers set
        the direction (1: from below, -1: from above); the toasts read the product. */
     --ui-toaster-slide-distance: var(--spacing-2);
@@ -58,6 +62,12 @@
       calc(100% - 2 * var(--ui-toaster-offset))
     );
     font-family: var(--ui-toaster-font-family);
+  }
+
+  /* F8 focuses the stack: the ring of the design system. */
+  .ui-toaster:focus-visible {
+    outline: 2px solid var(--ui-toaster-ring-color);
+    outline-offset: var(--ui-toaster-ring-offset);
   }
 
   /* The edge: a top stack slides its toasts down into place, a bottom stack up. */
@@ -94,11 +104,17 @@
   }
 
   .ui-toaster__list {
+    /* Room for a toast's focus ring, which a scrolling box would clip — taken back by the margin. */
+    --ui-toaster-ring-room: var(--spacing-1);
+
+    max-block-size: var(--ui-toaster-max-block-size);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--ui-toaster-ring-room);
+    margin: calc(-1 * var(--ui-toaster-ring-room));
     display: flex;
     flex-direction: column;
     gap: var(--ui-toaster-gap);
-    margin: 0;
-    padding: 0;
     list-style: none;
   }
 
@@ -126,7 +142,8 @@
     /* ---- override API (component-scoped ROLE vars) ---- */
     --ui-toast-bg: var(--color-surface);
     --ui-toast-fg: var(--color-text);
-    --ui-toast-border-color: var(--color-border);
+    /* The control boundary grey — 3:1 on the surface (WCAG 1.4.11). */
+    --ui-toast-border-color: var(--color-border-strong);
     --ui-toast-border-width: var(--spacing-px);
     --ui-toast-accent: var(--color-text-secondary);
     --ui-toast-radius: var(--radius-md);
@@ -262,7 +279,17 @@
 
   /* Pinned to the inline-end edge, aligned with the first line of text. */
   .ui-toast__close {
+    position: relative;
     flex-shrink: 0;
     margin-inline-start: auto;
+  }
+
+  /* The close glyph stays small; its HIT AREA is the project's 44 px target — a ring of
+     (44 - 32) / 2 = 6 px around the 32 px button, invisible. An absolute box starts at the padding
+     edge, inside the button's 1 px border (button.css): the ring adds it back. */
+  .ui-toast__close::after {
+    content: '';
+    position: absolute;
+    inset: calc(-1 * (var(--spacing-1-5) + var(--spacing-px)));
   }
 }
