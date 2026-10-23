@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.7.0...v0.8.0) (2026-10-23)
+
+### Bug Fixes
+
+- **tokens:** lift the success role to 3:1 on white ([af4d7a1](https://github.com/fubaritico/fubaritico-ds/commit/af4d7a1b9f97c6560a3b279cbf49b0f81f378144))
+
 # [0.7.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.6.0...v0.7.0) (2026-10-21)
 
 - feat(tokens)!: rename the colour tokens to roles named after what they paint ([c88df0f](https://github.com/fubaritico/fubaritico-ds/commit/c88df0f2d19cd35c5901b9f8c53cc30a12ea789b))

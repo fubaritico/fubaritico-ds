@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.7.0...v0.8.0) (2026-10-23)
+
+### Bug Fixes
+
+- **styles:** outline the light tooltip arrow and keep it a triangle under forced colours ([76bde29](https://github.com/fubaritico/fubaritico-ds/commit/76bde29a93d0c0e4b02d5465571023858c44b07e))
+
+### Features
+
+- **styles:** add the toast skin ([2d3dfee](https://github.com/fubaritico/fubaritico-ds/commit/2d3dfee52f67ce91f4f9fef1b3429f8580f7dd4d))
+- **styles:** an even toast stack, one-line toasts centred ([1d0d634](https://github.com/fubaritico/fubaritico-ds/commit/1d0d63473d4dd7b112ead486a313b3386d7a50fa))
+- **styles:** toast close target, reflow and focus ring ([36347c0](https://github.com/fubaritico/fubaritico-ds/commit/36347c0653df90d4ac105224c82f4ee57926d59b))
+
 # [0.7.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.6.0...v0.7.0) (2026-10-21)
 
 - feat(tokens)!: rename the colour tokens to roles named after what they paint ([c88df0f](https://github.com/fubaritico/fubaritico-ds/commit/c88df0f2d19cd35c5901b9f8c53cc30a12ea789b))

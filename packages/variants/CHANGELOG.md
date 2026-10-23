@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.7.0...v0.8.0) (2026-10-23)
+
+### Features
+
+- **variants:** add the toast resolvers ([8faafef](https://github.com/fubaritico/fubaritico-ds/commit/8faafefe94dc255c0a1ccce4dde4a003d3fd72b5))
+
 # [0.7.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.6.0...v0.7.0) (2026-10-21)
 
 **Note:** Version bump only for package @fubaritico/variants

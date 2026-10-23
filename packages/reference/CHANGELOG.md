@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.7.0...v0.8.0) (2026-10-23)
+
+### Bug Fixes
+
+- **styles:** outline the light tooltip arrow and keep it a triangle under forced colours ([76bde29](https://github.com/fubaritico/fubaritico-ds/commit/76bde29a93d0c0e4b02d5465571023858c44b07e))
+
+### Features
+
+- **reference:** add the Toaster and the toast() API ([6b9f86d](https://github.com/fubaritico/fubaritico-ds/commit/6b9f86dba0296c34f3a5262cf0b5bff2d6a6e627))
+- **reference:** document and showcase the Toast, one Toaster in the host ([e19cbc9](https://github.com/fubaritico/fubaritico-ds/commit/e19cbc93489446682e3a98457ba1d783ac4751d2))
+
 # [0.7.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.6.0...v0.7.0) (2026-10-21)
 
 - feat(tokens)!: rename the colour tokens to roles named after what they paint ([c88df0f](https://github.com/fubaritico/fubaritico-ds/commit/c88df0f2d19cd35c5901b9f8c53cc30a12ea789b))

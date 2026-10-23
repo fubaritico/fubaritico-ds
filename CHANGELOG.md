@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.7.0...v0.8.0) (2026-10-23)
+
+### Bug Fixes
+
+- **styles:** outline the light tooltip arrow and keep it a triangle under forced colours ([76bde29](https://github.com/fubaritico/fubaritico-ds/commit/76bde29a93d0c0e4b02d5465571023858c44b07e))
+- **tokens:** lift the success role to 3:1 on white ([af4d7a1](https://github.com/fubaritico/fubaritico-ds/commit/af4d7a1b9f97c6560a3b279cbf49b0f81f378144))
+
+### Features
+
+- **behaviors:** add the toast machine, one notification stack per page ([947b395](https://github.com/fubaritico/fubaritico-ds/commit/947b395e12f5ff438ff221e44900314aadb1ee0f))
+- **behaviors:** one toast view per page, in the host ([a371b1a](https://github.com/fubaritico/fubaritico-ds/commit/a371b1a3423d2d8927fb20f16caeaf4ad86534ee))
+- **behaviors:** own the toast announcements, icons and naming in the machine ([a400fb2](https://github.com/fubaritico/fubaritico-ds/commit/a400fb25c46698f887438b2b6ff4e7b48fac3235))
+- **reference:** add the Toaster and the toast() API ([6b9f86d](https://github.com/fubaritico/fubaritico-ds/commit/6b9f86dba0296c34f3a5262cf0b5bff2d6a6e627))
+- **reference:** document and showcase the Toast, one Toaster in the host ([e19cbc9](https://github.com/fubaritico/fubaritico-ds/commit/e19cbc93489446682e3a98457ba1d783ac4751d2))
+- **styles:** add the toast skin ([2d3dfee](https://github.com/fubaritico/fubaritico-ds/commit/2d3dfee52f67ce91f4f9fef1b3429f8580f7dd4d))
+- **styles:** an even toast stack, one-line toasts centred ([1d0d634](https://github.com/fubaritico/fubaritico-ds/commit/1d0d63473d4dd7b112ead486a313b3386d7a50fa))
+- **styles:** toast close target, reflow and focus ring ([36347c0](https://github.com/fubaritico/fubaritico-ds/commit/36347c0653df90d4ac105224c82f4ee57926d59b))
+- **variants:** add the toast resolvers ([8faafef](https://github.com/fubaritico/fubaritico-ds/commit/8faafefe94dc255c0a1ccce4dde4a003d3fd72b5))
+
 # [0.7.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.6.0...v0.7.0) (2026-10-21)
 
 - feat(tokens)!: rename the colour tokens to roles named after what they paint ([c88df0f](https://github.com/fubaritico/fubaritico-ds/commit/c88df0f2d19cd35c5901b9f8c53cc30a12ea789b))

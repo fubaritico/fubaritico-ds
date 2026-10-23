@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.7.0...v0.8.0) (2026-10-23)
+
+### Features
+
+- **behaviors:** add the toast machine, one notification stack per page ([947b395](https://github.com/fubaritico/fubaritico-ds/commit/947b395e12f5ff438ff221e44900314aadb1ee0f))
+- **behaviors:** one toast view per page, in the host ([a371b1a](https://github.com/fubaritico/fubaritico-ds/commit/a371b1a3423d2d8927fb20f16caeaf4ad86534ee))
+- **behaviors:** own the toast announcements, icons and naming in the machine ([a400fb2](https://github.com/fubaritico/fubaritico-ds/commit/a400fb25c46698f887438b2b6ff4e7b48fac3235))
+
 # [0.7.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.6.0...v0.7.0) (2026-10-21)
 
 **Note:** Version bump only for package @fubaritico/behaviors
