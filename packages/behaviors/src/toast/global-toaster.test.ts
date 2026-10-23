@@ -49,6 +49,16 @@ describe('getGlobalToaster', () => {
       )
     })
 
+    it('reports a version mismatch, not a foreign slot, for a copy that lacks a method', () => {
+      host[SLOT] = {
+        version: GLOBAL_TOASTER_VERSION + 1,
+        toaster: { show: () => '' },
+      }
+      expect(() => getGlobalToaster()).toThrow(
+        /Align the design-system versions/
+      )
+    })
+
     it.each([
       ['a string', 'hijacked'],
       ['an object without a toaster', { version: GLOBAL_TOASTER_VERSION }],

@@ -10,6 +10,24 @@ export const TOAST_ANNOUNCEMENT_LIFETIME = 1000
 /** Both live regions empty. */
 const SILENT: ToastLive = Object.freeze({ polite: '', assertive: '' })
 
+/** A text that already ends a sentence: no full stop is added after it. */
+const SENTENCE_END = /[.!?…]$/
+
+/**
+ * Appends a toast's text to what a region is still reading, one sentence each — never
+ * « Upload failed.. Saved », never « Saved Synced » run together.
+ *
+ * @param current - What the region holds.
+ * @param next - The toast's text.
+ * @returns Both, as sentences.
+ */
+function joinSpoken(current: string, next: string): string {
+  if (current === '') return next
+  return SENTENCE_END.test(current)
+    ? `${current} ${next}`
+    : `${current}. ${next}`
+}
+
 /** What a queued toast needs to be announced: who it is, where its text is, how loud. */
 interface Announceable {
   /** The toast's id. */
@@ -117,7 +135,7 @@ export class ToastAnnouncer {
     const { politeness } = announcement
     this.live = {
       ...this.live,
-      [politeness]: [this.live[politeness], spoken].filter(Boolean).join('. '),
+      [politeness]: joinSpoken(this.live[politeness], spoken),
     }
     this.heard.push(announcement)
     this.restartClear()

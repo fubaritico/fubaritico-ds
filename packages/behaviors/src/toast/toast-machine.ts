@@ -101,6 +101,8 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
   private readonly pauseReasons = new Set<ToastPauseReason>()
   /** Bumped by the hotkey. */
   private focusToken = 0
+  /** The registration of the view (an adapter's Toaster) that renders the stack — one per page. */
+  private renderer: symbol | null = null
   /** Source of the generated ids and DOM ids. */
   private sequence = 0
 
@@ -364,6 +366,27 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
   }
 
   /**
+   * Registers the view that renders the stack — the host's Toaster. One per page: the host mounts
+   * it, remotes only show toasts. A second one would show every toast twice.
+   *
+   * @returns The detach function, for the view's unmount.
+   * @throws Error when a view is already attached — a Toaster mounted in a remote, or twice.
+   */
+  attachRenderer(): () => void {
+    if (this.renderer !== null)
+      throw new Error(
+        "Toast: this page's stack already has a Toaster — mount it once, in the host; remotes " +
+          'only call toast().'
+      )
+    // Each registration its own token: a detach releases only its own — never a later view's.
+    const token = Symbol('renderer')
+    this.renderer = token
+    return () => {
+      if (this.renderer === token) this.renderer = null
+    }
+  }
+
+  /**
    * Hands back the text of a queued announcement (`snapshot.announcements`), read by the adapter
    * from the page once the toast is rendered — never in the frame it was inserted.
    *
@@ -405,6 +428,7 @@ export class ToastMachine<C> extends Store<ToasterSnapshot<C>> {
     this.entries = []
     this.pauseReasons.clear()
     this.announcer.reset()
+    this.renderer = null
     this.clearStore()
   }
 

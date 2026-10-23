@@ -4,8 +4,8 @@ import type { ToastMachine } from './toast-machine.js'
 
 /**
  * Version of the shared slot's contract. Two bundles of the design system (two micro-frontends)
- * share the slot only when they agree on it; bump it on any change of {@link SHARED_METHODS} or of
- * their signatures.
+ * share the slot only when they agree on it. It freezes at the first publication: from then on, bump
+ * it on any change of {@link SHARED_METHODS} or of their signatures.
  */
 export const GLOBAL_TOASTER_VERSION = 1
 
@@ -35,6 +35,7 @@ const SHARED_METHODS = [
   'batch',
   'handleKeydown',
   'handleToastKeydown',
+  'attachRenderer',
   'announce',
   'regionRemounted',
   'regionAttrs',
@@ -124,16 +125,22 @@ export function getGlobalToaster<C>(): SharedToaster<C> {
     host[SLOT] = created
     return toaster as SharedToaster<C>
   }
+  // The version first: a copy on another contract may lack a method, and must be told to align
+  // the versions — not that the slot is foreign.
+  const version =
+    typeof slot === 'object' && slot !== null
+      ? (slot as Record<string, unknown>).version
+      : undefined
+  if (typeof version === 'number' && version !== GLOBAL_TOASTER_VERSION)
+    throw new Error(
+      `Toast: the page's toaster was created by a @fubaritico/behaviors on contract ` +
+        `${String(version)}, this one is on ${String(GLOBAL_TOASTER_VERSION)}. ` +
+        `Align the design-system versions of the bundles sharing the page.`
+    )
   if (!isGlobalSlot(slot))
     throw new Error(
       `Toast: globalThis[Symbol.for('@fubaritico/toaster')] holds something that is not a ` +
         `toaster. Another script wrote to this slot; the page's toasts cannot be shared.`
-    )
-  if (slot.version !== GLOBAL_TOASTER_VERSION)
-    throw new Error(
-      `Toast: the page's toaster was created by a @fubaritico/behaviors on contract ` +
-        `${String(slot.version)}, this one is on ${String(GLOBAL_TOASTER_VERSION)}. ` +
-        `Align the design-system versions of the bundles sharing the page.`
     )
   return slot.toaster as SharedToaster<C>
 }

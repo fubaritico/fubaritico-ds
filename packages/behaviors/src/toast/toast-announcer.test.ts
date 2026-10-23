@@ -156,6 +156,15 @@ describe('toast announcements', () => {
   // L4: N/A — the text comes from the adapter's DOM; an empty one is an edge case, below.
 
   describe('edge cases', () => {
+    it('adds no second full stop after a text that ends a sentence', () => {
+      const { toaster } = setup()
+      toaster.show(message('Upload failed.'))
+      fulfilAll(toaster, () => 'Upload failed.')
+      toaster.show(message('Saved'))
+      fulfilAll(toaster, () => 'Saved')
+      expect(toaster.getState().live.polite).toBe('Upload failed. Saved')
+    })
+
     it('queues a toast replaced in place once on a replay', () => {
       const { toaster } = setup()
       toaster.show(message('Saving…', { id: 'save', duration: Infinity }))

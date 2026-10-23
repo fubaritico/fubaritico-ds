@@ -703,6 +703,39 @@ describe('ToastMachine', () => {
         expect(titles(toaster)).toEqual(['Saved'])
       })
 
+      it('throws when a second view attaches to the stack', () => {
+        const { toaster } = setup()
+        toaster.attachRenderer()
+        expect(() => toaster.attachRenderer()).toThrow(
+          /already has a Toaster — mount it once, in the host/
+        )
+      })
+
+      it('lets a view attach again once the first detached (a remount)', () => {
+        const { toaster } = setup()
+        const detach = toaster.attachRenderer()
+        detach()
+        expect(() => toaster.attachRenderer()).not.toThrow()
+      })
+
+      it('keeps a later view attached when an earlier one detaches after a destroy', () => {
+        const { toaster } = setup()
+        const first = toaster.attachRenderer()
+        toaster.destroy()
+        toaster.attachRenderer()
+        first()
+        expect(() => toaster.attachRenderer()).toThrow(/already has a Toaster/)
+      })
+
+      it('ignores a second detach of the same view', () => {
+        const { toaster } = setup()
+        const detach = toaster.attachRenderer()
+        detach()
+        toaster.attachRenderer()
+        detach()
+        expect(() => toaster.attachRenderer()).toThrow(/already has a Toaster/)
+      })
+
       it('still dismisses a non-dismissible toast by code', () => {
         const { toaster } = setup()
         const id = toaster.show(message('Uploading', { dismissible: false }))
