@@ -153,8 +153,12 @@
     /* The slide of the enclosing stack (signed by its edge); outside a `.ui-toaster`, none — the
        toast only fades. Override it here for one toast. */
     --ui-toast-slide: var(--ui-toaster-slide, 0px);
-    --ui-toast-padding-inline: var(--spacing-4);
-    --ui-toast-padding-block: var(--spacing-3);
+    /* The content's inset — the padding of a message toast, and where the close button sits in a
+       bare one (which zeroes the padding, not this): one source for both. */
+    --ui-toast-inset-inline: var(--spacing-4);
+    --ui-toast-inset-block: var(--spacing-3);
+    --ui-toast-padding-inline: var(--ui-toast-inset-inline);
+    --ui-toast-padding-block: var(--ui-toast-inset-block);
     --ui-toast-font-family: var(--font-inter);
     --ui-toast-title-font-size: var(--font-size-sm);
     --ui-toast-title-font-weight: var(--font-weight-semibold);
@@ -248,12 +252,23 @@
     --ui-toast-padding-block: 0px;
     --ui-toast-border-width: 0px;
     --ui-toast-bg: transparent;
+    --ui-toast-close-bg: var(--color-surface);
+
+    position: relative;
   }
 
   /* ---- parts ---- */
   /* `flex-shrink: 0` so a long message never squeezes the glyph out of shape. */
+  /* Exactly one title line tall, the glyph centred in it: a span's own line box (the toast's font
+     size, ~24 px) would make the row taller than the title's line (21 px) and push the text and the
+     close button off the toast's middle. One line: all three centred. Several: all on the first. */
   .ui-toast__icon {
+    display: flex;
     flex-shrink: 0;
+    align-items: center;
+    block-size: calc(
+      var(--ui-toast-title-font-size) * var(--ui-toast-line-height)
+    );
     color: var(--ui-toast-accent);
   }
 
@@ -281,6 +296,15 @@
   .ui-toast__close {
     position: relative;
     flex-shrink: 0;
+    /* Its centre on the first line of the title, not its top: half of what the button outgrows
+       that line by, taken back above it. */
+    margin-block: calc(
+      (
+          var(--ui-toast-title-font-size) * var(--ui-toast-line-height) -
+            var(--ui-icon-button-size)
+        ) /
+        2
+    );
     margin-inline-start: auto;
   }
 
@@ -291,5 +315,25 @@
     content: '';
     position: absolute;
     inset: calc(-1 * (var(--spacing-1-5) + var(--spacing-px)));
+  }
+
+  /* In a bare shell the content IS the surface: the close button sits INSIDE its inline-end top
+     corner, on a surface of its own so it stays legible over the content — never beside the
+     surface, and never past the list's edge (a scrolling list clips what overflows it). Placed
+     where a message toast puts it — the content's inset, centred on the title's first line — so
+     the stack's close buttons line up. `:where()` keeps it at one class: source order decides. */
+  :where(.ui-toast--bare) .ui-toast__close {
+    position: absolute;
+    margin-block: 0;
+    inset-block-start: calc(
+      var(--ui-toast-inset-block) +
+        (
+          var(--ui-toast-title-font-size) * var(--ui-toast-line-height) -
+            var(--ui-icon-button-size)
+        ) /
+        2
+    );
+    inset-inline-end: var(--ui-toast-inset-inline);
+    background-color: var(--ui-toast-close-bg);
   }
 }
