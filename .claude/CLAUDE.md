@@ -102,7 +102,7 @@ Code does not load it while `.claude/CLAUDE.md` exists (`rules/claude-config.md`
   already-decided things; that's friction. Only stop again for a genuinely undecided fork or an
   irreversible/outward-facing action.
 - **Plans = plain `.md` in `files/plans/`** (gitignored) — do NOT use the harness "plan mode" (its green in-prompt overlay confuses the workflow). Write/update/read plan files directly; they stay re-readable in the IDE.
-- **Review → Test → Commit** per change — no accumulation; **fix pre-existing issues a review surfaces in files you touch** — never defer them as "out of scope" (no tech-debt accumulation)
+- **Review → Test → Commit** per ticket — concise commits, no accumulation across tickets; **fix pre-existing issues a review surfaces in files you touch** — never defer them as "out of scope" (no tech-debt accumulation)
 - **Always run** — `pnpm type-check && pnpm lint && pnpm test` from root — MUST run after every code change, never skip
 - **Risky actions** (reset --hard, rm -rf) require explicit permission EVERY TIME
 - **Never hallucinate** — if uncertain, read code first, perform some searches on notes, the net and bring GitHub sources with /opensrc when needed
@@ -176,8 +176,7 @@ Read @known-issues.md
 ## Reference Files — how they load (2026-10-22)
 
 **A rule in `.claude/rules/` without `paths:` loads at every session; with `paths:`, when a matching file is
-read or written** (code.claude.com/docs/en/memory). Until 2026-10-22 this table said "NOT auto-loaded": false,
-all eight loaded every time (~100 KB). Now:
+read or written** (code.claude.com/docs/en/memory):
 
 | File (under `.claude/rules/`)                                 | Loads                                                                                        |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |

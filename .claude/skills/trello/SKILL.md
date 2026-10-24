@@ -94,7 +94,7 @@ Storybook, never "the code handles X".
 4. **README + story** for a component (`rules/component-docs.md`, `/story`).
 5. **Checked by the dev in Storybook** after `pnpm build` → ticket in **À valider** with exactly what to
    look at; only his verdict (or his decision) moves it on.
-6. **Committed** (`/commit`) after his check, with a commit TYPE that tells the truth (a fix typed
+6. **Committed on `main`** (`/commit`) after his check, with a commit TYPE that tells the truth (a fix typed
    `test(...)` gives « Version bump only »); the hash in a comment; then `done`.
 7. **Written where it lives** — closed known-issue removed, plan updated, `next.md` pointer.
 8. **The ticket documents the work** — its closing comment (below) is written before `done`.

@@ -135,19 +135,11 @@ Allowed types: `build chore ci docs feat fix perf refactor revert style test`
 Format: `type(scope): subject` (lowercase, no trailing period, ≤ 100 chars).
 Scopes: `reference` (or `ui`), `behaviors`, `shared`, `stencil`, `styles`, `tokens`, `variants`, `repo` (root/monorepo).
 
-**Branches and pull requests (the dev's call, 2026-10-23)** — so `main` stays releasable while a
-ticket spans several commits:
-
-- A ticket's work goes on its own branch, cut from `main` before the first edit (`git switch -c`
-  carries uncommitted work along), named `<type>/<TICKET>-<title-slug>`: the commit type, the ticket
-  (`/trello`), its title in lowercase ASCII with dashes — `[REACT-152 · BEHAVIORS] Toast : la pile de
-notifications` → `feat/REACT-152-toast-la-pile-de-notifications`.
-- Once the dev validated the work: push, open a PR to `main` (`gh pr create`, the ticket in the
-  body), link it on the ticket (`trello link`). `ci.yml` runs on it.
-- CI green → merge **fast-forward** (`git merge --ff-only` on `main`, push): GitHub marks the PR merged.
-  Never squash or rebase-merge — they rewrite the hashes the tickets cite. `main` behind → rebase the
-  branch first, before any hash is cited.
-- Pushing and merging are outward-facing: the dev's go each time.
+**Commits and pull requests (the dev's call, 2026-10-24)** — work is committed on `main`: concise
+commits, each one belonging to one ticket. A branch and a PR only when the dev asks for one (a chantier
+that would leave `main` unreleasable for several sessions, an outside reviewer); it is then named
+`<type>/<TICKET>-<title-slug>` and merged **fast-forward** (`git merge --ff-only`) — never squash or
+rebase-merge, they rewrite the hashes the tickets cite. Pushing is outward-facing: the dev's go each time.
 
 ## Forbidden
 

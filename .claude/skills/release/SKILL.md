@@ -31,6 +31,9 @@ gh run list --branch main --limit 3     # last CI run on main: success
 git describe --tags --abbrev=0          # last release tag
 ```
 
+Work is committed on `main` (`rules/architecture.md`): check the board (`/trello` `list`) — a ticket
+**En cours** may have half its work on `main`; stop and ask the dev before releasing.
+
 Stop and report if anything is red. Never release over a failing CI.
 
 ## 2. Audit the commits BEFORE bumping

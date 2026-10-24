@@ -48,11 +48,13 @@ paths:
   case), it takes a geometric test against its bounding box. Hence `useNativeDialog`'s option
   `backdropArea: 'self' | 'outside'`. In tests jsdom measures everything as zero: stub
   `getBoundingClientRect` and click through `user.pointer({ coords })`.
-- **Top-layer recipe (2026-10-11, Tooltip / Dropdown / Typeahead / BottomSheet)**: `popover="manual"` rendered
-  IN PLACE (never a portal by default — on `body` it ends up inert under a Modal), `showPopover()` in a
-  callback ref, a per-instance CSS anchor `--ui-<block>-anchor` (set on the root AND the surface), placement
-  under `@supports (position-anchor: …)`, a browser test « open inside a Modal ». A portalled menu loses the
-  block's vars → `.ui-x, body > .ui-x__menu { vars }`.
+- **Top-layer recipe (Tooltip, Dropdown, Typeahead, BottomSheet, Toast)**: `popover="manual"` rendered IN PLACE
+  (never a portal by default — on `body` it ends up inert under a Modal), `showPopover()` in a callback ref, a
+  browser test « open inside a Modal ». **Anchored** blocks (Dropdown, Typeahead): a per-instance CSS anchor
+  `--ui-<block>-anchor` (set on the root AND the surface), placement under `@supports (position-anchor: …)`; the
+  Tooltip is placed in JS, the BottomSheet by its edge. The Toast's page-wide stack is portalled INTO the open
+  modal dialog (outside it, it is inert). A portalled menu loses the block's vars →
+  `.ui-x, body > .ui-x__menu { vars }`.
 - **React propagates `close` through the React tree** (the DOM event does not bubble): a nested `<dialog>`
   closed its parent. `useNativeDialog.handleClose` ignores `target !== currentTarget` — every new dialog goes
   through this hook.

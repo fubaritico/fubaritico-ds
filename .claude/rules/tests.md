@@ -9,7 +9,7 @@ paths:
 # Rules — Test Policy
 
 > Every new component, hook, utility, or bug fix MUST ship with tests.
-> No code is considered done without tests, a `/commit`, and `/end-session`.
+> No code is considered done without tests and a `/commit`.
 
 Stack: **Vitest 4** (catalog) — React Testing Library (jsdom) + Vitest Browser Mode (Chromium) for
 `packages/reference`; `node` environment for `behaviors`, `variants`, `styles`, `shared`; **`@stencil/vitest`**
@@ -22,8 +22,8 @@ After every code change:
 1. **Write tests** — following the 5-level policy below
 2. **`pnpm type-check && pnpm lint && pnpm test`** — all pass
 3. **`/review`** — multi-agent review
-4. **`/commit`** — conventional commit
-5. **`/end-session`** — update session state before closing
+4. **`/commit`** — conventional commit, after the dev's check (Definition of Done, `/trello`)
+5. At the end of the session (not after each change), **`/end-session`** — update session state
 
 ## 5-Level Test Policy (mandatory)
 
