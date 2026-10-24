@@ -23,12 +23,12 @@ first run, through `e2e-orchestrator`, creates it (REPO-149, in Idées).
 
 | where               | ticket                                                                                                                                                                                                              | state                                        |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| **Chantiers**       | DESIGN-120 themes · DESIGN-121 DataTable · DESIGN-122 Stencil · DESIGN-123 agent-ready                                                                                                                              | rungs as checklists, linked to their tickets |
+| **Epics**           | DESIGN-120 themes · DESIGN-121 DataTable · DESIGN-122 Stencil · DESIGN-123 agent-ready · DESIGN-144 icons · DESIGN-156 a11y | « Paliers » + « Tickets enfants » (every child ticket) |
 | **À valider**       | —                                                                                                                                                                                                                   | empty                                        |
 | **À faire**         | —                                                                                                                                                                                                                   | empty: the order is his                      |
 | **Backlog**         | themes 2→5 (TOKENS-124…127), Atlas's command menu (REACT-128), `role="grid"` (REACT-129), Stencil green (STENCIL-130), doc as data (DESIGN-131), DataTable leftovers (REACT-145…147), Storybook play tests (SB-148) |                                              |
 | **Idées**           | the e2e harness and the CI stubs (REPO-149), among 13 others                                                                                                                                                        |                                              |
-| **Fait**, à publier | STYLES-119 the light Tooltip's arrow                                                                                                                                                                                | ships in 0.7.1 or with the next minor        |
+| **Fait**, à publier | —  | 0.8.0 published 2026-10-24 (REPO-155: REACT-152 Toast, STYLES-119 Tooltip arrow) |
 
 The day's choice still stands: themes step 2 (TOKENS-124) or Atlas's menu (REACT-128, low priority; my
 recommendation: a sibling `ActionMenu` rather than a `kind` prop — to debate).

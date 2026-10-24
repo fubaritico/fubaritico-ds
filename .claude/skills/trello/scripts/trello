@@ -37,7 +37,7 @@ function readCredentials () {
 
 const config = JSON.parse(readFileSync(resolve(HERE, '../board.json'), 'utf8'))
 const client = createClient({ config, credentials: readCredentials() })
-const { api, lists, listNamed, allCards, card, ticketRef, label, checkLabels } = client
+const { api, lists, listNamed, allCards, card, ticketRef, label, checkLabels, renameList, renameLabel, addChild, tickChild } = client
 const BOARD = config.board
 const LAST = config.columns.at(-1)
 
@@ -166,6 +166,8 @@ const verbs = {
   async done (ref) {
     await verbs.move(ref, LAST)
     const c = await card(ref)
+    const epic = await tickChild(c)
+    if (epic) console.warn(`${line(c)} ticked in ${epic}`)
     if (!client.ships(c.name)) return
     const l = await label(config.toPublish.name)
     if (!c.idLabels.includes(l.id)) await api('POST', `/cards/${c.id}/idLabels`, { value: l.id })
@@ -289,6 +291,32 @@ const verbs = {
     if (matches.length !== 1) fail(`${matches.length} items match "${text}": ${items.map((i) => i.name).join(' | ')}`)
     await api('PUT', `/cards/${c.id}/checkItem/${matches[0].id}`, { state: 'complete' })
     console.warn(`${line(c)} ticked: ${matches[0].name}`)
+  },
+
+  /** child <epic> <ticket> — the ticket joins the Epic: its label, and its link in « Tickets enfants ». */
+  async child (epicRef, ticketRef) {
+    if (!epicRef || !ticketRef) fail('child <epic> <ticket>')
+    const epic = await card(epicRef)
+    const ticket = await card(ticketRef)
+    const done = (await lists()).find((l) => l.id === ticket.idList)?.name === LAST
+    const added = await addChild(epic, ticket, done)
+    console.warn(`${line(ticket)} ${added ? 'joins' : 'already in'} ${epic.name}`)
+  },
+
+  /** rename-column <old> <new> [--dry-run] — in place; then change board.json the same way. */
+  async 'rename-column' (from, to, flag) {
+    if (!from || !to) fail('rename-column <old> <new> [--dry-run]')
+    const dryRun = flag === '--dry-run'
+    await renameList(from, to, { dryRun })
+    console.warn(`${dryRun ? '(dry run) ' : ''}column renamed: ${from} → ${to}`)
+  },
+
+  /** rename-label <old> <new> [--dry-run] — in place, every card keeps it; then board.json. */
+  async 'rename-label' (from, to, flag) {
+    if (!from || !to) fail('rename-label <old> <new> [--dry-run]')
+    const dryRun = flag === '--dry-run'
+    await renameLabel(from, to, { dryRun })
+    console.warn(`${dryRun ? '(dry run) ' : ''}label renamed: ${from} → ${to}`)
   },
 
   /** show <card> — title, column, labels, description, checklists, links, comments. */

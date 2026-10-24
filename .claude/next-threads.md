@@ -2,7 +2,7 @@
 
 > Split out of `next.md` on 2026-10-09 (200-line cap). `next.md` = the resume point; here = the backdrop:
 > north-star, milestones in progress, locked decisions. The tasks themselves are on the board (`/trello`),
-> the initiatives in its Chantiers column (DESIGN-120…123).
+> the initiatives in its Epics column (DESIGN-120…123, DESIGN-144, DESIGN-156).
 
 ## North-star (roadmap.md)
 

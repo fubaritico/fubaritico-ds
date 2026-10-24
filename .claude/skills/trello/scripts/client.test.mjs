@@ -101,3 +101,147 @@ describe('createClient', () => {
     })
   })
 })
+
+describe('renameList and renameLabel', () => {
+  describe('happy path', () => {
+    it('renames a column in place', async () => {
+      const c = client()
+      await c.renameList(config.columns[0], 'Renamed')
+      const put = c.calls.find((call) => call.method === 'PUT')
+      assert.equal(put?.url.pathname, '/1/lists/l0')
+      assert.equal(put?.url.searchParams.get('name'), 'Renamed')
+    })
+
+    it('renames a label in place', async () => {
+      const c = client()
+      await c.renameLabel(config.labels[0].name, 'renamed')
+      const put = c.calls.find((call) => call.method === 'PUT')
+      assert.equal(put?.url.pathname, '/1/labels/lb0')
+      assert.equal(put?.url.searchParams.get('name'), 'renamed')
+    })
+  })
+
+  describe('variants', () => {
+    it('writes nothing on a dry run', async () => {
+      const c = client()
+      await c.renameList(config.columns[0], 'Renamed', { dryRun: true })
+      await c.renameLabel(config.labels[0].name, 'renamed', { dryRun: true })
+      assert.equal(c.calls.filter((call) => call.method !== 'GET').length, 0)
+    })
+  })
+
+  describe('managed errors', () => {
+    it('refuses a column that does not exist', async () => {
+      await assert.rejects(client().renameList('Nope', 'Renamed'), TrelloError)
+    })
+
+    it('refuses to rename a column onto one that exists', async () => {
+      const c = client()
+      await assert.rejects(c.renameList(config.columns[0], config.columns[1]), /already exists/)
+      assert.equal(c.calls.filter((call) => call.method === 'PUT').length, 0)
+    })
+
+    it('refuses to rename a label onto one that exists', async () => {
+      const c = client()
+      await assert.rejects(c.renameLabel(config.labels[0].name, config.labels[1].name), /already exists/)
+      assert.equal(c.calls.filter((call) => call.method === 'PUT').length, 0)
+    })
+  })
+
+  // L4: N/A — a Trello refusal is surfaced by api(), covered above for the other verbs.
+
+  describe('edge cases', () => {
+    it('refuses a label that does not exist', async () => {
+      await assert.rejects(client().renameLabel('nope', 'renamed'), /no label "nope"/)
+    })
+  })
+})
+
+/**
+ * A fake Trello holding one Epic (label `epic · x`), its « Tickets enfants » checklist and the board
+ * labels; records every call.
+ *
+ * @param {{ items?: { id: string, name: string, state: string }[], noChecklist?: boolean }} [state] -
+ *   The checklist's items, or no checklist yet.
+ * @returns {{ fetchImpl: typeof fetch, calls: { method: string, url: URL }[] }} The fake and its log.
+ */
+function fakeEpicTrello ({ items = [], noChecklist = false } = {}) {
+  const calls = []
+  const labels = [...config.labels.map((l, i) => ({ id: `lb${i}`, name: l.name })), { id: 'lbEpic', name: `${config.epics.labelPrefix}x` }]
+  const fetchImpl = async (href, init = {}) => {
+    const url = new URL(href)
+    const method = init.method ?? 'GET'
+    calls.push({ method, url })
+    const reply = (body) => ({ ok: true, status: 200, json: async () => body, text: async () => '' })
+    if (url.pathname.endsWith('/labels') && method === 'GET') return reply(labels)
+    if (url.pathname.endsWith('/lists') && method === 'GET') return reply(config.columns.map((name, i) => ({ id: `l${i}`, name })))
+    if (/\/lists\/l\d+\/cards$/.test(url.pathname)) return reply([{ id: 'epic', name: 'The Epic', idLabels: ['lbEpic'], url: 'https://trello.com/c/EPIC/1-epic' }])
+    if (url.pathname.endsWith('/cards/epic/checklists') && method === 'GET')
+      return reply(noChecklist ? [] : [{ id: 'cl', name: config.epics.children, checkItems: items }])
+    if (url.pathname.endsWith('/cards/epic/checklists') && method === 'POST') return reply({ id: 'cl-new', name: config.epics.children })
+    return reply({})
+  }
+  return { fetchImpl, calls }
+}
+
+const epicClient = (state) => {
+  const fake = fakeEpicTrello(state)
+  return { ...createClient({ config, credentials: { key: 'k', token: 't' }, fetchImpl: fake.fetchImpl }), calls: fake.calls }
+}
+
+const EPIC = { id: 'epic', idLabels: ['lbEpic'], url: 'https://trello.com/c/EPIC/1-epic' }
+const TICKET = { id: 't1', idLabels: [], url: 'https://trello.com/c/T1LINK/2-ticket' }
+
+describe('addChild and tickChild', () => {
+  describe('happy path', () => {
+    it('labels the ticket and adds its link to the Epic', async () => {
+      const c = epicClient()
+      assert.equal(await c.addChild(EPIC, TICKET, false), true)
+      const label = c.calls.find((call) => call.method === 'POST' && call.url.pathname === '/1/cards/t1/idLabels')
+      assert.equal(label?.url.searchParams.get('value'), 'lbEpic')
+      const item = c.calls.find((call) => call.method === 'POST' && call.url.pathname === '/1/checklists/cl/checkItems')
+      assert.equal(item?.url.searchParams.get('name'), TICKET.url)
+      assert.equal(item?.url.searchParams.get('checked'), 'false')
+    })
+
+    it('ticks a done ticket in its Epic', async () => {
+      const c = epicClient({ items: [{ id: 'i1', name: TICKET.url, state: 'incomplete' }] })
+      assert.equal(await c.tickChild({ ...TICKET, idLabels: ['lbEpic'] }), 'The Epic')
+      const put = c.calls.find((call) => call.method === 'PUT')
+      assert.equal(put?.url.pathname, '/1/cards/epic/checkItem/i1')
+      assert.equal(put?.url.searchParams.get('state'), 'complete')
+    })
+  })
+
+  describe('variants', () => {
+    it('creates the checklist the first time', async () => {
+      const c = epicClient({ noChecklist: true })
+      await c.addChild(EPIC, TICKET, true)
+      assert.ok(c.calls.some((call) => call.method === 'POST' && call.url.pathname === '/1/cards/epic/checklists'))
+      const item = c.calls.find((call) => call.url.pathname === '/1/checklists/cl-new/checkItems')
+      assert.equal(item?.url.searchParams.get('checked'), 'true')
+    })
+  })
+
+  describe('managed errors', () => {
+    it('refuses a card that is not an Epic', async () => {
+      await assert.rejects(epicClient().addChild({ ...EPIC, idLabels: [] }, TICKET, false), /not an Epic/)
+    })
+  })
+
+  // L4: N/A — a Trello refusal is surfaced by api(), as for every verb.
+
+  describe('edge cases', () => {
+    it('adds a ticket already listed only once', async () => {
+      const c = epicClient({ items: [{ id: 'i1', name: TICKET.url, state: 'incomplete' }] })
+      assert.equal(await c.addChild(EPIC, TICKET, false), false)
+      assert.equal(c.calls.filter((call) => call.url.pathname.includes('/checkItems')).length, 0)
+    })
+
+    it('ticks nothing for a ticket without an Epic', async () => {
+      const c = epicClient()
+      assert.equal(await c.tickChild(TICKET), undefined)
+      assert.equal(c.calls.filter((call) => call.method === 'PUT').length, 0)
+    })
+  })
+})

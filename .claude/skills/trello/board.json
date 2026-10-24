@@ -3,7 +3,7 @@
   "board": "6ad37079956321012aa50424",
   "url": "https://trello.com/b/eEZaJpsL/fubaritico-ds",
   "columns": [
-    "Chantiers",
+    "Epics",
     "Idées",
     "Backlog",
     "À faire",
@@ -12,7 +12,7 @@
     "Fait"
   ],
   "active": [
-    "Chantiers",
+    "Epics",
     "À faire",
     "En cours",
     "À valider par le développeur"
@@ -29,6 +29,11 @@
     "DESIGN"
   ],
   "unpublished": ["REPO", "STENCIL", "SB"],
+  "epics": {
+    "column": "Epics",
+    "children": "Tickets enfants",
+    "labelPrefix": "epic · "
+  },
   "blocked": { "name": "Bloqué", "color": "red" },
   "toPublish": { "name": "à publier", "color": "green" },
   "priorities": { "haute": "red", "moyenne": "yellow", "aucune": null },
@@ -47,8 +52,8 @@
     { "family": "couche", "name": "outillage", "color": "black" },
     { "family": "couche", "name": "design", "color": "purple_dark" },
 
-    { "family": "type", "name": "défaut", "color": "red_light" },
-    { "family": "type", "name": "fonction", "color": "lime_dark" },
+    { "family": "type", "name": "bug", "color": "red_light" },
+    { "family": "type", "name": "story", "color": "lime_dark" },
     { "family": "type", "name": "dette", "color": "yellow_dark" },
     { "family": "type", "name": "décision", "color": "purple_light" },
     { "family": "type", "name": "doc", "color": "black_light" },
@@ -57,24 +62,34 @@
     { "family": "origine", "name": "demande Atlas", "color": "blue_dark" },
 
     {
-      "family": "chantier",
-      "name": "chantier · thèmes",
+      "family": "epic",
+      "name": "epic · thèmes",
       "color": "green_dark"
     },
     {
-      "family": "chantier",
-      "name": "chantier · DataTable",
+      "family": "epic",
+      "name": "epic · DataTable",
       "color": "blue_light"
     },
     {
-      "family": "chantier",
-      "name": "chantier · Stencil",
+      "family": "epic",
+      "name": "epic · Stencil",
       "color": "lime_light"
     },
     {
-      "family": "chantier",
-      "name": "chantier · agent-ready",
+      "family": "epic",
+      "name": "epic · agent-ready",
       "color": "orange_light"
+    },
+    {
+      "family": "epic",
+      "name": "epic · icons",
+      "color": "pink_light"
+    },
+    {
+      "family": "epic",
+      "name": "epic · a11y",
+      "color": "sky_light"
     },
 
     { "family": "statut", "name": "à publier", "color": "green" },

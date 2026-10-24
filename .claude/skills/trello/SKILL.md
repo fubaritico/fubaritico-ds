@@ -19,7 +19,7 @@ designed out. In French to the dev an item is a **ticket**, never a _carte_ (`Ca
 | home                                                                           | holds                                                                                                    | no longer holds          |
 | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- | ------------------------ |
 | **the board**                                                                  | the tasks and their state: what, stage, blocked, who has the ball, what waits for a release              | —                        |
-| `files/plans/*.md`                                                             | a chantier's design: why, how, trade-offs; its steps = a checklist on the ticket                         | progress                 |
+| `files/plans/*.md`                                                             | an Epic's design: why, how, trade-offs; its steps = a checklist on the ticket                         | progress                 |
 | known-issues (slices `.claude/rules/known-issues/*.md`, map `known-issues.md`) | a problem's mechanism; an entry that asks for an action carries ` — REACT-12`                            | the to-do                |
 | `.claude/next.md`                                                              | where we stopped, what is mid-flight, context that is not a task; names the tickets En cours / À valider | any task list            |
 | `.claude/completed.md`                                                         | a short account per session (spans, the dev's words, my faults), **citing** tickets                      | the detail of a delivery |
@@ -40,7 +40,7 @@ commit in a comment; a done ticket → `completed.md` cites it, never re-describ
 
 | column                           | holds                                                                                                                                                   | who moves a ticket in                                       |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| **Chantiers**                    | an initiative (themes, DataTable, Stencil, agent-ready): its checklist names the rungs, linked to their tickets. Outside the flow, stays its whole life | the dev                                                     |
+| **Epics**                        | an initiative (themes, DataTable, Stencil, agent-ready, icons, a11y), outside the flow its whole life. Two checklists: « Paliers » the rungs of its plan, « Tickets enfants » EVERY ticket of the Epic (its stories, its bugs), ticked when done | the dev |
 | **Idées**                        | a raw thought, _Idée_ template                                                                                                                          | anyone; what comes from me lands here                       |
 | **Backlog**                      | a shaped ticket, wording validated, unordered                                                                                                           | the dev (a subject of a plan he decided may enter directly) |
 | **À faire**                      | what he decided to do, **in his order**                                                                                                                 | the dev — never me                                          |
@@ -61,8 +61,8 @@ did not choose. « On passe à la suite » = propose the top of À faire, not st
   whose scope is not the ticket's (`REPO-142` for `REACT-142`) is refused — Atlas's script accepts it.
 - **Labels** live in `board.json` (`tag` refuses any other): gravité (`critique` `gênant` `cosmétique`,
   only on a fix), couche (redundant with the scope on purpose — a cue seen twice is wanted), type
-  (`défaut` `fonction` `dette` `décision` `doc` `a11y`), `demande Atlas`, `chantier · …` (on every ticket of
-  an initiative), `à publier`, `Bloqué`. A new label is the dev's call: add it to `board.json`, run `setup`.
+  (`bug` `story` `dette` `décision` `doc` `a11y`), `demande Atlas`, `epic · …` (on every ticket of
+  an Epic, and its link in the Epic's « Tickets enfants » — `child` does both), `à publier`, `Bloqué`. A new label is the dev's call: add it to `board.json`, run `setup`.
 - **Blocked** = the red `Bloqué` label via `block` (link + comment on both), never a column. When the
   blocking ticket is done, `unblock` its dependants in the same breath.
 
@@ -136,12 +136,14 @@ $S prefix STYLES-12 "styles · react"
 $S above STYLES-12 REACT-9    # place just above another
 $S move STYLES-12 "En cours"
 $S comment STYLES-12 "commit 76bde29 — vérifié par le dev : « … »"
-$S done STYLES-12             # → top of Fait (+ « à publier »)
+$S done STYLES-12             # → top of Fait (+ « à publier »), ticked in its Epic
 $S published 0.7.1            # after a proven publication
 $S tag STYLES-12 a11y · $S untag STYLES-12 a11y · $S priority STYLES-12 haute|moyenne|aucune
 $S block REACT-9 STYLES-12 "attend le skin" · $S unblock REACT-9
 $S link REACT-128 <https url> "Demande Atlas : CARTO-122"
 $S checklist DESIGN-120 "Paliers" "étape 1" "étape 2" · $S check DESIGN-120 "étape 1"
+$S child DESIGN-156 STYLES-153  # joins the Epic: its epic label + its link in « Tickets enfants »
+$S rename-column Old New [--dry-run] · $S rename-label old new [--dry-run]   # in place; then board.json
 $S show STYLES-12             # title, column, labels, description, checklists, links, comments
 $S archive STYLES-12 "doublon de STYLES-9"   # my own mistakes only
 $S setup                      # missing columns, labels, templates; column order
@@ -157,6 +159,7 @@ lives in `board.json`; the script holds the verbs only.
 | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
 | start-session                                                | `list`, sync check; tell the dev in two lines what waits on him (À valider) and the top of À faire |
 | I start a ticket he chose                                    | `move N "En cours"`                                                                                |
+| a ticket belongs to an Epic                                  | `child EPIC N` — its label and its link in « Tickets enfants »; `done` ticks it there              |
 | a check or a decision is his                                 | `move N "À valider par le développeur"` + a comment saying exactly what to do                      |
 | he finds a fault                                             | `comment` his words, `move N "En cours"`                                                           |
 | he validated, DoD met                                        | `/commit`, `comment` the hash and his verdict, `done N`                                            |
