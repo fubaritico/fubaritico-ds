@@ -1,7 +1,24 @@
 # Completed — archive
 
-Entries of 2026-10-13 and before, moved out of `completed.md` (it keeps the last two sessions). Translated into
+Entries of 2026-10-21 and before, moved out of `completed.md` (it keeps the last two sessions). Translated into
 English on 2026-10-22. Not loaded at launch. Since 2026-10-22 every delivery also has its Fait ticket on the board.
+
+### 2026-10-21 — release 0.7.0, Atlas migrated, the light Tooltip's arrow
+
+**One span** (20:06 → 22:45, 2h39), resumed after 7 days. A new chantier.
+
+- **0.7.0 published** through `/release minor` (the skill only starts by the dev's hand:
+  `disable-model-invocation`, on purpose). Beforehand: Stencil's `components.d.ts` ignored (`5ef57f4`).
+  Release `980d614`, tag `v0.7.0`, run `39654644976` (5 lines `+ @fubaritico/*@0.7.0`). Handoff written;
+  **Atlas migrated the same evening** (`aef0bf1` on their side, no old name left), earlier than planned.
+- **The "little thing in the whole type" of 13/10 = "tooltip"** (dictation), not the type. The light
+  variant's arrow had no outline and sat 1px off (offsets in border-box, an absolute box in padding-box).
+  **`76bde29` `fix(styles)`**: two triangles `::before` outline / `::after` fill (Bootstrap's technique),
+  `--ui-tooltip-arrow-size` tied to `ARROW_SIZE` by a test, **forced colours** (proven in Chromium: the
+  triangles became rectangles) → `forced-color-adjust: none`. Browser command `forcedColors`
+  (`vitest.browser.media.ts`). A thin light border = a WCAG 1.4.11 exception, assumed (the dev).
+- `known-issues.md` past 200 lines → `known-issues-datatable.md` (`4167a61`).
+- **Received from Atlas**: `files/REQUEST-menu-role-from-europe-historical-atlas.md` (CARTO-122, low priority).
 
 ### 2026-10-13 — release 0.6.0, colour roles renamed (themes, step 1)
 

@@ -3,6 +3,24 @@
 The last two sessions, short, citing their tickets (what shipped lives in the Fait tickets). Older ones:
 `completed-archive.md`.
 
+### 2026-10-23/24 — the Toast, release 0.8.0, Epics on the board, commits on main
+
+**One span** (23/10 20:50 → 24/10 02:29, 5h39), the chantier opened on 21/10 (4 spans, 13h17). Pushed (`607870b`).
+
+- **REPO-150 checked** at start: the hook names the rules, « écris les tests de Tabs » started `/test`.
+- **The Toast (REACT-152)**, asked by Atlas: one page-wide stack (`globalThis` slot, the Toaster mounted
+  « dans l'hôte, pas dans les remotes »), max 5, the 6th evicts the oldest, 6 positions, WCAG with no
+  assumed exception (« on doit respecter les précos WCAG »), 44 px target, announcements in the machine.
+  The dev's visual checks: same width for every toast, centring (one line / three lines stories).
+- **0.8.0 published** (REPO-155, `/release minor`, his two go's); Atlas handoff written.
+- **Epics** (REPO-154): Chantiers → Epics with « Tickets enfants », `epic · …` labels, story/bug; DESIGN-144
+  icons and DESIGN-156 a11y become Epics; STYLES-153 (contrasts, Backlog) is the a11y child.
+- **`/doctor prompt-audit`**, then the dev: « pas envie d'être emmerdé avec des pull requests » → commits on
+  `main`, a PR only on demand, plus the audit's fixes (REPO-157).
+- **My faults**: four `cd` despite the rule; an unverified tooltip claim in the handoff (removed); the
+  known-issues called the light Tooltip's 1.4.11 exception « the dev's choice » — he assumed nothing (STYLES-153);
+  a zsh `$G` command that ran nothing.
+
 ### 2026-10-22 — the Trello board, the context by path, every file in English, the prompt audit
 
 **Two spans** (10:46 → 13:09; 17:00 → 19:17, 4h39), the chantier opened on 21/10 (3 spans, 7h36). Pushed.
@@ -20,20 +38,3 @@ The last two sessions, short, citing their tickets (what shipped lives in the Fa
 - **My faults**: a first `audit-style` example with `background:` where the skin writes
   `background-color:` (caught before commit); a `git add -A .claude`, which `/commit` forbids — it failed
   on a pathspec and staged nothing.
-
-### 2026-10-21 — release 0.7.0, Atlas migrated, the light Tooltip's arrow
-
-**One span** (20:06 → 22:45, 2h39), resumed after 7 days. A new chantier.
-
-- **0.7.0 published** through `/release minor` (the skill only starts by the dev's hand:
-  `disable-model-invocation`, on purpose). Beforehand: Stencil's `components.d.ts` ignored (`5ef57f4`).
-  Release `980d614`, tag `v0.7.0`, run `39654644976` (5 lines `+ @fubaritico/*@0.7.0`). Handoff written;
-  **Atlas migrated the same evening** (`aef0bf1` on their side, no old name left), earlier than planned.
-- **The "little thing in the whole type" of 13/10 = "tooltip"** (dictation), not the type. The light
-  variant's arrow had no outline and sat 1px off (offsets in border-box, an absolute box in padding-box).
-  **`76bde29` `fix(styles)`**: two triangles `::before` outline / `::after` fill (Bootstrap's technique),
-  `--ui-tooltip-arrow-size` tied to `ARROW_SIZE` by a test, **forced colours** (proven in Chromium: the
-  triangles became rectangles) → `forced-color-adjust: none`. Browser command `forcedColors`
-  (`vitest.browser.media.ts`). A thin light border = a WCAG 1.4.11 exception, assumed (the dev).
-- `known-issues.md` past 200 lines → `known-issues-datatable.md` (`4167a61`).
-- **Received from Atlas**: `files/REQUEST-menu-role-from-europe-historical-atlas.md` (CARTO-122, low priority).
