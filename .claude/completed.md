@@ -3,6 +3,17 @@
 The last two sessions, short, citing their tickets (what shipped lives in the Fait tickets). Older ones:
 `completed-archive.md`.
 
+### 2026-10-30 — the MultiSelect for Atlas, release 0.9.0
+
+**One span** (17:32 → 19:53, 2h21), 6 days after 0.8.0. A new chantier. Pushed (`859606f`).
+
+- **The MultiSelect (REACT-158)**, asked by Atlas, aligned on the DS's conventions: « tu fais l'option A,
+  tu t'alignes sur tout ce qui a été fait ». It brought a dark Input and a removable Badge along.
+- **Checked from his phone** on screenshots I took in Storybook: « je valide » — the remote case only
+  (memory `send-storybook-screenshots-to-validate`).
+- **0.9.0 published** (REPO-159, `/release minor`, his two go's); Atlas's handoff written in europe-map.
+- **My faults**: two `cd` despite the rule (no effect on the journal).
+
 ### 2026-10-23/24 — the Toast, release 0.8.0, Epics on the board, commits on main
 
 **One span** (23/10 20:50 → 24/10 02:29, 5h39), the chantier opened on 21/10 (4 spans, 13h17). Pushed (`607870b`).
@@ -21,20 +32,3 @@ The last two sessions, short, citing their tickets (what shipped lives in the Fa
   known-issues called the light Tooltip's 1.4.11 exception « the dev's choice » — he assumed nothing (STYLES-153);
   a zsh `$G` command that ran nothing.
 
-### 2026-10-22 — the Trello board, the context by path, every file in English, the prompt audit
-
-**Two spans** (10:46 → 13:09; 17:00 → 19:17, 4h39), the chantier opened on 21/10 (3 spans, 7h36). Pushed.
-
-- **Morning** — the board and `/trello` (REPO-143); the rules loaded by path, the prompt hook, Atlas's
-  methods ported (REPO-150); `rules/error-handling.md` for a library (`421bd15`); **every file in English**,
-  the repository being public (the dev's call); the stray journal of 16/09 merged back (`513c3ef`).
-  The dev: « c'est bon, tu peux pousser les commits ».
-- **Evening** — `/doctor prompt-audit`, then the dev: « corrige les retours du tableau », French triggers
-  « pour l'instant », « corrige les défauts restants ». Seven commits `d73b359` → `69d527b`: the six e2e
-  agents rewritten for Playwright Test against Storybook (REPO-151, done), `tests.md` and `/test` on
-  Vitest 4, `architecture.md` true to the code, `/review` routing to its agents (PLAT-008), `audit-style`
-  and `audit-owasp` rewritten for the DS, `when_to_use` in French on eleven skills (REPO-150 comment).
-- **How a review runs** (his question): `/review` orchestrates, the seven `review-*` agents hold the rules.
-- **My faults**: a first `audit-style` example with `background:` where the skin writes
-  `background-color:` (caught before commit); a `git add -A .claude`, which `/commit` forbids — it failed
-  on a pathspec and staged nothing.

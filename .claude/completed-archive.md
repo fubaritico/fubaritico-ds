@@ -1,7 +1,25 @@
 # Completed — archive
 
-Entries of 2026-10-21 and before, moved out of `completed.md` (it keeps the last two sessions). Translated into
+Entries of 2026-10-22 and before, moved out of `completed.md` (it keeps the last two sessions). Translated into
 English on 2026-10-22. Not loaded at launch. Since 2026-10-22 every delivery also has its Fait ticket on the board.
+
+### 2026-10-22 — the Trello board, the context by path, every file in English, the prompt audit
+
+**Two spans** (10:46 → 13:09; 17:00 → 19:17, 4h39), the chantier opened on 21/10 (3 spans, 7h36). Pushed.
+
+- **Morning** — the board and `/trello` (REPO-143); the rules loaded by path, the prompt hook, Atlas's
+  methods ported (REPO-150); `rules/error-handling.md` for a library (`421bd15`); **every file in English**,
+  the repository being public (the dev's call); the stray journal of 16/09 merged back (`513c3ef`).
+  The dev: « c'est bon, tu peux pousser les commits ».
+- **Evening** — `/doctor prompt-audit`, then the dev: « corrige les retours du tableau », French triggers
+  « pour l'instant », « corrige les défauts restants ». Seven commits `d73b359` → `69d527b`: the six e2e
+  agents rewritten for Playwright Test against Storybook (REPO-151, done), `tests.md` and `/test` on
+  Vitest 4, `architecture.md` true to the code, `/review` routing to its agents (PLAT-008), `audit-style`
+  and `audit-owasp` rewritten for the DS, `when_to_use` in French on eleven skills (REPO-150 comment).
+- **How a review runs** (his question): `/review` orchestrates, the seven `review-*` agents hold the rules.
+- **My faults**: a first `audit-style` example with `background:` where the skin writes
+  `background-color:` (caught before commit); a `git add -A .claude`, which `/commit` forbids — it failed
+  on a pathspec and staged nothing.
 
 ### 2026-10-21 — release 0.7.0, Atlas migrated, the light Tooltip's arrow
 
