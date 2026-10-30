@@ -29,6 +29,7 @@
 @import './styles/input.css';
 @import './styles/listbox.css';
 @import './styles/modal.css';
+@import './styles/multi-select.css';
 @import './styles/pagination.css';
 @import './styles/popover.css';
 @import './styles/progress-bar.css';

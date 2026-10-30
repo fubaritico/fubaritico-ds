@@ -96,3 +96,16 @@ paths:
 - **Rating is display-only + grayscale by design** — REACT-140 (the clickable Phase-2 shape): `role="img"` + computed `aria-label` ("Rating: X out of Y", English default — pass `aria-label` to localise); the SVG/stars are `aria-hidden`. NO interaction/keyboard (a settable rating would be a separate interactive control; dev's Phase-2 shape = half-step clickable stars + callbacks, nothing more). NO traffic-light: fill = `--color-rating-filled` (neutral.900, repointed from amber.400) on `--color-rating-empty` (neutral.300); the score is read from the fill proportion + the number (never colour → 1.4.1).
 - **Rating `--color-rating-empty` (neutral.300, ~1.48:1 on white) is a DELIBERATE dev choice**: a review flagged it vs WCAG 1.4.11 (≥3:1 for graphical objects), but it's NOT treated as a blocker because (a) Rating is display-only, not a control boundary; (b) the score is redundantly conveyed by the high-contrast fill (neutral.900 ~17:1) AND the numeric value; (c) filled-vs-empty contrast is huge so the proportion is perceivable. If a stronger empty/track is wanted later, repoint `--color-rating-empty` to neutral.450 (the AA-min control shade) — scoped, no other consumer.
 - **Rating stars fill is RTL-safe via `--ui-rating-fill`**: the component passes ONLY the fill fraction as the `--ui-rating-fill` custom property (a 0–100% length); the skin owns the `clip-path` DIRECTION (LTR clips inline-end, a `:dir(rtl)` rule clips the other physical edge). Don't move the clip-path back inline (it was physical `inset(0 …% 0 0)` → broke RTL). The SVG ring geometry (svg px / stroke / dash arrays) stays inline (Skeleton precedent — skin owns look, not geometry).
+- **MultiSelect: the trigger is NOT a button (2026-10-30, REACT-158)** — each badge holds a remove
+  `<button>`, and a button inside a button is invalid HTML. The control is a plain `div` (pointer
+  convenience only); the search `<input>` is the `role="combobox"` and keeps focus
+  (`aria-activedescendant`); the menu closes as soon as focus leaves the INPUT (even to a remove button
+  inside the field). Behaviour in `MultiSelectService` (`packages/behaviors`), DOM glue in
+  `useMultiSelectDom`. A removal moves focus via `focusToken` (next badge's button, else the input).
+- **Badge remove button: 24px hit area, not 44 (2026-10-30, REACT-158)** — 16px glyph, `::before`
+  overflowing by 4px = WCAG 2.2 AA 2.5.8. The review rule asks ≥44px (AAA 2.5.5); 44px would overlap the
+  neighbouring badges in a wrapped MultiSelect. Kept at 24 pending the dev's word.
+- **The listbox's active option is ~1.3:1 on its surface (found 2026-10-30)** — `--color-pressed`
+  (#e5e5e5) on white: the keyboard cursor of Menu / Typeahead / Dropdown / MultiSelect is grey-on-grey,
+  under 1.4.11. DS-wide, so fixed in `listbox.css` for all, not per component — STYLES-153.
+

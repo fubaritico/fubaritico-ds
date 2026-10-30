@@ -15,6 +15,7 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] },
+    variant: { control: 'inline-radio', options: ['light', 'dark'] },
     icon: { control: 'text' },
     label: { control: 'text' },
     message: { control: 'text' },
@@ -26,6 +27,7 @@ const meta = {
   args: {
     placeholder: 'Enter text',
     size: 'md',
+    variant: 'light',
     messageType: 'info',
   },
 } satisfies Meta<typeof Input>
@@ -37,7 +39,7 @@ type Story = StoryObj<typeof meta>
 /** Interactive playground driven by the controls panel. */
 export const Playground: Story = {}
 
-/** Every case (sizes + icon + label + info/error + disabled) in one view; controls disabled. */
+/** Every case (sizes + icon + label + info/error + disabled + dark) in one view; controls disabled. */
 export const Showcase: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
@@ -67,6 +69,30 @@ export const Showcase: Story = {
         placeholder="••••••••"
       />
       <Input label="Disabled" placeholder="Can't touch this" disabled />
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+          padding: '1rem',
+          backgroundColor: 'var(--color-surface-inverse)',
+        }}
+      >
+        <Input
+          variant="dark"
+          label="Dark"
+          message="On an inverse panel (a dark admin)."
+          icon="MagnifyingGlass"
+          placeholder="Search"
+        />
+        <Input
+          variant="dark"
+          label="Dark, in error"
+          message="This field is required."
+          messageType="error"
+          placeholder="Required"
+        />
+      </div>
     </div>
   ),
 }

@@ -5,6 +5,9 @@ import type { VariantProps } from 'class-variance-authority'
 /** Size of the Input — drives the control geometry, icon inset and field font sizes. */
 export type InputSize = 'sm' | 'md' | 'lg'
 
+/** Colour scheme of the Input — `'dark'` for a field on an inverse panel (a dark admin). */
+export type InputVariant = 'light' | 'dark'
+
 /**
  * Resolves the Input control's size/state props into the BEM class names of the native skin
  * (`@fubaritico/styles` → `.ui-input`, `.ui-input--sm`, …).
@@ -18,6 +21,7 @@ export type InputSize = 'sm' | 'md' | 'lg'
  *
  * @param props - Input control options (all optional — CVA defaults apply).
  * @param props.size - Control size; defaults to `'md'`.
+ * @param props.variant - Colour scheme; defaults to `'light'`.
  * @param props.invalid - Whether the control is in an error state (destructive border + ring).
  * @param props.hasIcon - Whether a trailing icon reserves end padding.
  * @returns The space-separated BEM class string for the resolved props.
@@ -28,6 +32,10 @@ export const inputVariants = cva('ui-input', {
       sm: 'ui-input--sm',
       md: '', // default size — fully defined by the `.ui-input` base; no modifier emitted
       lg: 'ui-input--lg',
+    },
+    variant: {
+      light: '', // default — fully defined by the `.ui-input` base; no modifier emitted
+      dark: 'ui-input--dark',
     },
     invalid: {
       true: 'ui-input--invalid',
@@ -40,6 +48,7 @@ export const inputVariants = cva('ui-input', {
   },
   defaultVariants: {
     size: 'md',
+    variant: 'light',
     invalid: false,
     hasIcon: false,
   },
@@ -55,7 +64,8 @@ export type InputVariantProps = VariantProps<typeof inputVariants>
  *
  * @param props - Affix options (all optional — CVA defaults apply).
  * @param props.size - Wrapper size; defaults to `'md'`.
- * @returns The space-separated BEM class string for the resolved size.
+ * @param props.variant - Colour scheme (the icon colour); defaults to `'light'`.
+ * @returns The space-separated BEM class string for the resolved size and scheme.
  */
 export const inputAffixVariants = cva('ui-input-affix', {
   variants: {
@@ -64,9 +74,14 @@ export const inputAffixVariants = cva('ui-input-affix', {
       md: '', // default — base inset
       lg: 'ui-input-affix--lg',
     },
+    variant: {
+      light: '', // default — base icon colour
+      dark: 'ui-input-affix--dark',
+    },
   },
   defaultVariants: {
     size: 'md',
+    variant: 'light',
   },
 })
 
@@ -80,7 +95,8 @@ export type InputAffixVariantProps = VariantProps<typeof inputAffixVariants>
  *
  * @param props - Field options (all optional — CVA defaults apply).
  * @param props.size - Field size; defaults to `'md'`.
- * @returns The space-separated BEM class string for the resolved size.
+ * @param props.variant - Colour scheme of the label and message; defaults to `'light'`.
+ * @returns The space-separated BEM class string for the resolved size and scheme.
  */
 export const inputFieldVariants = cva('ui-field', {
   variants: {
@@ -89,9 +105,14 @@ export const inputFieldVariants = cva('ui-field', {
       md: '', // default — base font sizes
       lg: 'ui-field--lg',
     },
+    variant: {
+      light: '', // default — base colours
+      dark: 'ui-field--dark',
+    },
   },
   defaultVariants: {
     size: 'md',
+    variant: 'light',
   },
 })
 

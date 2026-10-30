@@ -1,0 +1,246 @@
+/**
+ * MultiSelect — native BEM skin.
+ *
+ * A field that holds several choices as removable badges, with a search input and a listbox of
+ * options. The block is MIXED onto `.ui-field` (label + control + message): the field layer owns
+ * the label and the message, this block owns the control and the menu.
+ *
+ *   - `.ui-multi-select__control`  the bordered box: the badges, then the search input. It wraps
+ *                                  onto several lines when the badges outgrow one.
+ *   - `.ui-multi-select__input`    the borderless combobox input; the focus ring is drawn on the
+ *                                  control around it.
+ *   - `.ui-multi-select__menu`     the `popover="manual"` listbox in the TOP LAYER, anchored under
+ *                                  the control (as wide, flipped above when there is no room) — the
+ *                                  Typeahead recipe. Its look is `.ui-listbox`.
+ *   - `.ui-multi-select__option`   an option's content: the label, then the check of a chosen one.
+ *   - `.ui-multi-select__empty`    the "no results" row; `__mark` the matched substring (by weight).
+ *   - `.ui-multi-select__live`     the visually hidden polite live region ("Port removed").
+ *
+ * The badges are the DS `Badge` (`.ui-badge` + its `__remove` button); the options are
+ * `.ui-listbox__item`. This block only adds what a multi-select needs on top of them.
+ *
+ * Override surface (white-label), by precedence:
+ *   1. Redefine the component-scoped `--ui-multi-select-*` vars on `.ui-multi-select`.
+ *   2. Redefine a global token → re-skins every MultiSelect.
+ *   3. Write any plain selector: being unlayered, it beats this layered skin with no specificity war.
+ *
+ * Values come from @fubaritico/tokens.
+ */
+@layer ui.components {
+  .ui-multi-select {
+    /* ---- override API (component-scoped) ---- */
+    --ui-multi-select-bg: var(--color-surface);
+    --ui-multi-select-fg: var(--color-text);
+    --ui-multi-select-placeholder: var(--color-text-placeholder);
+    /* The control's only boundary: `--color-border-strong` (≥3:1 on white, WCAG 1.4.11), as Input. */
+    --ui-multi-select-border-color: var(--color-border-strong);
+    --ui-multi-select-border-width: var(--spacing-px);
+    --ui-multi-select-radius: var(--radius-sm);
+    --ui-multi-select-ring-color: var(--color-focus);
+    --ui-multi-select-ring-offset: 2px;
+    --ui-multi-select-font-family: var(--font-roboto);
+    --ui-multi-select-font-size: var(--font-size-base);
+    --ui-multi-select-min-block-size: var(--spacing-10);
+    --ui-multi-select-padding-block: var(--spacing-1);
+    --ui-multi-select-padding-inline: var(--spacing-2);
+    --ui-multi-select-gap: var(--spacing-1);
+    --ui-multi-select-input-padding-inline: var(--spacing-1);
+    --ui-multi-select-input-min-inline-size: var(--spacing-16);
+    --ui-multi-select-disabled-opacity: 0.5;
+    /* Re-pointed by `--disabled`; read by the control (flat selectors, no descendant chain). */
+    --ui-multi-select-control-opacity: 1;
+    --ui-multi-select-control-pointer-events: auto;
+    --ui-multi-select-transition-duration: var(--duration-fast);
+    --ui-multi-select-transition-easing: var(--easing-standard);
+    --ui-multi-select-menu-offset: var(--spacing-1);
+    --ui-multi-select-menu-inline-size: anchor-size(inline);
+    --ui-multi-select-option-gap: var(--spacing-2);
+    --ui-multi-select-check-color: currentColor;
+    --ui-multi-select-empty-color: var(--color-text-secondary);
+    --ui-multi-select-empty-padding-block: var(--spacing-2);
+    --ui-multi-select-empty-padding-inline: var(--spacing-3);
+    --ui-multi-select-empty-font-family: var(--font-roboto);
+    --ui-multi-select-empty-font-size: var(--font-size-sm);
+    --ui-multi-select-mark-font-weight: var(--font-weight-extrabold);
+    /* NOT an override: `--ui-multi-select-anchor` is set inline by the component, unique per
+       instance, to tie the menu to its control (`anchor-name` / `position-anchor`). */
+  }
+
+  /* ---- scheme modifier ---- */
+  /* Dark control on an inverse panel. Declared BEFORE `--invalid`, so the error border wins. */
+  .ui-multi-select--dark {
+    --ui-multi-select-bg: var(--color-surface-inverse);
+    --ui-multi-select-fg: var(--color-text-on-inverse);
+    --ui-multi-select-placeholder: var(--color-text-on-inverse-secondary);
+    /* 3.4:1 on neutral.900 (WCAG 1.4.11); `--color-border-on-inverse` is a 1.7:1 hairline. */
+    --ui-multi-select-border-color: var(--color-border-strong-on-inverse);
+    --ui-multi-select-empty-color: var(--color-text-on-inverse-secondary);
+  }
+
+  /* ---- state modifiers ---- */
+  /* The red boundary reaches ≥3:1 on white AND on neutral.900 (4.8:1). The message carries the icon. */
+  .ui-multi-select--invalid {
+    --ui-multi-select-border-color: var(--color-destructive);
+    --ui-multi-select-ring-color: var(--color-destructive);
+  }
+
+  .ui-multi-select--disabled {
+    --ui-multi-select-control-opacity: var(--ui-multi-select-disabled-opacity);
+    --ui-multi-select-control-pointer-events: none;
+  }
+
+  /* ---- size modifiers ---- */
+  .ui-multi-select--sm {
+    --ui-multi-select-min-block-size: var(--spacing-8);
+    --ui-multi-select-font-size: var(--font-size-sm);
+  }
+
+  /* `md` is the default size (base) — the resolver emits no modifier for it. */
+
+  .ui-multi-select--lg {
+    --ui-multi-select-min-block-size: var(--spacing-12);
+    --ui-multi-select-font-size: var(--font-size-lg);
+  }
+
+  /* ---- control ---- */
+  .ui-multi-select__control {
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ui-multi-select-gap);
+    inline-size: 100%;
+    min-block-size: var(--ui-multi-select-min-block-size);
+    padding-block: var(--ui-multi-select-padding-block);
+    padding-inline: var(--ui-multi-select-padding-inline);
+    border: var(--ui-multi-select-border-width) solid
+      var(--ui-multi-select-border-color);
+    border-start-start-radius: var(
+      --ui-multi-select-radius-start-start,
+      var(--ui-multi-select-radius)
+    );
+    border-start-end-radius: var(
+      --ui-multi-select-radius-start-end,
+      var(--ui-multi-select-radius)
+    );
+    border-end-start-radius: var(
+      --ui-multi-select-radius-end-start,
+      var(--ui-multi-select-radius)
+    );
+    border-end-end-radius: var(
+      --ui-multi-select-radius-end-end,
+      var(--ui-multi-select-radius)
+    );
+    background-color: var(--ui-multi-select-bg);
+    color: var(--ui-multi-select-fg);
+    font-family: var(--ui-multi-select-font-family);
+    font-size: var(--ui-multi-select-font-size);
+    cursor: text;
+    opacity: var(--ui-multi-select-control-opacity);
+    pointer-events: var(--ui-multi-select-control-pointer-events);
+    anchor-name: var(--ui-multi-select-anchor);
+    transition: border-color var(--ui-multi-select-transition-duration)
+      var(--ui-multi-select-transition-easing);
+  }
+
+  /* The input draws no outline of its own: the ring goes around the whole control, badges included. */
+  .ui-multi-select__control:has(:where(.ui-multi-select__input:focus-visible)) {
+    outline: 2px solid var(--ui-multi-select-ring-color);
+    outline-offset: var(--ui-multi-select-ring-offset);
+  }
+
+  /* ---- search input ---- */
+  .ui-multi-select__input {
+    box-sizing: border-box;
+    flex: 1 1 var(--ui-multi-select-input-min-inline-size);
+    min-inline-size: var(--ui-multi-select-input-min-inline-size);
+    align-self: stretch;
+    margin: 0;
+    padding-block: 0;
+    padding-inline: var(--ui-multi-select-input-padding-inline);
+    border: 0;
+    outline: none;
+    background-color: transparent;
+    color: inherit;
+    font: inherit;
+  }
+
+  .ui-multi-select__input::placeholder {
+    color: var(--ui-multi-select-placeholder);
+  }
+
+  /* ---- menu (top layer, anchored under the control) ---- */
+  /* `.ui-listbox` sets `margin: 0`, which would pin the unanchored fallback to the viewport corner:
+     restore the UA centring. The UA paints a popover in CanvasText: take the field's colour. */
+  .ui-multi-select__menu {
+    margin: auto;
+    color: inherit;
+  }
+
+  @supports (position-anchor: --ui-multi-select) {
+    .ui-multi-select__menu {
+      inset: auto;
+      margin: 0;
+      position-anchor: var(--ui-multi-select-anchor);
+      position-area: block-end span-inline-end;
+      inline-size: var(--ui-multi-select-menu-inline-size);
+      margin-block-start: var(--ui-multi-select-menu-offset);
+      /* No room below: open above. Flipping swaps the margin to the other side as well. */
+      position-try-fallbacks: flip-block;
+      position-try-order: most-block-size;
+    }
+  }
+
+  /* ---- option content ---- */
+  .ui-multi-select__option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-multi-select-option-gap);
+  }
+
+  .ui-multi-select__check {
+    display: inline-flex;
+    flex: none;
+    color: var(--ui-multi-select-check-color);
+  }
+
+  /* ---- empty state ---- */
+  .ui-multi-select__empty {
+    padding-block: var(--ui-multi-select-empty-padding-block);
+    padding-inline: var(--ui-multi-select-empty-padding-inline);
+    color: var(--ui-multi-select-empty-color);
+    font-family: var(--ui-multi-select-empty-font-family);
+    font-size: var(--ui-multi-select-empty-font-size);
+    text-align: center;
+    user-select: none;
+  }
+
+  /* ---- matched-substring highlight ---- */
+  /* By WEIGHT, not colour (WCAG 1.4.1): the UA `<mark>` yellow is removed. */
+  .ui-multi-select__mark {
+    background-color: transparent;
+    color: inherit;
+    font-weight: var(--ui-multi-select-mark-font-weight);
+  }
+
+  /* ---- live region ---- */
+  /* sr-only: hidden visually, still read by screen readers. */
+  .ui-multi-select__live {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-multi-select__control {
+      transition: none;
+    }
+  }
+}

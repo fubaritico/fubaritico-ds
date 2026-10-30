@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { BADGE_ICON_CLASS, BADGE_LABEL_CLASS, badgeVariants } from './badge.js'
+import {
+  BADGE_ICON_CLASS,
+  BADGE_LABEL_CLASS,
+  BADGE_REMOVE_CLASS,
+  badgeVariants,
+} from './badge.js'
 
 describe('badgeVariants', () => {
   describe('happy path', () => {
@@ -16,6 +21,7 @@ describe('badgeVariants', () => {
   describe('variants', () => {
     it.each([
       ['secondary', 'ui-badge ui-badge--secondary'],
+      ['secondary-dark', 'ui-badge ui-badge--secondary-dark'],
       ['outline', 'ui-badge ui-badge--outline'],
       ['destructive', 'ui-badge ui-badge--destructive'],
     ] as const)('emits the modifier for variant "%s"', (variant, expected) => {
@@ -75,6 +81,10 @@ describe('badgeVariants', () => {
 
     it('exposes the label element class', () => {
       expect(BADGE_LABEL_CLASS).toBe('ui-badge__label')
+    })
+
+    it('exposes the remove-button element class', () => {
+      expect(BADGE_REMOVE_CLASS).toBe('ui-badge__remove')
     })
 
     it('combines every axis (variant, size, truncate)', () => {

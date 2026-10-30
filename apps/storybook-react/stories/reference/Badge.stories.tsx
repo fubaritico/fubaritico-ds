@@ -16,7 +16,13 @@ const meta = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['default', 'secondary', 'outline', 'destructive'],
+      options: [
+        'default',
+        'secondary',
+        'secondary-dark',
+        'outline',
+        'destructive',
+      ],
     },
     size: {
       control: 'inline-radio',
@@ -24,6 +30,8 @@ const meta = {
     },
     children: { control: 'text' },
     icon: { control: 'text' },
+    onRemove: { table: { disable: true } }, // callback
+    removeButtonProps: { table: { disable: true } },
   },
   args: {
     children: 'Badge',
@@ -39,7 +47,7 @@ type Story = StoryObj<typeof meta>
 /** Interactive playground driven by the controls panel. */
 export const Playground: Story = {}
 
-/** Every case (all variants + all sizes) in one view; controls disabled. */
+/** Every case (all variants + all sizes + removable) in one view; controls disabled. */
 export const Showcase: Story = {
   parameters: { controls: { disable: true } },
   render: () => (
@@ -54,6 +62,49 @@ export const Showcase: Story = {
         <Badge size="sm">Small</Badge>
         <Badge size="md">Medium</Badge>
         <Badge size="lg">Large</Badge>
+      </div>
+      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <Badge
+          variant="secondary"
+          onRemove={() => undefined}
+          removeLabel="Remove Port"
+        >
+          Port
+        </Badge>
+        <Badge
+          variant="outline"
+          size="sm"
+          onRemove={() => undefined}
+          removeLabel="Remove Fair"
+        >
+          Fair
+        </Badge>
+        <Badge
+          variant="default"
+          size="lg"
+          onRemove={() => undefined}
+          removeLabel="Remove Capital"
+        >
+          Capital
+        </Badge>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          gap: '0.5rem',
+          alignItems: 'center',
+          padding: '1rem',
+          backgroundColor: 'var(--color-surface-inverse)',
+        }}
+      >
+        <Badge variant="secondary-dark">Secondary dark</Badge>
+        <Badge
+          variant="secondary-dark"
+          onRemove={() => undefined}
+          removeLabel="Remove Pilgrimage"
+        >
+          Pilgrimage
+        </Badge>
       </div>
     </div>
   ),

@@ -5,13 +5,16 @@ skin. Presentational only: it conveys meaning through its text, never through co
 
 ## Capabilities
 
-- **Visual variants** — `default`, `secondary`, `outline`, `destructive`.
+- **Visual variants** — `default`, `secondary`, `secondary-dark` (the neutral chip on a dark panel),
+  `outline`, `destructive`.
 - **Sizes** — `sm`, `md`, `lg`.
 - **Optional leading icon** — `icon` (an `IconName`), rendered decorative (`aria-hidden`); the meaning
   must still be carried by the `children` text.
 - **Truncation** — `canTruncate` caps the badge to its container width and ellipsis-clips the label on
   one line (the icon stays visible). For tight layouts such as a fixed-width table column. A string or
   number label that is really cut becomes focusable and reveals itself in a tooltip on hover / focus.
+- **Removable** — `onRemove` + `removeLabel` add a native remove `<button>` at the inline end (16px
+  glyph, 24px hit area, its own focus ring). The badge itself stays a `<span>`.
 - **Inline element** — renders a `<span>`, so it flows inside text and forwards every `<span>`
   attribute (`id`, `aria-*`, `onClick`, `ref`, `className`, …).
 - **Headless skin** — variant/size resolve to BEM classes via `@fubaritico/variants`; colours and
@@ -42,6 +45,12 @@ import { Badge } from '@fubaritico/react/Badge'
 <Badge size="lg">Large</Badge>
 
 <Badge icon="Star">Featured</Badge>
+
+<Badge variant="secondary-dark">On a dark panel</Badge>
+
+<Badge variant="secondary" onRemove={() => remove('port')} removeLabel="Remove Port">
+  Port
+</Badge>
 ```
 
 ## Edge cases
@@ -63,19 +72,22 @@ import { Badge } from '@fubaritico/react/Badge'
 
 ## Props
 
-| Prop          | Type                                                     | Default     | Description                                       |
-| ------------- | -------------------------------------------------------- | ----------- | ------------------------------------------------- |
-| `variant`     | `'default' \| 'secondary' \| 'outline' \| 'destructive'` | `'default'` | Visual variant.                                   |
-| `size`        | `'sm' \| 'md' \| 'lg'`                                   | `'md'`      | Badge size.                                       |
-| `icon`        | `IconName`                                               | —           | Optional decorative leading icon (`aria-hidden`). |
-| `canTruncate` | `boolean`                                                | `false`     | Cap the width and ellipsis-truncate the label.    |
+| Prop                | Type                                                                         | Default     | Description                                                         |
+| ------------------- | ---------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------- |
+| `variant`           | `'default' \| 'secondary' \| 'secondary-dark' \| 'outline' \| 'destructive'` | `'default'` | Visual variant.                                                     |
+| `size`              | `'sm' \| 'md' \| 'lg'`                                                       | `'md'`      | Badge size.                                                         |
+| `icon`              | `IconName`                                                                   | —           | Optional decorative leading icon (`aria-hidden`).                   |
+| `canTruncate`       | `boolean`                                                                    | `false`     | Cap the width and ellipsis-truncate the label.                      |
+| `onRemove`          | `(event) => void`                                                            | —           | Renders the remove button and is called when it is pressed.         |
+| `removeLabel`       | `string`                                                                     | —           | Accessible name of the remove button. **Required with `onRemove`.** |
+| `removeButtonProps` | `Omit<ComponentProps<'button'>, 'onClick' \| 'children' \| 'aria-label'>`    | —           | Extra attributes of the remove button (`ref`, `disabled`…).         |
 
 Plus all native `<span>` attributes (`ComponentProps<'span'>`, including `ref` and `className`).
 
 ## Accessibility
 
 - The badge is **not interactive** — it carries no role. Don't use it as a button; for a clickable
-  chip use a real control.
+  chip use a real control. A removable badge holds a real `<button>`, named by `removeLabel`.
 - Don't rely on **colour alone** to distinguish states (e.g. `destructive`). The text content must
   state the meaning, so colour-blind and screen-reader users get it too.
 
@@ -90,8 +102,11 @@ Plus all native `<span>` attributes (`ComponentProps<'span'>`, including `ref` a
 
 > **Note** — only a **single string or number** label gets the revealing tooltip (via
 > `TruncatedText`). Elements and interpolated text (`{count} items`, an array of children) are clipped
-> visually with no tooltip: pass one string (`` {`${count} items`} ``) if the full label must be
+> visually with no tooltip: pass one string (``{`${count} items`}``) if the full label must be
 > readable on hover.
+
+> **Warning** — `onRemove` without `removeLabel` **throws**: the glyph alone gives the button no name.
+> Name it after the badge (« Remove Port »), in the user's language.
 
 > **Warning** — a cut label becomes a **Tab stop**. Do not put a `canTruncate` badge inside a button,
 > a link or a clickable row: it would nest a focusable element inside an interactive one.

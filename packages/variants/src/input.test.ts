@@ -29,6 +29,11 @@ describe('inputVariants', () => {
       expect(inputVariants({ size })).toBe(expected)
     })
 
+    it('emits the dark modifier, and none for the light default', () => {
+      expect(inputVariants({ variant: 'dark' })).toBe('ui-input ui-input--dark')
+      expect(inputVariants({ variant: 'light' })).toBe('ui-input')
+    })
+
     it('emits no size modifier for the default md', () => {
       expect(inputVariants({ size: 'md' })).toBe('ui-input')
     })
@@ -92,6 +97,13 @@ describe('inputAffixVariants', () => {
       expect(inputAffixVariants({ size })).toBe(expected)
     })
 
+    it('emits the dark modifier, and none for the light default', () => {
+      expect(inputAffixVariants({ variant: 'dark' })).toBe(
+        'ui-input-affix ui-input-affix--dark'
+      )
+      expect(inputAffixVariants({ variant: 'light' })).toBe('ui-input-affix')
+    })
+
     it('emits no size modifier for the default md', () => {
       expect(inputAffixVariants({ size: 'md' })).toBe('ui-input-affix')
     })
@@ -117,6 +129,13 @@ describe('inputFieldVariants', () => {
       ['lg', 'ui-field ui-field--lg'],
     ] as const)('emits the size modifier for "%s"', (size, expected) => {
       expect(inputFieldVariants({ size })).toBe(expected)
+    })
+
+    it('emits the dark modifier, and none for the light default', () => {
+      expect(inputFieldVariants({ variant: 'dark' })).toBe(
+        'ui-field ui-field--dark'
+      )
+      expect(inputFieldVariants({ variant: 'light' })).toBe('ui-field')
     })
 
     it('emits no size modifier for the default md', () => {

@@ -9,6 +9,9 @@ trailing icon and a helper/error message — a presentational, framework-agnosti
   icon is present; wrapped in a field layer when a `label` and/or `message` is present.
 - **Sizes**: `sm` / `md` (default) / `lg` — one size axis drives the control geometry, the icon inset
   and the label/message font sizes together.
+- **Colour schemes**: `variant` `'light'` (default) / `'dark'` — the dark one for a field on an inverse
+  panel (a dark admin): control, label, message and icon re-pointed to the inverse colour roles, with
+  the AA contrasts kept (boundary 3.4:1, error text 6.5:1).
 - **States**: native `disabled`; an **error** state (`messageType="error"` + a `message`) that recolours
   the border + focus ring and the message, and prefixes the message with an error icon.
 - **Accessibility wired in**: the label is linked via `htmlFor`; the message via `aria-describedby`;
@@ -37,6 +40,8 @@ import { Input } from '@fubaritico/react/Input'
 <Input size="sm" placeholder="Small" />
 <Input size="md" placeholder="Medium (default)" />
 <Input size="lg" placeholder="Large" />
+
+<Input variant="dark" label="Name" message="On a dark panel." placeholder="Name" />
 
 // Trailing icon (decorative)
 <Input icon="MagnifyingGlass" placeholder="Search" />
@@ -82,15 +87,16 @@ import { Input } from '@fubaritico/react/Input'
 
 ## Props / API
 
-| Prop          | Type                                    | Default  | Description                                                   |
-| ------------- | --------------------------------------- | -------- | ------------------------------------------------------------- |
-| `size`        | `'sm' \| 'md' \| 'lg'`                  | `'md'`   | Control size (geometry + icon inset + label/message font).    |
-| `icon`        | `IconName`                              | —        | Optional decorative trailing icon (heroicons subset).         |
-| `label`       | `string`                                | —        | Label above the control, linked via `htmlFor`.                |
-| `message`     | `string`                                | —        | Helper/error message below the control.                       |
-| `messageType` | `'info' \| 'error'`                     | `'info'` | Semantic of `message`: drives colour, `aria-invalid`, `role`. |
-| `id`          | `string`                                | auto     | Falls back to a `useId()` value if omitted.                   |
-| _...rest_     | `Omit<ComponentProps<'input'>, 'size'>` | —        | All native `<input>` attributes except `size` (forwarded).    |
+| Prop          | Type                                    | Default   | Description                                                   |
+| ------------- | --------------------------------------- | --------- | ------------------------------------------------------------- |
+| `size`        | `'sm' \| 'md' \| 'lg'`                  | `'md'`    | Control size (geometry + icon inset + label/message font).    |
+| `variant`     | `'light' \| 'dark'`                     | `'light'` | Colour scheme; `'dark'` for an inverse panel.                 |
+| `icon`        | `IconName`                              | —         | Optional decorative trailing icon (heroicons subset).         |
+| `label`       | `string`                                | —         | Label above the control, linked via `htmlFor`.                |
+| `message`     | `string`                                | —         | Helper/error message below the control.                       |
+| `messageType` | `'info' \| 'error'`                     | `'info'`  | Semantic of `message`: drives colour, `aria-invalid`, `role`. |
+| `id`          | `string`                                | auto      | Falls back to a `useId()` value if omitted.                   |
+| _...rest_     | `Omit<ComponentProps<'input'>, 'size'>` | —         | All native `<input>` attributes except `size` (forwarded).    |
 
 ## Accessibility
 

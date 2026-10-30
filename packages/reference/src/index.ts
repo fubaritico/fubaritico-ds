@@ -13,7 +13,14 @@ export type {
 } from './components/Avatar'
 
 export { Badge } from './components/Badge'
-export type { BadgeProps, BadgeSize, BadgeVariant } from './components/Badge'
+export type {
+  BadgeBaseProps,
+  BadgeProps,
+  BadgeSize,
+  BadgeVariant,
+  RemovableBadgeProps,
+  StaticBadgeProps,
+} from './components/Badge'
 
 export { Button } from './components/Button'
 export type { ButtonProps } from './components/Button'
@@ -98,6 +105,7 @@ export { Input } from './components/Input'
 export type {
   InputProps,
   InputSize,
+  InputVariant,
   InputMessageType,
 } from './components/Input'
 
@@ -175,6 +183,16 @@ export type {
   TypographyProps,
   TypographyVariant,
 } from './components/Typography'
+
+export { MultiSelect } from './components/MultiSelect'
+export type {
+  MultiSelectMessageType,
+  MultiSelectMessages,
+  MultiSelectOption,
+  MultiSelectProps,
+  MultiSelectSize,
+  MultiSelectVariant,
+} from './components/MultiSelect'
 
 export { Portal } from './components/Portal'
 export type { PortalProps } from './components/Portal'

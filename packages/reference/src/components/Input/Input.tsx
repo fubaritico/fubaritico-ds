@@ -14,10 +14,10 @@ import {
 import { Icon } from '../Icon'
 
 import type { IconName, IconSize } from '../Icon'
-import type { InputSize } from '@fubaritico/variants'
+import type { InputSize, InputVariant } from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
-export type { InputSize }
+export type { InputSize, InputVariant }
 
 /** Semantic of the helper message — drives the colour, `aria-invalid` and `role="alert"`. */
 export type InputMessageType = 'error' | 'info'
@@ -31,6 +31,8 @@ export type InputMessageType = 'error' | 'info'
 export interface InputProps extends Omit<ComponentProps<'input'>, 'size'> {
   /** Control size; defaults to `'md'`. */
   size?: InputSize
+  /** Colour scheme; `'dark'` for a field on an inverse panel (a dark admin). Defaults to `'light'`. */
+  variant?: InputVariant
   /** Optional decorative trailing icon (heroicons subset). */
   icon?: IconName
   /** Optional label rendered above the control and linked to it via `htmlFor`. */
@@ -60,6 +62,7 @@ const ERROR_ICON_SIZE: IconSize = 16
  */
 export function Input({
   size = 'md',
+  variant = 'light',
   icon,
   label,
   message,
@@ -79,7 +82,7 @@ export function Input({
       aria-invalid={hasError || undefined}
       aria-describedby={messageId}
       className={clsx(
-        inputVariants({ size, invalid: hasError, hasIcon: !!icon }),
+        inputVariants({ size, variant, invalid: hasError, hasIcon: !!icon }),
         className
       )}
       {...rest}
@@ -87,7 +90,7 @@ export function Input({
   )
 
   const control = icon ? (
-    <div className={inputAffixVariants({ size })}>
+    <div className={inputAffixVariants({ size, variant })}>
       {input}
       <span className={INPUT_ICON_CLASS}>
         <Icon name={icon} size={iconSizeMap[size]} />
@@ -100,7 +103,7 @@ export function Input({
   if (!label && !message) return control
 
   return (
-    <div className={inputFieldVariants({ size })}>
+    <div className={inputFieldVariants({ size, variant })}>
       {label ? (
         <label htmlFor={inputId} className={INPUT_LABEL_CLASS}>
           {label}

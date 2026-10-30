@@ -38,6 +38,22 @@ describe('Input', () => {
   })
 
   describe('variants', () => {
+    it('should render the dark scheme on the control, the field and the icon wrapper', () => {
+      const { container } = render(
+        <Input variant="dark" label="Name" message="Help" icon="MagnifyingGlass" />
+      )
+      expect(screen.getByRole('textbox')).toHaveClass('ui-input--dark')
+      expect(container.firstChild).toHaveClass('ui-field--dark')
+      expect(container.querySelector('.ui-input-affix')).toHaveClass(
+        'ui-input-affix--dark'
+      )
+    })
+
+    it('should emit no dark modifier by default', () => {
+      render(<Input />)
+      expect(screen.getByRole('textbox')).not.toHaveClass('ui-input--dark')
+    })
+
     it('should render the sm size modifier', () => {
       render(<Input size="sm" />)
       expect(screen.getByRole('textbox')).toHaveClass('ui-input--sm')

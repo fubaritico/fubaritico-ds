@@ -48,6 +48,14 @@
     /* The message stays at the md size (`sm`) on lg, by design — it's a secondary annotation. */
   }
 
+  /* Dark scheme — the field sits on an inverse panel (a dark admin): the same role vars re-pointed to
+     the inverse roles. The error text takes red.400 (6.5:1 on neutral.900); red.600 is 3.7:1 there. */
+  .ui-field--dark {
+    --ui-field-label-color: var(--color-text-on-inverse);
+    --ui-field-message-color: var(--color-text-on-inverse-secondary);
+    --ui-field-message-error-color: var(--color-text-destructive-on-inverse);
+  }
+
   .ui-field__label {
     color: var(--ui-field-label-color);
     font-family: var(--ui-field-font-family);
@@ -55,7 +63,9 @@
     font-weight: var(--ui-field-label-weight);
   }
 
+  /* The message is a `<p>`: its UA margin (1em) would add itself to the field's gap. */
   .ui-field__message {
+    margin: 0;
     color: var(--ui-field-message-color);
     font-family: var(--ui-field-font-family);
     font-size: var(--ui-field-message-size);

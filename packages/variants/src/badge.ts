@@ -3,7 +3,12 @@ import { cva } from 'class-variance-authority'
 import type { VariantProps } from 'class-variance-authority'
 
 /** Visual variant of the Badge. */
-export type BadgeVariant = 'default' | 'secondary' | 'outline' | 'destructive'
+export type BadgeVariant =
+  | 'default'
+  | 'secondary'
+  | 'secondary-dark'
+  | 'outline'
+  | 'destructive'
 
 /** Size of the Badge. */
 export type BadgeSize = 'sm' | 'md' | 'lg'
@@ -27,6 +32,8 @@ export const badgeVariants = cva('ui-badge', {
     variant: {
       default: '',
       secondary: 'ui-badge--secondary',
+      // The neutral chip on an inverse panel (a dark field), named after IconButton's `ghost-dark`.
+      'secondary-dark': 'ui-badge--secondary-dark',
       outline: 'ui-badge--outline',
       destructive: 'ui-badge--destructive',
     },
@@ -62,3 +69,9 @@ export const BADGE_ICON_CLASS = 'ui-badge__icon'
  * stays visible. Centralised so every framework renderer references the same class as the skin.
  */
 export const BADGE_LABEL_CLASS = 'ui-badge__label'
+
+/**
+ * BEM element class for the Badge's remove button (`.ui-badge__remove`) — rendered when the badge is
+ * removable (`onRemove`). A native `<button>` with a 24px hit area around a 16px glyph.
+ */
+export const BADGE_REMOVE_CLASS = 'ui-badge__remove'

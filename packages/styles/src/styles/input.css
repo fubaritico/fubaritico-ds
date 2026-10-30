@@ -79,6 +79,17 @@
     pointer-events: none;
   }
 
+  /* ---- scheme modifier ---- */
+  /* Dark control, on an inverse panel. Declared BEFORE `--invalid` so the error border wins when both
+     apply (same specificity, source order decides). The boundary is `--color-border-strong-on-inverse`
+     (3.4:1 on neutral.900, WCAG 1.4.11); the red boundary of `--invalid` already reaches 4.8:1 there. */
+  .ui-input--dark {
+    --ui-input-bg: var(--color-surface-inverse);
+    --ui-input-fg: var(--color-text-on-inverse);
+    --ui-input-placeholder: var(--color-text-on-inverse-secondary);
+    --ui-input-border-color: var(--color-border-strong-on-inverse);
+  }
+
   /* ---- state modifier ---- */
   .ui-input--invalid {
     --ui-input-border-color: var(--color-destructive);
@@ -118,6 +129,10 @@
 
     position: relative;
     inline-size: 100%;
+  }
+
+  .ui-input-affix--dark {
+    --ui-input-affix-icon-color: var(--color-text-on-inverse-secondary);
   }
 
   .ui-input-affix--sm {

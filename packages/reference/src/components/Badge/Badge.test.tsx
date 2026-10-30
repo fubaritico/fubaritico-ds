@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { userEvent } from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
 
 import Badge from './Badge'
 
@@ -109,9 +110,69 @@ describe('Badge', () => {
       expect(container.querySelector('.ui-badge__label')).toBeNull()
       expect(screen.getByText('Plain')).toBeInTheDocument()
     })
+
+    it('renders the secondary-dark variant modifier', () => {
+      const { container } = render(<Badge variant="secondary-dark">Dark</Badge>)
+      expect(container.firstChild).toHaveClass('ui-badge--secondary-dark')
+    })
+
+    it('renders a named remove button that calls onRemove when pressed', async () => {
+      const onRemove = vi.fn()
+      render(
+        <Badge onRemove={onRemove} removeLabel="Remove Port">
+          Port
+        </Badge>
+      )
+      const button = screen.getByRole('button', { name: 'Remove Port' })
+      expect(button).toHaveClass('ui-badge__remove')
+      expect(button).toHaveAttribute('type', 'button')
+      await userEvent.click(button)
+      expect(onRemove).toHaveBeenCalledTimes(1)
+    })
+
+    it('removes by keyboard: Enter on the focused button', async () => {
+      const onRemove = vi.fn()
+      render(
+        <Badge onRemove={onRemove} removeLabel="Remove Port">
+          Port
+        </Badge>
+      )
+      await userEvent.tab()
+      await userEvent.keyboard('{Enter}')
+      expect(onRemove).toHaveBeenCalledTimes(1)
+    })
+
+    it('renders no button without onRemove', () => {
+      render(<Badge>Port</Badge>)
+      expect(screen.queryByRole('button')).toBeNull()
+    })
   })
 
-  // L3 (managed errors): N/A — presentational atom with no validation/disabled/error states.
+  describe('managed errors', () => {
+    it('throws when onRemove comes without a removeLabel', () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const props = { onRemove: vi.fn() } as unknown as Parameters<typeof Badge>[0]
+      expect(() => render(<Badge {...props}>Port</Badge>)).toThrow(
+        'Badge: `onRemove` needs a `removeLabel` (the button name)'
+      )
+    })
+
+    it('does not call onRemove through a disabled button', async () => {
+      const onRemove = vi.fn()
+      render(
+        <Badge
+          onRemove={onRemove}
+          removeLabel="Remove Port"
+          removeButtonProps={{ disabled: true }}
+        >
+          Port
+        </Badge>
+      )
+      await userEvent.click(screen.getByRole('button', { name: 'Remove Port' }))
+      expect(onRemove).not.toHaveBeenCalled()
+    })
+  })
+
   // L4 (unmanaged errors): N/A — no async/data path; nothing to throw or swallow.
 
   describe('edge cases', () => {

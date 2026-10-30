@@ -111,6 +111,11 @@
       "$type": "color",
       "$description": "Error text and glyph (5.9:1 on white): field error message, error alert, destructive menu item."
     },
+    "text-destructive-on-inverse": {
+      "$value": "{color.primitive.red.400}",
+      "$type": "color",
+      "$description": "Error text and glyph on an inverse panel (6.5:1 on neutral.900; red.600 only reaches 3.7:1)."
+    },
     "text-on-inverse": {
       "$value": "{color.primitive.neutral.200}",
       "$type": "color",
@@ -160,6 +165,11 @@
       "$value": "{color.primitive.neutral.700}",
       "$type": "color",
       "$description": "Hairline on an inverse panel."
+    },
+    "border-strong-on-inverse": {
+      "$value": "{color.primitive.neutral.500}",
+      "$type": "color",
+      "$description": "Boundary of a control on an inverse panel (the dark field) — the darkest grey at ≥3:1 on neutral.900 (3.4:1, WCAG 1.4.11); border-on-inverse is a 1.7:1 hairline."
     },
     "focus": {
       "$value": "{color.primitive.neutral.500}",
