@@ -5,6 +5,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [0.9.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.8.0...v0.9.0) (2026-10-30)
 
+### Bug Fixes
+
+- **styles:** the field message (`.ui-field__message`, a `<p>`) loses its UA margin, which doubled the gap under every Input and MultiSelect ([b2bdcde](https://github.com/fubaritico/fubaritico-ds/commit/b2bdcde413794ad609001c72b12ea8374d90d70c))
+
 ### Features
 
 - **reference:** multi-select with search and removable badges, dark input and badge ([b2bdcde](https://github.com/fubaritico/fubaritico-ds/commit/b2bdcde413794ad609001c72b12ea8374d90d70c))
