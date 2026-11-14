@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.9.0...v0.10.0) (2026-11-14)
+
+- feat(reference)!: a "no colour" state for the color picker, beside automatic ([62e9baf](https://github.com/fubaritico/fubaritico-ds/commit/62e9baf44a8d312b22d3d00d36da39df8180e99e))
+
+### Features
+
+- **reference:** copy and paste a colour from the color field ([5656c3d](https://github.com/fubaritico/fubaritico-ds/commit/5656c3dcf2a046a82d42ed56b5aeac34106ad07b))
+
+### BREAKING CHANGES
+
+- ColorPicker.AutoToggle, toggleAuto() and autoToggleAttrs() are removed (use
+  ColorPicker.ModeGroup / setMode); colorPickerSwatchVariants takes mode instead of auto;
+  ColorPickerLabels gains mode, modeColor, none, noneDescription; automaticDescription defaults to
+  "Automatic color".
+
 # [0.9.0](https://github.com/fubaritico/fubaritico-ds/compare/v0.8.0...v0.9.0) (2026-10-30)
 
 ### Features
