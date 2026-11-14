@@ -6,6 +6,7 @@ import type { HsvaColor } from './color/types.js'
 import type {
   ColorAreaAxis,
   ColorPickerLabels,
+  ColorPickerMode,
   ColorPickerTarget,
 } from './types.js'
 
@@ -26,9 +27,9 @@ export interface AttrsContext {
   labels: ColorPickerLabels
   /** The working colour (where the thumbs sit). */
   color: HsvaColor
-  /** `true` in the automatic state. */
-  isAuto: boolean
-  /** Words for the current value (or the automatic description). */
+  /** The kind of value: a colour, automatic, or no colour. */
+  mode: ColorPickerMode
+  /** Words for the current value (or the automatic / "no colour" description). */
   description: string
   /** Whether every change is blocked. */
   disabled: boolean
@@ -36,6 +37,8 @@ export interface AttrsContext {
   alpha: boolean
   /** Whether the automatic state is allowed. */
   nullable: boolean
+  /** Whether the "no colour" state is allowed. */
+  allowNone: boolean
   /** The surface being dragged. */
   dragging: ColorPickerTarget | null
   /** The hex field's text. */
@@ -67,6 +70,42 @@ const flag = (on: boolean): string | undefined => (on ? '' : undefined)
  * @returns The DOM id.
  */
 export const hexErrorId = (uid: string): string => `${uid}-hex-error`
+
+/**
+ * Id of the hex field.
+ *
+ * @param uid - Id namespace.
+ * @returns The DOM id.
+ */
+export const hexInputId = (uid: string): string => `${uid}-hex`
+
+/**
+ * What a state that is not a colour says next to a thumb that still shows the last colour.
+ *
+ * @param ctx - The service state.
+ * @returns `', <description>'` in the automatic or "no colour" mode, else `''`.
+ */
+function notAColourSuffix(ctx: AttrsContext): string {
+  if (ctx.mode === 'auto') return `, ${ctx.labels.automaticDescription}`
+  if (ctx.mode === 'none') return `, ${ctx.labels.noneDescription}`
+  return ''
+}
+
+/**
+ * Whether the picker offers a mode.
+ *
+ * @param ctx - The service state.
+ * @param mode - The mode.
+ * @returns `true` for `'color'`, for `'auto'` when nullable, for `'none'` with `allowNone`.
+ */
+export function isModeAvailable(
+  ctx: Pick<AttrsContext, 'nullable' | 'allowNone'>,
+  mode: ColorPickerMode
+): boolean {
+  if (mode === 'auto') return ctx.nullable
+  if (mode === 'none') return ctx.allowNone
+  return true
+}
 
 /**
  * Attributes of the 2D area's container.
@@ -139,8 +178,8 @@ export function trackInputAttrs(
     step: 1,
     disabled: flag(ctx.disabled || (target === 'alpha' && !ctx.alpha)),
   }
-  // In the automatic state the thumb still shows the last colour: say that no colour is selected.
-  const auto = ctx.isAuto ? `, ${ctx.labels.automaticDescription}` : ''
+  // Out of the colour mode the thumb still shows the last colour: say what the value really is.
+  const auto = notAColourSuffix(ctx)
   if (target === 'hue') {
     const hueWords = describeColor({ h, s: 100, v: 100, a: 1 }).replace(
       /^vivid /,
@@ -172,12 +211,12 @@ export function trackInputAttrs(
  */
 export function hexInputAttrs(ctx: AttrsContext): DomAttributes {
   return {
-    id: `${ctx.uid}-hex`,
+    id: hexInputId(ctx.uid),
     type: 'text',
     value: ctx.hexDraft,
     'aria-label': ctx.labels.hex,
-    // An empty field reads as "missing"; in the automatic state it says why it is empty.
-    placeholder: ctx.isAuto ? ctx.labels.automatic : undefined,
+    // An empty field reads as "missing"; out of the colour mode it says why it is empty.
+    placeholder: hexPlaceholder(ctx),
     'aria-invalid': ctx.hexInvalid ? 'true' : undefined,
     'aria-describedby': ctx.hexInvalid ? hexErrorId(ctx.uid) : undefined,
     autocomplete: 'off',
@@ -200,18 +239,52 @@ export function hexErrorAttrs(ctx: AttrsContext): DomAttributes {
 }
 
 /**
- * Attributes of the "automatic" toggle button. Its name stays constant; `aria-pressed` carries the
- * state.
+ * The hex field's placeholder: the name of the mode that left it empty.
+ *
+ * @param ctx - The service state.
+ * @returns The automatic or "no colour" label, or `undefined` in the colour mode.
+ */
+function hexPlaceholder(ctx: AttrsContext): string | undefined {
+  if (ctx.mode === 'auto') return ctx.labels.automatic
+  if (ctx.mode === 'none') return ctx.labels.none
+  return undefined
+}
+
+/**
+ * Attributes of the mode group: a named radio group (colour, automatic, no colour). Its options are
+ * native radio inputs (`modeOptionAttrs`), so the arrow keys move AND select, natively.
  *
  * @param ctx - The service state.
  * @returns DOM attributes.
  */
-export function autoToggleAttrs(ctx: AttrsContext): DomAttributes {
+export function modeGroupAttrs(ctx: AttrsContext): DomAttributes {
   return {
-    type: 'button',
-    'aria-label': ctx.labels.automatic,
-    'aria-pressed': String(ctx.isAuto),
-    disabled: flag(ctx.disabled || !ctx.nullable),
+    role: 'radiogroup',
+    'aria-label': ctx.labels.mode,
+    // ARIA 1.2 keeps aria-disabled on `radiogroup`.
+    'aria-disabled': ctx.disabled ? 'true' : undefined,
+  }
+}
+
+/**
+ * Attributes of one option of the mode group — a native `<input type="radio">`, named by the label
+ * element wrapping it. `checked` is a DOM PROPERTY: bind it as one (React: the `checked` prop).
+ *
+ * @param ctx - The service state.
+ * @param mode - The option's mode.
+ * @returns DOM attributes.
+ */
+export function modeOptionAttrs(
+  ctx: AttrsContext,
+  mode: ColorPickerMode
+): DomAttributes {
+  return {
+    id: `${ctx.uid}-mode-${mode}`,
+    type: 'radio',
+    name: `${ctx.uid}-mode`,
+    value: mode,
+    checked: flag(ctx.mode === mode),
+    disabled: flag(ctx.disabled || !isModeAvailable(ctx, mode)),
   }
 }
 

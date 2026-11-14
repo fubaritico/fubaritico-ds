@@ -1,15 +1,18 @@
 # ColorPicker
 
 Picks a colour on a 2D saturation / brightness area, a hue track, an optional alpha track and a hex
-field — with an optional explicit "automatic / no colour" state. A thin React adapter over
+field — with the optional explicit states "automatic" and "no colour". A thin React adapter over
 `ColorPickerService` from `@fubaritico/behaviors`, which owns the behaviour.
 
 ## Capabilities
 
-- **HSVA source of truth** — the hue survives grays, black and the automatic state: pulling the
+- **HSVA source of truth** — the hue survives grays, black, "automatic" and "no colour": pulling the
   saturation to 0 and back never makes the hue jump to red.
-- **Automatic state** (`nullable`) — the value can be `null`, a first-class state with its own swatch,
-  toggle (`aria-pressed`) and accessible text. Leaving it restores the last colour.
+- **Three kinds of value** — a colour; "automatic" (`null`, with `nullable`): something else picks
+  the colour; "no colour" (`'none'`, with `allowNone`): nothing is painted. Each is a first-class
+  state with its own swatch (a magic wand for automatic, a struck-through square for no colour) and
+  accessible text. A segmented mode group (Color · Automatic · None) switches between them; going back
+  to "Color" restores the last colour.
 - **Pointer** — drag on the area with pointer capture (keeps tracking outside it); Escape during a
   drag puts the colour back.
 - **Keyboard** — on the area: arrows (saturation ←→, brightness ↑↓), Page Up / Down, Home / End,
@@ -61,10 +64,17 @@ area would also be a less precise one.
 <ColorPicker defaultValue={{ h: 210, s: 80, v: 60, a: 1 }} density="compact" />
 ```
 
-The automatic state — `null` means "no colour, the palette decides":
+The automatic state — `null` means "something else decides" (a palette, a theme):
 
 ```tsx
 <ColorPicker nullable defaultValue={null} />
+```
+
+The "no colour" state — `'none'` means "paint nothing" (a shape drawn without fill). Both together
+give a three-way mode group:
+
+```tsx
+<ColorPicker nullable allowNone defaultValue="none" />
 ```
 
 With the alpha track:
@@ -144,12 +154,18 @@ export function FillCard() {
 
 ## Edge cases
 
-A `null` default on a picker that is **not** nullable starts from the placeholder — pure red unless
-you pass one:
+A `null` default on a picker that is **not** nullable — or a `'none'` default without `allowNone` —
+starts from the placeholder, pure red unless you pass one:
 
 ```tsx
 <ColorPicker defaultValue={null} />
-<ColorPicker defaultValue={null} placeholder={{ h: 0, s: 0, v: 100, a: 1 }} /> {/* starts white */}
+<ColorPicker defaultValue="none" placeholder={{ h: 0, s: 0, v: 100, a: 1 }} /> {/* starts white */}
+```
+
+`allowNone` without `nullable` — a two-way group, Color · None:
+
+```tsx
+<ColorPicker allowNone defaultValue={{ h: 210, s: 80, v: 60, a: 1 }} />
 ```
 
 Driven from outside the tree — inject the service:
@@ -158,14 +174,17 @@ Driven from outside the tree — inject the service:
 import { createColorPickerService } from '@fubaritico/behaviors'
 import { ColorPicker } from '@fubaritico/react/ColorPicker'
 
-const fill = createColorPickerService({ uid: 'fill', nullable: true })
+const fill = createColorPickerService({ uid: 'fill', nullable: true, allowNone: true })
 
 export function ExternallyDriven() {
   return (
     <>
       <ColorPicker service={fill} />
-      <button type="button" onClick={() => fill.setAuto()}>
+      <button type="button" onClick={() => fill.setMode('auto')}>
         Reset to automatic
+      </button>
+      <button type="button" onClick={() => fill.setMode('none')}>
+        No fill
       </button>
     </>
   )
@@ -179,7 +198,7 @@ import { useColorPickerController } from '@fubaritico/react/ColorPicker'
 
 function HexReadout() {
   const { state } = useColorPickerController() // { state: snapshot, service }
-  return <output>{state.hex ?? 'automatic'}</output>
+  return <output>{state.hex ?? state.mode}</output> // 'auto' or 'none' when not a colour
 }
 
 ;<ColorPicker defaultValue={{ h: 210, s: 80, v: 60, a: 1 }}>
@@ -202,11 +221,12 @@ hsvaToHex({ h: 210, s: 80, v: 60, a: 1 }) // '#1f5c99'
 
 | Name                     | Type                           | Default     | Description                                     |
 | ------------------------ | ------------------------------ | ----------- | ----------------------------------------------- |
-| `value`                  | `HsvaColor \| null`            | —           | Controlled value (`null` = automatic).          |
-| `defaultValue`           | `HsvaColor \| null`            | —           | Initial value when uncontrolled.                |
+| `value`                  | `ColorValue`                   | —           | Controlled value (`null` automatic, `'none'`).  |
+| `defaultValue`           | `ColorValue`                   | —           | Initial value when uncontrolled.                |
 | `onChange`               | `(value: ColorValue) => void`  | —           | Every change, continuously while dragging.      |
 | `onChangeComplete`       | `(value: ColorValue) => void`  | —           | Once a change settles.                          |
-| `nullable`               | `boolean`                      | `false`     | Allows the automatic state.                     |
+| `nullable`               | `boolean`                      | `false`     | Allows the automatic state (`null`).            |
+| `allowNone`              | `boolean`                      | `false`     | Allows the "no colour" state (`'none'`).        |
 | `alpha`                  | `boolean`                      | `false`     | Edits the alpha channel.                        |
 | `disabled`               | `boolean`                      | `false`     | Blocks every change.                            |
 | `density`                | `'default' \| 'compact'`       | `'default'` | Panel density.                                  |
@@ -216,7 +236,8 @@ hsvaToHex({ h: 210, s: 80, v: 60, a: 1 }) // '#1f5c99'
 | `service`                | `ColorPickerService`           | created     | Injected behaviour service; read once at mount. |
 | …`ComponentProps<'div'>` | —                              | —           | On the panel root (`aria-label` overrides).     |
 
-`HsvaColor` is `{ h: 0–360, s: 0–100, v: 0–100, a: 0–1 }`; `ColorValue` is `HsvaColor | null`.
+`HsvaColor` is `{ h: 0–360, s: 0–100, v: 0–100, a: 0–1 }`; `ColorValue` is
+`HsvaColor | null | 'none'`. `isColor(value)` from `@fubaritico/behaviors` narrows it to a colour.
 
 ### `labels`
 
@@ -231,8 +252,12 @@ hsvaToHex({ h: 210, s: 80, v: 60, a: 1 }) // '#1f5c99'
 | `alpha`                | `Opacity`                           | The alpha track                       |
 | `hex`                  | `Hex color`                         | The hex field                         |
 | `hexInvalid`           | `Enter a hex color such as #1976d2` | The hex error message                 |
-| `automatic`            | `Automatic`                         | The automatic toggle                  |
-| `automaticDescription` | `Automatic, no color selected`      | How the automatic state is announced  |
+| `mode`                 | `Color mode`                        | The mode group's name                 |
+| `modeColor`            | `Color`                             | The mode group's colour option        |
+| `automatic`            | `Automatic`                         | The automatic option, hex placeholder |
+| `automaticDescription` | `Automatic color`                   | How the automatic state is announced  |
+| `none`                 | `None`                              | The "no colour" option, placeholder   |
+| `noneDescription`      | `No color`                          | How "no colour" is announced          |
 
 ### Parts
 
@@ -243,7 +268,7 @@ hsvaToHex({ h: 210, s: 80, v: 60, a: 1 }) // '#1f5c99'
 | `ColorPicker.Alpha`      | the alpha `Slider`            | same as `Hue`                                           | `null` without `alpha`    |
 | `ColorPicker.HexField`   | the hex `<input>` + its error | `<input>` props minus id / value / ARIA state           | `onKeyDown` runs first    |
 | `ColorPicker.Swatch`     | a `<span role="img">`         | `<span>` props                                          | —                         |
-| `ColorPicker.AutoToggle` | a `Button`                    | `Button` props minus pressed state / name / children    | `null` without `nullable` |
+| `ColorPicker.ModeGroup`  | a segmented radio group       | `<div>` props minus role / name                         | `null` with a single mode |
 
 `useColorPickerController()` returns `{ state, service }` — the live snapshot and the service's
 imperative API — for a custom part inside `<ColorPicker>`.
@@ -260,7 +285,10 @@ imperative API — for a custom part inside `<ColorPicker>`.
   (`:focus-visible`), so it stays visible on any colour under it (WCAG 1.4.11).
 - The hue and alpha tracks are `Slider`s: native role, value and keyboard. A change an assistive
   technology makes directly settles when focus leaves the track.
-- The automatic toggle is a pressed / unpressed button with a constant name.
+- The mode group is a `radiogroup` named "Color mode" of native radios: Tab enters on the checked
+  option, the arrow keys move AND select, a screen reader announces "Automatic, radio, 2 of 3". In
+  forced colours the checked segment is underlined (backgrounds are dropped there).
+- The swatch names the state ("Automatic color", "No color"); the wand is `aria-hidden`.
 - An invalid hex is announced (`role="alert"`), shown under the field and linked with
   `aria-describedby`.
 - A polite live region announces each settled change.
@@ -276,6 +304,10 @@ imperative API — for a custom part inside `<ColorPicker>`.
 
 > **Note** — `labels` is compared by content, so an inline object is fine; memoise `describeColor` if
 > you pass one.
+
+> **Warning** — `null` and `'none'` are two different things: `null` asks someone else to pick a
+> colour, `'none'` asks for nothing to be painted. Check for both before reading a channel
+> (`isColor(value)`).
 
 > **Note** — the panel has no surface of its own (no border, background or padding): a popover
 > brings one, and inline you compose a `Card`. Giving it a surface would double the chrome inside a

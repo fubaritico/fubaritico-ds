@@ -29,6 +29,18 @@ function setup(options: Partial<ColorPickerOptions> = {}) {
   return { service, onChange, onChangeComplete, onWarn }
 }
 
+/**
+ * The alpha of a value that must be a colour — fails the test otherwise.
+ *
+ * @param value - The value under test.
+ * @returns Its alpha.
+ */
+function alphaOf(value: ColorValue): number {
+  if (value === null || value === 'none')
+    throw new Error(`not a colour: ${String(value)}`)
+  return value.a
+}
+
 /** A minimal keyboard event recording whether it was consumed. */
 function key(
   name: string,
@@ -199,11 +211,13 @@ describe('ColorPickerService', () => {
         expect(onChangeComplete).toHaveBeenCalledTimes(2)
       })
 
-      it('toggles the automatic state and back to the last colour', () => {
-        const { service } = setup({ nullable: true })
-        expect(service.toggleAuto()).toBe(true)
-        expect(service.getState().isAuto).toBe(true)
-        expect(service.toggleAuto()).toBe(true)
+      it('switches modes through setMode and back to the last colour', () => {
+        const { service } = setup({ nullable: true, allowNone: true })
+        expect(service.setMode('auto')).toBe(true)
+        expect(service.getState().value).toBeNull()
+        expect(service.setMode('none')).toBe(true)
+        expect(service.getState().value).toBe('none')
+        expect(service.setMode('color')).toBe(true)
         expect(service.getState().value).toEqual(BLUE)
       })
 
@@ -368,18 +382,17 @@ describe('ColorPickerService', () => {
           color: BLUE,
         })
         expect(service.hexInputAttrs().placeholder).toBe('Automatic')
-        expect(service.describe()).toBe('Automatic, no color selected')
+        expect(service.describe()).toBe('Automatic color')
         expect(service.swatchAttrs()).toEqual({
           role: 'img',
-          'aria-label': 'Automatic, no color selected',
+          'aria-label': 'Automatic color',
         })
-        expect(service.getState().announcement).toBe(
-          'Automatic, no color selected'
-        )
+        expect(service.getState().announcement).toBe('Automatic color')
         expect(service.trackInputAttrs('hue')['aria-valuetext']).toBe(
-          '210°, blue, Automatic, no color selected'
+          '210°, blue, Automatic color'
         )
-        expect(service.autoToggleAttrs()['aria-pressed']).toBe('true')
+        expect(service.modeOptionAttrs('auto').checked).toBe('')
+        expect(service.getState().mode).toBe('auto')
         expect(service.getRgba()).toBeNull()
         expect(service.getHsla()).toBeNull()
         expect(onChange).toHaveBeenCalledWith(null)
@@ -415,6 +428,156 @@ describe('ColorPickerService', () => {
           isAuto: true,
           color: BLUE,
         })
+      })
+    })
+
+    describe('no colour (allowNone)', () => {
+      it('enters the "no colour" state and exposes it everywhere', () => {
+        const { service, onChange, onChangeComplete } = setup({
+          allowNone: true,
+        })
+        expect(service.setNone()).toBe(true)
+        expect(service.getState()).toMatchObject({
+          value: 'none',
+          mode: 'none',
+          isNone: true,
+          isAuto: false,
+          hex: null,
+          hexDraft: '',
+          color: BLUE,
+          announcement: 'No color',
+        })
+        expect(service.hexInputAttrs().placeholder).toBe('None')
+        expect(service.describe()).toBe('No color')
+        expect(service.swatchAttrs()['aria-label']).toBe('No color')
+        expect(service.trackInputAttrs('hue')['aria-valuetext']).toBe(
+          '210°, blue, No color'
+        )
+        expect(service.getRgba()).toBeNull()
+        expect(service.getHsla()).toBeNull()
+        expect(onChange).toHaveBeenCalledWith('none')
+        expect(onChangeComplete).toHaveBeenCalledWith('none')
+      })
+
+      it("accepts 'none' through setColor", () => {
+        const { service } = setup({ allowNone: true })
+        expect(service.setColor('none')).toBe(true)
+        expect(service.getState().isNone).toBe(true)
+      })
+
+      it('starts in the "no colour" state from a \'none\' default', () => {
+        const { service } = setup({ allowNone: true, defaultValue: 'none' })
+        expect(service.getState()).toMatchObject({
+          value: 'none',
+          color: hsv(0, 100, 100),
+        })
+      })
+
+      it('leaves "no colour" from the colour the user had', () => {
+        const { service } = setup({ allowNone: true })
+        service.setNone()
+        service.setChannel('v', 90)
+        expect(service.getState().value).toEqual({ ...BLUE, v: 90 })
+      })
+
+      it('goes from "no colour" to automatic and back, the colour kept', () => {
+        const { service, onChange } = setup({ nullable: true, allowNone: true })
+        service.setMode('none')
+        service.setMode('auto')
+        expect(onChange).toHaveBeenLastCalledWith(null)
+        service.setMode('color')
+        expect(onChange).toHaveBeenLastCalledWith(BLUE)
+      })
+
+      it("follows a controlled 'none', then a controlled colour", () => {
+        const { service } = setup({ allowNone: true, value: BLUE })
+        service.setOptions({ value: 'none' })
+        expect(service.getState()).toMatchObject({ value: 'none', color: BLUE })
+        service.setOptions({ value: hsv(0, 100, 100) })
+        expect(service.getState().value).toEqual(hsv(0, 100, 100))
+      })
+
+      it('emits the intent only when controlled', () => {
+        const { service, onChange } = setup({ allowNone: true, value: BLUE })
+        service.setMode('none')
+        expect(onChange).toHaveBeenCalledWith('none')
+        expect(service.getState().value).toEqual(BLUE)
+      })
+
+      it('returns to "no colour" when a drag started from it is cancelled', () => {
+        const { service } = setup({ allowNone: true })
+        service.setNone()
+        service.startDrag('area', { x: 0.1, y: 0.1 })
+        service.cancelDrag()
+        expect(service.getState()).toMatchObject({ value: 'none', color: BLUE })
+      })
+
+      it('returns to "no colour" when a previewed hex is abandoned', () => {
+        const { service } = setup({ allowNone: true })
+        service.setNone()
+        service.setHexDraft('#ff0000')
+        expect(service.getState().mode).toBe('color')
+        service.cancelHexDraft()
+        expect(service.getState()).toMatchObject({ value: 'none', color: BLUE })
+      })
+    })
+
+    describe('mode group', () => {
+      it('lists the modes the picker offers, in order', () => {
+        expect(setup().service.getModes()).toEqual(['color'])
+        expect(setup({ nullable: true }).service.getModes()).toEqual([
+          'color',
+          'auto',
+        ])
+        expect(setup({ allowNone: true }).service.getModes()).toEqual([
+          'color',
+          'none',
+        ])
+        expect(
+          setup({ nullable: true, allowNone: true }).service.getModes()
+        ).toEqual(['color', 'auto', 'none'])
+      })
+
+      it('names each option with its label', () => {
+        const { service } = setup({ nullable: true, allowNone: true })
+        expect(service.modeLabel('color')).toBe('Color')
+        expect(service.modeLabel('auto')).toBe('Automatic')
+        expect(service.modeLabel('none')).toBe('None')
+      })
+
+      it('builds a named radio group of native radios sharing one name', () => {
+        const { service } = setup({ nullable: true, allowNone: true })
+        expect(service.modeGroupAttrs()).toEqual({
+          role: 'radiogroup',
+          'aria-label': 'Color mode',
+          'aria-disabled': undefined,
+        })
+        expect(service.modeOptionAttrs('none')).toEqual({
+          id: 'cp-mode-none',
+          type: 'radio',
+          name: 'cp-mode',
+          value: 'none',
+          checked: undefined,
+          disabled: undefined,
+        })
+        expect(service.modeOptionAttrs('color').checked).toBe('')
+      })
+
+      it('checks the option of the current mode only', () => {
+        const { service } = setup({ nullable: true, allowNone: true })
+        service.setNone()
+        expect(service.modeOptionAttrs('none').checked).toBe('')
+        expect(service.modeOptionAttrs('color').checked).toBeUndefined()
+        expect(service.modeOptionAttrs('auto').checked).toBeUndefined()
+      })
+
+      it('notifies when allowNone changes', () => {
+        const { service } = setup()
+        const listener = vi.fn()
+        service.subscribe(listener)
+        service.setOptions({ allowNone: true })
+        expect(listener).toHaveBeenCalledTimes(1)
+        expect(service.getState().allowNone).toBe(true)
       })
     })
 
@@ -458,12 +621,12 @@ describe('ColorPickerService', () => {
         const off = setup().service
         off.setHexDraft('#ff000080')
         off.commitHexDraft()
-        expect(off.getState().value?.a).toBe(1)
+        expect(alphaOf(off.getState().value)).toBe(1)
 
         const on = setup({ alpha: true }).service
         on.setHexDraft('#ff000080')
         on.commitHexDraft()
-        expect(on.getState().value?.a).toBeCloseTo(128 / 255)
+        expect(alphaOf(on.getState().value)).toBeCloseTo(128 / 255)
       })
 
       it('mirrors the value again after a drag (the draft is not stuck)', () => {
@@ -489,7 +652,7 @@ describe('ColorPickerService', () => {
       it('previews an 8-digit hex with alpha', () => {
         const { service } = setup({ alpha: true })
         service.setHexDraft('#ff000080')
-        expect(service.getState().value?.a).toBeCloseTo(128 / 255)
+        expect(alphaOf(service.getState().value)).toBeCloseTo(128 / 255)
       })
 
       it('does not preview the short forms: "#abc" is on the way to "#abcdef"', () => {
@@ -745,8 +908,9 @@ describe('ColorPickerService', () => {
         expect(service.areaAttrs()['data-dragging']).toBe('')
       })
 
-      it('describes the hex field, the swatch and the automatic toggle', () => {
+      it('describes the hex field, the swatch and the mode options', () => {
         const { service } = setup()
+        expect(service.hexInputId()).toBe(service.hexInputAttrs().id)
         expect(service.hexInputAttrs()).toMatchObject({
           id: 'cp-hex',
           type: 'text',
@@ -760,12 +924,7 @@ describe('ColorPickerService', () => {
           role: 'img',
           'aria-label': 'dark blue',
         })
-        expect(service.autoToggleAttrs()).toEqual({
-          type: 'button',
-          'aria-label': 'Automatic',
-          'aria-pressed': 'false',
-          disabled: '',
-        })
+        expect(service.modeOptionAttrs('auto').disabled).toBe('')
         expect(service.statusAttrs()).toEqual({
           role: 'status',
           'aria-live': 'polite',
@@ -839,6 +998,35 @@ describe('ColorPickerService', () => {
       expect(onWarn).toHaveBeenCalledWith(
         expect.stringContaining('not nullable')
       )
+      expect(onChange).not.toHaveBeenCalled()
+    })
+
+    it('refuses the "no colour" state on a picker without allowNone', () => {
+      const { service, onWarn, onChange } = setup({ nullable: true })
+      expect(service.setNone()).toBe(false)
+      expect(service.setColor('none')).toBe(false)
+      expect(service.setMode('none')).toBe(false)
+      expect(onWarn).toHaveBeenCalledWith(expect.stringContaining('allowNone'))
+      expect(onChange).not.toHaveBeenCalled()
+    })
+
+    it('disables the options of the modes the picker does not offer', () => {
+      const { service } = setup()
+      expect(service.modeOptionAttrs('color').disabled).toBeUndefined()
+      expect(service.modeOptionAttrs('auto').disabled).toBe('')
+      expect(service.modeOptionAttrs('none').disabled).toBe('')
+    })
+
+    it('blocks every mode change when disabled', () => {
+      const { service, onChange } = setup({
+        nullable: true,
+        allowNone: true,
+        disabled: true,
+      })
+      expect(service.setMode('none')).toBe(false)
+      expect(service.setMode('auto')).toBe(false)
+      expect(service.modeGroupAttrs()['aria-disabled']).toBe('true')
+      expect(service.modeOptionAttrs('color').disabled).toBe('')
       expect(onChange).not.toHaveBeenCalled()
     })
 
@@ -958,6 +1146,23 @@ describe('ColorPickerService', () => {
       )
     })
 
+    it("warns on a controlled 'none' without allowNone, and shows it anyway", () => {
+      const { service, onWarn } = setup({ value: 'none' })
+      expect(onWarn).toHaveBeenCalledWith(expect.stringContaining('allowNone'))
+      expect(service.getState().isNone).toBe(true)
+    })
+
+    it("starts from the placeholder for a 'none' default without allowNone", () => {
+      const { service } = setup({
+        defaultValue: 'none',
+        placeholder: hsv(120, 50, 50),
+      })
+      expect(service.getState()).toMatchObject({
+        value: hsv(120, 50, 50),
+        isNone: false,
+      })
+    })
+
     it('falls back to the placeholder for a null default on a non-nullable picker', () => {
       const { service } = setup({
         defaultValue: null,
@@ -1074,7 +1279,7 @@ describe('ColorPickerService', () => {
         defaultValue: { ...BLUE, a: 0.2 },
       })
       service.setOptions({ alpha: false })
-      expect(service.getState().value?.a).toBe(1)
+      expect(alphaOf(service.getState().value)).toBe(1)
     })
 
     it('allows hue 360 (the end of the track), drawn as red', () => {
@@ -1098,7 +1303,8 @@ describe('ColorPickerService', () => {
         service.trackInputAttrs('hue'),
         service.trackInputAttrs('alpha'),
         service.hexInputAttrs(),
-        service.autoToggleAttrs(),
+        service.modeGroupAttrs(),
+        service.modeOptionAttrs('auto'),
         service.swatchAttrs(),
       ]
       for (const attrs of maps) {
@@ -1106,7 +1312,7 @@ describe('ColorPickerService', () => {
         expect(attrs.disabled).toBeUndefined()
         expect(attrs['data-dragging']).toBeUndefined()
       }
-      expect(service.autoToggleAttrs()['aria-pressed']).toBe('false')
+      expect(service.modeOptionAttrs('auto').checked).toBeUndefined()
     })
 
     it('notifies when uid or dir change, since ids and key mapping derive from them', () => {

@@ -7,10 +7,10 @@ colour picker in a popover, above everything on the page. A composition of `Colo
 ## Capabilities
 
 - **Type or pick** — the hex input previews a complete hex live and settles on Enter or blur,
-  without opening anything; the swatch opens the picker (area, hue, alpha, automatic toggle) in a
-  popover.
-- **Everything the ColorPicker does** — HSVA value, the optional "automatic / no colour" state
-  (`nullable`), alpha, two callbacks (`onChange` / `onChangeComplete`), localised labels.
+  without opening anything; the swatch opens the picker (area, hue, alpha, mode group) in a popover.
+- **Everything the ColorPicker does** — HSVA value, the optional "automatic" (`nullable`, `null`) and
+  "no colour" (`allowNone`, `'none'`) states, alpha, two callbacks (`onChange` /
+  `onChangeComplete`), localised labels.
 - **Popover** — top layer (no portal, no z-index), anchored below the field, Escape / click outside
   close it and focus returns to the swatch; focus lands on the area when it opens.
 
@@ -32,6 +32,13 @@ Automatic state and alpha:
 
 ```tsx
 <ColorField label="Stroke" nullable alpha defaultValue={null} />
+```
+
+Colour, automatic or no colour — the popover offers Color · Automatic · None, the swatch shows a
+magic wand for automatic and a struck-through square for no colour:
+
+```tsx
+<ColorField label="Polity fill" nullable allowNone defaultValue="none" />
 ```
 
 Compact density — a shorter popover (same width, flatter area):
@@ -61,7 +68,17 @@ Localised:
 <ColorField
   label="Couleur de remplissage"
   triggerLabel="Choisir une couleur"
-  labels={{ hex: 'Couleur hexadécimale', automatic: 'Automatique' }}
+  nullable
+  allowNone
+  labels={{
+    hex: 'Couleur hexadécimale',
+    mode: 'Type de couleur',
+    modeColor: 'Couleur',
+    automatic: 'Automatique',
+    automaticDescription: 'Couleur automatique',
+    none: 'Aucune',
+    noneDescription: 'Aucune couleur',
+  }}
 />
 ```
 
@@ -97,7 +114,7 @@ export function EditLayer({ onClose }: Readonly<{ onClose: () => void }>) {
 ## Props
 
 Every `ColorPicker` prop (`value`, `defaultValue`, `onChange`, `onChangeComplete`, `nullable`,
-`alpha`, `disabled`, `density`, `placeholder`, `labels`, `describeColor`, `service`, `<div>` props except
+`allowNone`, `alpha`, `disabled`, `density`, `placeholder`, `labels`, `describeColor`, `service`, `<div>` props except
 `aria-label` / `aria-labelledby` — the visible label names the field), plus:
 
 | Name           | Type                      | Default        | Description                                   |
@@ -125,5 +142,6 @@ Every `ColorPicker` prop (`value`, `defaultValue`, `onChange`, `onChangeComplete
 > **Note** — works inside a `Modal`: the popover opens above the dialog and Escape closes the
 > popover first, then the dialog.
 
-> **Note** — see the `ColorPicker` README for the value model (HSVA, `null` = automatic) and the
+> **Note** — see the `ColorPicker` README for the value model (HSVA, `null` = automatic, `'none'` =
+> no colour) and the
 > `Popover` README for positioning and browser support.

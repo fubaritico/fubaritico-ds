@@ -19,6 +19,15 @@ const hexField = () => screen.getByRole('textbox', { name: 'Hex color Fill' })
 const popoverOpen = () =>
   document.querySelector('.ui-popover')?.matches(':popover-open') ?? false
 
+/**
+ * A segment of the mode group as the user sees and clicks it: the label (its radio is visually
+ * hidden, a 1px box no pointer reaches).
+ *
+ * @param name - The segment's text.
+ * @returns The label element.
+ */
+const modeSegment = (name: string) => screen.getByText(name, { selector: 'label' })
+
 describe('ColorField (browser)', () => {
   describe('happy path', () => {
     it('opens the picker from the swatch, focus inside, and closes on Escape back to the swatch', async () => {
@@ -109,10 +118,29 @@ describe('ColorField (browser)', () => {
         />
       )
       await userEvent.click(trigger())
-      await userEvent.click(screen.getByRole('button', { name: 'Automatic' }))
+      await userEvent.click(modeSegment('Automatic'))
       expect(onChange).toHaveBeenLastCalledWith(null)
       expect(hexField()).toHaveValue('')
       expect(hexField()).toHaveAttribute('placeholder', 'Automatic')
+    })
+
+    it('offers "no colour" inside the popover with allowNone, and leaves it for the last colour', async () => {
+      const onChange = vi.fn()
+      render(
+        <ColorField
+          label="Fill"
+          defaultValue={BLUE}
+          nullable
+          allowNone
+          onChange={onChange}
+        />
+      )
+      await userEvent.click(trigger())
+      await userEvent.click(modeSegment('None'))
+      expect(onChange).toHaveBeenLastCalledWith('none')
+      expect(hexField()).toHaveAttribute('placeholder', 'None')
+      await userEvent.click(modeSegment('Color'))
+      expect(onChange).toHaveBeenLastCalledWith(BLUE)
     })
 
     it('follows a controlled open state', () => {

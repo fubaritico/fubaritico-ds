@@ -19,6 +19,7 @@ import type { ChannelPatch } from './keyboard.js'
 import type {
   ColorAreaAxis,
   ColorPickerLabels,
+  ColorPickerMode,
   ColorPickerOptions,
   ColorPickerSnapshot,
   ColorPickerTarget,
@@ -28,13 +29,36 @@ import type {
 import type { DomAttributes, KeyboardLike } from '../common/types.js'
 
 /**
- * A value's hex, for comparing values the way the field shows them; `null` stays `null`.
+ * Whether a value is a colour — not "automatic" (`null`) nor "no colour" (`'none'`).
  *
- * @param value - A colour, `null` (automatic) or `undefined` (uncontrolled).
- * @returns Its hex, or the `null` / `undefined` itself.
+ * @param value - Any value.
+ * @returns `true` for an HSVA colour.
+ */
+export function isColor(value: ColorValue | undefined): value is HsvaColor {
+  return typeof value === 'object' && value !== null
+}
+
+/**
+ * The mode a value belongs to.
+ *
+ * @param value - A value.
+ * @returns `'color'`, `'auto'` (`null`) or `'none'`.
+ */
+function modeOf(value: ColorValue): ColorPickerMode {
+  if (value === null) return 'auto'
+  if (value === 'none') return 'none'
+  return 'color'
+}
+
+/**
+ * A value's hex, for comparing values the way the field shows them; `null`, `'none'` and
+ * `undefined` stay themselves.
+ *
+ * @param value - A colour, `null` (automatic), `'none'` or `undefined` (uncontrolled).
+ * @returns Its hex, or the value itself when it is not a colour.
  */
 function hexOf(value: ColorValue | undefined): string | null | undefined {
-  return value === null || value === undefined ? value : hsvaToHex(value)
+  return isColor(value) ? hsvaToHex(value) : value
 }
 
 /** The hex forms previewed while typing: the complete long ones only (6 or 8 digits). */
@@ -48,8 +72,12 @@ const DEFAULT_LABELS: ColorPickerLabels = {
   hue: 'Hue',
   alpha: 'Opacity',
   hex: 'Hex color',
+  mode: 'Color mode',
+  modeColor: 'Color',
   automatic: 'Automatic',
-  automaticDescription: 'Automatic, no color selected',
+  automaticDescription: 'Automatic color',
+  none: 'None',
+  noneDescription: 'No color',
   areaRoleDescription: '2D slider',
   picker: 'Color picker',
   hexInvalid: 'Enter a hex color such as #1976d2',
@@ -87,20 +115,20 @@ type ResolvedOptions = Omit<
  * @returns Whether they are equal.
  */
 function sameValue(a: ColorValue, b: ColorValue): boolean {
-  if (a === null || b === null) return a === b
+  if (!isColor(a) || !isColor(b)) return a === b
   return a.h === b.h && a.s === b.s && a.v === b.v && a.a === b.a
 }
 
 /**
  * Colour picker behaviour as a framework-agnostic service: the HSVA source of truth, the
- * "automatic" state, pointer drags on the 2D area and the hue / alpha tracks, keyboard steps, the
+ * "automatic" and "no colour" modes, pointer drags on the 2D area and the hue / alpha tracks, keyboard steps, the
  * hex field's draft, and the ARIA attributes of every control. Adapters render and measure; they
  * never convert a colour or compute an attribute.
  *
  * **HSVA is the source of truth, never hex**: converting back from RGB loses the hue of every gray
  * (and the saturation of black), so a picker that re-derives its state from hex jumps to red as
  * soon as the saturation reaches 0. The working colour keeps hue and saturation through those
- * states, and through the automatic state.
+ * states, and through the automatic and "no colour" modes.
  */
 export class ColorPickerService extends Store<ColorPickerSnapshot> {
   private opts: ResolvedOptions
@@ -109,8 +137,8 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
 
   /** Where the thumbs sit. */
   private working: HsvaColor
-  /** `true` in the automatic state (uncontrolled; controlled reads `opts.value`). */
-  private auto: boolean
+  /** The kind of value held (uncontrolled; controlled reads `opts.value`). */
+  private mode: ColorPickerMode
 
   private dragging: ColorPickerTarget | null = null
   /**
@@ -118,7 +146,7 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
    * `settle` compares against and `cancelDrag` restores. `undefined` when nothing is pending.
    */
   private baseline: ColorValue | undefined = undefined
-  /** The working colour when the drag started — restored by `cancelDrag`, even from "automatic". */
+  /** The working colour when the drag started — restored by `cancelDrag`, even from a non-colour. */
   private dragStartWorking: HsvaColor | null = null
 
   /** The hex field's text while the user edits it; `null` when it simply mirrors the value. */
@@ -126,7 +154,7 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   private hexInvalid = false
   /** Whether the value currently shown is a live preview of the hex draft, not yet settled. */
   private previewing = false
-  /** The working colour before the hex preview began — restored on abandon, even from "automatic". */
+  /** The working colour before the hex preview began — restored on abandon, even from a non-colour. */
   private hexStartWorking: HsvaColor | null = null
   /** Hex of the previewed colour, to tell a parent echoing the preview from one overriding it. */
   private previewedHex: string | null = null
@@ -146,11 +174,15 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
     const initial = this.controlled
       ? (options.value ?? null)
       : (options.defaultValue ?? null)
-    const accepted =
-      initial === null && !this.opts.nullable ? this.opts.placeholder : initial
-    this.auto = accepted === null
-    this.working = this.normalize(accepted ?? this.opts.placeholder)
-    this.warnOnNullWithoutNullable()
+    // A mode the picker does not offer starts from the placeholder (warned when controlled).
+    const accepted = this.isModeAllowed(modeOf(initial))
+      ? initial
+      : this.opts.placeholder
+    this.mode = modeOf(accepted)
+    this.working = this.normalize(
+      isColor(accepted) ? accepted : this.opts.placeholder
+    )
+    this.warnOnUnavailableMode()
   }
 
   // ---------- reading ----------
@@ -162,11 +194,14 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
    */
   protected createSnapshot(): ColorPickerSnapshot {
     const value = this.currentValue()
-    const hex = value === null ? null : hsvaToHex(value)
+    const hex = isColor(value) ? hsvaToHex(value) : null
+    const mode = modeOf(value)
     return {
       value,
       color: this.working,
-      isAuto: value === null,
+      mode,
+      isAuto: mode === 'auto',
+      isNone: mode === 'none',
       hex,
       hueHex: hsvaToHex({ h: this.working.h, s: 100, v: 100, a: 1 }),
       opaqueHex: hsvaToHex({ ...this.working, a: 1 }),
@@ -176,14 +211,15 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
       announcement: this.announcement,
       alpha: this.opts.alpha,
       nullable: this.opts.nullable,
+      allowNone: this.opts.allowNone,
       disabled: this.opts.disabled,
       dir: this.opts.dir,
     }
   }
 
   /**
-   * The resolved accessible labels — for visible text an adapter renders (the automatic toggle's
-   * caption, a hex error), so it never reads text back out of an ARIA attribute.
+   * The resolved accessible labels — for visible text an adapter renders (a hex error), so it never
+   * reads text back out of an ARIA attribute.
    *
    * @returns The labels, defaults filled in.
    */
@@ -192,27 +228,52 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   }
 
   /**
-   * The current value in RGBA — for display. `null` in the automatic state.
+   * The current value in RGBA — for display. `null` when the value is not a colour.
    *
    * @returns The RGBA colour, unrounded.
    */
   getRgba(): RgbaColor | null {
     const value = this.currentValue()
-    return value === null ? null : hsvaToRgba(value)
+    return isColor(value) ? hsvaToRgba(value) : null
   }
 
   /**
-   * The current value in HSLA — for display. `null` in the automatic state.
+   * The current value in HSLA — for display. `null` when the value is not a colour.
    *
    * @returns The HSLA colour, unrounded.
    */
   getHsla(): HslaColor | null {
     const value = this.currentValue()
-    return value === null ? null : hsvaToHsla(value)
+    return isColor(value) ? hsvaToHsla(value) : null
   }
 
   /**
-   * Words for the current value ("dark red"), or the automatic label.
+   * The modes the picker offers, in display order: always `'color'`, then `'auto'` when nullable,
+   * then `'none'` with `allowNone`. An adapter renders the mode group only when there are two or
+   * more.
+   *
+   * @returns The available modes.
+   */
+  getModes(): ColorPickerMode[] {
+    const all: ColorPickerMode[] = ['color', 'auto', 'none']
+    return all.filter((mode) => this.isModeAllowed(mode))
+  }
+
+  /**
+   * The visible text of a mode group option.
+   *
+   * @param mode - The option's mode.
+   * @returns Its localisable label.
+   */
+  modeLabel(mode: ColorPickerMode): string {
+    const { labels } = this.opts
+    if (mode === 'auto') return labels.automatic
+    if (mode === 'none') return labels.none
+    return labels.modeColor
+  }
+
+  /**
+   * Words for the current value ("dark red"), or the automatic / "no colour" description.
    *
    * @returns The description.
    */
@@ -273,12 +334,11 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
         hexOf(patch.value) !== this.previewedHex
       )
         this.dropPreview()
-      if (patch.value !== undefined && patch.value !== null)
-        this.adoptExternal(patch.value)
+      if (isColor(patch.value)) this.adoptExternal(patch.value)
     }
     // Disabled mid-edit: the preview the consumer already received becomes the settled value.
     if (this.opts.disabled && this.previewing) this.endPreview()
-    this.warnOnNullWithoutNullable()
+    this.warnOnUnavailableMode()
 
     this.commitIfChanged(
       before,
@@ -288,6 +348,7 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
         b.color !== a.color ||
         b.alpha !== a.alpha ||
         b.nullable !== a.nullable ||
+        b.allowNone !== a.allowNone ||
         b.disabled !== a.disabled ||
         b.hexDraft !== a.hexDraft
     )
@@ -298,17 +359,19 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   /**
    * Sets the value programmatically. A settled change: `onChange` and `onChangeComplete` both fire.
    *
-   * @param value - A colour, or `null` for automatic (nullable pickers only).
-   * @returns `false` when blocked (disabled, or `null` on a non-nullable picker).
+   * @param value - A colour, `null` for automatic (nullable pickers only), or `'none'` for no
+   *   colour (`allowNone` pickers only).
+   * @returns `false` when blocked (disabled, or a mode the picker does not offer).
    */
   setColor(value: ColorValue): boolean {
     if (value === null) return this.setAuto()
+    if (value === 'none') return this.setNone()
     return this.applyValue(this.normalize(value), true)
   }
 
   /**
    * Changes one channel — what a native range input or a numeric field reports. Leaves the
-   * automatic state, starting from the working colour.
+   * automatic and "no colour" modes, starting from the working colour.
    *
    * @param channel - `'h'` (degrees), `'s'` / `'v'` (%), or `'a'` (fraction).
    * @param value - The new channel value; clamped to its range.
@@ -353,15 +416,32 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   }
 
   /**
-   * The automatic toggle's action: enters the automatic state, or leaves it back to the last colour
-   * (whose hue was kept).
+   * Switches to the "no colour" state (`'none'`). The working colour is kept, so leaving it returns
+   * to the colour the user had.
    *
-   * @returns `false` when blocked.
+   * @returns `false` when the picker does not allow it, or is disabled.
    */
-  toggleAuto(): boolean {
-    return this.currentValue() === null
-      ? this.setColor(this.working)
-      : this.setAuto()
+  setNone(): boolean {
+    if (!this.opts.allowNone) {
+      this.opts.onWarn?.(
+        `[color-picker:${this.opts.uid}] setNone on a picker without allowNone`
+      )
+      return false
+    }
+    return this.applyValue('none', true)
+  }
+
+  /**
+   * The mode group's action: `'color'` returns to the last colour (whose hue was kept), `'auto'`
+   * and `'none'` switch to those states. A settled change.
+   *
+   * @param mode - The mode chosen.
+   * @returns `false` when blocked, unavailable, or already in that mode.
+   */
+  setMode(mode: ColorPickerMode): boolean {
+    if (mode === 'auto') return this.setAuto()
+    if (mode === 'none') return this.setNone()
+    return this.applyValue(this.working, true)
   }
 
   /**
@@ -453,7 +533,7 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
       this.dragStartWorking = null
       this.applyValue(start, false)
       this.baseline = undefined
-      // From "automatic" the value returns to null — the thumbs must return too.
+      // From a non-colour the value returns to it — the thumbs must return too.
       if (!this.controlled && startWorking !== null) this.working = startWorking
       this.commit()
     })
@@ -519,8 +599,7 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
       const start = this.previewing ? this.baseline : undefined
       const next =
         parsed !== null &&
-        start !== undefined &&
-        start !== null &&
+        isColor(start) &&
         hsvaToHex(start) === hsvaToHex(parsed)
           ? start
           : parsed
@@ -653,6 +732,15 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   }
 
   /**
+   * Id of the hex field — for an adapter that names it from outside (`aria-labelledby`).
+   *
+   * @returns The DOM id, the one `hexInputAttrs().id` carries.
+   */
+  hexInputId(): string {
+    return attrs.hexInputId(this.opts.uid)
+  }
+
+  /**
    * Attributes of the hex error message — render it, with `hexErrorText()`, while
    * `snapshot.hexInvalid`.
    *
@@ -672,12 +760,22 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   }
 
   /**
-   * Attributes of the "automatic" toggle button.
+   * Attributes of the mode group (a radio group).
    *
    * @returns DOM attributes.
    */
-  autoToggleAttrs(): DomAttributes {
-    return attrs.autoToggleAttrs(this.attrsContext())
+  modeGroupAttrs(): DomAttributes {
+    return attrs.modeGroupAttrs(this.attrsContext())
+  }
+
+  /**
+   * Attributes of one option of the mode group — a native radio input (`checked` is a property).
+   *
+   * @param mode - The option's mode.
+   * @returns DOM attributes.
+   */
+  modeOptionAttrs(mode: ColorPickerMode): DomAttributes {
+    return attrs.modeOptionAttrs(this.attrsContext(), mode)
   }
 
   /**
@@ -746,7 +844,7 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
    */
   private matchesCurrentHex(next: HsvaColor): boolean {
     const current = this.currentValue()
-    return current !== null && hsvaToHex(next) === hsvaToHex(current)
+    return isColor(current) && hsvaToHex(next) === hsvaToHex(current)
   }
 
   /** Forgets a preview without touching the value (the parent decided otherwise). */
@@ -856,15 +954,25 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   }
 
   /**
-   * Words for a value: the colour's description, or the automatic one.
+   * Words for a value: the colour's description, or the automatic / "no colour" one.
    *
    * @param value - A value.
    * @returns The description.
    */
   private describeValue(value: ColorValue): string {
-    return value === null
-      ? this.opts.labels.automaticDescription
-      : this.opts.describeColor(value)
+    if (value === null) return this.opts.labels.automaticDescription
+    if (value === 'none') return this.opts.labels.noneDescription
+    return this.opts.describeColor(value)
+  }
+
+  /**
+   * Whether the picker offers a mode (`'color'` always).
+   *
+   * @param mode - The mode.
+   * @returns `true` when it can be reached.
+   */
+  private isModeAllowed(mode: ColorPickerMode): boolean {
+    return attrs.isModeAvailable(this.opts, mode)
   }
 
   /**
@@ -878,22 +986,32 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
       uid: this.opts.uid,
       labels: this.opts.labels,
       color: state.color,
-      isAuto: state.isAuto,
+      mode: state.mode,
       description: this.describeValue(state.value),
       disabled: this.opts.disabled,
       alpha: this.opts.alpha,
       nullable: this.opts.nullable,
+      allowNone: this.opts.allowNone,
       dragging: this.dragging,
       hexDraft: state.hexDraft,
       hexInvalid: this.hexInvalid,
     }
   }
 
-  /** Reports a controlled `null` on a picker that is not nullable — it shows "automatic" anyway. */
-  private warnOnNullWithoutNullable(): void {
-    if (this.controlled && this.opts.value === null && !this.opts.nullable) {
+  /**
+   * Reports a controlled value in a mode the picker does not offer — `null` without `nullable`,
+   * `'none'` without `allowNone`. The state is shown anyway.
+   */
+  private warnOnUnavailableMode(): void {
+    if (!this.controlled || this.opts.value === undefined) return
+    if (this.opts.value === null && !this.opts.nullable) {
       this.opts.onWarn?.(
         `[color-picker:${this.opts.uid}] value is null but the picker is not nullable`
+      )
+    }
+    if (this.opts.value === 'none' && !this.opts.allowNone) {
+      this.opts.onWarn?.(
+        `[color-picker:${this.opts.uid}] value is 'none' but the picker does not allowNone`
       )
     }
   }
@@ -909,6 +1027,7 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
       uid: options.uid,
       value: options.value,
       nullable: options.nullable ?? false,
+      allowNone: options.allowNone ?? false,
       alpha: options.alpha ?? false,
       disabled: options.disabled ?? false,
       dir: options.dir ?? 'ltr',
@@ -924,14 +1043,16 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   /**
    * The value the consumer sees.
    *
-   * @returns The controlled value, else the working colour (or `null` when automatic).
+   * @returns The controlled value, else the working colour (or `null` / `'none'` in those modes).
    */
   private currentValue(): ColorValue {
     if (this.controlled) {
       const value = this.opts.value ?? null
-      return value === null ? null : this.normalize(value)
+      return isColor(value) ? this.normalize(value) : value
     }
-    return this.auto ? null : this.working
+    if (this.mode === 'auto') return null
+    if (this.mode === 'none') return 'none'
+    return this.working
   }
 
   /**
@@ -1005,8 +1126,8 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
     if (sameValue(previous, next)) return false
 
     if (!this.controlled) {
-      this.auto = next === null
-      if (next !== null) this.working = next
+      this.mode = modeOf(next)
+      if (isColor(next)) this.working = next
     }
     this.draft = null
     this.hexInvalid = false

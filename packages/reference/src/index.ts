@@ -45,15 +45,17 @@ export type { ColorFieldProps } from './components/ColorField'
 export { ColorPicker, useColorPickerController } from './components/ColorPicker'
 export type {
   ColorPickerAreaProps,
-  ColorPickerAutoToggleProps,
   ColorPickerController,
   ColorPickerDensity,
   ColorPickerHexFieldProps,
+  ColorPickerMode,
+  ColorPickerModeGroupProps,
   ColorPickerProps,
   ColorPickerSwatchProps,
   ColorPickerTrackProps,
   ColorValue,
   HsvaColor,
+  NoColor,
 } from './components/ColorPicker'
 
 export {

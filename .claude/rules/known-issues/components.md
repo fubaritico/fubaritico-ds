@@ -1,10 +1,11 @@
 ---
 paths:
-  - "packages/reference/src/components/**"
-  - "packages/styles/src/styles/**"
-  - "packages/variants/src/**"
-  - "apps/storybook-react/stories/**"
+  - 'packages/reference/src/components/**'
+  - 'packages/styles/src/styles/**'
+  - 'packages/variants/src/**'
+  - 'apps/storybook-react/stories/**'
 ---
+
 # Known issues — the components
 
 > Slice of `.claude/known-issues.md` (the index). Loads when a component, its skin, its resolver or its story is touched.
@@ -105,7 +106,15 @@ paths:
 - **Badge remove button: 24px hit area, not 44 (2026-10-30, REACT-158)** — 16px glyph, `::before`
   overflowing by 4px = WCAG 2.2 AA 2.5.8. The review rule asks ≥44px (AAA 2.5.5); 44px would overlap the
   neighbouring badges in a wrapped MultiSelect. Kept at 24 pending the dev's word.
+- **ColorPicker mode segments: ~24px high, not 44 (2026-11-15, REACT-161)** — 12px text + 4px block
+  padding = WCAG 2.2 AA 2.5.8; the review rule asks 44px (AAA 2.5.5). Shown at 24 in À valider, the dev
+  validated the ticket as shown (« C'est bon pour moi ») — not a separate ruling on the 24/44 question.
+  To raise it: `--ui-color-picker-mode-padding-block` (a var, scoped).
+- **ColorPicker: `'none'` ≠ `null` (2026-11-15, REACT-161)** — `null` = automatic (something else picks),
+  `'none'` = no colour (nothing painted). Narrow with `isColor(value)` before reading a channel. The mode
+  radios are visually hidden (1px, `clip-path`): a browser test clicks the `<label>`, never the radio
+  (Playwright: « element is outside of the viewport »). `checked` reaches React as a boolean ALWAYS
+  (`toReactAttributes`), else the radio flips controlled ↔ uncontrolled.
 - **The listbox's active option is ~1.3:1 on its surface (found 2026-10-30)** — `--color-pressed`
   (#e5e5e5) on white: the keyboard cursor of Menu / Typeahead / Dropdown / MultiSelect is grey-on-grey,
   under 1.4.11. DS-wide, so fixed in `listbox.css` for all, not per component — STYLES-153.
-

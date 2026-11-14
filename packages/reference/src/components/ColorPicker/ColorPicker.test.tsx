@@ -203,22 +203,53 @@ describe('ColorPicker', () => {
       expect(swatch()).not.toHaveAccessibleName('vivid red')
     })
 
-    it('toggles the automatic state, then back to the last colour', async () => {
+    it('switches to automatic, then back to the last colour', async () => {
       const user = userEvent.setup()
       const onChange = vi.fn()
       render(<ColorPicker defaultValue={BLUE} nullable onChange={onChange} />)
-      const toggle = screen.getByRole('button', { name: 'Automatic' })
-      expect(toggle).toHaveAttribute('aria-pressed', 'false')
+      expect(screen.getByRole('radiogroup', { name: 'Color mode' })).toBeInTheDocument()
+      expect(screen.getByRole('radio', { name: 'Color' })).toBeChecked()
 
-      await user.click(toggle)
+      await user.click(screen.getByRole('radio', { name: 'Automatic' }))
       expect(onChange).toHaveBeenLastCalledWith(null)
-      expect(toggle).toHaveAttribute('aria-pressed', 'true')
-      expect(swatch()).toHaveAccessibleName('Automatic, no color selected')
+      expect(screen.getByRole('radio', { name: 'Automatic' })).toBeChecked()
+      expect(swatch()).toHaveAccessibleName('Automatic color')
       expect(swatch()).toHaveClass('ui-color-picker__swatch--auto')
+      expect(swatch().querySelector('svg')).not.toBeNull()
       expect(hexField()).toHaveValue('')
 
-      await user.click(toggle)
+      await user.click(screen.getByRole('radio', { name: 'Color' }))
       expect(onChange).toHaveBeenLastCalledWith(BLUE)
+    })
+
+    it('switches to "no colour", then back to the last colour', async () => {
+      const user = userEvent.setup()
+      const onChange = vi.fn()
+      render(<ColorPicker defaultValue={BLUE} nullable allowNone onChange={onChange} />)
+      expect(screen.getAllByRole('radio')).toHaveLength(3)
+
+      await user.click(screen.getByRole('radio', { name: 'None' }))
+      expect(onChange).toHaveBeenLastCalledWith('none')
+      expect(screen.getByRole('radio', { name: 'None' })).toBeChecked()
+      expect(swatch()).toHaveAccessibleName('No color')
+      expect(swatch()).toHaveClass('ui-color-picker__swatch--none')
+      expect(swatch().querySelector('svg')).toBeNull()
+      expect(hexField()).toHaveAttribute('placeholder', 'None')
+
+      await user.click(screen.getByRole('radio', { name: 'Color' }))
+      expect(onChange).toHaveBeenLastCalledWith(BLUE)
+    })
+
+    it('moves and selects the mode with the arrow keys', async () => {
+      const user = userEvent.setup()
+      const onChange = vi.fn()
+      render(<ColorPicker defaultValue={BLUE} nullable allowNone onChange={onChange} />)
+      screen.getByRole('radio', { name: 'Color' }).focus()
+      await user.keyboard('{ArrowRight}')
+      expect(screen.getByRole('radio', { name: 'Automatic' })).toHaveFocus()
+      expect(onChange).toHaveBeenLastCalledWith(null)
+      await user.keyboard('{ArrowRight}')
+      expect(onChange).toHaveBeenLastCalledWith('none')
     })
 
     it('follows a controlled value round-tripped through state', async () => {
@@ -229,7 +260,7 @@ describe('ColorPicker', () => {
           <>
             <ColorPicker value={value} onChange={setValue} />
             <output aria-label="Saturation value">
-              {value === null ? 'none' : String(value.s)}
+              {value === null || value === 'none' ? 'none' : String(value.s)}
             </output>
           </>
         )
@@ -253,13 +284,19 @@ describe('ColorPicker', () => {
         <ColorPicker
           defaultValue={BLUE}
           nullable
-          labels={{ picker: 'Couleur du fond', hex: 'Hexadécimal', automatic: 'Auto' }}
+          labels={{
+            picker: 'Couleur du fond',
+            hex: 'Hexadécimal',
+            mode: 'Mode',
+            automatic: 'Auto',
+          }}
           describeColor={() => 'bleu'}
         />
       )
       expect(screen.getByRole('group', { name: 'Couleur du fond' })).toBeInTheDocument()
       expect(screen.getByRole('textbox', { name: 'Hexadécimal' })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Auto' })).toHaveTextContent('Auto')
+      expect(screen.getByRole('radiogroup', { name: 'Mode' })).toBeInTheDocument()
+      expect(screen.getByRole('radio', { name: 'Auto' })).toBeInTheDocument()
       expect(swatch()).toHaveAccessibleName('bleu')
     })
 
@@ -392,9 +429,23 @@ describe('ColorPicker', () => {
       expect(hue()).toHaveValue('360')
     })
 
-    it('renders no automatic toggle on a picker that is not nullable', () => {
+    it('renders no mode group on a picker that offers a single mode', () => {
       render(<ColorPicker defaultValue={BLUE} />)
-      expect(screen.queryByRole('button', { name: 'Automatic' })).toBeNull()
+      expect(screen.queryByRole('radiogroup')).toBeNull()
+    })
+
+    it('offers colour and "no colour" only, with allowNone alone', () => {
+      render(<ColorPicker defaultValue={BLUE} allowNone />)
+      expect(screen.getAllByRole('radio').map((radio) => radio.getAttribute('value'))).toEqual([
+        'color',
+        'none',
+      ])
+    })
+
+    it('shows "no colour" from a controlled \'none\'', () => {
+      render(<ColorPicker value="none" allowNone />)
+      expect(screen.getByRole('radio', { name: 'None' })).toBeChecked()
+      expect(swatch()).toHaveAccessibleName('No color')
     })
 
     it('starts from the placeholder when a non-nullable picker gets a null default', () => {

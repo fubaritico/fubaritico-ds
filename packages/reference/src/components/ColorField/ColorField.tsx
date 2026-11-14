@@ -58,7 +58,7 @@ function ColorFieldControl({
 }: Readonly<ColorFieldControlProps>) {
   const { service } = useColorPickerContext()
   const triggerId = useId()
-  const hexId = String(service.hexInputAttrs().id)
+  const hexId = service.hexInputId()
 
   return (
     <div className={COLOR_FIELD_CONTROL_CLASS}>
@@ -81,9 +81,9 @@ function ColorFieldControl({
  * opens the full picker in a popover, above everything on the page.
  *
  * Pure composition: a `ColorPicker` (one `ColorPickerService` behind the hex input AND the panel,
- * so they always agree) arranged as a field, with its area / hue / alpha / automatic toggle inside a
+ * so they always agree) arranged as a field, with its area / hue / alpha / mode group inside a
  * `Popover`. A complete typed hex is previewed live and settles on Enter or blur, without opening
- * anything. Every ColorPicker prop works the same (value, nullable, alpha, labels…).
+ * anything. Every ColorPicker prop works the same (value, nullable, allowNone, alpha, labels…).
  *
  * @param props - {@link ColorFieldProps}.
  * @param props.label - Visible label.
@@ -133,7 +133,7 @@ export function ColorField({
             <ColorPicker.Area />
             <ColorPicker.Hue />
             <ColorPicker.Alpha />
-            <ColorPicker.AutoToggle />
+            <ColorPicker.ModeGroup />
           </div>
         </Popover.Content>
       </Popover>

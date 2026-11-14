@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { hsvaToHex } from '@fubaritico/behaviors'
+import { hsvaToHex, isColor } from '@fubaritico/behaviors'
 import { Button } from '@fubaritico/react/Button'
 import { Card } from '@fubaritico/react/Card'
 import { ColorField } from '@fubaritico/react/ColorField'
@@ -18,6 +18,7 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     nullable: { control: 'boolean' },
+    allowNone: { control: 'boolean' },
     alpha: { control: 'boolean' },
     disabled: { control: 'boolean' },
     density: { control: 'inline-radio', options: ['default', 'compact'] },
@@ -37,6 +38,7 @@ const meta = {
     label: 'Fill color',
     defaultValue: BLUE,
     nullable: false,
+    allowNone: false,
     alpha: false,
     disabled: false,
   },
@@ -48,9 +50,9 @@ type Story = StoryObj<typeof meta>
 /** Type a hex and press Enter, or click the swatch to open the picker. */
 export const Playground: Story = {}
 
-/** Open from the start — the picker in its popover. */
+/** Open from the start — the picker in its popover, with its mode group. */
 export const Open: Story = {
-  args: { open: true, nullable: true },
+  args: { open: true, nullable: true, allowNone: true },
   parameters: { layout: 'padded' },
 }
 
@@ -65,6 +67,21 @@ export const AutomaticWithAlpha: Story = {
   args: { nullable: true, alpha: true, defaultValue: null },
 }
 
+/**
+ * The three swatches side by side: a colour, automatic (a magic wand), no colour (struck through,
+ * the Illustrator / Office mark). They must never be mistaken for one another.
+ */
+export const Swatches: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div style={{ display: 'flex', gap: '1.5rem' }}>
+      <ColorField label="Colour" defaultValue={BLUE} nullable allowNone />
+      <ColorField label="Automatic" defaultValue={null} nullable allowNone />
+      <ColorField label="No colour" defaultValue="none" nullable allowNone />
+    </div>
+  ),
+}
+
 /** A form-like stack of fields, controlled, with the settled values shown. */
 export const InAForm: Story = {
   parameters: { controls: { disable: true } },
@@ -72,8 +89,9 @@ export const InAForm: Story = {
     function Demo() {
       const [fill, setFill] = useState<ColorValue>(BLUE)
       const [stroke, setStroke] = useState<ColorValue>(null)
+      const [border, setBorder] = useState<ColorValue>('none')
       const label = (color: ColorValue) =>
-        color === null ? 'automatic' : hsvaToHex(color)
+        isColor(color) ? hsvaToHex(color) : String(color)
       return (
         <div style={{ display: 'grid', gap: '1rem' }}>
           <ColorField label="Fill" value={fill} onChange={setFill} />
@@ -83,8 +101,14 @@ export const InAForm: Story = {
             onChange={setStroke}
             nullable
           />
+          <ColorField
+            label="Border"
+            value={border}
+            onChange={setBorder}
+            allowNone
+          />
           <Typography variant="body2">
-            fill {label(fill)} · stroke {label(stroke)}
+            fill {label(fill)} · stroke {label(stroke)} · border {label(border)}
           </Typography>
         </div>
       )

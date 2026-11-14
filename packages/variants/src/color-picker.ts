@@ -40,21 +40,24 @@ export type ColorPickerDensity = 'default' | 'compact'
 export type ColorPickerVariantProps = VariantProps<typeof colorPickerVariants>
 
 /**
- * Resolves a colour swatch (`.ui-color-picker__swatch`, `+ --auto` for the "no colour" state).
+ * Resolves a colour swatch (`.ui-color-picker__swatch`): `--auto` shows the automatic mark (a magic
+ * wand, rendered by the adapter as `__swatch-icon`), `--none` the struck-through square of "no
+ * colour" (the Illustrator / Office convention).
  *
  * @param props - Swatch options.
- * @param props.auto - Shows the "automatic / no colour" pattern instead of a colour.
+ * @param props.mode - `'color'` (default), `'auto'` or `'none'` — the picker's mode.
  * @returns The BEM class string.
  */
 export const colorPickerSwatchVariants = cva('ui-color-picker__swatch', {
   variants: {
-    auto: {
-      false: '',
-      true: 'ui-color-picker__swatch--auto',
+    mode: {
+      color: '',
+      auto: 'ui-color-picker__swatch--auto',
+      none: 'ui-color-picker__swatch--none',
     },
   },
   defaultVariants: {
-    auto: false,
+    mode: 'color',
   },
 })
 
@@ -106,8 +109,20 @@ export type ColorPickerTrackVariantProps = VariantProps<
  */
 export const COLOR_PICKER_TRACK_IMAGE_VAR = '--ui-color-picker-track-image'
 
-/** BEM element: a horizontal row of controls (swatch, hex field, automatic toggle). */
+/** BEM element: a horizontal row of controls (swatch, hex field). */
 export const COLOR_PICKER_ROW_CLASS = 'ui-color-picker__row'
+
+/** BEM element: the automatic mark (a magic wand) inside an `--auto` swatch. */
+export const COLOR_PICKER_SWATCH_ICON_CLASS = 'ui-color-picker__swatch-icon'
+
+/** BEM element: the mode group — a segmented control (colour · automatic · no colour). */
+export const COLOR_PICKER_MODES_CLASS = 'ui-color-picker__modes'
+
+/** BEM element: one segment of the mode group — the `<label>` wrapping its radio. */
+export const COLOR_PICKER_MODE_CLASS = 'ui-color-picker__mode'
+
+/** BEM element: a segment's native radio, visually hidden (keyboard + assistive technology). */
+export const COLOR_PICKER_MODE_INPUT_CLASS = 'ui-color-picker__mode-input'
 
 /** BEM element: the hex field's column (input + error message). */
 export const COLOR_PICKER_HEX_FIELD_CLASS = 'ui-color-picker__hex-field'

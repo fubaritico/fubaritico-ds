@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { hsvaToHex } from '@fubaritico/behaviors'
+import { hsvaToHex, isColor } from '@fubaritico/behaviors'
 import { Card } from '@fubaritico/react/Card'
 import { ColorPicker } from '@fubaritico/react/ColorPicker'
 import { Typography } from '@fubaritico/react/Typography'
@@ -26,6 +26,7 @@ const meta = {
   ],
   argTypes: {
     nullable: { control: 'boolean' },
+    allowNone: { control: 'boolean' },
     alpha: { control: 'boolean' },
     disabled: { control: 'boolean' },
     density: { control: 'inline-radio', options: ['default', 'compact'] },
@@ -41,6 +42,7 @@ const meta = {
   args: {
     defaultValue: BLUE,
     nullable: false,
+    allowNone: false,
     alpha: false,
     disabled: false,
   },
@@ -56,17 +58,25 @@ type Story = StoryObj<typeof meta>
  */
 export const Playground: Story = {}
 
-/**
- * The "automatic / no colour" state: the toggle switches to `null` and back to the last colour,
- * whose hue is kept.
- */
 /** The compact density: narrower panel, wide 2:1 area, tighter gaps. */
 export const Compact: Story = {
   args: { density: 'compact', alpha: true },
 }
 
+/**
+ * The automatic state (`nullable`): the mode group switches to `null` — the swatch shows a magic
+ * wand — and "Color" goes back to the last colour, whose hue is kept.
+ */
 export const Automatic: Story = {
   args: { nullable: true, defaultValue: null },
+}
+
+/**
+ * Colour, automatic or no colour (`nullable` + `allowNone`): "None" is `'none'` — nothing is
+ * painted, the swatch is struck through. Arrow keys move and select inside the mode group.
+ */
+export const NoColor: Story = {
+  args: { nullable: true, allowNone: true, defaultValue: 'none' },
 }
 
 /** With the alpha track, over a checkerboard. */
@@ -85,7 +95,7 @@ export const Controlled: Story = {
       const [value, setValue] = useState<ColorValue>(BLUE)
       const [settled, setSettled] = useState<ColorValue>(BLUE)
       const label = (color: ColorValue) =>
-        color === null ? 'automatic' : hsvaToHex(color)
+        isColor(color) ? hsvaToHex(color) : String(color)
       return (
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
           <ColorPicker
@@ -93,6 +103,7 @@ export const Controlled: Story = {
             onChange={setValue}
             onChangeComplete={setSettled}
             nullable
+            allowNone
           />
           <div>
             <Typography variant="body2">onChange: {label(value)}</Typography>

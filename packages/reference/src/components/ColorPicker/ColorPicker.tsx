@@ -11,12 +11,12 @@ import { useMergedRef } from '../../hooks'
 import { toReactAttributes } from '../../utils'
 
 import { ColorPickerArea } from './ColorPickerArea'
-import { ColorPickerAutoToggle } from './ColorPickerAutoToggle'
 import {
   ColorPickerContext,
   useColorPickerSelector,
 } from './ColorPickerContext'
 import { ColorPickerHexField } from './ColorPickerHexField'
+import { ColorPickerModeGroup } from './ColorPickerModeGroup'
 import { ColorPickerStatus } from './ColorPickerStatus'
 import { ColorPickerSwatch } from './ColorPickerSwatch'
 import { ColorPickerAlpha, ColorPickerHue } from './ColorPickerTrack'
@@ -32,12 +32,20 @@ import type {
 import type { ColorPickerDensity } from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
-export type { ColorValue, HsvaColor } from '@fubaritico/behaviors'
+export type {
+  ColorPickerMode,
+  ColorValue,
+  HsvaColor,
+  NoColor,
+} from '@fubaritico/behaviors'
 
 /** Props of the {@link ColorPicker} root. */
 export interface ColorPickerProps
   extends Omit<ComponentProps<'div'>, 'defaultValue' | 'onChange'> {
-  /** Controlled value: a colour, or `null` for "automatic" (with `nullable`). */
+  /**
+   * Controlled value: a colour, `null` for "automatic" (with `nullable`), or `'none'` for "no
+   * colour" (with `allowNone`).
+   */
   value?: ColorValue
   /** Initial value when uncontrolled. */
   defaultValue?: ColorValue
@@ -45,8 +53,10 @@ export interface ColorPickerProps
   onChange?: (value: ColorValue) => void
   /** Called once a change is settled (release, key, hex commit) — for anything expensive. */
   onChangeComplete?: (value: ColorValue) => void
-  /** Allows the "automatic / no colour" state (`null`). */
+  /** Allows the "automatic" state (`null`): something else picks the colour. */
   nullable?: boolean
+  /** Allows the "no colour" state (`'none'`): nothing is painted. */
+  allowNone?: boolean
   /** Edits the alpha channel too. */
   alpha?: boolean
   /** Blocks every change. */
@@ -82,6 +92,7 @@ function toServiceOptions(
     | 'onChange'
     | 'onChangeComplete'
     | 'nullable'
+    | 'allowNone'
     | 'alpha'
     | 'disabled'
     | 'placeholder'
@@ -94,6 +105,7 @@ function toServiceOptions(
     onChange: props.onChange,
     onChangeComplete: props.onChangeComplete,
     nullable: props.nullable,
+    allowNone: props.allowNone,
     alpha: props.alpha,
     disabled: props.disabled,
     labels: props.labels,
@@ -108,7 +120,8 @@ function toServiceOptions(
 
 /**
  * The default arrangement, used when `<ColorPicker>` has no children: area, hue, alpha (when
- * enabled), then a row with the swatch, the hex field and the automatic toggle (when nullable).
+ * enabled), a row with the swatch and the hex field, then the mode group (when the picker offers
+ * "automatic" or "no colour").
  *
  * @returns The default parts.
  */
@@ -121,20 +134,20 @@ function DefaultLayout() {
       <div className={COLOR_PICKER_ROW_CLASS}>
         <ColorPickerSwatch />
         <ColorPickerHexField />
-        <ColorPickerAutoToggle />
       </div>
+      <ColorPickerModeGroup />
     </>
   )
 }
 
 /**
  * ColorPicker — picks a colour on a 2D saturation / brightness area, a hue track, an optional alpha
- * track and a hex field; optionally an explicit "automatic / no colour" state.
+ * track and a hex field; optionally the explicit "automatic" and "no colour" states.
  *
  * A thin React adapter over `ColorPickerService` (`@fubaritico/behaviors`), which owns the HSVA
  * state, the drags, the keyboard, the hex draft and every ARIA attribute. Works controlled
  * (`value` + `onChange`) or uncontrolled (`defaultValue`). Without children it renders the default
- * arrangement; compose `ColorPicker.Area`, `.Hue`, `.Alpha`, `.HexField`, `.Swatch`, `.AutoToggle`
+ * arrangement; compose `ColorPicker.Area`, `.Hue`, `.Alpha`, `.HexField`, `.Swatch`, `.ModeGroup`
  * to arrange it yourself. The polite live region (`.Status`) is always rendered.
  *
  * @param props - {@link ColorPickerProps}.
@@ -143,6 +156,7 @@ function DefaultLayout() {
  * @param props.onChange - Called on every change.
  * @param props.onChangeComplete - Called once a change is settled.
  * @param props.nullable - Allows the automatic state.
+ * @param props.allowNone - Allows the "no colour" state.
  * @param props.alpha - Edits the alpha channel.
  * @param props.disabled - Blocks every change.
  * @param props.density - Panel density; defaults to `'default'`.
@@ -158,6 +172,7 @@ export function ColorPicker({
   onChange,
   onChangeComplete,
   nullable = false,
+  allowNone = false,
   alpha = false,
   disabled = false,
   density = 'default',
@@ -179,6 +194,7 @@ export function ColorPicker({
     onChange,
     onChangeComplete,
     nullable,
+    allowNone,
     alpha,
     disabled,
     placeholder,
@@ -251,6 +267,6 @@ ColorPicker.Hue = ColorPickerHue
 ColorPicker.Alpha = ColorPickerAlpha
 ColorPicker.HexField = ColorPickerHexField
 ColorPicker.Swatch = ColorPickerSwatch
-ColorPicker.AutoToggle = ColorPickerAutoToggle
+ColorPicker.ModeGroup = ColorPickerModeGroup
 
 export default ColorPicker

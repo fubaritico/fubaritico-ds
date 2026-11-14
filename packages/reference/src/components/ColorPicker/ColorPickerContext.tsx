@@ -68,7 +68,7 @@ export function useColorPickerSelector<T extends string | number | boolean | nul
 export interface ColorPickerController {
   /** The live snapshot; the calling component re-renders when it changes. */
   state: ColorPickerSnapshot
-  /** The service's imperative API (`setColor`, `setChannel`, `toggleAuto`…). */
+  /** The service's imperative API (`setColor`, `setChannel`, `setMode`…). */
   service: ColorPickerService
 }
 

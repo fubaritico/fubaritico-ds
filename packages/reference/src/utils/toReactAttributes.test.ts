@@ -46,6 +46,11 @@ describe('toReactAttributes', () => {
     it('turns a present boolean attribute into true (React drops an empty string)', () => {
       expect(toReactAttributes({ hidden: '' })).toEqual({ hidden: true })
     })
+
+    it('always gives checked as a boolean, so a radio stays controlled', () => {
+      expect(toReactAttributes({ checked: '' })).toEqual({ checked: true })
+      expect(toReactAttributes({ checked: undefined })).toEqual({ checked: false })
+    })
   })
 
   // L3: N/A — no managed error path, every attribute map converts.

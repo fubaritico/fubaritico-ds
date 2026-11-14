@@ -2,8 +2,11 @@
  * ColorPicker — native BEM skin.
  *
  * `.ui-color-picker` is the panel; `__area` the 2D saturation × brightness surface and `__area-thumb`
- * its handle; `__track` marks the hue / alpha `Slider`s; `__row` lines up the swatch, the hex field
- * and the "automatic" toggle; `__swatch` (+ `--auto`) shows the current value; `__status` is the
+ * its handle; `__track` marks the hue / alpha `Slider`s; `__row` lines up the swatch and the hex
+ * field; `__swatch` shows the current value (`--auto`: a magic wand, `__swatch-icon`; `--none`: struck
+ * through); `__modes` is the mode group, a segmented control whose `__mode` segments are `<label>`s
+ * WRAPPING their visually hidden `__mode-input` radio — the checked, focused and disabled looks are
+ * read from that radio through `:has()`, so the label must contain it; `__status` is the
  * visually hidden live region. Behaviour lives in `ColorPickerService` (@fubaritico/behaviors);
  * this file only paints.
  *
@@ -64,8 +67,27 @@
     --ui-color-picker-swatch-radius: var(--radius-sm);
     --ui-color-picker-swatch-border-width: 1px;
     --ui-color-picker-swatch-border-color: var(--color-border);
-    --ui-color-picker-auto-stroke-color: var(--color-text-secondary);
-    --ui-color-picker-auto-stroke-width: 2px;
+    /* "No colour": the struck-through square (Illustrator / Office). */
+    --ui-color-picker-none-stroke-color: var(--color-text-secondary);
+    --ui-color-picker-none-stroke-width: 2px;
+    --ui-color-picker-none-background: var(--ui-color-picker-checker-light);
+    /* "Automatic": a magic wand on a plain square. */
+    --ui-color-picker-auto-background: var(--color-surface-sunken);
+    --ui-color-picker-auto-icon-color: var(--color-text-secondary);
+    --ui-color-picker-auto-icon-size: 70%;
+
+    /* ---- override API: mode group (segmented control) ---- */
+    --ui-color-picker-modes-radius: var(--radius-sm);
+    --ui-color-picker-modes-border-width: 1px;
+    --ui-color-picker-modes-border-color: var(--color-border-strong);
+    --ui-color-picker-mode-padding-block: var(--spacing-1);
+    --ui-color-picker-mode-padding-inline: var(--spacing-2);
+    --ui-color-picker-mode-font-size: var(--font-size-xs);
+    --ui-color-picker-mode-text-color: var(--color-text);
+    --ui-color-picker-mode-background: transparent;
+    --ui-color-picker-mode-hover-background: var(--color-hover);
+    --ui-color-picker-mode-selected-background: var(--color-surface-inverse);
+    --ui-color-picker-mode-selected-text-color: var(--color-text-on-inverse);
 
     /* ---- override API: checkerboard (under translucent colours) ---- */
     /* Theme-INVARIANT on purpose, like the thumb rings: the picker paints colours, not chrome, so a
@@ -139,10 +161,22 @@
     aspect-ratio: var(--ui-color-picker-area-aspect-ratio);
     border: var(--ui-color-picker-area-border-width) solid
       var(--ui-color-picker-area-border-color);
-    border-start-start-radius: var(--ui-color-picker-area-radius-start-start, var(--ui-color-picker-area-radius));
-    border-start-end-radius: var(--ui-color-picker-area-radius-start-end, var(--ui-color-picker-area-radius));
-    border-end-start-radius: var(--ui-color-picker-area-radius-end-start, var(--ui-color-picker-area-radius));
-    border-end-end-radius: var(--ui-color-picker-area-radius-end-end, var(--ui-color-picker-area-radius));
+    border-start-start-radius: var(
+      --ui-color-picker-area-radius-start-start,
+      var(--ui-color-picker-area-radius)
+    );
+    border-start-end-radius: var(
+      --ui-color-picker-area-radius-start-end,
+      var(--ui-color-picker-area-radius)
+    );
+    border-end-start-radius: var(
+      --ui-color-picker-area-radius-end-start,
+      var(--ui-color-picker-area-radius)
+    );
+    border-end-end-radius: var(
+      --ui-color-picker-area-radius-end-end,
+      var(--ui-color-picker-area-radius)
+    );
     /* The HSV model itself — see the header: these two gradients are mechanics, not theme. */
     background-color: var(--ui-color-picker-hue);
     background-image:
@@ -270,7 +304,7 @@
     --ui-slider-track-size: 100% 100%, var(--ui-color-picker-checker-tile);
   }
 
-  /* ---- row: swatch + hex + automatic ---- */
+  /* ---- row: swatch + hex ---- */
 
   .ui-color-picker__row {
     display: flex;
@@ -280,15 +314,29 @@
 
   .ui-color-picker__swatch {
     box-sizing: border-box;
+    display: inline-grid;
     flex-shrink: 0;
+    place-items: center;
     inline-size: var(--ui-color-picker-swatch-size);
     block-size: var(--ui-color-picker-swatch-size);
     border: var(--ui-color-picker-swatch-border-width) solid
       var(--ui-color-picker-swatch-border-color);
-    border-start-start-radius: var(--ui-color-picker-swatch-radius-start-start, var(--ui-color-picker-swatch-radius));
-    border-start-end-radius: var(--ui-color-picker-swatch-radius-start-end, var(--ui-color-picker-swatch-radius));
-    border-end-start-radius: var(--ui-color-picker-swatch-radius-end-start, var(--ui-color-picker-swatch-radius));
-    border-end-end-radius: var(--ui-color-picker-swatch-radius-end-end, var(--ui-color-picker-swatch-radius));
+    border-start-start-radius: var(
+      --ui-color-picker-swatch-radius-start-start,
+      var(--ui-color-picker-swatch-radius)
+    );
+    border-start-end-radius: var(
+      --ui-color-picker-swatch-radius-start-end,
+      var(--ui-color-picker-swatch-radius)
+    );
+    border-end-start-radius: var(
+      --ui-color-picker-swatch-radius-end-start,
+      var(--ui-color-picker-swatch-radius)
+    );
+    border-end-end-radius: var(
+      --ui-color-picker-swatch-radius-end-end,
+      var(--ui-color-picker-swatch-radius)
+    );
     /* The colour over a checkerboard, so translucency shows. */
     background-image:
       linear-gradient(
@@ -301,18 +349,127 @@
       var(--ui-color-picker-checker-tile);
   }
 
-  /* "Automatic / no colour": an empty swatch struck through. */
-  .ui-color-picker__swatch--auto {
+  /* "No colour": an empty swatch struck through — the universal "none" of Illustrator and Office. */
+  .ui-color-picker__swatch--none {
     background:
       linear-gradient(
         to top right,
-        transparent calc(50% - var(--ui-color-picker-auto-stroke-width) / 2),
-        var(--ui-color-picker-auto-stroke-color) 0,
-        var(--ui-color-picker-auto-stroke-color)
-          calc(50% + var(--ui-color-picker-auto-stroke-width) / 2),
+        transparent calc(50% - var(--ui-color-picker-none-stroke-width) / 2),
+        var(--ui-color-picker-none-stroke-color) 0,
+        var(--ui-color-picker-none-stroke-color)
+          calc(50% + var(--ui-color-picker-none-stroke-width) / 2),
         transparent 0
       ),
-      var(--ui-color-picker-checker-light);
+      var(--ui-color-picker-none-background);
+  }
+
+  /* "Automatic": a plain square holding the magic wand (`__swatch-icon`). */
+  .ui-color-picker__swatch--auto {
+    background: var(--ui-color-picker-auto-background);
+    color: var(--ui-color-picker-auto-icon-color);
+  }
+
+  .ui-color-picker__swatch-icon {
+    inline-size: var(--ui-color-picker-auto-icon-size);
+    block-size: var(--ui-color-picker-auto-icon-size);
+    fill: currentcolor;
+  }
+
+  /* ---- mode group: a segmented control over native radios ---- */
+
+  .ui-color-picker__modes {
+    display: flex;
+    overflow: hidden;
+    border: var(--ui-color-picker-modes-border-width) solid
+      var(--ui-color-picker-modes-border-color);
+    border-start-start-radius: var(
+      --ui-color-picker-modes-radius-start-start,
+      var(--ui-color-picker-modes-radius)
+    );
+    border-start-end-radius: var(
+      --ui-color-picker-modes-radius-start-end,
+      var(--ui-color-picker-modes-radius)
+    );
+    border-end-start-radius: var(
+      --ui-color-picker-modes-radius-end-start,
+      var(--ui-color-picker-modes-radius)
+    );
+    border-end-end-radius: var(
+      --ui-color-picker-modes-radius-end-end,
+      var(--ui-color-picker-modes-radius)
+    );
+  }
+
+  .ui-color-picker__mode {
+    position: relative;
+    flex: 1;
+    padding-block: var(--ui-color-picker-mode-padding-block);
+    padding-inline: var(--ui-color-picker-mode-padding-inline);
+    font-size: var(--ui-color-picker-mode-font-size);
+    color: var(--ui-color-picker-mode-text-color);
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    background: var(--ui-color-picker-mode-background);
+    transition: background-color var(--ui-color-picker-transition-duration)
+      var(--ui-color-picker-transition-easing);
+  }
+
+  .ui-color-picker__mode + .ui-color-picker__mode {
+    border-inline-start: var(--ui-color-picker-modes-border-width) solid
+      var(--ui-color-picker-modes-border-color);
+  }
+
+  .ui-color-picker__mode:hover:not(
+      :has(.ui-color-picker__mode-input:disabled)
+    ) {
+    background: var(--ui-color-picker-mode-hover-background);
+  }
+
+  .ui-color-picker__mode:has(.ui-color-picker__mode-input:checked) {
+    color: var(--ui-color-picker-mode-selected-text-color);
+    background: var(--ui-color-picker-mode-selected-background);
+  }
+
+  .ui-color-picker__mode:has(.ui-color-picker__mode-input:focus-visible) {
+    z-index: 1;
+    outline: var(--ui-color-picker-ring-width) solid
+      var(--ui-color-picker-ring-color);
+    outline-offset: calc(var(--ui-color-picker-ring-width) * -1);
+    box-shadow: inset 0 0 0 calc(var(--ui-color-picker-ring-width) * 2)
+      var(--ui-color-picker-ring-contrast-color);
+  }
+
+  .ui-color-picker__mode:has(.ui-color-picker__mode-input:disabled) {
+    cursor: not-allowed;
+  }
+
+  /* A mode the picker does not offer is dimmed; a disabled picker is already dimmed as a whole. */
+  .ui-color-picker:not(.ui-color-picker--disabled)
+    .ui-color-picker__mode:has(.ui-color-picker__mode-input:disabled) {
+    opacity: var(--ui-color-picker-disabled-opacity);
+  }
+
+  /* The radio is the keyboard and assistive-technology surface; the label is what is seen. */
+  .ui-color-picker__mode-input {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    white-space: nowrap;
+    border: 0;
+    clip-path: inset(50%);
+  }
+
+  /* Forced colours drop backgrounds: the selected segment keeps a visible mark. */
+  @media (forced-colors: active) {
+    .ui-color-picker__mode:has(.ui-color-picker__mode-input:checked) {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+    }
   }
 
   /* The hex input and its error, stacked: the message gets the field's full width. */
@@ -335,7 +492,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .ui-color-picker__area-thumb {
+    .ui-color-picker__area-thumb,
+    .ui-color-picker__mode {
       transition: none;
     }
   }

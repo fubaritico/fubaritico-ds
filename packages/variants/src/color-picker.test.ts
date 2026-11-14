@@ -10,8 +10,12 @@ import {
   COLOR_PICKER_HEX_ERROR_CLASS,
   COLOR_PICKER_HEX_FIELD_CLASS,
   COLOR_PICKER_HUE_VAR,
+  COLOR_PICKER_MODES_CLASS,
+  COLOR_PICKER_MODE_CLASS,
+  COLOR_PICKER_MODE_INPUT_CLASS,
   COLOR_PICKER_ROW_CLASS,
   COLOR_PICKER_STATUS_CLASS,
+  COLOR_PICKER_SWATCH_ICON_CLASS,
   COLOR_PICKER_TRACK_CLASS,
   COLOR_PICKER_TRACK_IMAGE_VAR,
   COLOR_PICKER_X_VAR,
@@ -71,6 +75,10 @@ describe('colorPickerVariants', () => {
         COLOR_PICKER_HEX_FIELD_CLASS,
         COLOR_PICKER_HEX_ERROR_CLASS,
         COLOR_PICKER_STATUS_CLASS,
+        COLOR_PICKER_SWATCH_ICON_CLASS,
+        COLOR_PICKER_MODES_CLASS,
+        COLOR_PICKER_MODE_CLASS,
+        COLOR_PICKER_MODE_INPUT_CLASS,
       ]) {
         expect(name).toMatch(/^ui-color-picker__[a-z-]+$/)
       }
@@ -97,8 +105,14 @@ describe('colorPickerSwatchVariants', () => {
 
   describe('variants', () => {
     it('adds the automatic modifier', () => {
-      expect(colorPickerSwatchVariants({ auto: true })).toBe(
+      expect(colorPickerSwatchVariants({ mode: 'auto' })).toBe(
         'ui-color-picker__swatch ui-color-picker__swatch--auto'
+      )
+    })
+
+    it('adds the "no colour" modifier', () => {
+      expect(colorPickerSwatchVariants({ mode: 'none' })).toBe(
+        'ui-color-picker__swatch ui-color-picker__swatch--none'
       )
     })
   })
@@ -106,8 +120,8 @@ describe('colorPickerSwatchVariants', () => {
   // L3 / L4: N/A — pure string resolver.
 
   describe('edge cases', () => {
-    it('emits no modifier for auto: false', () => {
-      expect(colorPickerSwatchVariants({ auto: false })).toBe(
+    it('emits no modifier in the colour mode', () => {
+      expect(colorPickerSwatchVariants({ mode: 'color' })).toBe(
         'ui-color-picker__swatch'
       )
     })
