@@ -32,6 +32,7 @@ const meta = {
     labels: { table: { disable: true } },
     describeColor: { table: { disable: true } },
     placeholder: { table: { disable: true } },
+    clipboard: { table: { disable: true } },
     open: { table: { disable: true } },
   },
   args: {
@@ -78,6 +79,21 @@ export const Swatches: Story = {
       <ColorField label="Colour" defaultValue={BLUE} nullable allowNone />
       <ColorField label="Automatic" defaultValue={null} nullable allowNone />
       <ColorField label="No colour" defaultValue="none" nullable allowNone />
+    </div>
+  ),
+}
+
+/**
+ * Copy a colour from one field, paste it into the other — without opening either picker. Copy is
+ * disabled while a field holds no colour; paste works from every mode. Uses the browser's clipboard:
+ * Firefox and Safari may ask to confirm a paste.
+ */
+export const CopyPaste: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => (
+    <div style={{ display: 'grid', gap: '1rem' }}>
+      <ColorField label="Rome" defaultValue={BLUE} nullable allowNone />
+      <ColorField label="Carthage" defaultValue={null} nullable allowNone />
     </div>
   ),
 }

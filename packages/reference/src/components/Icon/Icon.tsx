@@ -9,6 +9,8 @@ import {
   ChevronLeftIcon as ChevronLeftIcon16,
   ChevronRightIcon as ChevronRightIcon16,
   ChevronUpIcon as ChevronUpIcon16,
+  ClipboardDocumentIcon as ClipboardDocumentIcon16,
+  DocumentDuplicateIcon as DocumentDuplicateIcon16,
   EllipsisVerticalIcon as EllipsisVerticalIcon16,
   ExclamationCircleIcon as ExclamationCircleIcon16,
   ExclamationTriangleIcon as ExclamationTriangleIcon16,
@@ -35,6 +37,8 @@ import {
   ChevronLeftIcon as ChevronLeftIcon20,
   ChevronRightIcon as ChevronRightIcon20,
   ChevronUpIcon as ChevronUpIcon20,
+  ClipboardDocumentIcon as ClipboardDocumentIcon20,
+  DocumentDuplicateIcon as DocumentDuplicateIcon20,
   EllipsisVerticalIcon as EllipsisVerticalIcon20,
   ExclamationCircleIcon as ExclamationCircleIcon20,
   ExclamationTriangleIcon as ExclamationTriangleIcon20,
@@ -67,6 +71,8 @@ import {
   ChevronLeftIcon as ChevronLeftIcon24,
   ChevronRightIcon as ChevronRightIcon24,
   ChevronUpIcon as ChevronUpIcon24,
+  ClipboardDocumentIcon as ClipboardDocumentIcon24,
+  DocumentDuplicateIcon as DocumentDuplicateIcon24,
   EllipsisVerticalIcon as EllipsisVerticalIcon24,
   ExclamationCircleIcon as ExclamationCircleIcon24,
   ExclamationTriangleIcon as ExclamationTriangleIcon24,
@@ -106,6 +112,8 @@ const iconMap24: Record<string, HeroIcon> = {
   ChevronLeft: ChevronLeftIcon24,
   ChevronRight: ChevronRightIcon24,
   ChevronUp: ChevronUpIcon24,
+  ClipboardDocument: ClipboardDocumentIcon24,
+  DocumentDuplicate: DocumentDuplicateIcon24,
   EllipsisVertical: EllipsisVerticalIcon24,
   ExclamationCircle: ExclamationCircleIcon24,
   ExclamationTriangle: ExclamationTriangleIcon24,
@@ -140,6 +148,8 @@ const iconMap20: Record<string, HeroIcon> = {
   ChevronLeft: ChevronLeftIcon20,
   ChevronRight: ChevronRightIcon20,
   ChevronUp: ChevronUpIcon20,
+  ClipboardDocument: ClipboardDocumentIcon20,
+  DocumentDuplicate: DocumentDuplicateIcon20,
   EllipsisVertical: EllipsisVerticalIcon20,
   ExclamationCircle: ExclamationCircleIcon20,
   ExclamationTriangle: ExclamationTriangleIcon20,
@@ -173,6 +183,8 @@ const iconMap16: Record<string, HeroIcon> = {
   ChevronLeft: ChevronLeftIcon16,
   ChevronRight: ChevronRightIcon16,
   ChevronUp: ChevronUpIcon16,
+  ClipboardDocument: ClipboardDocumentIcon16,
+  DocumentDuplicate: DocumentDuplicateIcon16,
   EllipsisVertical: EllipsisVerticalIcon16,
   ExclamationCircle: ExclamationCircleIcon16,
   ExclamationTriangle: ExclamationTriangleIcon16,
@@ -201,6 +213,8 @@ export type IconName =
   | 'ChevronLeft'
   | 'ChevronRight'
   | 'ChevronUp'
+  | 'ClipboardDocument'
+  | 'DocumentDuplicate'
   | 'EllipsisVertical'
   | 'ExclamationCircle'
   | 'ExclamationTriangle'

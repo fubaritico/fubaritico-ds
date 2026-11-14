@@ -112,6 +112,12 @@ export const COLOR_PICKER_TRACK_IMAGE_VAR = '--ui-color-picker-track-image'
 /** BEM element: a horizontal row of controls (swatch, hex field). */
 export const COLOR_PICKER_ROW_CLASS = 'ui-color-picker__row'
 
+/**
+ * BEM element: a copy / paste icon button beside the hex field (mixed onto `.ui-icon-button`): the
+ * skin squares it to the swatch size, while its icon keeps the clearer 20px drawing.
+ */
+export const COLOR_PICKER_ACTION_CLASS = 'ui-color-picker__action'
+
 /** BEM element: the automatic mark (a magic wand) inside an `--auto` swatch. */
 export const COLOR_PICKER_SWATCH_ICON_CLASS = 'ui-color-picker__swatch-icon'
 

@@ -8,6 +8,8 @@ colour picker in a popover, above everything on the page. A composition of `Colo
 
 - **Type or pick** — the hex input previews a complete hex live and settles on Enter or blur,
   without opening anything; the swatch opens the picker (area, hue, alpha, mode group) in a popover.
+- **Copy and paste** — two icon buttons on the field's row, usable without opening the popover:
+  copy a colour from one field, paste it into another. Hidden where there is no clipboard.
 - **Everything the ColorPicker does** — HSVA value, the optional "automatic" (`nullable`, `null`) and
   "no colour" (`allowNone`, `'none'`) states, alpha, two callbacks (`onChange` /
   `onChangeComplete`), localised labels.
@@ -84,6 +86,16 @@ Localised:
 
 ## Edge cases
 
+Without copy and paste — no clipboard (the buttons are also absent on an insecure page):
+
+```tsx
+<ColorField
+  label="Fill"
+  defaultValue={{ h: 210, s: 80, v: 60, a: 1 }}
+  clipboard={null}
+/>
+```
+
 A `null` default on a field that is not nullable starts from the placeholder (pure red):
 
 ```tsx
@@ -114,8 +126,9 @@ export function EditLayer({ onClose }: Readonly<{ onClose: () => void }>) {
 ## Props
 
 Every `ColorPicker` prop (`value`, `defaultValue`, `onChange`, `onChangeComplete`, `nullable`,
-`allowNone`, `alpha`, `disabled`, `density`, `placeholder`, `labels`, `describeColor`, `service`, `<div>` props except
-`aria-label` / `aria-labelledby` — the visible label names the field), plus:
+`allowNone`, `clipboard`, `alpha`, `disabled`, `density`, `placeholder`, `labels`, `describeColor`,
+`service`, `<div>` props except `aria-label` / `aria-labelledby` — the visible label names the
+field), plus:
 
 | Name           | Type                      | Default        | Description                                   |
 | -------------- | ------------------------- | -------------- | --------------------------------------------- |
@@ -129,12 +142,18 @@ Every `ColorPicker` prop (`value`, `defaultValue`, `onChange`, `onChangeComplete
 
 - The field is a `group` named by its visible label.
 - The swatch button and the hex input are each named by their own label followed by the field's
-  ("Choose color Fill", "Hex color Fill"), so two fields stay distinct out of their group. The swatch
+  ("Choose color Fill", "Hex color Fill", "Copy color Fill", "Paste a color Fill"), so two fields stay
+  distinct out of their group. Copy is disabled while the field holds no colour ("automatic",
+  "no colour"); paste works in every state, and both outcomes are announced. The swatch
   never speaks the colour words — the colour is read from the hex field and the live region.
 - The popover is a non-modal dialog named after the field; the picker inside keeps all its own
   accessibility (2D slider, colour words, announcements).
 
 ## Notes
+
+> **Note** — copy and paste sit on the field's row, outside the popover: copying a colour from one
+> field into another needs no picker opened. They need a secure page (HTTPS, localhost); see the
+> `ColorPicker` README for the browsers' paste confirmations.
 
 > **Note** — the field and the popover share one service: dragging in the popover updates the hex
 > field live, typing in the field moves the thumbs.

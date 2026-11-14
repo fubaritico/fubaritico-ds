@@ -289,6 +289,36 @@ export function modeOptionAttrs(
 }
 
 /**
+ * Attributes of the copy button. Disabled while the value is not a colour (nothing to copy). No
+ * `id`: an adapter that names the button from outside gives it its own.
+ *
+ * @param ctx - The service state.
+ * @returns DOM attributes.
+ */
+export function copyButtonAttrs(ctx: AttrsContext): DomAttributes {
+  return {
+    type: 'button',
+    'aria-label': ctx.labels.copy,
+    disabled: flag(ctx.disabled || ctx.mode !== 'color'),
+  }
+}
+
+/**
+ * Attributes of the paste button — usable in every mode: a pasted colour leaves "automatic" and
+ * "no colour".
+ *
+ * @param ctx - The service state.
+ * @returns DOM attributes.
+ */
+export function pasteButtonAttrs(ctx: AttrsContext): DomAttributes {
+  return {
+    type: 'button',
+    'aria-label': ctx.labels.paste,
+    disabled: flag(ctx.disabled),
+  }
+}
+
+/**
  * Attributes of the picker's root: a named group, so several pickers on one page are told apart.
  *
  * @param ctx - The service state.

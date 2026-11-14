@@ -4,9 +4,12 @@ export { ColorPickerAlpha, ColorPickerHue } from './ColorPickerTrack'
 export { ColorPickerHexField } from './ColorPickerHexField'
 export { ColorPickerSwatch } from './ColorPickerSwatch'
 export { ColorPickerModeGroup } from './ColorPickerModeGroup'
+export { ColorPickerCopyButton } from './ColorPickerCopyButton'
+export { ColorPickerPasteButton } from './ColorPickerPasteButton'
 export { useColorPickerController } from './ColorPickerContext'
 
 export type {
+  ColorClipboard,
   ColorPickerMode,
   ColorPickerProps,
   ColorValue,
@@ -19,4 +22,6 @@ export type { ColorPickerTrackProps } from './ColorPickerTrack'
 export type { ColorPickerHexFieldProps } from './ColorPickerHexField'
 export type { ColorPickerSwatchProps } from './ColorPickerSwatch'
 export type { ColorPickerModeGroupProps } from './ColorPickerModeGroup'
+export type { ColorPickerCopyButtonProps } from './ColorPickerCopyButton'
+export type { ColorPickerPasteButtonProps } from './ColorPickerPasteButton'
 export type { ColorPickerController } from './ColorPickerContext'

@@ -38,6 +38,7 @@ const meta = {
     labels: { table: { disable: true } },
     describeColor: { table: { disable: true } },
     placeholder: { table: { disable: true } },
+    clipboard: { table: { disable: true } },
   },
   args: {
     defaultValue: BLUE,

@@ -18,6 +18,7 @@ import type { HslaColor, HsvaColor, RgbaColor } from './color/types.js'
 import type { ChannelPatch } from './keyboard.js'
 import type {
   ColorAreaAxis,
+  ColorClipboard,
   ColorPickerLabels,
   ColorPickerMode,
   ColorPickerOptions,
@@ -81,7 +82,15 @@ const DEFAULT_LABELS: ColorPickerLabels = {
   areaRoleDescription: '2D slider',
   picker: 'Color picker',
   hexInvalid: 'Enter a hex color such as #1976d2',
+  copy: 'Copy color',
+  paste: 'Paste a color',
+  copied: 'Color copied',
+  pasteInvalid: 'The clipboard holds no color',
+  clipboardFailed: 'The clipboard could not be used',
 }
+
+/** Appended to repeat an announcement — invisible, not spoken, but a change of the region's text. */
+const NO_BREAK_SPACE = '\u00a0'
 
 /** Percentage denominator — alpha is a fraction in the state, a percentage on its slider. */
 const PERCENT = 100
@@ -98,12 +107,14 @@ type ResolvedOptions = Omit<
   | 'onChangeComplete'
   | 'onWarn'
   | 'labels'
+  | 'clipboard'
 > &
   Pick<
     ColorPickerOptions,
     'value' | 'onChange' | 'onChangeComplete' | 'onWarn'
   > & {
     labels: ColorPickerLabels
+    clipboard: ColorClipboard | null
   }
 
 /**
@@ -212,6 +223,7 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
       alpha: this.opts.alpha,
       nullable: this.opts.nullable,
       allowNone: this.opts.allowNone,
+      hasClipboard: this.opts.clipboard !== null,
       disabled: this.opts.disabled,
       dir: this.opts.dir,
     }
@@ -349,6 +361,7 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
         b.alpha !== a.alpha ||
         b.nullable !== a.nullable ||
         b.allowNone !== a.allowNone ||
+        b.hasClipboard !== a.hasClipboard ||
         b.disabled !== a.disabled ||
         b.hexDraft !== a.hexDraft
     )
@@ -690,6 +703,61 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
     this.abandonHexEdit()
   }
 
+  // ---------- clipboard ----------
+
+  /**
+   * Copies the current colour, as the hex the field shows, to the injected clipboard; the outcome is
+   * announced in the live region ("Color copied", or the failure).
+   *
+   * @returns `true` once written; `false` without a clipboard, while disabled, when the value is not
+   *   a colour, or when the clipboard refused.
+   */
+  async copy(): Promise<boolean> {
+    const { clipboard } = this.opts
+    const value = this.currentValue()
+    if (clipboard === null || this.isDisabled() || !isColor(value)) return false
+    try {
+      await clipboard.writeText(hsvaToHex(value))
+    } catch {
+      // The platform refused (permission, focus): said in the live region, never swallowed.
+      this.announce(this.opts.labels.clipboardFailed)
+      return false
+    }
+    this.announce(this.opts.labels.copied)
+    return true
+  }
+
+  /**
+   * Reads the clipboard and applies the colour it holds — a settled change that leaves "automatic"
+   * and "no colour". Text that is not a hex colour changes nothing and is announced as such.
+   *
+   * @returns `true` when a colour was read; `false` without a clipboard, while disabled, when the
+   *   text is not a colour, or when the clipboard refused.
+   */
+  async paste(): Promise<boolean> {
+    const { clipboard } = this.opts
+    if (clipboard === null || this.isDisabled()) return false
+    let text: string
+    try {
+      text = await clipboard.readText()
+    } catch {
+      this.announce(this.opts.labels.clipboardFailed)
+      return false
+    }
+    // The picker may have been disabled while the clipboard was being read (`setOptions` replaces
+    // `opts` meanwhile — read through a method, which TypeScript does not narrow across `await`).
+    if (this.isDisabled()) return false
+    const next = this.hexToValue(text.trim())
+    if (next === null) {
+      this.announce(this.opts.labels.pasteInvalid)
+      return false
+    }
+    // The same colour again (hex rounds every channel): nothing to change, the colour is said.
+    if (this.matchesCurrentHex(next)) this.announce(this.describe())
+    else this.applyValue(next, true)
+    return true
+  }
+
   // ---------- a11y attributes ----------
   // Pure builders in `attrs.ts`; the service only hands them a view of its state.
 
@@ -776,6 +844,24 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
    */
   modeOptionAttrs(mode: ColorPickerMode): DomAttributes {
     return attrs.modeOptionAttrs(this.attrsContext(), mode)
+  }
+
+  /**
+   * Attributes of the copy button.
+   *
+   * @returns DOM attributes.
+   */
+  copyButtonAttrs(): DomAttributes {
+    return attrs.copyButtonAttrs(this.attrsContext())
+  }
+
+  /**
+   * Attributes of the paste button.
+   *
+   * @returns DOM attributes.
+   */
+  pasteButtonAttrs(): DomAttributes {
+    return attrs.pasteButtonAttrs(this.attrsContext())
   }
 
   /**
@@ -966,6 +1052,28 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
   }
 
   /**
+   * Whether every change is blocked, read fresh — what an `async` method checks after an `await`.
+   *
+   * @returns The current `disabled` option.
+   */
+  private isDisabled(): boolean {
+    return this.opts.disabled
+  }
+
+  /**
+   * Puts a message in the live region (a settled outcome, not a value change). The same message
+   * twice in a row would leave the region's text unchanged, and a screen reader silent ("Color
+   * copied", copied again): the repeat alternates a trailing no-break space, so the text changes.
+   *
+   * @param message - The text to announce.
+   */
+  private announce(message: string): void {
+    this.announcement =
+      this.announcement === message ? `${message}${NO_BREAK_SPACE}` : message
+    this.commit()
+  }
+
+  /**
    * Whether the picker offers a mode (`'color'` always).
    *
    * @param mode - The mode.
@@ -1028,6 +1136,7 @@ export class ColorPickerService extends Store<ColorPickerSnapshot> {
       value: options.value,
       nullable: options.nullable ?? false,
       allowNone: options.allowNone ?? false,
+      clipboard: options.clipboard ?? null,
       alpha: options.alpha ?? false,
       disabled: options.disabled ?? false,
       dir: options.dir ?? 'ltr',

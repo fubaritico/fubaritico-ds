@@ -34,6 +34,19 @@ const hue = () => screen.getByRole('slider', { name: 'Hue' })
 const hexField = () => screen.getByRole('textbox', { name: 'Hex color' })
 const swatch = () => screen.getByRole('img')
 
+/**
+ * A clipboard double holding `text`, recording the writes.
+ *
+ * @param text - What a read returns.
+ * @returns The double.
+ */
+function fakeClipboard(text = '') {
+  return {
+    writeText: vi.fn<(value: string) => Promise<void>>(() => Promise.resolve()),
+    readText: vi.fn<() => Promise<string>>(() => Promise.resolve(text)),
+  }
+}
+
 beforeEach(() => {
   // jsdom measures nothing and has no pointer capture: stub both (Drawer precedent).
   vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
@@ -240,6 +253,32 @@ describe('ColorPicker', () => {
       expect(onChange).toHaveBeenLastCalledWith(BLUE)
     })
 
+    it('copies the colour and says so', async () => {
+      const user = userEvent.setup()
+      const clipboard = fakeClipboard()
+      render(<ColorPicker defaultValue={BLUE} clipboard={clipboard} />)
+      await user.click(screen.getByRole('button', { name: 'Copy color' }))
+      expect(clipboard.writeText).toHaveBeenCalledWith(BLUE_HEX)
+      expect(await screen.findByText('Color copied')).toBeInTheDocument()
+    })
+
+    it('pastes a colour from the clipboard, out of "no colour"', async () => {
+      const user = userEvent.setup()
+      const onChange = vi.fn()
+      render(
+        <ColorPicker
+          defaultValue="none"
+          allowNone
+          onChange={onChange}
+          clipboard={fakeClipboard('#ff0000')}
+        />
+      )
+      await user.click(screen.getByRole('button', { name: 'Paste a color' }))
+      expect(onChange).toHaveBeenLastCalledWith(RED)
+      expect(hexField()).toHaveValue('#ff0000')
+      expect(screen.getByRole('radio', { name: 'Color' })).toBeChecked()
+    })
+
     it('moves and selects the mode with the arrow keys', async () => {
       const user = userEvent.setup()
       const onChange = vi.fn()
@@ -427,6 +466,34 @@ describe('ColorPicker', () => {
       render(<ColorPicker value={{ h: 400, s: 150, v: -10, a: 1 }} />)
       expect(hexField()).toHaveValue('#000000')
       expect(hue()).toHaveValue('360')
+    })
+
+    it('announces a pasted text that is not a colour', async () => {
+      const user = userEvent.setup()
+      render(<ColorPicker defaultValue={BLUE} clipboard={fakeClipboard('bonjour')} />)
+      await user.click(screen.getByRole('button', { name: 'Paste a color' }))
+      expect(await screen.findByText('The clipboard holds no color')).toBeInTheDocument()
+      expect(hexField()).toHaveValue(BLUE_HEX)
+    })
+
+    it('disables copy while the value is not a colour', () => {
+      render(<ColorPicker value="none" allowNone clipboard={fakeClipboard()} />)
+      expect(screen.getByRole('button', { name: 'Copy color' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Paste a color' })).toBeEnabled()
+    })
+
+    it('disables copy as soon as the value stops being a colour', async () => {
+      const user = userEvent.setup()
+      render(<ColorPicker defaultValue={BLUE} allowNone clipboard={fakeClipboard()} />)
+      expect(screen.getByRole('button', { name: 'Copy color' })).toBeEnabled()
+      await user.click(screen.getByRole('radio', { name: 'None' }))
+      expect(screen.getByRole('button', { name: 'Copy color' })).toBeDisabled()
+    })
+
+    it('hides copy and paste without a clipboard', () => {
+      render(<ColorPicker defaultValue={BLUE} clipboard={null} />)
+      expect(screen.queryByRole('button', { name: 'Copy color' })).toBeNull()
+      expect(screen.queryByRole('button', { name: 'Paste a color' })).toBeNull()
     })
 
     it('renders no mode group on a picker that offers a single mode', () => {

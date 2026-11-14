@@ -26,6 +26,36 @@ describe('ColorField', () => {
   })
 
   describe('variants', () => {
+    it('copies from one field and pastes into another, without opening either', async () => {
+      const user = userEvent.setup()
+      let held = ''
+      const clipboard = {
+        writeText: (text: string) => {
+          held = text
+          return Promise.resolve()
+        },
+        readText: () => Promise.resolve(held),
+      }
+      const onChange = vi.fn()
+      render(
+        <>
+          <ColorField label="Fill" defaultValue={BLUE} clipboard={clipboard} />
+          <ColorField
+            label="Stroke"
+            defaultValue={null}
+            nullable
+            clipboard={clipboard}
+            onChange={onChange}
+          />
+        </>
+      )
+      await user.click(screen.getByRole('button', { name: 'Copy color Fill' }))
+      await user.click(screen.getByRole('button', { name: 'Paste a color Stroke' }))
+      // Through hex, the channels come back rounded: the hex is what round-trips exactly.
+      expect(onChange).toHaveBeenCalledTimes(1)
+      expect(screen.getByRole('textbox', { name: 'Hex color Stroke' })).toHaveValue(BLUE_HEX)
+    })
+
     it('passes the compact density to the picker it composes', () => {
       render(<ColorField label="Fill" defaultValue={BLUE} density="compact" />)
       expect(screen.getByRole('group', { name: 'Fill' })).toHaveClass(

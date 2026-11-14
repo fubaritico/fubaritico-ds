@@ -1,5 +1,12 @@
 import clsx from 'clsx'
-import { useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import {
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react'
 
 import { createColorPickerService, resolveDirection } from '@fubaritico/behaviors'
 import {
@@ -15,13 +22,16 @@ import {
   ColorPickerContext,
   useColorPickerSelector,
 } from './ColorPickerContext'
+import { ColorPickerCopyButton } from './ColorPickerCopyButton'
 import { ColorPickerHexField } from './ColorPickerHexField'
 import { ColorPickerModeGroup } from './ColorPickerModeGroup'
+import { ColorPickerPasteButton } from './ColorPickerPasteButton'
 import { ColorPickerStatus } from './ColorPickerStatus'
 import { ColorPickerSwatch } from './ColorPickerSwatch'
 import { ColorPickerAlpha, ColorPickerHue } from './ColorPickerTrack'
 
 import type {
+  ColorClipboard,
   ColorPickerLabels,
   ColorPickerOptions,
   ColorPickerService,
@@ -33,6 +43,7 @@ import type { ColorPickerDensity } from '@fubaritico/variants'
 import type { ComponentProps } from 'react'
 
 export type {
+  ColorClipboard,
   ColorPickerMode,
   ColorValue,
   HsvaColor,
@@ -70,6 +81,11 @@ export interface ColorPickerProps
   /** Colour-to-words function for screen readers; English default. Memoise it. */
   describeColor?: DescribeColor
   /**
+   * The clipboard behind the copy and paste buttons. Defaults to the browser's
+   * `navigator.clipboard`; `null` (or a page without one, such as plain HTTP) hides both buttons.
+   */
+  clipboard?: ColorClipboard | null
+  /**
    * A service built elsewhere with `createColorPickerService` — to drive the picker from outside
    * the tree, or to inject a stub in a test. Read once, at mount; its own `uid` and
    * `defaultValue` are kept.
@@ -98,6 +114,7 @@ function toServiceOptions(
     | 'placeholder'
     | 'labels'
     | 'describeColor'
+    | 'clipboard'
   >
 ): Partial<ColorPickerOptions> {
   return {
@@ -109,6 +126,7 @@ function toServiceOptions(
     alpha: props.alpha,
     disabled: props.disabled,
     labels: props.labels,
+    clipboard: props.clipboard,
     ...(props.placeholder === undefined
       ? {}
       : { placeholder: props.placeholder }),
@@ -119,9 +137,34 @@ function toServiceOptions(
 }
 
 /**
+ * The browser's clipboard, or `null` where there is none (an insecure page): the declared degraded
+ * mode — copy and paste are then not offered.
+ *
+ * @returns `navigator.clipboard`, or `null`.
+ */
+function platformClipboard(): ColorClipboard | null {
+  return globalThis.navigator?.clipboard ?? null
+}
+
+/**
+ * What a server render sees: no clipboard. Hydration starts from it too, then React re-renders with
+ * the browser's — the buttons appear after hydration, never as a mismatch.
+ *
+ * @returns `null`.
+ */
+const serverClipboard = (): null => null
+
+/**
+ * The platform clipboard never changes during a page's life: nothing to subscribe to.
+ *
+ * @returns A no-op unsubscribe.
+ */
+const subscribeToNothing = (): (() => void) => () => undefined
+
+/**
  * The default arrangement, used when `<ColorPicker>` has no children: area, hue, alpha (when
- * enabled), a row with the swatch and the hex field, then the mode group (when the picker offers
- * "automatic" or "no colour").
+ * enabled), a row with the swatch, the hex field and the copy / paste buttons (with a clipboard),
+ * then the mode group (when the picker offers "automatic" or "no colour").
  *
  * @returns The default parts.
  */
@@ -134,6 +177,8 @@ function DefaultLayout() {
       <div className={COLOR_PICKER_ROW_CLASS}>
         <ColorPickerSwatch />
         <ColorPickerHexField />
+        <ColorPickerCopyButton />
+        <ColorPickerPasteButton />
       </div>
       <ColorPickerModeGroup />
     </>
@@ -147,7 +192,8 @@ function DefaultLayout() {
  * A thin React adapter over `ColorPickerService` (`@fubaritico/behaviors`), which owns the HSVA
  * state, the drags, the keyboard, the hex draft and every ARIA attribute. Works controlled
  * (`value` + `onChange`) or uncontrolled (`defaultValue`). Without children it renders the default
- * arrangement; compose `ColorPicker.Area`, `.Hue`, `.Alpha`, `.HexField`, `.Swatch`, `.ModeGroup`
+ * arrangement; compose `ColorPicker.Area`, `.Hue`, `.Alpha`, `.HexField`, `.Swatch`, `.ModeGroup`,
+ * `.CopyButton`, `.PasteButton`
  * to arrange it yourself. The polite live region (`.Status`) is always rendered.
  *
  * @param props - {@link ColorPickerProps}.
@@ -163,6 +209,7 @@ function DefaultLayout() {
  * @param props.placeholder - Thumb position while nothing was chosen.
  * @param props.labels - Accessible labels.
  * @param props.describeColor - Colour-to-words function.
+ * @param props.clipboard - Clipboard behind copy / paste; the browser's by default, `null` for none.
  * @param props.service - Injected service; one is created when absent.
  * @returns The rendered picker panel.
  */
@@ -179,6 +226,7 @@ export function ColorPicker({
   placeholder,
   labels,
   describeColor,
+  clipboard: injectedClipboard,
   service: injectedService,
   className,
   children,
@@ -186,6 +234,15 @@ export function ColorPicker({
   ...rest
 }: Readonly<ColorPickerProps>) {
   const uid = useId()
+  // Read through the external-store hook so the server snapshot (no clipboard) is also the one
+  // hydration starts from.
+  const browserClipboard = useSyncExternalStore(
+    subscribeToNothing,
+    platformClipboard,
+    serverClipboard
+  )
+  const clipboard =
+    injectedClipboard === undefined ? browserClipboard : injectedClipboard
   const rootRef = useRef<HTMLDivElement>(null)
   const mergedRef = useMergedRef(rootRef, ref)
 
@@ -200,6 +257,7 @@ export function ColorPicker({
     placeholder,
     labels,
     describeColor,
+    clipboard,
   })
 
   // `useState`, not `useMemo`: the instance must live as long as the component, and a StrictMode
@@ -268,5 +326,7 @@ ColorPicker.Alpha = ColorPickerAlpha
 ColorPicker.HexField = ColorPickerHexField
 ColorPicker.Swatch = ColorPickerSwatch
 ColorPicker.ModeGroup = ColorPickerModeGroup
+ColorPicker.CopyButton = ColorPickerCopyButton
+ColorPicker.PasteButton = ColorPickerPasteButton
 
 export default ColorPicker

@@ -41,6 +41,19 @@ function alphaOf(value: ColorValue): number {
   return value.a
 }
 
+/**
+ * A clipboard double: it holds `text` and records the writes.
+ *
+ * @param text - What a read returns.
+ * @returns The double.
+ */
+function fakeClipboard(text = '') {
+  return {
+    writeText: vi.fn<(value: string) => Promise<void>>(() => Promise.resolve()),
+    readText: vi.fn<() => Promise<string>>(() => Promise.resolve(text)),
+  }
+}
+
 /** A minimal keyboard event recording whether it was consumed. */
 function key(
   name: string,
@@ -519,6 +532,107 @@ describe('ColorPickerService', () => {
         expect(service.getState().mode).toBe('color')
         service.cancelHexDraft()
         expect(service.getState()).toMatchObject({ value: 'none', color: BLUE })
+      })
+    })
+
+    describe('clipboard', () => {
+      it('copies the hex the field shows and announces it', async () => {
+        const clipboard = fakeClipboard()
+        const { service } = setup({ clipboard })
+        expect(await service.copy()).toBe(true)
+        expect(clipboard.writeText).toHaveBeenCalledWith(BLUE_HEX)
+        expect(service.getState().announcement).toBe('Color copied')
+      })
+
+      it('announces a repeated copy again (the region text changes)', async () => {
+        const { service } = setup({ clipboard: fakeClipboard() })
+        await service.copy()
+        const first = service.getState().announcement
+        await service.copy()
+        const second = service.getState().announcement
+        expect(second).not.toBe(first)
+        expect(second.trim()).toBe('Color copied')
+        await service.copy()
+        expect(service.getState().announcement).toBe(first)
+      })
+
+      it('pastes a hex as a settled change', async () => {
+        const { service, onChange, onChangeComplete } = setup({
+          clipboard: fakeClipboard('#ff0000'),
+        })
+        expect(await service.paste()).toBe(true)
+        expect(service.getState().value).toEqual(hsv(0, 100, 100))
+        expect(onChange).toHaveBeenCalledWith(hsv(0, 100, 100))
+        expect(onChangeComplete).toHaveBeenCalledWith(hsv(0, 100, 100))
+        expect(service.getState().announcement).toBe('vivid red')
+      })
+
+      it('pastes out of "no colour" and "automatic"', async () => {
+        const { service } = setup({
+          nullable: true,
+          allowNone: true,
+          clipboard: fakeClipboard('#ff0000'),
+        })
+        service.setNone()
+        await service.paste()
+        expect(service.getState().mode).toBe('color')
+        service.setAuto()
+        await service.paste()
+        expect(service.getState().value).toEqual(hsv(0, 100, 100))
+      })
+
+      it('accepts a pasted hex without "#" and with spaces around it', async () => {
+        const { service } = setup({ clipboard: fakeClipboard('  ff0000\n') })
+        expect(await service.paste()).toBe(true)
+        expect(service.getState().value).toEqual(hsv(0, 100, 100))
+      })
+
+      it('keeps the hue when the pasted colour is a gray', async () => {
+        const { service } = setup({ clipboard: fakeClipboard('#808080') })
+        await service.paste()
+        expect(service.getState().color.h).toBe(210)
+      })
+
+      it('says the colour again when the same one is pasted, without a change', async () => {
+        const { service, onChange } = setup({
+          clipboard: fakeClipboard(BLUE_HEX),
+        })
+        expect(await service.paste()).toBe(true)
+        expect(onChange).not.toHaveBeenCalled()
+        expect(service.getState().announcement).toBe(service.describe())
+      })
+
+      it('offers the controls only with a clipboard', () => {
+        expect(setup().service.getState().hasClipboard).toBe(false)
+        expect(
+          setup({ clipboard: fakeClipboard() }).service.getState().hasClipboard
+        ).toBe(true)
+      })
+
+      it('notifies when the clipboard appears or goes', () => {
+        const { service } = setup()
+        const listener = vi.fn()
+        service.subscribe(listener)
+        service.setOptions({ clipboard: fakeClipboard() })
+        expect(listener).toHaveBeenCalledTimes(1)
+        service.setOptions({ clipboard: null })
+        expect(service.getState().hasClipboard).toBe(false)
+      })
+
+      it('names the two buttons and enables paste in every mode', () => {
+        const { service } = setup({ allowNone: true })
+        expect(service.copyButtonAttrs()).toEqual({
+          type: 'button',
+          'aria-label': 'Copy color',
+          disabled: undefined,
+        })
+        service.setNone()
+        expect(service.copyButtonAttrs().disabled).toBe('')
+        expect(service.pasteButtonAttrs()).toEqual({
+          type: 'button',
+          'aria-label': 'Paste a color',
+          disabled: undefined,
+        })
       })
     })
 
@@ -1030,6 +1144,43 @@ describe('ColorPickerService', () => {
       expect(onChange).not.toHaveBeenCalled()
     })
 
+    it('announces a pasted text that is not a colour, and changes nothing', async () => {
+      const { service, onChange } = setup({
+        clipboard: fakeClipboard('bonjour'),
+      })
+      expect(await service.paste()).toBe(false)
+      expect(service.getState()).toMatchObject({
+        value: BLUE,
+        announcement: 'The clipboard holds no color',
+      })
+      expect(onChange).not.toHaveBeenCalled()
+    })
+
+    it('copies nothing while the value is not a colour', async () => {
+      const clipboard = fakeClipboard()
+      const { service } = setup({ allowNone: true, clipboard })
+      service.setNone()
+      expect(await service.copy()).toBe(false)
+      expect(clipboard.writeText).not.toHaveBeenCalled()
+    })
+
+    it('neither copies nor pastes while disabled', async () => {
+      const clipboard = fakeClipboard('#ff0000')
+      const { service, onChange } = setup({ clipboard, disabled: true })
+      expect(await service.copy()).toBe(false)
+      expect(await service.paste()).toBe(false)
+      expect(clipboard.readText).not.toHaveBeenCalled()
+      expect(onChange).not.toHaveBeenCalled()
+      expect(service.copyButtonAttrs().disabled).toBe('')
+      expect(service.pasteButtonAttrs().disabled).toBe('')
+    })
+
+    it('copies and pastes nothing without a clipboard', async () => {
+      const { service } = setup()
+      expect(await service.copy()).toBe(false)
+      expect(await service.paste()).toBe(false)
+    })
+
     it('flags an invalid hex on Enter and keeps the draft for correction', () => {
       const { service, onChange } = setup()
       service.setHexDraft('#zzz')
@@ -1137,6 +1288,43 @@ describe('ColorPickerService', () => {
       service.cancelDrag()
       expect(onChange).not.toHaveBeenCalled()
       expect(onChangeComplete).not.toHaveBeenCalled()
+    })
+
+    it('announces a clipboard that refuses to be written', async () => {
+      const clipboard = fakeClipboard()
+      clipboard.writeText.mockRejectedValueOnce(new Error('NotAllowedError'))
+      const { service } = setup({ clipboard })
+      expect(await service.copy()).toBe(false)
+      expect(service.getState().announcement).toBe(
+        'The clipboard could not be used'
+      )
+    })
+
+    it('announces a clipboard that refuses to be read, and changes nothing', async () => {
+      const clipboard = fakeClipboard()
+      clipboard.readText.mockRejectedValueOnce(new Error('NotAllowedError'))
+      const { service, onChange } = setup({ clipboard })
+      expect(await service.paste()).toBe(false)
+      expect(service.getState().announcement).toBe(
+        'The clipboard could not be used'
+      )
+      expect(onChange).not.toHaveBeenCalled()
+    })
+
+    it('drops a paste that resolves after the picker was disabled', async () => {
+      let resolve: (text: string) => void = () => undefined
+      const clipboard = fakeClipboard()
+      clipboard.readText.mockReturnValueOnce(
+        new Promise<string>((done) => {
+          resolve = done
+        })
+      )
+      const { service, onChange } = setup({ clipboard })
+      const pending = service.paste()
+      service.setOptions({ disabled: true })
+      resolve('#ff0000')
+      expect(await pending).toBe(false)
+      expect(onChange).not.toHaveBeenCalled()
     })
 
     it('warns on a controlled null when the picker is not nullable', () => {

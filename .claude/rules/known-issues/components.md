@@ -110,6 +110,13 @@ paths:
   padding = WCAG 2.2 AA 2.5.8; the review rule asks 44px (AAA 2.5.5). Shown at 24 in À valider, the dev
   validated the ticket as shown (« C'est bon pour moi ») — not a separate ruling on the 24/44 question.
   To raise it: `--ui-color-picker-mode-padding-block` (a var, scoped).
+- **ColorPicker copy / paste (2026-11-15, REACT-160)** — 32px outline IconButtons (the swatch size,
+  `--ui-color-picker-action-size`; AA 2.5.8, not the review's 44), validated as shown (« OK j'ai
+  testé, c'est bon »). Size `md` on purpose: it draws the 20px icon (16px solid reads as a blot), the
+  skin squares the button. The platform clipboard is read through `useSyncExternalStore` with a `null`
+  server snapshot (SSR: no hydration mismatch); none (HTTP) → buttons hidden (the dev's choice).
+  A repeated announcement alternates a trailing no-break space, else the live region stays silent.
+  Chrome shows a permission prompt on the first paste: an automated browser check cannot click Paste.
 - **ColorPicker: `'none'` ≠ `null` (2026-11-15, REACT-161)** — `null` = automatic (something else picks),
   `'none'` = no colour (nothing painted). Narrow with `isColor(value)` before reading a channel. The mode
   radios are visually hidden (1px, `clip-path`): a browser test clicks the `<label>`, never the radio

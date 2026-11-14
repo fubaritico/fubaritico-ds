@@ -3,7 +3,7 @@
  *
  * `.ui-color-picker` is the panel; `__area` the 2D saturation × brightness surface and `__area-thumb`
  * its handle; `__track` marks the hue / alpha `Slider`s; `__row` lines up the swatch and the hex
- * field; `__swatch` shows the current value (`--auto`: a magic wand, `__swatch-icon`; `--none`: struck
+ * field and the copy / paste `__action` buttons; `__swatch` shows the current value (`--auto`: a magic wand, `__swatch-icon`; `--none`: struck
  * through); `__modes` is the mode group, a segmented control whose `__mode` segments are `<label>`s
  * WRAPPING their visually hidden `__mode-input` radio — the checked, focused and disabled looks are
  * read from that radio through `:has()`, so the label must contain it; `__status` is the
@@ -76,6 +76,11 @@
     --ui-color-picker-auto-icon-color: var(--color-text-secondary);
     --ui-color-picker-auto-icon-size: 70%;
 
+    /* ---- override API: copy / paste buttons ---- */
+    --ui-color-picker-action-size: var(--ui-color-picker-swatch-size);
+    /* A bordered button beside a square swatch and field: their corners, not a circle. */
+    --ui-color-picker-action-radius: var(--ui-color-picker-swatch-radius);
+
     /* ---- override API: mode group (segmented control) ---- */
     --ui-color-picker-modes-radius: var(--radius-sm);
     --ui-color-picker-modes-border-width: 1px;
@@ -88,6 +93,9 @@
     --ui-color-picker-mode-hover-background: var(--color-hover);
     --ui-color-picker-mode-selected-background: var(--color-surface-inverse);
     --ui-color-picker-mode-selected-text-color: var(--color-text-on-inverse);
+    --ui-color-picker-mode-unavailable-opacity: var(
+      --ui-color-picker-disabled-opacity
+    );
 
     /* ---- override API: checkerboard (under translucent colours) ---- */
     /* Theme-INVARIANT on purpose, like the thumb rings: the picker paints colours, not chrome, so a
@@ -149,6 +157,8 @@
 
   .ui-color-picker--disabled {
     --ui-color-picker-area-cursor: not-allowed;
+    /* The panel is dimmed as a whole: its unavailable modes are not dimmed a second time. */
+    --ui-color-picker-mode-unavailable-opacity: 1;
     opacity: var(--ui-color-picker-disabled-opacity);
   }
 
@@ -375,6 +385,13 @@
     fill: currentcolor;
   }
 
+  /* Copy / paste: an IconButton squared to the swatch, its 20px icon kept (16px reads as a blot). */
+  .ui-color-picker__action {
+    --ui-icon-button-size: var(--ui-color-picker-action-size);
+    --ui-icon-button-radius: var(--ui-color-picker-action-radius);
+    flex-shrink: 0;
+  }
+
   /* ---- mode group: a segmented control over native radios ---- */
 
   .ui-color-picker__modes {
@@ -441,14 +458,10 @@
       var(--ui-color-picker-ring-contrast-color);
   }
 
+  /* A mode the picker does not offer is dimmed (`--disabled` neutralises it: no double dimming). */
   .ui-color-picker__mode:has(.ui-color-picker__mode-input:disabled) {
     cursor: not-allowed;
-  }
-
-  /* A mode the picker does not offer is dimmed; a disabled picker is already dimmed as a whole. */
-  .ui-color-picker:not(.ui-color-picker--disabled)
-    .ui-color-picker__mode:has(.ui-color-picker__mode-input:disabled) {
-    opacity: var(--ui-color-picker-disabled-opacity);
+    opacity: var(--ui-color-picker-mode-unavailable-opacity);
   }
 
   /* The radio is the keyboard and assistive-technology surface; the label is what is seen. */

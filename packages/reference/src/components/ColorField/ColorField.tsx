@@ -44,9 +44,10 @@ interface ColorFieldControlProps {
 }
 
 /**
- * The swatch button and the hex input. Each one is named by its own label FOLLOWED by the field's
- * ("Choose color Fill", "Hex color Fill"), so two ColorFields on a form stay distinguishable out of
- * their group. Reads the picker service for the hex input's id.
+ * The swatch button, the hex input and the copy / paste buttons. Each one is named by its own label
+ * FOLLOWED by the field's ("Choose color Fill", "Hex color Fill", "Copy color Fill"), so two
+ * ColorFields on a form stay distinguishable out of their group. Reads the hex input's id from the
+ * picker service.
  *
  * @param props - {@link ColorFieldControlProps}.
  * @returns The rendered control row.
@@ -58,6 +59,8 @@ function ColorFieldControl({
 }: Readonly<ColorFieldControlProps>) {
   const { service } = useColorPickerContext()
   const triggerId = useId()
+  const copyId = useId()
+  const pasteId = useId()
   const hexId = service.hexInputId()
 
   return (
@@ -72,18 +75,29 @@ function ColorFieldControl({
         <ColorPicker.Swatch aria-hidden="true" />
       </Popover.Trigger>
       <ColorPicker.HexField aria-labelledby={`${hexId} ${labelId}`} />
+      <ColorPicker.CopyButton
+        id={copyId}
+        aria-labelledby={`${copyId} ${labelId}`}
+      />
+      <ColorPicker.PasteButton
+        id={pasteId}
+        aria-labelledby={`${pasteId} ${labelId}`}
+      />
     </div>
   )
 }
 
 /**
- * ColorField — a colour form field: a label, a swatch button and an editable hex input; the swatch
- * opens the full picker in a popover, above everything on the page.
+ * ColorField — a colour form field: a label, a swatch button, an editable hex input and copy /
+ * paste buttons (when there is a clipboard — `clipboard`); the swatch opens the full picker in a
+ * popover, above everything on the page. Copying from one field and pasting into another needs no
+ * popover at all.
  *
  * Pure composition: a `ColorPicker` (one `ColorPickerService` behind the hex input AND the panel,
  * so they always agree) arranged as a field, with its area / hue / alpha / mode group inside a
  * `Popover`. A complete typed hex is previewed live and settles on Enter or blur, without opening
- * anything. Every ColorPicker prop works the same (value, nullable, allowNone, alpha, labels…).
+ * anything. Every ColorPicker prop works the same (value, nullable, allowNone, clipboard, alpha,
+ * labels…).
  *
  * @param props - {@link ColorFieldProps}.
  * @param props.label - Visible label.

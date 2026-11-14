@@ -84,6 +84,27 @@ export interface ColorPickerLabels {
   hexInvalid: string
   /** The picker as a whole (its root group). */
   picker: string
+  /** The copy button's name. */
+  copy: string
+  /** The paste button's name. */
+  paste: string
+  /** Announced once the colour is in the clipboard. */
+  copied: string
+  /** Announced when the pasted text is not a colour. */
+  pasteInvalid: string
+  /** Announced when the clipboard refuses to be read or written. */
+  clipboardFailed: string
+}
+
+/**
+ * The clipboard the picker copies to and pastes from — the slice of the browser's
+ * `navigator.clipboard` it needs, injected so a test or another platform can stand in.
+ */
+export interface ColorClipboard {
+  /** Writes text to the clipboard; rejects when the platform refuses. */
+  writeText: (text: string) => Promise<void>
+  /** Reads text from the clipboard; rejects when the platform refuses. */
+  readText: () => Promise<string>
 }
 
 /**
@@ -122,6 +143,11 @@ export interface ColorPickerOptions {
   labels?: Partial<ColorPickerLabels>
   /** Colour-to-words function for `aria-valuetext`; defaults to an English describer. */
   describeColor?: DescribeColor
+  /**
+   * The clipboard behind `copy()` / `paste()`. Absent or `null`: there is none — the copy and paste
+   * controls are not offered (`snapshot.hasClipboard === false`).
+   */
+  clipboard?: ColorClipboard | null
   /** Called on every change — continuously while dragging. */
   onChange?: (value: ColorValue) => void
   /** Called once a change is settled: pointer released, key pressed, hex committed. */
@@ -159,7 +185,7 @@ export interface ColorPickerSnapshot {
   hexInvalid: boolean
   /**
    * Text for a polite live region: the description at the last SETTLED change (release, key,
-   * hex commit, mode change) — never during a drag, so a screen reader is not flooded.
+   * hex commit, mode change), or the outcome of a copy / paste — never during a drag, so a screen reader is not flooded.
    * Empty until the first settled change.
    */
   announcement: string
@@ -169,6 +195,8 @@ export interface ColorPickerSnapshot {
   nullable: boolean
   /** Whether the "no colour" state is allowed. */
   allowNone: boolean
+  /** Whether a clipboard is available — the copy and paste controls render only then. */
+  hasClipboard: boolean
   /** Whether every change is blocked. */
   disabled: boolean
   /** Text direction the pointer and arrow keys follow. */

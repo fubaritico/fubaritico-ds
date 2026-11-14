@@ -25,9 +25,20 @@
     --ui-color-field-trigger-ring-color: var(--color-focus);
     /* Follows the picker's width, so the compact density narrows the popover too. */
     --ui-color-field-panel-width: var(--ui-color-picker-width);
+    /* What the copy and paste buttons add to the row, when there is a clipboard. */
+    --ui-color-field-actions-width: calc(
+      2 * (var(--ui-color-picker-action-size) + var(--ui-color-picker-gap))
+    );
 
     gap: var(--ui-color-field-gap);
     inline-size: var(--ui-color-field-width);
+  }
+
+  /* With copy / paste, the field widens by their room: the hex input keeps its own. */
+  .ui-color-field:has(.ui-color-picker__action) {
+    inline-size: calc(
+      var(--ui-color-field-width) + var(--ui-color-field-actions-width)
+    );
   }
 
   .ui-color-field__label {
@@ -48,18 +59,31 @@
     display: inline-flex;
     padding: 0;
     border: 0;
-    border-start-start-radius: var(--ui-color-field-trigger-radius-start-start, var(--ui-color-field-trigger-radius));
-    border-start-end-radius: var(--ui-color-field-trigger-radius-start-end, var(--ui-color-field-trigger-radius));
-    border-end-start-radius: var(--ui-color-field-trigger-radius-end-start, var(--ui-color-field-trigger-radius));
-    border-end-end-radius: var(--ui-color-field-trigger-radius-end-end, var(--ui-color-field-trigger-radius));
+    border-start-start-radius: var(
+      --ui-color-field-trigger-radius-start-start,
+      var(--ui-color-field-trigger-radius)
+    );
+    border-start-end-radius: var(
+      --ui-color-field-trigger-radius-start-end,
+      var(--ui-color-field-trigger-radius)
+    );
+    border-end-start-radius: var(
+      --ui-color-field-trigger-radius-end-start,
+      var(--ui-color-field-trigger-radius)
+    );
+    border-end-end-radius: var(
+      --ui-color-field-trigger-radius-end-end,
+      var(--ui-color-field-trigger-radius)
+    );
     background: none;
     cursor: pointer;
     --ui-color-picker-swatch-size: var(--ui-color-field-trigger-size);
   }
 
   .ui-color-field__trigger:focus-visible {
-    outline: 2px solid var(--ui-color-field-trigger-ring-color);
-    outline-offset: 2px;
+    outline: var(--ui-color-picker-ring-width) solid
+      var(--ui-color-field-trigger-ring-color);
+    outline-offset: var(--ui-color-picker-ring-offset);
   }
 
   .ui-color-field__trigger:disabled {

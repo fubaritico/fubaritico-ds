@@ -24,6 +24,10 @@ field — with the optional explicit states "automatic" and "no colour". A thin 
   form (`#19f`), which is not previewed since it is usually on its way to a long one. An invalid
   draft shows a text error on Enter and is discarded on blur; Escape goes back to the colour from
   before the typing.
+- **Copy and paste** — two icon buttons beside the hex field copy the colour (as hex) and paste
+  one from the clipboard, as a settled change that also leaves "automatic" and "no colour". Text that
+  is not a colour changes nothing and is announced; so is a clipboard that refuses. Hidden where there
+  is no clipboard.
 - **Announcements** — a polite live region speaks the colour ("dark blue") after each settled change,
   never during a drag.
 - **RTL** — the saturation axis and the tracks run from the inline-start, and follow a `dir` that
@@ -168,13 +172,47 @@ starts from the placeholder, pure red unless you pass one:
 <ColorPicker allowNone defaultValue={{ h: 210, s: 80, v: 60, a: 1 }} />
 ```
 
+Copy and paste — on by default with the browser's clipboard; `null` hides both buttons, and a
+clipboard of your own (a test double, an app-level clipboard) is injected the same way:
+
+```tsx
+;<ColorPicker defaultValue={{ h: 210, s: 80, v: 60, a: 1 }} clipboard={null} />
+
+const memory = { text: '' }
+const appClipboard = {
+  writeText: (text: string) => Promise.resolve(void (memory.text = text)),
+  readText: () => Promise.resolve(memory.text),
+}
+;<ColorPicker
+  defaultValue={{ h: 210, s: 80, v: 60, a: 1 }}
+  clipboard={appClipboard}
+/>
+```
+
+The two buttons in your own arrangement:
+
+```tsx
+<ColorPicker defaultValue={{ h: 210, s: 80, v: 60, a: 1 }}>
+  <ColorPicker.Area />
+  <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+    <ColorPicker.HexField />
+    <ColorPicker.CopyButton />
+    <ColorPicker.PasteButton />
+  </div>
+</ColorPicker>
+```
+
 Driven from outside the tree — inject the service:
 
 ```tsx
 import { createColorPickerService } from '@fubaritico/behaviors'
 import { ColorPicker } from '@fubaritico/react/ColorPicker'
 
-const fill = createColorPickerService({ uid: 'fill', nullable: true, allowNone: true })
+const fill = createColorPickerService({
+  uid: 'fill',
+  nullable: true,
+  allowNone: true,
+})
 
 export function ExternallyDriven() {
   return (
@@ -233,6 +271,7 @@ hsvaToHex({ h: 210, s: 80, v: 60, a: 1 }) // '#1f5c99'
 | `placeholder`            | `HsvaColor`                    | pure red    | Thumb position while nothing was chosen.        |
 | `labels`                 | `Partial<ColorPickerLabels>`   | English     | Accessible labels and messages (below).         |
 | `describeColor`          | `(color: HsvaColor) => string` | English     | Colour-to-words for screen readers.             |
+| `clipboard`              | `ColorClipboard \| null`       | the browser | Behind copy / paste; `null` hides both buttons. |
 | `service`                | `ColorPickerService`           | created     | Injected behaviour service; read once at mount. |
 | …`ComponentProps<'div'>` | —                              | —           | On the panel root (`aria-label` overrides).     |
 
@@ -258,17 +297,24 @@ hsvaToHex({ h: 210, s: 80, v: 60, a: 1 }) // '#1f5c99'
 | `automaticDescription` | `Automatic color`                   | How the automatic state is announced  |
 | `none`                 | `None`                              | The "no colour" option, placeholder   |
 | `noneDescription`      | `No color`                          | How "no colour" is announced          |
+| `copy`                 | `Copy color`                        | The copy button                       |
+| `paste`                | `Paste a color`                     | The paste button                      |
+| `copied`               | `Color copied`                      | Announced after a copy                |
+| `pasteInvalid`         | `The clipboard holds no color`      | Announced for a paste that is no hex  |
+| `clipboardFailed`      | `The clipboard could not be used`   | Announced when the platform refuses   |
 
 ### Parts
 
-| Part                     | Renders                       | Props                                                   | Notes                     |
-| ------------------------ | ----------------------------- | ------------------------------------------------------- | ------------------------- |
-| `ColorPicker.Area`       | the 2D area                   | `<div>` props (pointer handlers run first, may prevent) | —                         |
-| `ColorPicker.Hue`        | the hue `Slider`              | `Slider` props minus value / range / ARIA / callbacks   | —                         |
-| `ColorPicker.Alpha`      | the alpha `Slider`            | same as `Hue`                                           | `null` without `alpha`    |
-| `ColorPicker.HexField`   | the hex `<input>` + its error | `<input>` props minus id / value / ARIA state           | `onKeyDown` runs first    |
-| `ColorPicker.Swatch`     | a `<span role="img">`         | `<span>` props                                          | —                         |
-| `ColorPicker.ModeGroup`  | a segmented radio group       | `<div>` props minus role / name                         | `null` with a single mode |
+| Part                      | Renders                       | Props                                                   | Notes                     |
+| ------------------------- | ----------------------------- | ------------------------------------------------------- | ------------------------- |
+| `ColorPicker.Area`        | the 2D area                   | `<div>` props (pointer handlers run first, may prevent) | —                         |
+| `ColorPicker.Hue`         | the hue `Slider`              | `Slider` props minus value / range / ARIA / callbacks   | —                         |
+| `ColorPicker.Alpha`       | the alpha `Slider`            | same as `Hue`                                           | `null` without `alpha`    |
+| `ColorPicker.HexField`    | the hex `<input>` + its error | `<input>` props minus id / value / ARIA state           | `onKeyDown` runs first    |
+| `ColorPicker.Swatch`      | a `<span role="img">`         | `<span>` props                                          | —                         |
+| `ColorPicker.ModeGroup`   | a segmented radio group       | `<div>` props minus role / name                         | `null` with a single mode |
+| `ColorPicker.CopyButton`  | an `IconButton`               | `IconButton` props minus icon / name / disabled / type  | `null` without clipboard  |
+| `ColorPicker.PasteButton` | an `IconButton`               | same as `CopyButton`                                    | `null` without clipboard  |
 
 `useColorPickerController()` returns `{ state, service }` — the live snapshot and the service's
 imperative API — for a custom part inside `<ColorPicker>`.
@@ -289,6 +335,8 @@ imperative API — for a custom part inside `<ColorPicker>`.
   option, the arrow keys move AND select, a screen reader announces "Automatic, radio, 2 of 3". In
   forced colours the checked segment is underlined (backgrounds are dropped there).
 - The swatch names the state ("Automatic color", "No color"); the wand is `aria-hidden`.
+- The copy and paste buttons are named "Copy color" / "Paste a color"; their outcome goes to the
+  live region. Copy is disabled while the value is not a colour.
 - An invalid hex is announced (`role="alert"`), shown under the field and linked with
   `aria-describedby`.
 - A polite live region announces each settled change.
@@ -308,6 +356,15 @@ imperative API — for a custom part inside `<ColorPicker>`.
 > **Warning** — `null` and `'none'` are two different things: `null` asks someone else to pick a
 > colour, `'none'` asks for nothing to be painted. Check for both before reading a channel
 > (`isColor(value)`).
+
+> **Note** — copy and paste use `navigator.clipboard`, which exists on secure pages only (HTTPS,
+> localhost): elsewhere the two buttons are not rendered. Pasting asks the browser: Chrome asks
+> once per site; Firefox and Safari show a small "Paste" confirmation, except for text copied from
+> the same site. Inject `clipboard` to use your own (a test double, an app-level clipboard).
+
+> **Note** — rendered on a server, the picker has no clipboard: the two buttons appear right after
+> hydration (no hydration mismatch). Copy is disabled while the value is "automatic" or "no colour";
+> the buttons' `size` is fixed by the skin to the swatch (`--ui-color-picker-action-size`).
 
 > **Note** — the panel has no surface of its own (no border, background or padding): a popover
 > brings one, and inline you compose a `Card`. Giving it a surface would double the chrome inside a

@@ -45,8 +45,9 @@
 @import './styles/truncated-text.css';
 @import './styles/typeahead.css';
 @import './styles/typography.css';
-/* After slider.css and input.css: its __track / __hex rules sit on .ui-slider / .ui-input
-   elements and must win at equal specificity inside the layer (IconButton precedent). */
+/* After slider.css, input.css and icon-button.css: its __track / __hex / __action rules sit on
+   .ui-slider / .ui-input / .ui-icon-button elements (`__action` re-sets --ui-icon-button-size) and
+   must win at equal specificity inside the layer (IconButton precedent). */
 @import './styles/color-picker.css';
 /* After color-picker.css: .ui-color-field is mixed onto the picker root and overrides it. */
 @import './styles/color-field.css';
