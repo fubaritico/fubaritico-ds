@@ -5,14 +5,16 @@
 > only where we stopped, what is mid-flight, and context that is not a task. Its former content is in
 > `next-archive.md`, verbatim. Long threads (north-star, locked decisions): `next-threads.md`.
 
-## ▶ RESUME HERE (2026-10-30, evening)
+## ▶ RESUME HERE (2026-11-15, night)
 
 Nothing waits in **À valider**, nothing is **En cours**, **À faire** is empty: the order is his. All is
-committed and pushed (`859606f`). **0.9.0 is published** (the MultiSelect, REACT-158); Atlas has its
-handoff (`europe-map/HANDOFF-from-fubaritico-ds.md`, untracked there).
+committed and pushed. **0.10.0 is published** (« aucune couleur » REACT-161, copy / paste REACT-160);
+Atlas has its handoff (`europe-map/HANDOFF-from-fubaritico-ds.md`, untracked there): range `^0.10.0`,
+`ColorValue` widened in `ColourField` / `SwatchPicker`, nine new labels, `allowNone` for CARTO-445.
 
 Open for his decision: the Badge remove button's hit area — 24 px today (WCAG 2.2 AA 2.5.8), 44 px if he
-wants the review's target (known-issues `components.md`).
+wants the review's target. Same question, now settled « as shown »: the mode segments (24 px) and the
+copy / paste buttons (32 px) — known-issues `components.md`.
 
 **Since 2026-10-24, work is committed on `main`** — concise commits, one ticket each; a branch and a PR
 only when the dev asks (`rules/architecture.md`, REPO-157). Pushing still takes his go.
@@ -28,8 +30,8 @@ first run, through `e2e-orchestrator`, creates it (REPO-149, in Idées).
 | **À valider**       | —                                                                                                                                                                                                                   | empty                                                  |
 | **À faire**         | —                                                                                                                                                                                                                   | empty: the order is his                                |
 | **Backlog**         | themes 2→5 (TOKENS-124…127), Atlas's command menu (REACT-128), `role="grid"` (REACT-129), Stencil green (STENCIL-130), doc as data (DESIGN-131), DataTable leftovers (REACT-145…147), Storybook play tests (SB-148) |                                                        |
-| **Idées**           | the e2e harness and the CI stubs (REPO-149), among 13 others                                                                                                                                                        |                                                        |
-| **Fait**, à publier | —                                                                                                                                                                                                                   | nothing: 0.9.0 published 2026-10-30 (REPO-159)         |
+| **Idées**           | the e2e harness and the CI stubs (REPO-149), the flaky Image test (REACT-162), among 13 others                                                                                                                                                      |                                                        |
+| **Fait**, à publier | —                                                                                                                                                                                                                   | nothing: 0.10.0 published 2026-11-14 (REPO-163)         |
 
 The choice still stands: the contrasts (STYLES-153, a11y Epic), themes step 2 (TOKENS-124) or Atlas's menu (REACT-128, low priority; my
 recommendation: a sibling `ActionMenu` rather than a `kind` prop — to debate).

@@ -3,6 +3,24 @@
 Entries of 2026-10-22 and before, moved out of `completed.md` (it keeps the last two sessions). Translated into
 English on 2026-10-22. Not loaded at launch. Since 2026-10-22 every delivery also has its Fait ticket on the board.
 
+### 2026-10-23/24 — the Toast, release 0.8.0, Epics on the board, commits on main
+
+**One span** (23/10 20:50 → 24/10 02:29, 5h39), the chantier opened on 21/10 (4 spans, 13h17). Pushed (`607870b`).
+
+- **REPO-150 checked** at start: the hook names the rules, « écris les tests de Tabs » started `/test`.
+- **The Toast (REACT-152)**, asked by Atlas: one page-wide stack (`globalThis` slot, the Toaster mounted
+  « dans l'hôte, pas dans les remotes »), max 5, the 6th evicts the oldest, 6 positions, WCAG with no
+  assumed exception (« on doit respecter les précos WCAG »), 44 px target, announcements in the machine.
+  The dev's visual checks: same width for every toast, centring (one line / three lines stories).
+- **0.8.0 published** (REPO-155, `/release minor`, his two go's); Atlas handoff written.
+- **Epics** (REPO-154): Chantiers → Epics with « Tickets enfants », `epic · …` labels, story/bug; DESIGN-144
+  icons and DESIGN-156 a11y become Epics; STYLES-153 (contrasts, Backlog) is the a11y child.
+- **`/doctor prompt-audit`**, then the dev: « pas envie d'être emmerdé avec des pull requests » → commits on
+  `main`, a PR only on demand, plus the audit's fixes (REPO-157).
+- **My faults**: four `cd` despite the rule; an unverified tooltip claim in the handoff (removed); the
+  known-issues called the light Tooltip's 1.4.11 exception « the dev's choice » — he assumed nothing (STYLES-153);
+  a zsh `$G` command that ran nothing.
+
 ### 2026-10-22 — the Trello board, the context by path, every file in English, the prompt audit
 
 **Two spans** (10:46 → 13:09; 17:00 → 19:17, 4h39), the chantier opened on 21/10 (3 spans, 7h36). Pushed.
